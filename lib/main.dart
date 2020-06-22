@@ -39,9 +39,7 @@ class _MyAppState extends State<MyApp> {
               // Function callback for stretch
               return;
             },
-
             expandedHeight: _hight,
-
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: <StretchMode>[
                 StretchMode.zoomBackground,
@@ -74,61 +72,74 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
           SliverList(
-              delegate: SliverChildListDelegate([
+            delegate: SliverChildListDelegate(
+              [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     SizedBox(height: 20.0),
-
-                    new Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child:
-                        new TextField(
-                          decoration: new InputDecoration.collapsed(
-                            hintText: "0",
-                            hintStyle: TextStyle(fontSize: 50, fontFamily: 'RobotoMono',)
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          "Monto:",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontFamily: 'RobotoMono',
                           ),
-                        style: TextStyle(
-                          fontSize: 50,
-                          fontFamily: 'RobotoMono',
-                        ),
-                        textAlign: TextAlign.right,
-                        controller: textControllerInput,
-                        onTap: () =>
-                            FocusScope.of(context).requestFocus(new FocusNode()),
-                      )
+                        )
+                      ],
                     ),
-
+                    new Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: new TextField(
+                          decoration: new InputDecoration.collapsed(
+                              hintText: "0",
+                              hintStyle: TextStyle(
+                                fontSize: 50,
+                                fontFamily: 'RobotoMono',
+                              )),
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontFamily: 'RobotoMono',
+                          ),
+                          textAlign: TextAlign.right,
+                          controller: textControllerInput,
+                          onTap: () => FocusScope.of(context)
+                              .requestFocus(new FocusNode()),
+                        )),
                     SizedBox(height: 20.0),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         btn('7', Colors.white),
                         btn('8', Colors.white),
                         btn('9', Colors.white),
-                      ],),
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         btn('4', Colors.white),
                         btn('5', Colors.white),
                         btn('6', Colors.white),
-                      ],),
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         btn('1', Colors.white),
                         btn('2', Colors.white),
                         btn('3', Colors.white),
-                      ],),
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        btn('000', Colors.white),
+                        btn000(Colors.white),
                         btn('0', Colors.white),
-                        btn('00', Colors.white),
-                        ],
+                        btn00(Colors.white),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -137,14 +148,16 @@ class _MyAppState extends State<MyApp> {
                         btnEnter(),
                       ],
                     ),
-                    SizedBox(height: 10.0,)
-                ],
-              ),
-            ],
+                    SizedBox(
+                      height: 10.0,
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
     );
   }
 
@@ -178,10 +191,54 @@ class _MyAppState extends State<MyApp> {
         onPressed: () {
           textControllerInput.text = (textControllerInput.text.length > 0)
               ? (textControllerInput.text
-              .substring(0, textControllerInput.text.length - 1))
+                  .substring(0, textControllerInput.text.length - 1))
               : "";
         },
-        color: const Color(0xFFF5F7F9),
+        color: Colors.amberAccent,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
+  }
+
+  Widget btn00(Color btnColor) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Text(
+          ",00",
+          style: TextStyle(
+              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+        ),
+        onPressed: () {
+          setState(() {
+            textControllerInput.text = textControllerInput.text + ",00";
+          });
+        },
+        color: btnColor,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
+  }
+
+  Widget btn000(Color btnColor) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Text(
+          "000",
+          style: TextStyle(
+              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+        ),
+        onPressed: () {
+          setState(() {
+            textControllerInput.text = textControllerInput.text + "000";
+          });
+        },
+        color: btnColor,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
         shape: CircleBorder(),
@@ -193,11 +250,9 @@ class _MyAppState extends State<MyApp> {
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
-        child: Icon(Icons.arrow_forward, size: 35, color: Colors.blueGrey),
-        onPressed: () {
-
-        },
-        color: const Color(0xFFF5F7F9),
+        child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
+        onPressed: () {},
+        color: Colors.green,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
         shape: CircleBorder(),
@@ -205,4 +260,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
