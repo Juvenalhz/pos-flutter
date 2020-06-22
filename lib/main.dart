@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(MaterialApp(home: MyApp()));
 
@@ -11,7 +12,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   double _hight;
   bool test = true;
-  var textControllerInput = new MaskedTextController(mask: '000.000.000,00');
+  String amount = '0';
+  var textControllerInput =  TextEditingController(text: '0,00');
+  var formatter = new NumberFormat.currency(locale: 'eu', symbol:' ', decimalDigits: 2);
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +23,7 @@ class _MyAppState extends State<MyApp> {
       _hight = 100.0;
     else
       _hight = 200.0;
+
 
     return Scaffold(
       body: CustomScrollView(
@@ -84,7 +89,7 @@ class _MyAppState extends State<MyApp> {
                           "Monto:",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 50,
+                            fontSize: 40,
                             fontFamily: 'RobotoMono',
                           ),
                         )
@@ -96,11 +101,11 @@ class _MyAppState extends State<MyApp> {
                           decoration: new InputDecoration.collapsed(
                               hintText: "0",
                               hintStyle: TextStyle(
-                                fontSize: 50,
+                                fontSize: 40,
                                 fontFamily: 'RobotoMono',
                               )),
                           style: TextStyle(
-                            fontSize: 50,
+                            fontSize: 40,
                             fontFamily: 'RobotoMono',
                           ),
                           textAlign: TextAlign.right,
@@ -109,6 +114,7 @@ class _MyAppState extends State<MyApp> {
                               .requestFocus(new FocusNode()),
                         )),
                     SizedBox(height: 20.0),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
@@ -136,7 +142,8 @@ class _MyAppState extends State<MyApp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        btn000(Colors.white),
+                        SizedBox(height: 20.0, width: 90.0,),
+                        //btn000(Colors.white),
                         btn('0', Colors.white),
                         btn00(Colors.white),
                       ],
@@ -172,7 +179,22 @@ class _MyAppState extends State<MyApp> {
         ),
         onPressed: () {
           setState(() {
-            textControllerInput.text = textControllerInput.text + btntext;
+            String formattedAmount;
+
+            if (amount.length < 15) {
+              amount = amount + btntext;
+
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
+
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
           });
         },
         color: btnColor,
@@ -183,37 +205,34 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget btnClear() {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Icon(Icons.backspace, size: 35, color: Colors.blueGrey),
-        onPressed: () {
-          textControllerInput.text = (textControllerInput.text.length > 0)
-              ? (textControllerInput.text
-                  .substring(0, textControllerInput.text.length - 1))
-              : "";
-        },
-        color: Colors.amberAccent,
-        padding: EdgeInsets.all(18.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
-    );
-  }
 
   Widget btn00(Color btnColor) {
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
         child: Text(
-          ",00",
+          "00",
           style: TextStyle(
               fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
         ),
         onPressed: () {
           setState(() {
-            textControllerInput.text = textControllerInput.text + ",00";
+            String formattedAmount;
+
+            if (amount.length <= 13) {
+              amount = amount + '00';
+
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
+
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
           });
         },
         color: btnColor,
@@ -235,10 +254,54 @@ class _MyAppState extends State<MyApp> {
         ),
         onPressed: () {
           setState(() {
-            textControllerInput.text = textControllerInput.text + "000";
+            String formattedAmount;
+
+            if (amount.length <= 12) {
+              amount = amount + '000';
+
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
+
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
           });
         },
         color: btnColor,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
+  }
+
+  Widget btnClear() {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Icon(Icons.backspace, size: 35, color: Colors.blueGrey),
+        onPressed: () {
+          String formattedAmount;
+
+          amount = (amount.length > 0)
+              ? (amount.substring(0, amount.length - 1))
+              : "";
+
+          if (amount.length >= 2)
+            formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+          else if (amount.length == 2)
+            formattedAmount = '0.' + amount;
+          else
+            formattedAmount = '0.0' + amount;
+
+          textControllerInput.text = formatter.format( double.parse(formattedAmount));
+        },
+        color: Colors.amberAccent,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
         shape: CircleBorder(),
