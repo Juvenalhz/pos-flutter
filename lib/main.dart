@@ -1,117 +1,325 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(MyApp());
+void main() => runApp(MaterialApp(home: MyApp()));
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
+  double _hight;
+  bool test = true;
+  String amount = '0';
+  var textControllerInput =  TextEditingController(text: '0,00');
+  var formatter = new NumberFormat.currency(locale: 'eu', symbol:' ', decimalDigits: 2);
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    if (test)
+      _hight = 100.0;
+    else
+      _hight = 200.0;
+
+
+    return Scaffold(
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: <Widget>[
+          SliverAppBar(
+            leading: Padding(
+              padding: EdgeInsets.only(left: 12),
+              child: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  print('menu selected');
+                },
+              ),
+            ),
+            stretch: true,
+            onStretchTrigger: () {
+              // Function callback for stretch
+              return;
+            },
+            expandedHeight: _hight,
+            flexibleSpace: FlexibleSpaceBar(
+              stretchModes: <StretchMode>[
+                StretchMode.zoomBackground,
+                StretchMode.blurBackground,
+                StretchMode.fadeTitle,
+              ],
+              centerTitle: true,
+              title: const Text('Store Name'),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+//                  Image.network(
+//                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
+//                    fit: BoxFit.cover,
+//                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0.0, 0.5),
+                        end: Alignment(0.0, 0.0),
+                        colors: <Color>[
+                          Color(0x60000000),
+                          Color(0x00000000),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    SizedBox(height: 20.0),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          "Monto:",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontFamily: 'RobotoMono',
+                          ),
+                        )
+                      ],
+                    ),
+                    new Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: new TextField(
+                          decoration: new InputDecoration.collapsed(
+                              hintText: "0",
+                              hintStyle: TextStyle(
+                                fontSize: 40,
+                                fontFamily: 'RobotoMono',
+                              )),
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontFamily: 'RobotoMono',
+                          ),
+                          textAlign: TextAlign.right,
+                          controller: textControllerInput,
+                          onTap: () => FocusScope.of(context)
+                              .requestFocus(new FocusNode()),
+                        )),
+                    SizedBox(height: 20.0),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        btn('7', Colors.white),
+                        btn('8', Colors.white),
+                        btn('9', Colors.white),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        btn('4', Colors.white),
+                        btn('5', Colors.white),
+                        btn('6', Colors.white),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        btn('1', Colors.white),
+                        btn('2', Colors.white),
+                        btn('3', Colors.white),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        SizedBox(height: 20.0, width: 90.0,),
+                        //btn000(Colors.white),
+                        btn('0', Colors.white),
+                        btn00(Colors.white),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        btnClear(),
+                        btnEnter(),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  Widget btn(btntext, Color btnColor) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Text(
+          btntext,
+          style: TextStyle(
+              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+        ),
+        onPressed: () {
+          setState(() {
+            String formattedAmount;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+            if (amount.length < 15) {
+              amount = amount + btntext;
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
 
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
+          });
+        },
+        color: btnColor,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+
+  Widget btn00(Color btnColor) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Text(
+          "00",
+          style: TextStyle(
+              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
         ),
+        onPressed: () {
+          setState(() {
+            String formattedAmount;
+
+            if (amount.length <= 13) {
+              amount = amount + '00';
+
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
+
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
+          });
+        },
+        color: btnColor,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget btn000(Color btnColor) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Text(
+          "000",
+          style: TextStyle(
+              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+        ),
+        onPressed: () {
+          setState(() {
+            String formattedAmount;
+
+            if (amount.length <= 12) {
+              amount = amount + '000';
+
+              if (amount.length >= 2)
+                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
+                    amount.substring(amount.length - 2);
+              else if (amount.length == 2)
+                formattedAmount = '0.' + amount;
+              else
+                formattedAmount = '0.0' + amount;
+
+              textControllerInput.text =
+                  formatter.format(double.parse(formattedAmount));
+            }
+          });
+        },
+        color: btnColor,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
+  }
+
+  Widget btnClear() {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Icon(Icons.backspace, size: 35, color: Colors.blueGrey),
+        onPressed: () {
+          String formattedAmount;
+
+          amount = (amount.length > 0)
+              ? (amount.substring(0, amount.length - 1))
+              : "";
+
+          if (amount.length >= 2)
+            formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+          else if (amount.length == 2)
+            formattedAmount = '0.' + amount;
+          else
+            formattedAmount = '0.0' + amount;
+
+          textControllerInput.text = formatter.format( double.parse(formattedAmount));
+        },
+        color: Colors.amberAccent,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
+    );
+  }
+
+  Widget btnEnter() {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
+        onPressed: () {},
+        color: Colors.green,
+        padding: EdgeInsets.all(18.0),
+        splashColor: Colors.black,
+        shape: CircleBorder(),
+      ),
     );
   }
 }
