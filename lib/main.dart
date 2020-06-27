@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/models/merchant.dart';
+
+import 'database.dart';
 
 void main() => runApp(MaterialApp(home: MyApp()));
 
@@ -11,20 +14,39 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double _hight;
-  bool test = true;
   String amount = '0';
   var textControllerInput =  TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol:' ', decimalDigits: 2);
+  final appdb = DatabaseHelper.instance;
+  String storeName = '';
 
+  void _insertMerchant() async {
+    // row to insert
+    Map<String, dynamic> row = {
+      'name' : 'Merchant ABC',
+      'address' : '1 main st'
+    };
+    final id = await appdb.insert('merchant', row);
+    print('inserted row id: $id');
+  }
+
+  Future<String> _getName()  async {
+    Map<String, dynamic> merchant = await appdb.queryById('merchant', 1);
+    return Merchant.fromMap(merchant).name;
+  }
+
+  @override
+  void initState() {
+      Future<String> Name = _getName().then((value) {
+        setState(() {
+          storeName = value;
+        });
+      });
+      super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (test)
-      _hight = 100.0;
-    else
-      _hight = 200.0;
-
-
     return Scaffold(
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -52,7 +74,7 @@ class _MyAppState extends State<MyApp> {
                 StretchMode.fadeTitle,
               ],
               centerTitle: true,
-              title: const Text('Store Name'),
+              title: Text(storeName),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -89,7 +111,7 @@ class _MyAppState extends State<MyApp> {
                           "Monto:",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             fontFamily: 'RobotoMono',
                           ),
                         )
@@ -101,11 +123,11 @@ class _MyAppState extends State<MyApp> {
                           decoration: new InputDecoration.collapsed(
                               hintText: "0",
                               hintStyle: TextStyle(
-                                fontSize: 40,
+                                fontSize: 35,
                                 fontFamily: 'RobotoMono',
                               )),
                           style: TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             fontFamily: 'RobotoMono',
                           ),
                           textAlign: TextAlign.right,
@@ -118,25 +140,25 @@ class _MyAppState extends State<MyApp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        btn('7', Colors.white),
-                        btn('8', Colors.white),
-                        btn('9', Colors.white),
+                        btn('7', Colors.grey[200]),
+                        btn('8', Colors.grey[200]),
+                        btn('9', Colors.grey[200]),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        btn('4', Colors.white),
-                        btn('5', Colors.white),
-                        btn('6', Colors.white),
+                        btn('4', Colors.grey[200]),
+                        btn('5', Colors.grey[200]),
+                        btn('6', Colors.grey[200]),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        btn('1', Colors.white),
-                        btn('2', Colors.white),
-                        btn('3', Colors.white),
+                        btn('1', Colors.grey[200]),
+                        btn('2', Colors.grey[200]),
+                        btn('3', Colors.grey[200]),
                       ],
                     ),
                     Row(
@@ -144,8 +166,8 @@ class _MyAppState extends State<MyApp> {
                       children: <Widget>[
                         SizedBox(height: 20.0, width: 90.0,),
                         //btn000(Colors.white),
-                        btn('0', Colors.white),
-                        btn00(Colors.white),
+                        btn('0', Colors.grey[200]),
+                        btn00(Colors.grey[200]),
                       ],
                     ),
                     Row(
@@ -198,7 +220,7 @@ class _MyAppState extends State<MyApp> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(16.0),
         splashColor: Colors.black,
         shape: CircleBorder(),
       ),
