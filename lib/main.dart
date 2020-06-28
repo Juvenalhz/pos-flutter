@@ -2,17 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/screens/amount.dart';
+import 'package:pay/screens/mainScreen.dart';
+import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/database.dart';
+import 'package:pay/utils/init.dart';
 
-void main() => runApp(MaterialApp(home: MyApp()));
+void main() => runApp(InitializationApp());
 
-class MyApp extends StatefulWidget {
+//class MyApp extends StatefulWidget {
+//  @override
+//  _MyAppState createState() => _MyAppState();
+//}
+
+class InitializationApp extends StatelessWidget {
+
+  Future<void> _initFuture = Init().initialize();
+
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Initialization',
+      home: FutureBuilder(
+        future: _initFuture,
+        builder: (context, snapshot){
+          if (snapshot.connectionState == ConnectionState.done){
+            return MainScreen();
+          } else {
+            return SplashScreen();
+          }
+        },
+      ),
+    );
+  }
 }
 
+/*
+
 class _MyAppState extends State<MyApp> {
-  double _hight = 300;
+  double _hight = 100;
   String amount = '0';
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
@@ -339,3 +366,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+*/

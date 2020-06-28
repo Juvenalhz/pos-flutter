@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
               // Function callback for stretch
               return;
             },
-            expandedHeight: 100,
+            expandedHeight: 70,
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: <StretchMode>[
                 StretchMode.zoomBackground,
