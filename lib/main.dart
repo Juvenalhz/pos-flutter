@@ -1,3 +1,8 @@
+import 'dart:core';
+import 'dart:core';
+import 'dart:core';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/models/merchant.dart';
@@ -15,12 +20,13 @@ void main() => runApp(InitializationApp());
 //}
 
 class InitializationApp extends StatelessWidget {
-
+  bool isDev = (const String.fromEnvironment('dev') != null);
   Future<void> _initFuture = Init().initialize();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: isDev,
       title: 'Initialization',
       home: FutureBuilder(
         future: _initFuture,
