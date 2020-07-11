@@ -49,7 +49,7 @@ String bcdToStr(Uint8List data) {
 }
 
 Uint8List strToBcd(String data) {
-  return hex.decode(data);
+  return new Uint8List.fromList(hex.decode(data));
 }
 
 int bcd2Int(Uint8List bcd, int len) {
@@ -73,10 +73,9 @@ class Iso8583 {
   int _index;
   Uint8List _isoMsg;
   var _isoSpec;
-  List<int> _Bitmap = new List(128);
-  Map<String, dynamic> _fieldData;
-  Map<String, int> _fieldLen;
-  String _MTI;
+  Uint8List _Bitmap = new Uint8List(128);
+  int _MTI;
+  List<Map<String, dynamic>> _data;
 
   Iso8583([Uint8List isoMsg, ISOSPEC isoSpec]) {
     if (isoMsg == null) {
@@ -90,7 +89,7 @@ class Iso8583 {
       this._isoSpec = new IsoSpecASCII();
     } else {
       if (isoSpec == ISOSPEC.ISO_1987)
-        this._isoSpec = new Iso8583Specs();
+        this._isoSpec = new IsoSpec1987();
       else if (isoSpec == ISOSPEC.ISO_ASCII)
         this._isoSpec = new IsoSpecASCII();
       else if (isoSpec == ISOSPEC.ISO_BCD)
@@ -98,6 +97,8 @@ class Iso8583 {
       else
         throw 'Wrong ISO type';
     }
+
+    this._data = new List();
     this._strict = false;
     this._index = 0;
   }
@@ -112,26 +113,21 @@ class Iso8583 {
   }
 
   int parseMTI(Uint8List p) {
-    DT dataType = this._isoSpec.dataType('MTI');
+    DT dataType = this._isoSpec.dataType(MTI);
 
     if (dataType == DT.BCD) {
-      this._MTI = bcdToStr(this._isoMsg.sublist(_index, _index + 2));
+      this._MTI = int.parse(bcdToStr(this._isoMsg.sublist(_index, _index + 2)));
       _index += 2;
     } else if (dataType == DT.ASCII) {
-      this._MTI = this._isoMsg.sublist(_index, _index + 4).toString();
+      this._MTI = int.parse(this._isoMsg.sublist(_index, _index + 4).toString());
       _index += 4;
     }
 
-    try {
-      int test = int.parse(this._MTI);
-    } catch (e) {
-      throw "Invalid MTI";
-    }
 
-    if (_strict == true) {
-      if (_MTI[1] == '0') throw 'Invalid MTI: Invalid Message type';
-      if (int.parse(this._MTI[3]) > 5) throw 'Invalid MTI: Invalid Message origin ';
-    }
+//    if (_strict == true) {
+//      if (this._MTI.toString()[1] == '0') throw 'Invalid MTI: Invalid Message type';
+//      if (int.parse(this._MTI.toString()[3]) > 5) throw 'Invalid MTI: Invalid Message origin ';
+//    }
 
     return _index;
   }
@@ -219,38 +215,38 @@ class Iso8583 {
     }
     if (len > maxLength) throw "Flield $field is larger than maximum length $len > $maxLength";
 
-    _fieldLen[field] = len;
+    //this._isoSpec.length(field, len);
 
     if (len == 0) return index; // In case of zero length, don't try to parse the field itself, just continue
 
     if (dataType == DT.ASCII) {
       if (contentType == 'n') {
-        _fieldData[field] = _isoMsg.sublist(index, index + len);
+        _isoSpec._data[field]['data'] = _isoMsg.sublist(index, index + len);
       } else {
-        _fieldData[field] = AsciiDecoder().convert(_isoMsg.sublist(index, index + len));
+        _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + len));
       }
       index += len;
     } else if (dataType == DT.BCD) {
       if (len % 2 == 1) len += 1;
       if (contentType == 'n') {
-        _fieldData[field] = bcdToStr(_isoMsg.sublist(index, index + (len ~/ 2)));
+        _isoSpec._data[field]['data'] = bcdToStr(_isoMsg.sublist(index, index + (len ~/ 2)));
         index += len ~/ 2;
       } else if (contentType == 'z') {
-        _fieldData[field] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len ~/ 2))).toUpperCase();
+        _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len ~/ 2))).toUpperCase();
         index += len ~/ 2;
       }
       index += len ~/ 2;
     } else if (dataType == DT.BIN) {
-      _fieldData[field] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len))).toUpperCase();
+      _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len))).toUpperCase();
       index += len;
     }
 
     if (contentType == 'z') {
-      _fieldData[field] = _fieldData[field].toString().replaceAll('D', '=');
-      _fieldData[field] = _fieldData[field].toString().replaceAll('F', '');
+      _isoSpec._data[field]['data'].replaceAll('D', '=');
+      _isoSpec._data[field]['data'].replaceAll('F', '');
     }
 
-    print('Field[$field]: $_fieldData[field]');
+    print('Field[$field]: ' + _isoSpec._data[field]['data']);
     return index;
   }
 
@@ -268,16 +264,16 @@ class Iso8583 {
   }
 
   void buildMTI() {
-    if (_isoSpec.dataType("MTI") == DT.BCD)
-      _isoMsg += strToBcd(_MTI);
-    else if (_isoSpec.dataType("MTI") == DT.ASCII) _isoMsg += AsciiEncoder().convert(_MTI);
+    if (_isoSpec.dataType(MTI) == DT.BCD)
+      this._isoMsg += strToBcd(_MTI.toString());
+    else if (_isoSpec.dataType(MTI) == DT.ASCII) this._isoMsg = this._isoMsg + AsciiEncoder().convert(_MTI.toString());
   }
 
   void buildBitmap() {
     int intBitmap;
     bool hassecondary = false;
 
-    DT dataType = _isoSpec.dataType('1');
+    DT dataType = _isoSpec.dataType(1);
 
     //primary bitmap
     for (var i = 0; i < 65; i++) {
@@ -301,14 +297,14 @@ class Iso8583 {
     }
   }
 
-  void buildField(String field) {
+  void buildField(int field) {
     DT dataType = _isoSpec.dataType(field);
     LT lenType = _isoSpec.lengthType(field);
     String contentType = _isoSpec.contentType(field);
     int maxLength = _isoSpec.maxLength(field);
     int len;
     int lenDataType = _isoSpec.lengthDataType(field);
-    String data = _fieldData[field];
+    String data = _isoSpec._data[field]['data'];
 
     if (lenType == LT.FIXED) {
       len = maxLength;
@@ -323,7 +319,7 @@ class Iso8583 {
     } else {
       String lenString;
 
-      len = _fieldData[field].length();
+      len = _isoSpec._data[field]['data'].length();
 
       if (dataType == DT.BIN) len = len ~/ 2;
 
@@ -359,7 +355,7 @@ class Iso8583 {
     buildBitmap();
 
     for (var i = 0; i < _Bitmap.length; i++) {
-      if (_Bitmap[i] == 1) buildField(i.toString());
+      if (_Bitmap[i] == 1) buildField(i);
     }
 
     return _isoMsg;
@@ -376,14 +372,28 @@ class Iso8583 {
     }
   }
 
-  String fieldData(String field, [String value]) {
-    if (value == null) {
-      return _fieldData[field];
-    } else {
-      if (value.length > _isoSpec.maxLength(field)) throw 'Value length larger than field maximum';
+  String fieldData(int field, [String value]) {
+    Map<String, dynamic> currentField = this._data.firstWhere((e) => e['field'] == field, orElse: () => null);
+    int index = this._data.indexOf(currentField);
 
-      _fieldData[field] = value;
-      _Bitmap[int.parse(field)] = 1;
+    if (value == null) {
+      if (currentField != null) {
+        this._data[index]['data'] = value;
+        return this._data[index]['data'].toString();
+      }
+      else
+        return null;
+    }
+    else {
+      if (currentField == null) {
+        Map<String, dynamic> temp = {'field': field, 'data': value};
+        this._data.add(temp);
+        return temp['data'].toString();
+      }
+      else
+        this._data[field]['data'] = value;
+
+      return this._data[field]['data'].toString();
     }
   }
 
@@ -391,18 +401,13 @@ class Iso8583 {
     return _Bitmap;
   }
 
-  String MTI([String value]) {
+  int setMTI([int value]) {
     if (value == null) {
       return _MTI;
     } else {
-      try {
-        int.parse(value);
-      } catch (e) {
-        throw 'Invalid MTI it must contain only numbers';
-      }
-
-      if (value[1] == '0') throw 'Invalid Message Type';
-      if (int.parse(value[3]) > 5) throw 'Invalid Message Origin';
+      // TODO: validate these cases
+//      if (value.toString().padLeft(0)[1] == '0') throw 'Invalid Message Type';
+//      if (int.parse(value.toString().padLeft(0)[3]) > 5) throw 'Invalid Message Origin';
 
       _MTI = value;
       return _MTI;
@@ -424,7 +429,7 @@ class Iso8583 {
   void printMessage() {
     String temp;
 
-    print('MTI: [' + _MTI + ']');
+    print('MTI: [' + _MTI.toString() + ']');
 
     for (var i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) temp += i.toString() + ' ';
@@ -435,19 +440,19 @@ class Iso8583 {
       if (_Bitmap[i] == 1) {
         if ((this.contentType(i.toString()) == 'n') && (_isoSpec[i.toString()].lenthType == LT.FIXED)) {
           print('$i - ' +
-              _isoSpec.descrption(i.toString()) +
+              _isoSpec.descrption(i) +
               ' : (' +
-              _fieldLen[i].toString() +
+              _isoSpec.length(i).toString() +
               ') [' +
-              _fieldData[i.toString()] +
+              _isoSpec.data(i) +
               ']');
         } else {
           print('$i - ' +
               _isoSpec.descrption(i.toString()) +
               ' : (' +
-              _fieldLen[i].toString() +
+              _isoSpec.length(i).toString() +
               ') [' +
-              _fieldData[i.toString()] +
+              _isoSpec.data(i) +
               ']');
         }
       }
