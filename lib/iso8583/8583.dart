@@ -76,7 +76,7 @@ Uint8List int2Bcd(int i) {
 }
 
 class Iso8583 {
-  List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
+  //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
   bool _strict;
   int _index;
   Uint8List _isoMsg;
@@ -507,45 +507,35 @@ class Iso8583 {
 
     for (i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) {
+        int len = 0;
         String data = this._data.firstWhere((element) => element['field'] == i, orElse: () => null)['data'];
-        print(i.toString() + ' - ' + _isoSpec.description(i) + ' : (' + data.length.toString() + ') [' + data + ']');
+
+        temp = i.toString() + ' - ' + _isoSpec.description(i) + ' : (';
+        if (_isoSpec.lengthType(i) == LT.FIXED) {
+          len = _isoSpec.maxLength(i);
+          temp += len.toString();
+        } else if ((_isoSpec.lengthType(i) == LT.LVAR) || (_isoSpec.lengthType(i) == LT.LLVAR)) {
+          temp += data.length.toString().padLeft(2, '0');
+        } else if (_isoSpec.lengthType(i) == LT.LLLVAR) {
+          temp += data.length.toString().padLeft(4, '0');
+        }
+        temp += ') [';
+
+        if (_isoSpec.lengthType(i) == LT.FIXED) {
+          temp += data.padLeft(len, '0') + ']';
+        } else {
+          if (_isoSpec.contentType(i) == 'z') {
+            data = data.substring(0, 4) + '********' + data.substring(12);
+            temp += data + ']';
+          } else {
+            if (data.length % 2 == 0)
+              temp += data + ']';
+            else
+              temp += data.padLeft(data.length + 1, '0') + ']';
+          }
+        }
+        print(temp);
       }
     }
   }
 }
-
-/*
-
-
-def DictMessage(self):
-dict_msg = {}
-
-dict_msg['MID'] = "{0}".format(self.__MID)
-dict_msg['bitmap'] = []
-
-for i in sorted(self.__Bitmap.keys()):
-if (i == 1):
-continue
-if (self.__Bitmap[i] == 1):
-dict_msg['bitmap'].append(i)
-
-for i in sorted(self.__Bitmap.keys()):
-if (i == 1):
-continue
-if (self.__Bitmap[i] == 1):
-
-try:
-FieldData = self.__FieldData[i]
-except KeyError:
-FieldData = ''
-
-if (self.ContentType(i) == 'n' and self.__IsoSpec.LengthType(i) == LT.FIXED):
-FieldData = str(FieldData).zfill(self.__IsoSpec.MaxLength(i))
-
-#Len = self.__FieldLen[i]
-Len = len(FieldData)
-
-dict_msg["F{0:>03d}".format(i)] = {'data': FieldData, 'length': Len}
-
-return dict_msg
-*/
