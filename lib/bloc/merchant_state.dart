@@ -18,6 +18,11 @@ class MerchantLoading extends MerchantState {
   List<Object> get props => [];
 }
 
+class MerchantMissing extends MerchantState {
+  @override
+  List<Object> get props => [];
+}
+
 class MerchantGet extends MerchantState {
   final int id;
 

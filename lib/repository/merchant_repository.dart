@@ -13,4 +13,6 @@ class MerchantRepository {
   Future updateMerchant(Merchant merchant) => appdb.update('merchant', merchant.id, merchant.toMap());
 
   Future deleteMerchant(int id) => appdb.delete('merchant', id);
+
+  Future getCountMerchants() => appdb.queryRowCount('merchant');
 }

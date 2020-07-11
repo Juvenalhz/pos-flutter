@@ -1,16 +1,19 @@
 import 'dart:core';
-import 'dart:core';
-import 'dart:core';
-import 'dart:core';
+
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:pay/models/merchant.dart';
-import 'package:pay/screens/amount.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/mainScreen.dart';
-import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/utils/init.dart';
+
+import 'bloc/merchant_bloc.dart';
+import 'bloc/merchant_event.dart';
+import 'bloc/merchant_state.dart';
+import 'models/merchant.dart';
+
+
 
 void main() => runApp(InitializationApp());
 
@@ -22,22 +25,43 @@ void main() => runApp(InitializationApp());
 class InitializationApp extends StatelessWidget {
   bool isDev = (const String.fromEnvironment('dev') != null);
   Future<void> _initFuture = Init().initialize();
+  MerchantRepository merchantRepository = new MerchantRepository();
+  final appdb = DatabaseHelper.instance;
+
+
 
   @override
   Widget build(BuildContext context) {
+//    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+//    merchantBloc.add(GetMerchant(1));
+
+
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
       title: 'Initialization',
-      home: FutureBuilder(
-        future: _initFuture,
-        builder: (context, snapshot){
-          if (snapshot.connectionState == ConnectionState.done){
-            return MainScreen();
-          } else {
-            return SplashScreen();
-          }
-        },
-      ),
+      home:
+        //BlocProvider(create: (context) => MerchantBloc(merchantRepository: merchantRepository),
+//        BlocProvider<MerchantBloc>(
+//            create: (BuildContext context) => MerchantBloc(GetMerchant(id: 0)),
+//            child: MainScreen() ),
+
+      Scaffold(
+        body: BlocProvider<MerchantBloc>(
+          create: (context) => MerchantBloc(merchantRepository: merchantRepository),
+          child: MainScreen() ),
+        ),
+
+
+//      FutureBuilder(
+//        future: _initFuture,
+//        builder: (context, snapshot){
+//          if (snapshot.connectionState == ConnectionState.done){
+//            return MainScreen();
+//          } else {
+//            return SplashScreen();
+//          }
+//        },
+//      ),
     );
   }
 }
@@ -52,24 +76,7 @@ class _MyAppState extends State<MyApp> {
   final appdb = DatabaseHelper.instance;
   String storeName = '';
 
-  void _insertMerchant() async {
-    // row to insert
-    Map<String, dynamic> row = {'name': 'Merchant ABC', 'address': '1 main st'};
-    final id = await appdb.insert('merchant', row);
-    print('inserted row id: $id');
-  }
 
-  Future<String> _getName() async {
-    Map<String, dynamic> merchant = await appdb.queryById('merchant', 1);
-
-    if (const String.fromEnvironment('dev') != null) {
-      if (Merchant.fromMap(merchant).name == null) {
-        _insertMerchant();
-        merchant = await appdb.queryById('merchant', 1);
-      }
-    }
-    return Merchant.fromMap(merchant).name;
-  }
 
   @override
   void initState() {
