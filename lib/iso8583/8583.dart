@@ -34,11 +34,12 @@ void memDump(String title, Uint8List data) {
 
   print(title);
   for (i = 0; i < data.length; i++) {
-    if ((i == 0) || (i % 32) != 0) {
-      temp += hex.encode(data.sublist(i, i + 1)).toString() + ' ';
-    } else if (temp.length > 0) {
-      print(temp);
-      temp = '';
+    temp += hex.encode(data.sublist(i, i + 1)).toString() + ' ';
+    if ((i % 32) == 0) {
+      if (temp.length > 0) {
+        print(temp);
+        temp = '';
+      }
     }
   }
   if (i == data.length) print(temp);
@@ -49,7 +50,14 @@ String bcdToStr(Uint8List data) {
 }
 
 Uint8List strToBcd(String data) {
-  return new Uint8List.fromList(hex.decode(data));
+  if (data.length != 0) {
+    if (data.length % 2 == 1) {
+      String temp = data.padLeft(data.length + 1, '0');
+      return new Uint8List.fromList(hex.decode(temp));
+    }
+    return new Uint8List.fromList(hex.decode(data));
+  }
+  return null;
 }
 
 int bcd2Int(Uint8List bcd, int len) {
@@ -60,9 +68,9 @@ int bcd2Int(Uint8List bcd, int len) {
 }
 
 Uint8List int2Bcd(int i) {
-  String temp = i.toString();
+  String temp = i.toRadixString(16).toString();
   if (temp.length % 2 == 1) {
-    print(temp.padLeft(temp.length + 1, '0'));
+    temp = temp.padLeft(temp.length + 1, '0');
   }
   return strToBcd(temp);
 }
@@ -74,7 +82,7 @@ class Iso8583 {
   Uint8List _isoMsg;
   var _isoSpec;
   Uint8List _Bitmap = new Uint8List(128);
-  int _MTI;
+  int _MID;
   List<Map<String, dynamic>> _data;
 
   Iso8583([Uint8List isoMsg, ISOSPEC isoSpec]) {
@@ -112,21 +120,20 @@ class Iso8583 {
     parseIso();
   }
 
-  int parseMTI(Uint8List p) {
-    DT dataType = this._isoSpec.dataType(MTI);
+  int parseMID(Uint8List p) {
+    DT dataType = this._isoSpec.dataType(MID);
 
     if (dataType == DT.BCD) {
-      this._MTI = int.parse(bcdToStr(this._isoMsg.sublist(_index, _index + 2)));
+      this._MID = int.parse(bcdToStr(this._isoMsg.sublist(_index, _index + 2)));
       _index += 2;
     } else if (dataType == DT.ASCII) {
-      this._MTI = int.parse(this._isoMsg.sublist(_index, _index + 4).toString());
+      this._MID = int.parse(this._isoMsg.sublist(_index, _index + 4).toString());
       _index += 4;
     }
 
-
 //    if (_strict == true) {
-//      if (this._MTI.toString()[1] == '0') throw 'Invalid MTI: Invalid Message type';
-//      if (int.parse(this._MTI.toString()[3]) > 5) throw 'Invalid MTI: Invalid Message origin ';
+//      if (this._MID.toString()[1] == '0') throw 'Invalid MID: Invalid Message type';
+//      if (int.parse(this._MID.toString()[3]) > 5) throw 'Invalid MID: Invalid Message origin ';
 //    }
 
     return _index;
@@ -253,7 +260,7 @@ class Iso8583 {
   void parseIso() {
     int index = 0;
 
-    index = parseMTI(_isoMsg);
+    index = parseMID(_isoMsg);
     index = parseBitmap(index);
 
     for (var b in _Bitmap) {
@@ -263,79 +270,127 @@ class Iso8583 {
     }
   }
 
-  void buildMTI() {
-    if (_isoSpec.dataType(MTI) == DT.BCD)
-      this._isoMsg += strToBcd(_MTI.toString());
-    else if (_isoSpec.dataType(MTI) == DT.ASCII) this._isoMsg = this._isoMsg + AsciiEncoder().convert(_MTI.toString());
+  int buildMID(int index) {
+    if (_isoSpec.dataType(MID) == DT.BCD) {
+      Uint8List temp = strToBcd(_MID.toString().padLeft(4, '0'));
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+      return index;
+    } else if (_isoSpec.dataType(MID) == DT.ASCII) {
+      this._isoMsg = this._isoMsg + AsciiEncoder().convert(_MID.toString().padLeft(4, '0'));
+    }
   }
 
-  void buildBitmap() {
-    int intBitmap;
+  int buildBitmap(int index) {
+    int intBitmap = 0;
     bool hassecondary = false;
-
     DT dataType = _isoSpec.dataType(1);
+    int i;
 
     //primary bitmap
-    for (var i = 0; i < 65; i++) {
-      if (_Bitmap[i] == 1) intBitmap |= (1 << 64 - i);
+    for (i = 0; i < 65; i++) {
+      if (this._Bitmap[i] == 1) {
+        intBitmap |= (1 << (64 - i)).toUnsigned(64);
+      }
     }
-    if (dataType == DT.BIN)
-      _isoMsg.add(intBitmap);
-    else if (dataType == DT.ASCII) _isoMsg += AsciiEncoder().convert(intBitmap.toString());
+
+    if (dataType == DT.ASCII) {
+      Uint8List temp = AsciiEncoder().convert(intBitmap.toRadixString(16).toString());
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    } else if ((dataType == DT.BIN) || (dataType == DT.BCD)) {
+      Uint8List temp = int2Bcd(intBitmap);
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    }
 
     //secondary bitmap
-    for (var i = 65; i < 129; i++) {
+    intBitmap = 0;
+    for (var i = 65; i < 128; i++) {
       if (_Bitmap[i] == 1) {
-        intBitmap |= (1 << 64 - i);
+        intBitmap |= (1 << 128 - i).toUnsigned(64);
         hassecondary = true;
       }
     }
+
     if (hassecondary) {
-      if (dataType == DT.BIN)
-        _isoMsg.add(intBitmap);
-      else if (dataType == DT.ASCII) _isoMsg += AsciiEncoder().convert(intBitmap.toString());
+      if (dataType == DT.ASCII) {
+        Uint8List temp = AsciiEncoder().convert(intBitmap.toRadixString(16).toString());
+        temp.forEach((element) {
+          this._isoMsg[index++] = element;
+        });
+      } else if ((dataType == DT.BIN) || (dataType == DT.BCD)) {
+        Uint8List temp = int2Bcd(intBitmap);
+
+        temp.forEach((element) {
+          this._isoMsg[index++] = element;
+        });
+      }
     }
+
+    memDump("iso msg:", _isoMsg.sublist(0, index));
+
+    return index;
   }
 
-  void buildField(int field) {
+  int buildField(int field, int index) {
     DT dataType = _isoSpec.dataType(field);
     LT lenType = _isoSpec.lengthType(field);
     String contentType = _isoSpec.contentType(field);
     int maxLength = _isoSpec.maxLength(field);
     int len;
-    int lenDataType = _isoSpec.lengthDataType(field);
-    String data = _isoSpec._data[field]['data'];
+    DT lenDataType = _isoSpec.lengthDataType(field);
+    String data = this._data.firstWhere((element) => element['field'] == field, orElse: () => null)['data'];
+
+    if (field == 59) {
+      field += 0;
+    }
 
     if (lenType == LT.FIXED) {
       len = maxLength;
 
       if (contentType == 'n') {
-        _isoMsg += int2Bcd(len);
       } else if ((contentType.contains('a')) || (contentType.contains('s'))) {
-        _isoMsg += AsciiEncoder().convert(len.toString());
+        //   _isoMsg += AsciiEncoder().convert(len.toString());
       } else {
-        _isoMsg += int2Bcd(len ~/ 2);
+        //  _isoMsg += int2Bcd(len ~/ 2);
       }
     } else {
       String lenString;
 
-      len = _isoSpec._data[field]['data'].length();
+      len = data.length;
 
       if (dataType == DT.BIN) len = len ~/ 2;
 
       if (len > maxLength) throw 'Cannot Build F{$field}: Field Length larger than specification';
 
-      if (lenType == LT.LVAR)
+      if (lenType == LT.LVAR) {
         lenString = len.toString().padLeft(1, '0');
-      else if (lenType == LT.LLVAR)
+        len = 1;
+      } else if (lenType == LT.LLVAR) {
         lenString = len.toString().padLeft(2, '0');
-      else if (lenType == LT.LLLVAR) lenString = len.toString().padLeft(3, '0');
+        len = 2;
+      } else if (lenType == LT.LLLVAR) {
+        lenString = len.toString().padLeft(3, '0');
+        len = 3;
+      }
 
       if (lenDataType == DT.ASCII)
         _isoMsg += AsciiEncoder().convert(lenString);
-      else if (lenDataType == DT.BCD)
-        _isoMsg += strToBcd(lenString);
-      else if (lenDataType == DT.BIN) _isoMsg.add(len); //TODO fix this length
+      else if (lenDataType == DT.BCD) {
+        Uint8List temp = strToBcd(lenString.padLeft(len, '0'));
+
+        temp.forEach((element) {
+          this._isoMsg[index++] = element;
+        });
+      } else if (lenDataType == DT.BIN) {
+        _isoMsg.add(len);
+      } //TODO fix this length
     }
 
     if (contentType == 'z') {
@@ -343,22 +398,38 @@ class Iso8583 {
       if ((data.length % 2) == 1) data += 'F';
     }
 
-    if (dataType == DT.ASCII)
-      _isoMsg += AsciiEncoder().convert(data);
-    else if (dataType == DT.BCD)
-      _isoMsg += strToBcd(data);
-    else if (dataType == DT.BIN) _isoMsg += hex.decode(data);
+    if (dataType == DT.ASCII) {
+      Uint8List temp = AsciiEncoder().convert(data);
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    } else if ((dataType == DT.BIN) || (dataType == DT.BCD)) {
+      Uint8List temp = strToBcd(data.padLeft(len, '0'));
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    }
+    return index;
   }
 
   Uint8List buildIso() {
-    buildMTI();
-    buildBitmap();
+    int index = 0;
+
+    index = buildMID(index);
+    memDump("iso msg MID:", _isoMsg.sublist(0, index));
+
+    index = buildBitmap(index);
+    memDump("iso msg:", _isoMsg.sublist(0, index));
 
     for (var i = 0; i < _Bitmap.length; i++) {
-      if (_Bitmap[i] == 1) buildField(i);
+      if (_Bitmap[i] == 1) {
+        index = buildField(i, index);
+        memDump("iso msg:", _isoMsg.sublist(0, index));
+      }
     }
 
-    return _isoMsg;
+    return _isoMsg.sublist(0, index);
   }
 
   int bit(String field, [int value]) {
@@ -380,17 +451,15 @@ class Iso8583 {
       if (currentField != null) {
         this._data[index]['data'] = value;
         return this._data[index]['data'].toString();
-      }
-      else
+      } else
         return null;
-    }
-    else {
+    } else {
+      this._Bitmap[field] = 1;
       if (currentField == null) {
         Map<String, dynamic> temp = {'field': field, 'data': value};
         this._data.add(temp);
         return temp['data'].toString();
-      }
-      else
+      } else
         this._data[field]['data'] = value;
 
       return this._data[field]['data'].toString();
@@ -401,16 +470,16 @@ class Iso8583 {
     return _Bitmap;
   }
 
-  int setMTI([int value]) {
+  int setMID([int value]) {
     if (value == null) {
-      return _MTI;
+      return _MID;
     } else {
       // TODO: validate these cases
 //      if (value.toString().padLeft(0)[1] == '0') throw 'Invalid Message Type';
 //      if (int.parse(value.toString().padLeft(0)[3]) > 5) throw 'Invalid Message Origin';
 
-      _MTI = value;
-      return _MTI;
+      _MID = value;
+      return _MID;
     }
   }
 
@@ -427,34 +496,19 @@ class Iso8583 {
   }
 
   void printMessage() {
-    String temp;
-
-    print('MTI: [' + _MTI.toString() + ']');
+    String temp = '';
+    int i = 0;
+    print('MID: [' + _MID.toString() + ']');
 
     for (var i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) temp += i.toString() + ' ';
     }
-    print('Flieds: [' + temp + ']');
+    print('Bits: [' + temp + ']');
 
-    for (var i = 0; i < _Bitmap.length; i++) {
+    for (i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) {
-        if ((this.contentType(i.toString()) == 'n') && (_isoSpec[i.toString()].lenthType == LT.FIXED)) {
-          print('$i - ' +
-              _isoSpec.descrption(i) +
-              ' : (' +
-              _isoSpec.length(i).toString() +
-              ') [' +
-              _isoSpec.data(i) +
-              ']');
-        } else {
-          print('$i - ' +
-              _isoSpec.descrption(i.toString()) +
-              ' : (' +
-              _isoSpec.length(i).toString() +
-              ') [' +
-              _isoSpec.data(i) +
-              ']');
-        }
+        String data = this._data.firstWhere((element) => element['field'] == i, orElse: () => null)['data'];
+        print(i.toString() + ' - ' + _isoSpec.description(i) + ' : (' + data.length.toString() + ') [' + data + ']');
       }
     }
   }
@@ -466,7 +520,7 @@ class Iso8583 {
 def DictMessage(self):
 dict_msg = {}
 
-dict_msg['mti'] = "{0}".format(self.__MTI)
+dict_msg['MID'] = "{0}".format(self.__MID)
 dict_msg['bitmap'] = []
 
 for i in sorted(self.__Bitmap.keys()):
