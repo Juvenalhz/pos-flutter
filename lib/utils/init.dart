@@ -26,7 +26,7 @@ class Init {
 
    _registerServices() async {
     print("starting registering services");
-    await Future.delayed(Duration(seconds: 1));
+    //await Future.delayed(Duration(seconds: 1));
     print("finished registering services");
   }
 
