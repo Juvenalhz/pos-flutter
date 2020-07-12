@@ -6,9 +6,6 @@ import 'package:pay/screens/mainScreen.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/utils/init.dart';
 import 'bloc/merchant_bloc.dart';
-import 'package:pay/iso8583/8583specs.dart';
-import 'package:pay/iso8583/8583.dart';
-import 'dart:typed_data';
 
 void main() => runApp(InitializationApp());
 
