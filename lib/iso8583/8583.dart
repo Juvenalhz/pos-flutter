@@ -61,7 +61,7 @@ Uint8List strToBcd(String data) {
 }
 
 int bcd2Int(Uint8List bcd, int len) {
-  if ((len > 0) && (len < 5))
+  if ((len > 0) && (len < 9))
     return int.parse(bcdToStr(bcd.sublist(0, len)), radix: 16);
   else
     throw 'Invalid length';
@@ -78,7 +78,7 @@ Uint8List int2Bcd(int i) {
 class Iso8583 {
   //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
   bool _strict;
-  int _index;
+  //int _index;
   Uint8List _isoMsg;
   var _isoSpec;
   Uint8List _Bitmap = new Uint8List(128);
@@ -86,13 +86,6 @@ class Iso8583 {
   List<Map<String, dynamic>> _data;
 
   Iso8583([Uint8List isoMsg, ISOSPEC isoSpec]) {
-    if (isoMsg == null) {
-      this._isoMsg = new Uint8List(2000);
-    } else {
-      this._isoMsg = isoMsg;
-      parseIso();
-    }
-
     if (isoSpec == null) {
       this._isoSpec = new IsoSpecASCII();
     } else {
@@ -108,7 +101,13 @@ class Iso8583 {
 
     this._data = new List();
     this._strict = false;
-    this._index = 0;
+
+    if (isoMsg == null) {
+      this._isoMsg = new Uint8List(2000);
+    } else {
+      this._isoMsg = isoMsg;
+      parseIso();
+    }
   }
 
   void setStrict(bool value) {
@@ -120,31 +119,26 @@ class Iso8583 {
     parseIso();
   }
 
-  int parseMID(Uint8List p) {
+  int parseMID(Uint8List p, int index) {
     DT dataType = this._isoSpec.dataType(MID);
 
     if (dataType == DT.BCD) {
-      this._MID = int.parse(bcdToStr(this._isoMsg.sublist(_index, _index + 2)));
-      _index += 2;
+      this._MID = int.parse(bcdToStr(this._isoMsg.sublist(index, index + 2)));
+      index += 2;
     } else if (dataType == DT.ASCII) {
-      this._MID = int.parse(this._isoMsg.sublist(_index, _index + 4).toString());
-      _index += 4;
+      this._MID = int.parse(this._isoMsg.sublist(index, index + 4).toString());
+      index += 4;
     }
 
-//    if (_strict == true) {
-//      if (this._MID.toString()[1] == '0') throw 'Invalid MID: Invalid Message type';
-//      if (int.parse(this._MID.toString()[3]) > 5) throw 'Invalid MID: Invalid Message origin ';
-//    }
-
-    return _index;
+    return index;
   }
 
   int parseBitmap(int index) {
-    DT dataType = _isoSpec.dataType('1');
+    DT dataType = _isoSpec.dataType(1);
     Uint8List bitmapBuffer;
     int intBitmap;
 
-    if (dataType == DT.BIN) {
+    if (dataType == DT.BCD) {
       bitmapBuffer = _isoMsg.sublist(index, index + 8);
       index += 8;
     } else if (dataType == DT.ASCII) {
@@ -152,7 +146,7 @@ class Iso8583 {
       index += 16;
     }
 
-    intBitmap = int.parse(bitmapBuffer.toString());
+    intBitmap = bcd2Int(bitmapBuffer, 8);
     for (var i = 0; i < 65; i++) {
       _Bitmap[i] = intBitmap >> (64 - i) & 1;
     }
@@ -166,7 +160,7 @@ class Iso8583 {
         bitmapBuffer = strToBcd(_isoMsg.sublist(index, index + 16).toString());
         index += 16;
       }
-      intBitmap = int.parse(bitmapBuffer.toString());
+      intBitmap = bcd2Int(bitmapBuffer, 8);
       for (var i = 0; i < 65; i++) {
         _Bitmap[i + 64] = intBitmap >> (64 - i) & 1;
       }
@@ -174,15 +168,20 @@ class Iso8583 {
     return index;
   }
 
-  int parseField(String field, int index) {
+  int parseField(int field, int index) {
     var dataType;
     var contentType;
     var maxLength;
     int len;
     DT lenDataType;
     LT lenType;
+    Map<String, dynamic> fieldData = new Map();
 
-    print('ParseFiedl' + field);
+    //print('ParseField ' + field.toString());
+
+    if (field == 55) {
+      field += 0;
+    }
 
     dataType = _isoSpec.dataType(field);
     lenType = _isoSpec.lengthType(field);
@@ -198,10 +197,11 @@ class Iso8583 {
     else if (lenType == LT.LLVAR) {
       lenDataType = _isoSpec.lengthDataType(field);
       if (lenDataType == DT.ASCII) {
-        len = bcd2Int(_isoMsg, 2);
+        len = bcd2Int(_isoMsg.sublist(index, index + 2), 2);
         index += 2;
       } else if (lenDataType == DT.BCD) {
-        len = bcd2Int(_isoMsg, 1);
+        String temp = bcdToStr(_isoMsg.sublist(index, index + 1));
+        len = int.parse(temp);
         index += 1;
       } else if (lenDataType == DT.BIN) {
         len = _isoMsg[index];
@@ -210,10 +210,11 @@ class Iso8583 {
     } else if (lenType == LT.LLLVAR) {
       lenDataType = _isoSpec.lengthDataType(field);
       if (lenDataType == DT.ASCII) {
-        len = bcd2Int(_isoMsg, 3);
-        index += 3;
+        len = bcd2Int(_isoMsg.sublist(index, index + 4), 4);
+        index += 4;
       } else if (lenDataType == DT.BCD) {
-        len = bcd2Int(_isoMsg, 2);
+        String temp = bcdToStr(_isoMsg.sublist(index, index + 2));
+        len = int.parse(temp);
         index += 2;
       } else if (lenDataType == DT.BIN) {
         len = _isoMsg[index]; //TODO fix this legnth as it needs 2 bytes
@@ -228,44 +229,51 @@ class Iso8583 {
 
     if (dataType == DT.ASCII) {
       if (contentType == 'n') {
-        _isoSpec._data[field]['data'] = _isoMsg.sublist(index, index + len);
+        fieldData['field'] = field;
+        fieldData['data'] = _isoMsg.sublist(index, index + len);
       } else {
-        _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + len));
+        fieldData['field'] = field;
+        fieldData['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + len));
       }
       index += len;
     } else if (dataType == DT.BCD) {
       if (len % 2 == 1) len += 1;
       if (contentType == 'n') {
-        _isoSpec._data[field]['data'] = bcdToStr(_isoMsg.sublist(index, index + (len ~/ 2)));
-        index += len ~/ 2;
+        fieldData['field'] = field;
+        fieldData['data'] = bcdToStr(_isoMsg.sublist(index, index + (len ~/ 2)));
       } else if (contentType == 'z') {
-        _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len ~/ 2))).toUpperCase();
-        index += len ~/ 2;
+        fieldData['field'] = field;
+        fieldData['data'] = bcdToStr(_isoMsg.sublist(index, index + (len ~/ 2))).toUpperCase();
       }
       index += len ~/ 2;
     } else if (dataType == DT.BIN) {
-      _isoSpec._data[field]['data'] = AsciiDecoder().convert(_isoMsg.sublist(index, index + (len))).toUpperCase();
+      fieldData['field'] = field;
+      fieldData['data'] = hex.encode(_isoMsg.sublist(index, index + len)).toString().toUpperCase();
       index += len;
     }
 
     if (contentType == 'z') {
-      _isoSpec._data[field]['data'].replaceAll('D', '=');
-      _isoSpec._data[field]['data'].replaceAll('F', '');
+      fieldData['data'] = fieldData['data'].replaceAll('D', '=');
+      fieldData['data'] = fieldData['data'].replaceAll('F', '');
     }
 
-    print('Field[$field]: ' + _isoSpec._data[field]['data']);
+    this._data.add(fieldData);
+
+    //print('Field[$field]: ' + fieldData['data']);
     return index;
   }
 
   void parseIso() {
     int index = 0;
+    int i = 0;
+    _data.removeRange(0, _data.length);
 
-    index = parseMID(_isoMsg);
+    index = parseMID(_isoMsg, index);
     index = parseBitmap(index);
 
-    for (var b in _Bitmap) {
-      if (b == 1) {
-        index = parseField(b.toString(), index);
+    for (i = 0; i < 128; i++) {
+      if (_Bitmap[i] == 1) {
+        index = parseField(i, index);
       }
     }
   }
