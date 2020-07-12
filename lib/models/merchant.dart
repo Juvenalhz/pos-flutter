@@ -1,6 +1,4 @@
-
 class Merchant {
-
   int _id;
   String _name;
   String _TID;
@@ -16,11 +14,17 @@ class Merchant {
   String _Address;
   String _TaxID;
 
-
-  Merchant(this._name, this._TID, this._MID, [this._CurrencyCode, this._CurrencySymbol, this._Password,
-           this._Header, this._Amount_MaxDigtis, this._Amount_DecimalPosition, this._BatchNumber, this._MaxTip,
-           this._Address, this._TaxID]);
-
+  Merchant(this._name, this._TID, this._MID,
+      [this._CurrencyCode,
+      this._CurrencySymbol,
+      this._Password,
+      this._Header,
+      this._Amount_MaxDigtis,
+      this._Amount_DecimalPosition,
+      this._BatchNumber,
+      this._MaxTip,
+      this._Address,
+      this._TaxID]);
 
   int get id => _id;
   String get name => _name;
@@ -91,7 +95,6 @@ class Merchant {
 
   // Convert a Merchant object into a Map object
   Map<String, dynamic> toMap() {
-
     var map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = _id;
@@ -109,7 +112,6 @@ class Merchant {
     map['MaxTip'] = _MaxTip;
     map['Address'] = _Address;
     map['TaxID'] = _TaxID;
-
 
     return map;
   }
@@ -132,11 +134,3 @@ class Merchant {
     this._TaxID = map['TaxID'];
   }
 }
-
-
-
-
-
-
-
-

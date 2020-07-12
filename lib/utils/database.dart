@@ -60,7 +60,6 @@ class DatabaseHelper {
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     await _CreateMerchantTable(db);
-
   }
 
   // Inserts a row in the database where each key in the Map is a column name
@@ -75,8 +74,11 @@ class DatabaseHelper {
   // a key-value list of columns.
   Future<Map<String, dynamic>> queryById(String table, int id) async {
     Database db = await instance.database;
-    List<Map<String, dynamic>> MerchantList = await db.query(table, where: 'rowid=$id');
-    return MerchantList[0];
+    List<Map<String, dynamic>> rowList = await db.query(table, where: 'rowid=$id');
+    if (rowList.length != 0)
+      return rowList[0];
+    else
+      return null;
   }
 
   Future<List<Map<String, dynamic>>> queryAllRows(String table) async {
@@ -87,7 +89,7 @@ class DatabaseHelper {
   // raw SQL commands. This method uses a raw query to give the row count.
   Future<int> queryRowCount(String table) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM table'));
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
   // We are assuming here that the id column in the map is set. The other
@@ -103,4 +105,5 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(table, where: 'rowid = ?', whereArgs: [id]);
   }
+
 }

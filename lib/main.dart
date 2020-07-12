@@ -1,347 +1,69 @@
+import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:intl/intl.dart';
-import 'package:pay/models/merchant.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/screens/mainScreen.dart';
+import 'package:pay/utils/database.dart';
+import 'package:pay/utils/init.dart';
+import 'bloc/merchant_bloc.dart';
+import 'package:pay/iso8583/8583specs.dart';
+import 'package:pay/iso8583/8583.dart';
+import 'dart:typed_data';
 
-import 'database.dart';
+void main() => runApp(InitializationApp());
 
-void main() => runApp(MaterialApp(home: MyApp()));
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  double _hight;
-  String amount = '0';
-  var textControllerInput =  TextEditingController(text: '0,00');
-  var formatter = new NumberFormat.currency(locale: 'eu', symbol:' ', decimalDigits: 2);
+class InitializationApp extends StatelessWidget {
+  bool isDev = (const String.fromEnvironment('dev') != null);
+  Future<void> _initFuture = Init().initialize();
+  MerchantRepository merchantRepository = new MerchantRepository();
   final appdb = DatabaseHelper.instance;
-  String storeName = '';
-
-  void _insertMerchant() async {
-    // row to insert
-    Map<String, dynamic> row = {
-      'name' : 'Merchant ABC',
-      'address' : '1 main st'
-    };
-    final id = await appdb.insert('merchant', row);
-    print('inserted row id: $id');
-  }
-
-  Future<String> _getName()  async {
-    Map<String, dynamic> merchant = await appdb.queryById('merchant', 1);
-    return Merchant.fromMap(merchant).name;
-  }
-
-  @override
-  void initState() {
-      Future<String> Name = _getName().then((value) {
-        setState(() {
-          storeName = value;
-        });
-      });
-      super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: <Widget>[
-          SliverAppBar(
-            leading: Padding(
-              padding: EdgeInsets.only(left: 12),
-              child: IconButton(
-                icon: Icon(Icons.menu),
-                onPressed: () {
-                  print('menu selected');
-                },
-              ),
-            ),
-            stretch: true,
-            onStretchTrigger: () {
-              // Function callback for stretch
-              return;
-            },
-            expandedHeight: _hight,
-            flexibleSpace: FlexibleSpaceBar(
-              stretchModes: <StretchMode>[
-                StretchMode.zoomBackground,
-                StretchMode.blurBackground,
-                StretchMode.fadeTitle,
-              ],
-              centerTitle: true,
-              title: Text(storeName),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-//                  Image.network(
-//                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
-//                    fit: BoxFit.cover,
-//                  ),
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(0.0, 0.5),
-                        end: Alignment(0.0, 0.0),
-                        colors: <Color>[
-                          Color(0x60000000),
-                          Color(0x00000000),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    SizedBox(height: 20.0),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          "Monto:",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 35,
-                            fontFamily: 'RobotoMono',
-                          ),
-                        )
-                      ],
-                    ),
-                    new Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: new TextField(
-                          decoration: new InputDecoration.collapsed(
-                              hintText: "0",
-                              hintStyle: TextStyle(
-                                fontSize: 35,
-                                fontFamily: 'RobotoMono',
-                              )),
-                          style: TextStyle(
-                            fontSize: 35,
-                            fontFamily: 'RobotoMono',
-                          ),
-                          textAlign: TextAlign.right,
-                          controller: textControllerInput,
-                          onTap: () => FocusScope.of(context)
-                              .requestFocus(new FocusNode()),
-                        )),
-                    SizedBox(height: 20.0),
+    Uint8List isoMsg = new Uint8List(2000);
+    Uint8List data;
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        btn('7', Colors.grey[200]),
-                        btn('8', Colors.grey[200]),
-                        btn('9', Colors.grey[200]),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        btn('4', Colors.grey[200]),
-                        btn('5', Colors.grey[200]),
-                        btn('6', Colors.grey[200]),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        btn('1', Colors.grey[200]),
-                        btn('2', Colors.grey[200]),
-                        btn('3', Colors.grey[200]),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        SizedBox(height: 20.0, width: 90.0,),
-                        //btn000(Colors.white),
-                        btn('0', Colors.grey[200]),
-                        btn00(Colors.grey[200]),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        btnClear(),
-                        btnEnter(),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    Iso8583 isoPacket = Iso8583(null, ISOSPEC.ISO_BCD);
 
-  Widget btn(btntext, Color btnColor) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Text(
-          btntext,
-          style: TextStyle(
-              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+    isoPacket.setMID(0200);
+
+    isoPacket.fieldData(3, '3000');
+    isoPacket.fieldData(4, '123');
+    isoPacket.fieldData(7, '1030050505');
+    isoPacket.fieldData(11, '333');
+    isoPacket.fieldData(12, '505');
+    isoPacket.fieldData(13, '1030');
+    isoPacket.fieldData(15, '1030');
+    isoPacket.fieldData(22, '51');
+    isoPacket.fieldData(23, '1');
+    isoPacket.fieldData(24, '111');
+    isoPacket.fieldData(25, '0');
+    isoPacket.fieldData(32, '006432');
+    isoPacket.fieldData(35, '5548975439889554=9886954728965478965834');
+    isoPacket.fieldData(41, '11111111');
+    isoPacket.fieldData(42, '222222222222222');
+    isoPacket.fieldData(48, '   124587896');
+
+    isoPacket.fieldData(49, '840');
+    isoPacket.fieldData(55,
+        '5F2A020937820239008407A0000000041010950500000080009A031909029C01009F02060000000002009F03060000000000005F3401009F090200029F10120110604001220000365000000000000000FF9F1A0208629F1E0831323336313138339F26085E0F0E80C87EA2A89F2701409F3303E0F0C89F34031E03009F3501229F3602007A9F370470792F499F530152');
+    isoPacket.fieldData(59, '511101512341101');
+    isoPacket.fieldData(60, '000011');
+
+    print("\n");
+
+    data = isoPacket.buildIso();
+
+    isoPacket.printMessage();
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: isDev,
+      title: 'Initialization',
+      home: Scaffold(
+        body: BlocProvider<MerchantBloc>(
+          create: (context) => MerchantBloc(merchantRepository: merchantRepository),
+          child: MainScreen() ),
         ),
-        onPressed: () {
-          setState(() {
-            String formattedAmount;
-
-            if (amount.length < 15) {
-              amount = amount + btntext;
-
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
-                    amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text =
-                  formatter.format(double.parse(formattedAmount));
-            }
-          });
-        },
-        color: btnColor,
-        padding: EdgeInsets.all(16.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
-    );
-  }
-
-
-  Widget btn00(Color btnColor) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Text(
-          "00",
-          style: TextStyle(
-              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
-        ),
-        onPressed: () {
-          setState(() {
-            String formattedAmount;
-
-            if (amount.length <= 13) {
-              amount = amount + '00';
-
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
-                    amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text =
-                  formatter.format(double.parse(formattedAmount));
-            }
-          });
-        },
-        color: btnColor,
-        padding: EdgeInsets.all(18.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
-    );
-  }
-
-  Widget btn000(Color btnColor) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Text(
-          "000",
-          style: TextStyle(
-              fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
-        ),
-        onPressed: () {
-          setState(() {
-            String formattedAmount;
-
-            if (amount.length <= 12) {
-              amount = amount + '000';
-
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' +
-                    amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text =
-                  formatter.format(double.parse(formattedAmount));
-            }
-          });
-        },
-        color: btnColor,
-        padding: EdgeInsets.all(18.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
-    );
-  }
-
-  Widget btnClear() {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Icon(Icons.backspace, size: 35, color: Colors.blueGrey),
-        onPressed: () {
-          String formattedAmount;
-
-          amount = (amount.length > 0)
-              ? (amount.substring(0, amount.length - 1))
-              : "";
-
-          if (amount.length >= 2)
-            formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-          else if (amount.length == 2)
-            formattedAmount = '0.' + amount;
-          else
-            formattedAmount = '0.0' + amount;
-
-          textControllerInput.text = formatter.format( double.parse(formattedAmount));
-        },
-        color: Colors.amberAccent,
-        padding: EdgeInsets.all(18.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
-    );
-  }
-
-  Widget btnEnter() {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
-        onPressed: () {},
-        color: Colors.green,
-        padding: EdgeInsets.all(18.0),
-        splashColor: Colors.black,
-        shape: CircleBorder(),
-      ),
     );
   }
 }
