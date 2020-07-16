@@ -10,7 +10,7 @@ import 'bloc/merchant_bloc.dart';
 void main() => runApp(InitializationApp());
 
 class InitializationApp extends StatelessWidget {
-  bool isDev = (const String.fromEnvironment('dev') != null);
+  final bool isDev = (const String.fromEnvironment('dev') == 'true');
   Future<void> _initFuture = Init().initialize();
   MerchantRepository merchantRepository = new MerchantRepository();
   final appdb = DatabaseHelper.instance;
@@ -19,9 +19,12 @@ class InitializationApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
-      title: 'Initialization',
+      title: 'APOS',
       home: Scaffold(
-        body: BlocProvider<MerchantBloc>(create: (context) => MerchantBloc(merchantRepository: merchantRepository), child: MainScreen()),
+        body: BlocProvider<MerchantBloc>(
+            create: (context) => MerchantBloc(merchantRepository: merchantRepository),
+            child: MainScreen()
+        ),
       ),
     );
   }

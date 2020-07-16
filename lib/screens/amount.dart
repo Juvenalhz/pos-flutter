@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AmountEntry extends StatefulWidget {
+  final String entryText;
+
+  AmountEntry(this.entryText);
+
   @override
-  _AmountEntryState createState() => _AmountEntryState();
+  _AmountEntryState createState() => _AmountEntryState(entryText);
 }
 
 class _AmountEntryState extends State<AmountEntry> {
   String amount = '0';
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+  String entryText;
+
+  _AmountEntryState(this.entryText);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class _AmountEntryState extends State<AmountEntry> {
         Row(
           children: <Widget>[
             Text(
-              "Monto:",
+              entryText,
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 35,
