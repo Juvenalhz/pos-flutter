@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
 
-  static final _databaseName = "app.db";
+  static final _databaseName = "test9.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -26,20 +26,24 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   void _tableAlter(Database db, String table, String column, String type) async {
-    if (type.compareTo('text') == 0)
-      await db.execute('''alter table $table add column $column $type DEFAULT ' ' ''');
-    else
-      await db.execute('''alter table $table add column $column $type DEFAULT '0' ''');
+    try {
+      if (type.compareTo('text') == 0)
+        await db.execute('alter table $table add column $column $type');
+      else
+        await db.execute('''alter table $table add column $column $type DEFAULT '0' ''');
+    }
+    catch (e) {}
   }
 
   void _CreateMerchantTable(Database db) async {
     await db.execute('''
           CREATE TABLE merchant (
-          Name TEXT DEFAULT ' ')
+          id integer PRIMARY KEY AUTOINCREMENT,
+          Name TEXT DEFAULT '')
           ''');
 
     await _tableAlter(db, 'merchant', 'TID', 'text');
@@ -54,12 +58,34 @@ class DatabaseHelper {
     await _tableAlter(db, 'merchant', 'MaxTip', 'integer');
     await _tableAlter(db, 'merchant', 'Address', 'text');
     await _tableAlter(db, 'merchant', 'TaxID', 'text');
+    await _tableAlter(db, 'merchant', 'Logo', 'text');
+
+  }
+
+  void _UpgradeMerchantTable(Database db) async {
+    await _tableAlter(db, 'merchant', 'TID', 'text');
+    await _tableAlter(db, 'merchant', 'MID', 'text');
+    await _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
+    await _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
+    await _tableAlter(db, 'merchant', 'Password', 'text');
+    await _tableAlter(db, 'merchant', 'Header', 'text');
+    await _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
+    await _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
+    await _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
+    await _tableAlter(db, 'merchant', 'MaxTip', 'integer');
+    await _tableAlter(db, 'merchant', 'Address', 'text');
+    await _tableAlter(db, 'merchant', 'TaxID', 'text');
+    await _tableAlter(db, 'merchant', 'Logo', 'text');
 
   }
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     await _CreateMerchantTable(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await _UpgradeMerchantTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name
@@ -74,9 +100,10 @@ class DatabaseHelper {
   // a key-value list of columns.
   Future<Map<String, dynamic>> queryById(String table, int id) async {
     Database db = await instance.database;
-    List<Map<String, dynamic>> rowList = await db.query(table, where: 'rowid=$id');
-    if (rowList.length != 0)
+    List<Map<String, dynamic>> rowList = await db.query(table, where: 'id=$id');
+    if (rowList.length != 0) {
       return rowList[0];
+    }
     else
       return null;
   }
@@ -96,14 +123,14 @@ class DatabaseHelper {
   // column values will be used to update the row.
   Future<int> update(String table, int id, Map<String, dynamic> row) async {
     Database db = await instance.database;
-    return await db.update(table, row, where: 'rowid = ?', whereArgs: [id]);
+    return await db.update(table, row, where: 'id = ?', whereArgs: [id]);
   }
 
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   Future<int> delete(String table, int id) async {
     Database db = await instance.database;
-    return await db.delete(table, where: 'rowid = ?', whereArgs: [id]);
+    return await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
 }
