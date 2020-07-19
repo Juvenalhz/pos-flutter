@@ -1,16 +1,23 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/bloc.dart';
+import 'package:pay/bloc/merchant_bloc.dart';
+import 'dart:io';
+import 'package:pay/models/merchant.dart';
 
 class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    bool isDev = (const String.fromEnvironment("dev").contains('true') );
-    isDev = true;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
 
-          _createHeader(),
+          _createHeader(context),
 
           _createDrawerItem(
               icon: Icons.receipt,
@@ -44,7 +51,9 @@ class MainMenu extends StatelessWidget {
     );
   }
 
-  Widget _createHeader() {
+  Widget _createHeader(BuildContext context) {
+    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+
     return DrawerHeader(
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
@@ -61,13 +70,55 @@ class MainMenu extends StatelessWidget {
         ),
         child: Stack(children: <Widget>[
           Positioned(
+            top: 10.0,
+            left: 95.0,
+            child: BlocBuilder<MerchantBloc, MerchantState>(
+              builder: (context, state) {
+                if (state is MerchantLoaded) {
+                  if ((state.merchant.Logo != null) && (state.merchant.Logo.length > 0)) {
+                    return GestureDetector(
+                        onTap: () {
+                          selectFile(context, state.merchant);
+                        },
+                      child: CircleImage(state.merchant.Logo, 2)
+                    );
+                  }
+                  else{
+                    return GestureDetector(
+                      onTap: () {
+                        selectFile(context, state.merchant);
+                      },
+                      child: CircleImage('assets/images/logo.jpg', 1)
+                    );
+                  }
+                }
+                else
+                  return CircleImage('assets/images/logo.jpg', 1);
+              }
+            ),
+          ),
+          Positioned(
               bottom: 12.0,
               left: 16.0,
-              child: Text("Flutter Step-by-Step",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500))),
+              child:  BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state){
+                  if (state is MerchantLoaded) {
+                    return Text(state.merchant.name,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500) );
+                  }
+                  else{
+                    return Text(' ',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500));
+                  }
+                }
+              ),
+          )
         ]));
   }
 
@@ -85,5 +136,49 @@ class MainMenu extends StatelessWidget {
       ),
       onTap: onTap,
     );
+  }
+
+  Future<void> selectFile(BuildContext context, Merchant merchant)   async {
+    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+
+    File file = await FilePicker.getFile(type: FileType.image );
+    merchant.Logo = file.path;
+    merchant.id = 1;
+    merchantBloc.add(UpdateMerchant(merchant));
+  }
+
+
+}
+
+
+class CircleImage extends StatelessWidget {
+  String image;
+  int imageType;
+
+  CircleImage(this.image, this.imageType);
+
+   @override
+  Widget build(BuildContext context) {
+    double _size = 100.0;
+    Image img;
+
+    if (this.imageType == 1)
+      img = new Image.asset(this.image, height: 70, width: 70, );
+    else if (this.imageType == 2)
+      img = new Image.file(File(this.image), height: 200, width: 200);
+
+    return Container(
+            width: _size,
+            height: _size,
+            decoration: new BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              image: new DecorationImage(
+                  fit: BoxFit.fill,
+                  image: img.image,
+              )
+            )
+          );
+
   }
 }

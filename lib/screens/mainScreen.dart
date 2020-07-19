@@ -14,8 +14,6 @@ class MainScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    const test = String.fromEnvironment("dev");
-    String test2 = test;
 
     merchantBloc.add(GetMerchant(1));
 

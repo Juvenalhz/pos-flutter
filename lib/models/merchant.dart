@@ -13,6 +13,7 @@ class Merchant {
   int _MaxTip;
   String _Address;
   String _TaxID;
+  String _Logo;
 
   Merchant(this._name, this._TID, this._MID,
       [this._CurrencyCode,
@@ -24,7 +25,8 @@ class Merchant {
       this._BatchNumber,
       this._MaxTip,
       this._Address,
-      this._TaxID]);
+      this._TaxID,
+      this._Logo]);
 
   int get id => _id;
   String get name => _name;
@@ -40,9 +42,10 @@ class Merchant {
   int get MaxTip => _MaxTip;
   String get Address => _Address;
   String get TaxID => _TaxID;
+  String get Logo => _Logo;
 
-  set name(String name) {
-    this._name = name;
+  set id(int id) {
+    this._id = id;
   }
 
   set TID(String TID) {
@@ -93,6 +96,9 @@ class Merchant {
     this._TaxID = TaxID;
   }
 
+  set Logo(String Logo) {
+    this._Logo = Logo;
+  }
   // Convert a Merchant object into a Map object
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
@@ -112,6 +118,7 @@ class Merchant {
     map['MaxTip'] = _MaxTip;
     map['Address'] = _Address;
     map['TaxID'] = _TaxID;
+    map['Logo'] = _Logo;
 
     return map;
   }
@@ -132,5 +139,6 @@ class Merchant {
     this._MaxTip = map['MaxTip'];
     this._Address = map['Address'];
     this._TaxID = map['TaxID'];
+    this._Logo = map['Logo'];
   }
 }
