@@ -24,37 +24,40 @@ class _AmountEntryState extends State<AmountEntry> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        SizedBox(height: 20.0),
+        SizedBox(height: 5.0),
         Row(
           children: <Widget>[
-            Text(
-              entryText,
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 35,
-                fontFamily: 'RobotoMono',
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30.0, 0, 0, 0),
+              child: Text(
+                entryText,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'RobotoMono',
+                ),
               ),
             )
           ],
         ),
         new Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.fromLTRB(0, 0, 30.0, 0),
             child: new TextField(
               decoration: new InputDecoration.collapsed(
                   hintText: "0",
                   hintStyle: TextStyle(
-                    fontSize: 35,
+                    fontSize: 20,
                     fontFamily: 'RobotoMono',
                   )),
               style: TextStyle(
-                fontSize: 35,
+                fontSize: 30,
                 fontFamily: 'RobotoMono',
               ),
               textAlign: TextAlign.right,
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
             )),
-        SizedBox(height: 20.0),
+        SizedBox(height: 5.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -99,7 +102,7 @@ class _AmountEntryState extends State<AmountEntry> {
           ],
         ),
         SizedBox(
-          height: 10.0,
+          height: 5.0,
         )
       ],
     );
@@ -109,6 +112,10 @@ class _AmountEntryState extends State<AmountEntry> {
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: btnColor)
+        ),
         child: Text(
           btntext,
           style: TextStyle(fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
@@ -134,7 +141,7 @@ class _AmountEntryState extends State<AmountEntry> {
         color: btnColor,
         padding: EdgeInsets.all(16.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        //shape: CircleBorder(),
       ),
     );
   }
@@ -168,7 +175,10 @@ class _AmountEntryState extends State<AmountEntry> {
         color: btnColor,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -202,7 +212,10 @@ class _AmountEntryState extends State<AmountEntry> {
         color: btnColor,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -229,7 +242,10 @@ class _AmountEntryState extends State<AmountEntry> {
         color: Colors.amberAccent,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -243,7 +259,10 @@ class _AmountEntryState extends State<AmountEntry> {
         color: Colors.green,
         padding: EdgeInsets.all(18.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }

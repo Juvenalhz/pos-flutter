@@ -23,66 +23,65 @@ class MainScreen extends StatelessWidget{
       home: Scaffold(
           drawer: MainMenu(),
           body:
-            BlocBuilder<MerchantBloc, MerchantState>(
-              builder: (context, state){
-                if (state is MerchantLoaded){
-                  return  CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverAppBar(
-                        stretch: true,
-                        onStretchTrigger: () {
-                          return;
-                        },
-                        expandedHeight: 70,
-                        flexibleSpace: FlexibleSpaceBar(
-                          stretchModes: <StretchMode>[
-                            StretchMode.zoomBackground,
-                            StretchMode.blurBackground,
-                            StretchMode.fadeTitle,
-                          ],
-                          centerTitle: true,
-                          title: Text(state.merchant.name),
-                          background: Stack(
-                            fit: StackFit.expand,
-                            children: [
-          //                  Image.network(
-          //                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
-          //                    fit: BoxFit.cover,
-          //                  ),
-                              const DecoratedBox(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment(0.0, 0.5),
-                                    end: Alignment(0.0, 0.0),
-                                    colors: <Color>[
-                                      Color(0x60000000),
-                                      Color(0x00000000),
-                                    ],
-                                  ),
+            SafeArea(
+              child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state){
+                  if (state is MerchantLoaded) {
+                    return
+                      Scaffold(
+
+                        body: Column(
+                          children: <Widget>[
+                            Container(
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                gradient: LinearGradient(
+                                  begin: Alignment(0.0, 0.6),
+                                  end: Alignment(0.0, 0.0),
+                                  colors: <Color>[
+                                    Color(0xFF0D47A1),
+                                    Colors.blue,
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                              child:
+                              Center(child: Text(state.merchant.name, style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 30
+                              ),)),
+                            ),
+                            Expanded(
+                              child: Stack(
+                                children:<Widget>[
+                                  Container(
+                                    color: Color(0xFF0D47A1),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30),
+                                        topLeft: Radius.circular(30)), color: Colors.white),
+                                    child: AmountEntry('Monto:'),
+                                  ),
+
+                              ]
+                              )
+                            ),
+
+
+
+                  ],
                         ),
-                      ),
-                      SliverList(
-                        delegate: SliverChildListDelegate(
-                          [
-                             AmountEntry("Monto:"),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
+                      );
+                    }
+
+                  else {
+                    return SplashScreen();
+                  }
                 }
-                else {
-                  return SplashScreen();
-                }
-              }
-          )
+          ),
+            )
       ),
     );
   }
 }
-
