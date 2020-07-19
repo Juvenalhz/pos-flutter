@@ -14,6 +14,7 @@ class MainScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    var scaffoldKey = GlobalKey<ScaffoldState>();
 
     merchantBloc.add(GetMerchant(1));
 
@@ -21,36 +22,49 @@ class MainScreen extends StatelessWidget{
       debugShowCheckedModeBanner: isDev,
       title: 'APOS',
       home: Scaffold(
+          key: scaffoldKey,
           drawer: MainMenu(),
           body:
             SafeArea(
               child: BlocBuilder<MerchantBloc, MerchantState>(
                 builder: (context, state){
                   if (state is MerchantLoaded) {
-                    return
-                      Scaffold(
-
+                    return Scaffold(
                         body: Column(
                           children: <Widget>[
-                            Container(
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                gradient: LinearGradient(
-                                  begin: Alignment(0.0, 0.6),
-                                  end: Alignment(0.0, 0.0),
-                                  colors: <Color>[
-                                    Color(0xFF0D47A1),
-                                    Colors.blue,
-                                  ],
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  gradient: LinearGradient(
+                                    begin: Alignment(0.0, 0.6),
+                                    end: Alignment(0.0, 0.0),
+                                    colors: <Color>[
+                                      Color(0xFF0D47A1),
+                                      Colors.blue,
+                                    ],
+                                  ),
+                                ),
+                                  child:
+                                    Center(child: Text(state.merchant.name, style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30
+                                  ),)
                                 ),
                               ),
-                              child:
-                              Center(child: Text(state.merchant.name, style: TextStyle(
+                              Positioned(
+                                left: 6,
+                                top: 6,
+                                child: IconButton(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30
-                              ),)),
+                                  icon: Icon(Icons.menu),
+                                  onPressed: () => scaffoldKey.currentState.openDrawer(),
+                                ),
+                              ),
+                              ]
                             ),
                             Expanded(
                               child: Stack(
@@ -67,19 +81,15 @@ class MainScreen extends StatelessWidget{
                               ]
                               )
                             ),
-
-
-
-                  ],
+                          ],
                         ),
                       );
                     }
-
-                  else {
-                    return SplashScreen();
-                  }
+                    else {
+                      return SplashScreen();
+                    }
                 }
-          ),
+              ),
             )
       ),
     );
