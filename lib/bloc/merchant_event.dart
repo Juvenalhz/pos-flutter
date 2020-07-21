@@ -34,3 +34,9 @@ class DeleteMerchant extends MerchantEvent {
 
   const DeleteMerchant([this.id]);
 }
+
+class UpdateMerchant extends MerchantEvent{
+  final Merchant merchant;
+
+  const UpdateMerchant(this.merchant);
+}
