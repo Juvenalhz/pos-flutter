@@ -14,6 +14,7 @@ void main(){
 }
 
 class InitializationApp extends StatelessWidget {
+  bool isDev = (const String.fromEnvironment('dev') != null);
   //Future<void> _initFuture = Init().initialize();
   MerchantRepository merchantRepository = new MerchantRepository();
   final appdb = DatabaseHelper.instance;
