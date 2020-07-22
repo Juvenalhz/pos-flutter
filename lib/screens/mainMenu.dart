@@ -19,18 +19,32 @@ class MainMenu extends StatelessWidget {
 
           _createHeader(context),
 
-          _createDrawerItem(
-              icon: Icons.receipt,
-              text: 'Reportes Detallado',
+          ExpansionTile(
+            title: Text("Reportes"),
+              leading: Icon(Icons.receipt),
+            children: <Widget>[
+              _createDrawerItem(
+                icon: Icons.calendar_view_day,
+                text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-          ),
-          _createDrawerItem(
-              icon: Icons.calendar_view_day,
-              text: 'Reporte Resumen',
+              ),
+              _createDrawerItem(
+                icon: Icons.receipt,
+                text: 'Reporte Detallado',
 //              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.events)
+//                  Navigator.pushReplacementNamed(context, Routes.contacts)
+              ),
+              _createDrawerItem(
+                icon: Icons.room_service,
+                text: 'Reporte Meseros',
+//              onTap: () =>
+//                  Navigator.pushReplacementNamed(context, Routes.contacts)
+              ),
+            ]
           ),
+
+          Divider(),
           _createDrawerItem(
               icon: Icons.repeat,
               text: 'Reimpresion',
