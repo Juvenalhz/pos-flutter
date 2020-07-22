@@ -85,6 +85,26 @@ class MainScreen extends StatelessWidget{
                         ),
                       );
                     }
+                    else if (state is MerchantMissing)
+                      return AlertDialog(
+                        title: Text('Inicializacion', style: TextStyle(color: Color(0xFF0D47A1)),),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text('El terminal no esta inicializado.'),
+                              Text('Ejecutar inicialization desde el menu de la aplicacion...'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('OK', style: TextStyle(color: Color(0xFF0D47A1)),),
+                            onPressed: () {
+                              scaffoldKey.currentState.openDrawer();
+                            },
+                          ),
+                        ],
+                      );
                     else {
                       return SplashScreen();
                     }
