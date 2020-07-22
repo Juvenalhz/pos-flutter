@@ -22,9 +22,9 @@ class _AmountEntryState extends State<AmountEntry> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 5.0),
+        SizedBox(height: 17.0),
         Row(
           children: <Widget>[
             Padding(
@@ -50,8 +50,9 @@ class _AmountEntryState extends State<AmountEntry> {
                     fontFamily: 'RobotoMono',
                   )),
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 33,
                 fontFamily: 'RobotoMono',
+                fontWeight: FontWeight.bold
               ),
               textAlign: TextAlign.right,
               controller: textControllerInput,
@@ -139,7 +140,7 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         //shape: CircleBorder(),
       ),
@@ -173,7 +174,7 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -210,7 +211,7 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -240,7 +241,7 @@ class _AmountEntryState extends State<AmountEntry> {
           textControllerInput.text = formatter.format(double.parse(formattedAmount));
         },
         color: Colors.amberAccent,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -257,7 +258,7 @@ class _AmountEntryState extends State<AmountEntry> {
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {},
         color: Colors.green,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),

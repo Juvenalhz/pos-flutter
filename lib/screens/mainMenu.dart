@@ -41,7 +41,7 @@ class MainMenu extends StatelessWidget {
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           _createDrawerItem(icon: Icons.settings, text: 'Menu Tecnico'),
-          if(isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion Manual'),
+          if(isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion De Pruebas'),
           ListTile(
             title: Text('0.0.1'),
             onTap: () {},
