@@ -3,51 +3,62 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AmountEntry extends StatefulWidget {
+  final String entryText;
+
+  AmountEntry(this.entryText);
+
   @override
-  _AmountEntryState createState() => _AmountEntryState();
+  _AmountEntryState createState() => _AmountEntryState(entryText);
 }
 
 class _AmountEntryState extends State<AmountEntry> {
   String amount = '0';
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+  String entryText;
+
+  _AmountEntryState(this.entryText);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 20.0),
+        SizedBox(height: 17.0),
         Row(
           children: <Widget>[
-            Text(
-              "Monto:",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 35,
-                fontFamily: 'RobotoMono',
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30.0, 0, 0, 0),
+              child: Text(
+                entryText,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'RobotoMono',
+                ),
               ),
             )
           ],
         ),
         new Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.fromLTRB(0, 0, 30.0, 0),
             child: new TextField(
               decoration: new InputDecoration.collapsed(
                   hintText: "0",
                   hintStyle: TextStyle(
-                    fontSize: 35,
+                    fontSize: 20,
                     fontFamily: 'RobotoMono',
                   )),
               style: TextStyle(
-                fontSize: 35,
+                fontSize: 33,
                 fontFamily: 'RobotoMono',
+                fontWeight: FontWeight.bold
               ),
               textAlign: TextAlign.right,
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
             )),
-        SizedBox(height: 20.0),
+        SizedBox(height: 5.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -92,7 +103,7 @@ class _AmountEntryState extends State<AmountEntry> {
           ],
         ),
         SizedBox(
-          height: 10.0,
+          height: 5.0,
         )
       ],
     );
@@ -102,6 +113,10 @@ class _AmountEntryState extends State<AmountEntry> {
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: btnColor)
+        ),
         child: Text(
           btntext,
           style: TextStyle(fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
@@ -125,9 +140,9 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        //shape: CircleBorder(),
       ),
     );
   }
@@ -159,9 +174,12 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -193,9 +211,12 @@ class _AmountEntryState extends State<AmountEntry> {
           });
         },
         color: btnColor,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -220,9 +241,12 @@ class _AmountEntryState extends State<AmountEntry> {
           textControllerInput.text = formatter.format(double.parse(formattedAmount));
         },
         color: Colors.amberAccent,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }
@@ -234,9 +258,12 @@ class _AmountEntryState extends State<AmountEntry> {
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {},
         color: Colors.green,
-        padding: EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        shape: CircleBorder(),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            //side: BorderSide(color: Colors.blueGrey)
+        ),
       ),
     );
   }

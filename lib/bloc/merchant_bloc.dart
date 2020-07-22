@@ -23,18 +23,24 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
 
     if (event is GetMerchant){
       int numMerchants = await merchantRepository.getCountMerchants();
-      Map<String, dynamic> merchantMap = await merchantRepository.getMerchant(event.id);
-      Merchant merchant = new Merchant.fromMap(merchantMap);
 
       if (numMerchants == 0){
         yield MerchantMissing();
       }
       else {
+        Map<String, dynamic> merchantMap = await merchantRepository.getMerchant(event.id);
+        Merchant merchant = new Merchant.fromMap(merchantMap);
+
         if (merchant == null)
           yield MerchantLoading();
 
         yield MerchantLoaded(merchant: merchant);
       }
+    }
+    else if (event is UpdateMerchant){
+      yield MerchantLoading();
+      await merchantRepository.updateMerchant(event.merchant);
+      yield MerchantGet(id: event.merchant.id);
     }
 
 

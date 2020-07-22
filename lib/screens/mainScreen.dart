@@ -5,87 +5,113 @@ import 'package:pay/bloc/bloc.dart';
 import 'package:pay/bloc/merchant_bloc.dart';
 import 'package:pay/screens/splash.dart';
 import 'amount.dart';
+import 'mainMenu.dart';
 
 class MainScreen extends StatelessWidget{
+  MainScreen({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    var scaffoldKey = GlobalKey<ScaffoldState>();
 
     merchantBloc.add(GetMerchant(1));
 
-    return Scaffold(
-        body:
-        BlocBuilder<MerchantBloc, MerchantState>(
-            //bloc: BlocProvider.of<MerchantBloc>(context),
-            // ignore: missing_return
-            builder: (context, state){
-              if (state is MerchantLoaded){
-                return  CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: <Widget>[
-                    SliverAppBar(
-                      leading: Padding(
-                        padding: EdgeInsets.only(left: 12),
-                        child: IconButton(
-                          icon: Icon(Icons.menu),
-                          onPressed: () {
-                            print('menu selected');
-                          },
-                        ),
-                      ),
-                      stretch: true,
-                      onStretchTrigger: () {
-                        // Function callback for stretch
-                        return;
-                      },
-                      expandedHeight: 70,
-                      flexibleSpace: FlexibleSpaceBar(
-                        stretchModes: <StretchMode>[
-                          StretchMode.zoomBackground,
-                          StretchMode.blurBackground,
-                          StretchMode.fadeTitle,
-                        ],
-                        centerTitle: true,
-                        title: Text(state.merchant.name),
-                        background: Stack(
-                          fit: StackFit.expand,
-                          children: [
-        //                  Image.network(
-        //                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
-        //                    fit: BoxFit.cover,
-        //                  ),
-                            const DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment(0.0, 0.5),
-                                  end: Alignment(0.0, 0.0),
-                                  colors: <Color>[
-                                    Color(0x60000000),
-                                    Color(0x00000000),
-                                  ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: isDev,
+      title: 'APOS',
+      home: Scaffold(
+          key: scaffoldKey,
+          drawer: MainMenu(),
+          body:
+            SafeArea(
+              child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state){
+                  if (state is MerchantLoaded) {
+                    return Scaffold(
+                        body: Column(
+                          children: <Widget>[
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  gradient: LinearGradient(
+                                    begin: Alignment(0.0, 0.6),
+                                    end: Alignment(0.0, 0.0),
+                                    colors: <Color>[
+                                      Color(0xFF0D47A1),
+                                      Colors.blue,
+                                    ],
+                                  ),
+                                ),
+                                  child:
+                                    Center(child: Text(state.merchant.name, style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30
+                                  ),)
                                 ),
                               ),
+                              Positioned(
+                                left: 6,
+                                top: 6,
+                                child: IconButton(
+                                  color: Colors.white,
+                                  icon: Icon(Icons.menu),
+                                  onPressed: () => scaffoldKey.currentState.openDrawer(),
+                                ),
+                              ),
+                              ]
+                            ),
+                            Expanded(
+                              child: Stack(
+                                children:<Widget>[
+                                  Container(
+                                    color: Color(0xFF0D47A1),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30),
+                                        topLeft: Radius.circular(30)), color: Colors.white),
+                                    child: AmountEntry('Monto:'),
+                                  ),
+
+                              ]
+                              )
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          new AmountEntry(),
+                      );
+                    }
+                    else if (state is MerchantMissing)
+                      return AlertDialog(
+                        title: Text('Inicializacion', style: TextStyle(color: Color(0xFF0D47A1)),),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text('El terminal no esta inicializado.'),
+                              Text('Ejecutar inicialization desde el menu de la aplicacion...'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('OK', style: TextStyle(color: Color(0xFF0D47A1)),),
+                            onPressed: () {
+                              scaffoldKey.currentState.openDrawer();
+                            },
+                          ),
                         ],
-                      ),
-                    ),
-                  ],
-                );
-              }
-              else {
-                    return SplashScreen();
-              }
-            }
-        )
+                      );
+                    else {
+                      return SplashScreen();
+                    }
+                }
+              ),
+            )
+      ),
     );
   }
 }
-
