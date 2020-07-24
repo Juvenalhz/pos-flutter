@@ -54,7 +54,17 @@ class MainMenu extends StatelessWidget {
           Divider(),
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
-          _createDrawerItem(icon: Icons.settings, text: 'Menu Tecnico'),
+          ExpansionTile(
+            title: Text("Menu Tecnico"),
+            leading: Icon(Icons.settings),
+            children: <Widget>[
+              _createDrawerItem(text: 'Inicializacion'),
+              _createDrawerItem(text: 'Borrar Lote'),
+              _createDrawerItem(text: 'Borrar Reverso'),
+              _createDrawerItem(text: 'Reporte de Parametros'),
+              _createDrawerItem(text: 'Configuracion'),
+            ]
+          ),
           if(isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion De Pruebas'),
           ListTile(
             title: Text('0.0.1'),
@@ -136,8 +146,7 @@ class MainMenu extends StatelessWidget {
         ]));
   }
 
-  Widget _createDrawerItem(
-      {IconData icon, String text, GestureTapCallback onTap}) {
+  Widget _createDrawerItem({IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[
