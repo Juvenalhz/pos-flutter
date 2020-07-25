@@ -87,47 +87,47 @@ class DatabaseHelper {
 
     _tableAlter(db, 'terminal', 'password', 'text');
     _tableAlter(db, 'terminal', 'techPassword', 'text');
-    _tableAlter(db, 'terminal', 'id', 'text');
-    _tableAlter(db, 'terminal', 'kin', 'text');
-    _tableAlter(db, 'terminal', 'minPinDigits', 'text');
-    _tableAlter(db, 'terminal', 'maxPinDigits', 'text');
-    _tableAlter(db, 'terminal', 'timeoutPrompt', 'text');
-    _tableAlter(db, 'terminal', 'maxTipPercentage', 'text');
-    _tableAlter(db, 'terminal', 'keyIndex', 'text');
+    _tableAlter(db, 'terminal', 'idTerminal', 'text');
+    _tableAlter(db, 'terminal', 'kin', 'integer');
+    _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
+    _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
+    _tableAlter(db, 'terminal', 'keyIndex', 'integer');
     _tableAlter(db, 'terminal', 'industry', 'text');
     _tableAlter(db, 'terminal', 'print', 'text');
-    _tableAlter(db, 'terminal', 'cashback', 'text');
-    _tableAlter(db, 'terminal', 'installments', 'text');
-    _tableAlter(db, 'terminal', 'refund', 'text');
-    _tableAlter(db, 'terminal', 'last4Digits', 'text');
-    _tableAlter(db, 'terminal', 'passwordVoid', 'text');
-    _tableAlter(db, 'terminal', 'passwordBatch', 'text');
-    _tableAlter(db, 'terminal', 'passwordRefund', 'text');
-    _tableAlter(db, 'terminal', 'maskPan', 'text');
-    _tableAlter(db, 'terminal', 'amountConfirmation', 'text');
+    _tableAlter(db, 'terminal', 'cashback', 'integer');
+    _tableAlter(db, 'terminal', 'installments', 'integer');
+    _tableAlter(db, 'terminal', 'refund', 'integer');
+    _tableAlter(db, 'terminal', 'last4Digits', 'integer');
+    _tableAlter(db, 'terminal', 'passwordVoid', 'integer');
+    _tableAlter(db, 'terminal', 'passwordBatch', 'integer');
+    _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
+    _tableAlter(db, 'terminal', 'maskPan', 'integer');
+    _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
   }
 
   void _UpgradeTerminalTable(Database db) async {
     _tableAlter(db, 'terminal', 'password', 'text');
     _tableAlter(db, 'terminal', 'techPassword', 'text');
-    _tableAlter(db, 'terminal', 'id', 'text');
-    _tableAlter(db, 'terminal', 'kin', 'text');
-    _tableAlter(db, 'terminal', 'minPinDigits', 'text');
-    _tableAlter(db, 'terminal', 'maxPinDigits', 'text');
-    _tableAlter(db, 'terminal', 'timeoutPrompt', 'text');
-    _tableAlter(db, 'terminal', 'maxTipPercentage', 'text');
-    _tableAlter(db, 'terminal', 'keyIndex', 'text');
+    _tableAlter(db, 'terminal', 'idTerminal', 'text');
+    _tableAlter(db, 'terminal', 'kin', 'integer');
+    _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
+    _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
+    _tableAlter(db, 'terminal', 'keyIndex', 'integer');
     _tableAlter(db, 'terminal', 'industry', 'text');
     _tableAlter(db, 'terminal', 'print', 'text');
-    _tableAlter(db, 'terminal', 'cashback', 'text');
-    _tableAlter(db, 'terminal', 'installments', 'text');
-    _tableAlter(db, 'terminal', 'refund', 'text');
-    _tableAlter(db, 'terminal', 'last4Digits', 'text');
-    _tableAlter(db, 'terminal', 'passwordVoid', 'text');
-    _tableAlter(db, 'terminal', 'passwordBatch', 'text');
-    _tableAlter(db, 'terminal', 'passwordRefund', 'text');
-    _tableAlter(db, 'terminal', 'maskPan', 'text');
-    _tableAlter(db, 'terminal', 'amountConfirmation', 'text');
+    _tableAlter(db, 'terminal', 'cashback', 'integer');
+    _tableAlter(db, 'terminal', 'installments', 'integer');
+    _tableAlter(db, 'terminal', 'refund', 'integer');
+    _tableAlter(db, 'terminal', 'last4Digits', 'integer');
+    _tableAlter(db, 'terminal', 'passwordVoid', 'integer');
+    _tableAlter(db, 'terminal', 'passwordBatch', 'integer');
+    _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
+    _tableAlter(db, 'terminal', 'maskPan', 'integer');
+    _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
   }
 
   void _CreateCommTable(Database db) async {
@@ -139,29 +139,54 @@ class DatabaseHelper {
 
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'text');
+    _tableAlter(db, 'comm', 'timout', 'integer');
     _tableAlter(db, 'comm', 'ip', 'text');
-    _tableAlter(db, 'comm', 'port', 'text');
+    _tableAlter(db, 'comm', 'port', 'integer');
   }
 
   void _UpgradeCommTable(Database db) async {
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'text');
+    _tableAlter(db, 'comm', 'timout', 'integer');
     _tableAlter(db, 'comm', 'ip', 'text');
-    _tableAlter(db, 'comm', 'port', 'text');
+    _tableAlter(db, 'comm', 'port', 'integer');
+  }
+
+  void _CreateEmvTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE emv (
+          id integer PRIMARY KEY AUTOINCREMENT,
+          Name TEXT DEFAULT '')
+          ''');
+
+    _tableAlter(db, 'emv', 'terminalType', 'text');
+    _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
+    _tableAlter(db, 'emv', 'AddTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'fallback', 'integer');
+    _tableAlter(db, 'emv', 'forceOnline', 'integer');
+  }
+
+  void _UpgradeEmvTable(Database db) async {
+    _tableAlter(db, 'emv', 'terminalType', 'text');
+    _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
+    _tableAlter(db, 'emv', 'AddTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'fallback', 'integer');
+    _tableAlter(db, 'emv', 'forceOnline', 'integer');
   }
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
     _CreateTerminalTable(db);
-
+    _CreateCommTable(db);
+    _CreateEmvTable(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     _UpgradeMerchantTable(db);
     _UpgradeTerminalTable(db);
+    _UpgradeCommTable(db);
+    _UpgradeEmvTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name
