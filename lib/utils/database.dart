@@ -161,7 +161,7 @@ class DatabaseHelper {
 
     _tableAlter(db, 'emv', 'terminalType', 'text');
     _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
-    _tableAlter(db, 'emv', 'AddTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
     _tableAlter(db, 'emv', 'fallback', 'integer');
     _tableAlter(db, 'emv', 'forceOnline', 'integer');
   }
@@ -169,7 +169,7 @@ class DatabaseHelper {
   void _UpgradeEmvTable(Database db) async {
     _tableAlter(db, 'emv', 'terminalType', 'text');
     _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
-    _tableAlter(db, 'emv', 'AddTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
     _tableAlter(db, 'emv', 'fallback', 'integer');
     _tableAlter(db, 'emv', 'forceOnline', 'integer');
   }
