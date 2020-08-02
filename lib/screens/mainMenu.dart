@@ -1,8 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/bloc.dart';
-import 'package:pay/bloc/merchant_bloc.dart';
+import 'package:pay/bloc/merchantBloc.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
