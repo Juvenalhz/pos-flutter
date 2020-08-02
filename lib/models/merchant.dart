@@ -1,25 +1,26 @@
 class Merchant {
   int _id;
-  String _name;
+  String _nameL1;
+  String _nameL2;
   String _TID;
   String _MID;
   int _CurrencyCode;
   String _CurrencySymbol;
-  String _CountryCode;
+  int _CountryCode;
   String _Password;
   String _Header;
   int _Amount_MaxDigtis;
   int _Amount_DecimalPosition;
   int _BatchNumber;
   int _MaxTip;
-  String _Address;
+  String _City;
   String _TaxID;
   String _Logo;
   String _AcquirerCode;
 
-
-  Merchant(this._name, this._TID, this._MID,
-      [this._CurrencyCode,
+  Merchant(this._nameL1, this._TID, this._MID,
+      [this._nameL2,
+      this._CurrencyCode,
       this._CurrencySymbol,
       this._CountryCode,
       this._Password,
@@ -28,31 +29,40 @@ class Merchant {
       this._Amount_DecimalPosition,
       this._BatchNumber,
       this._MaxTip,
-      this._Address,
+      this._City,
       this._TaxID,
       this._Logo,
       this._AcquirerCode]);
 
   int get id => _id;
-  String get name => _name;
+  String get nameL1 => _nameL1;
+  String get nameL2 => _nameL2;
   String get TID => _TID;
   String get MID => _MID;
   int get CurrencyCode => _CurrencyCode;
   String get CurrencySymbol => _CurrencySymbol;
-  String get CountryCode => _CountryCode;
+  int get CountryCode => _CountryCode;
   String get Password => _Password;
   String get Header => _Header;
   int get Amount_MaxDigtis => _Amount_MaxDigtis;
   int get Amount_DecimalPosition => _Amount_DecimalPosition;
   int get BatchNumber => _BatchNumber;
   int get MaxTip => _MaxTip;
-  String get Address => _Address;
+  String get City => _City;
   String get TaxID => _TaxID;
   String get Logo => _Logo;
   String get AcquirerCode => _AcquirerCode;
 
   set id(int id) {
     this._id = id;
+  }
+
+  set NameL1(String nameL1) {
+    this._nameL1 = nameL1;
+  }
+
+  set NameL2(String nameL2) {
+    this._nameL2 = nameL2;
   }
 
   set TID(String TID) {
@@ -71,7 +81,7 @@ class Merchant {
     this._CurrencySymbol = CurrencySymbol;
   }
 
-  set CountryCode(String CountryCode) {
+  set CountryCode(int CountryCode) {
     this._CountryCode = CountryCode;
   }
 
@@ -99,8 +109,8 @@ class Merchant {
     this._MaxTip = MaxTip;
   }
 
-  set Address(String Address) {
-    this._Address = Address;
+  set City(String City) {
+    this._City = City;
   }
 
   set TaxID(String TaxID) {
@@ -111,7 +121,7 @@ class Merchant {
     this._Logo = Logo;
   }
 
-  set AcquirerCode(String AcquirerCode){
+  set AcquirerCode(String AcquirerCode) {
     this._AcquirerCode = AcquirerCode;
   }
 
@@ -121,7 +131,8 @@ class Merchant {
     if (id != null) {
       map['id'] = _id;
     }
-    map['Name'] = _name;
+    map['NameL1'] = _nameL1;
+    map['NameL2'] = _nameL2;
     map['TID'] = _TID;
     map['MID'] = _MID;
     map['CurrencyCode'] = _CurrencyCode;
@@ -133,7 +144,7 @@ class Merchant {
     map['Amount_DecimalPosition'] = _Amount_DecimalPosition;
     map['BatchNumber'] = _BatchNumber;
     map['MaxTip'] = _MaxTip;
-    map['Address'] = _Address;
+    map['City'] = _City;
     map['TaxID'] = _TaxID;
     map['Logo'] = _Logo;
     map['AcquirerCode'] = _AcquirerCode;
@@ -144,7 +155,8 @@ class Merchant {
   // Extract a Merchant object from a Map object
   Merchant.fromMap(Map<String, dynamic> merchant) {
     this._id = merchant['id'];
-    this._name = merchant['Name'];
+    this._nameL1 = merchant['NameL1'];
+    this._nameL2 = merchant['NameL2'];
     this._TID = merchant['TID'];
     this._MID = merchant['MID'];
     this._CurrencyCode = merchant['CurrencyCode'];
@@ -156,7 +168,7 @@ class Merchant {
     this._Amount_DecimalPosition = merchant['Amount_DecimalPosition'];
     this._BatchNumber = merchant['BatchNumber'];
     this._MaxTip = merchant['MaxTip'];
-    this._Address = merchant['Address'];
+    this._City = merchant['City'];
     this._TaxID = merchant['TaxID'];
     this._Logo = merchant['Logo'];
     this._AcquirerCode = merchant['AcquirerCode'];

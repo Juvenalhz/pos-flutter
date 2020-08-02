@@ -22,11 +22,12 @@ class MerchantLoadSuccess extends MerchantEvent {
   String toString() => 'MerchantLoadSuccess { merchant: $merchant }';
 }
 
-class GetMerchant extends MerchantEvent{
+class GetMerchant extends MerchantEvent {
   final int id;
 
   const GetMerchant([this.id]);
 }
+
 class MerchantLoadFailure extends MerchantEvent {}
 
 class DeleteMerchant extends MerchantEvent {
@@ -35,7 +36,7 @@ class DeleteMerchant extends MerchantEvent {
   const DeleteMerchant([this.id]);
 }
 
-class UpdateMerchant extends MerchantEvent{
+class UpdateMerchant extends MerchantEvent {
   final Merchant merchant;
 
   const UpdateMerchant(this.merchant);

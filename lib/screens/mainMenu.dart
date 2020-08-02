@@ -5,6 +5,7 @@ import 'package:pay/bloc/bloc.dart';
 import 'package:pay/bloc/merchant_bloc.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/utils/testConfig.dart';
 
 class MainMenu extends StatelessWidget {
   @override
@@ -54,7 +55,16 @@ class MainMenu extends StatelessWidget {
             _createDrawerItem(text: 'Reporte de Parametros'),
             _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
           ]),
-          if (isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion De Pruebas'),
+          if (isDev)
+            _createDrawerItem(
+              icon: Icons.bug_report,
+              text: 'Inicializacion De Pruebas',
+              onTap: () async {
+                await testConfig().createTestConfiguration();
+                merchantBloc.add(GetMerchant(1));
+                Navigator.of(context).pop();
+              },
+            ),
           ListTile(
             title: Text('0.0.1'),
             onTap: () {},
@@ -109,7 +119,7 @@ class MainMenu extends StatelessWidget {
             left: 16.0,
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
-                return Text(state.merchant.name, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
                 return Text(' ', style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               }
