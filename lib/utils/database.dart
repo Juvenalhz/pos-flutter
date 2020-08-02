@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-
-  static final _databaseName = "test10.db";
+  static final _databaseName = "test15.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -35,20 +33,21 @@ class DatabaseHelper {
         await db.execute('alter table $table add column $column $type');
       else
         await db.execute('''alter table $table add column $column $type DEFAULT '0' ''');
-    }
-    catch (e) {}
+    } catch (e) {}
   }
 
   void _CreateMerchantTable(Database db) async {
     await db.execute('''
           CREATE TABLE merchant (
           id integer PRIMARY KEY AUTOINCREMENT,
-          Name TEXT DEFAULT '')
+          NameL1 TEXT DEFAULT '')
           ''');
 
+    _tableAlter(db, 'merchant', 'NameL2', 'text');
     _tableAlter(db, 'merchant', 'TID', 'text');
     _tableAlter(db, 'merchant', 'MID', 'text');
     _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
+    _tableAlter(db, 'merchant', 'CountryCode', 'integer');
     _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
     _tableAlter(db, 'merchant', 'Password', 'text');
     _tableAlter(db, 'merchant', 'Header', 'text');
@@ -56,16 +55,18 @@ class DatabaseHelper {
     _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
     _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
     _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    _tableAlter(db, 'merchant', 'Address', 'text');
+    _tableAlter(db, 'merchant', 'City', 'text');
     _tableAlter(db, 'merchant', 'TaxID', 'text');
     _tableAlter(db, 'merchant', 'Logo', 'text');
-
+    _tableAlter(db, 'merchant', 'AcquirerCode', 'text');
   }
 
   void _UpgradeMerchantTable(Database db) async {
+    _tableAlter(db, 'merchant', 'NameL2', 'text');
     _tableAlter(db, 'merchant', 'TID', 'text');
     _tableAlter(db, 'merchant', 'MID', 'text');
     _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
+    _tableAlter(db, 'merchant', 'CountryCode', 'integer');
     _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
     _tableAlter(db, 'merchant', 'Password', 'text');
     _tableAlter(db, 'merchant', 'Header', 'text');
@@ -73,16 +74,16 @@ class DatabaseHelper {
     _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
     _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
     _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    _tableAlter(db, 'merchant', 'Address', 'text');
+    _tableAlter(db, 'merchant', 'City', 'text');
     _tableAlter(db, 'merchant', 'TaxID', 'text');
     _tableAlter(db, 'merchant', 'Logo', 'text');
+    _tableAlter(db, 'merchant', 'AcquirerCode', 'text');
   }
 
   void _CreateTerminalTable(Database db) async {
     await db.execute('''
           CREATE TABLE terminal (
           id integer PRIMARY KEY AUTOINCREMENT,
-          Name TEXT DEFAULT '')
           ''');
 
     _tableAlter(db, 'terminal', 'password', 'text');
@@ -156,7 +157,6 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE emv (
           id integer PRIMARY KEY AUTOINCREMENT,
-          Name TEXT DEFAULT '')
           ''');
 
     _tableAlter(db, 'emv', 'terminalType', 'text');
@@ -204,8 +204,7 @@ class DatabaseHelper {
     List<Map<String, dynamic>> rowList = await db.query(table, where: 'id=$id');
     if (rowList.length != 0) {
       return rowList[0];
-    }
-    else
+    } else
       return null;
   }
 
@@ -213,6 +212,7 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(table);
   }
+
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   Future<int> queryRowCount(String table) async {
@@ -234,4 +234,8 @@ class DatabaseHelper {
     return await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<int> deleteAll(String table) async {
+    Database db = await instance.database;
+    return await db.delete(table);
+  }
 }

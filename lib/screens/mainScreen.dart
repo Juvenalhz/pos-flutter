@@ -50,7 +50,7 @@ class MainScreen extends StatelessWidget {
                           ),
                           child: Center(
                               child: Text(
-                            state.merchant.name,
+                            state.merchant.nameL1,
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                           )),
                         ),
