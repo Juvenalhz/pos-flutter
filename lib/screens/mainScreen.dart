@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/bloc.dart';
-import 'package:pay/bloc/merchant_bloc.dart';
+import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/screens/splash.dart';
 import 'ConfigurationScreen.dart';
 import 'amount.dart';

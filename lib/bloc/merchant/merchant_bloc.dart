@@ -1,16 +1,49 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:pay/models/merchant.dart';
-import 'bloc.dart';
+import 'package:pay/repository/merchant_repository.dart';
+import 'merchant_event.dart';
+import 'merchant_state.dart';
+
+
 
 class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
-  Merchant merchant;
+  final MerchantRepository merchantRepository  ;
 
-  MerchantBloc(MerchantState initialState) : super(initialState);
-
-  @override
-  MerchantState get initialState => InitialMerchantState();
+  MerchantBloc({@required this.merchantRepository}) : super(null) ;
 
   @override
-  Stream<MerchantState> mapEventToState(MerchantEvent event) async* {}
+  MerchantState get initialState => MerchantInitial();
+
+  @override
+  Stream<MerchantState> mapEventToState(MerchantEvent event) async* {
+
+    yield MerchantLoading();
+
+    if (event is GetMerchant){
+      int numMerchants = await merchantRepository.getCountMerchants();
+
+      if (numMerchants == 0){
+        yield MerchantMissing();
+      }
+      else {
+        Map<String, dynamic> merchantMap = await merchantRepository.getMerchant(event.id);
+        Merchant merchant = new Merchant.fromMap(merchantMap);
+
+        if (merchant == null)
+          yield MerchantLoading();
+
+        yield MerchantLoaded(merchant: merchant);
+      }
+    }
+    else if (event is UpdateMerchant){
+      yield MerchantLoading();
+      await merchantRepository.updateMerchant(event.merchant);
+      yield MerchantGet(id: event.merchant.id);
+    }
+
+
+
+  }
 }

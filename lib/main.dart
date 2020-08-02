@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/mainScreen.dart';
 import 'package:pay/utils/database.dart';
-import 'bloc/merchant_bloc.dart';
+import 'package:pay/bloc/merchantBloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
