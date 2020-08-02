@@ -46,46 +46,147 @@ class DatabaseHelper {
           Name TEXT DEFAULT '')
           ''');
 
-    await _tableAlter(db, 'merchant', 'TID', 'text');
-    await _tableAlter(db, 'merchant', 'MID', 'text');
-    await _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
-    await _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
-    await _tableAlter(db, 'merchant', 'Password', 'text');
-    await _tableAlter(db, 'merchant', 'Header', 'text');
-    await _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
-    await _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
-    await _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
-    await _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    await _tableAlter(db, 'merchant', 'Address', 'text');
-    await _tableAlter(db, 'merchant', 'TaxID', 'text');
-    await _tableAlter(db, 'merchant', 'Logo', 'text');
+    _tableAlter(db, 'merchant', 'TID', 'text');
+    _tableAlter(db, 'merchant', 'MID', 'text');
+    _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
+    _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
+    _tableAlter(db, 'merchant', 'Password', 'text');
+    _tableAlter(db, 'merchant', 'Header', 'text');
+    _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
+    _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
+    _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
+    _tableAlter(db, 'merchant', 'MaxTip', 'integer');
+    _tableAlter(db, 'merchant', 'Address', 'text');
+    _tableAlter(db, 'merchant', 'TaxID', 'text');
+    _tableAlter(db, 'merchant', 'Logo', 'text');
 
   }
 
   void _UpgradeMerchantTable(Database db) async {
-    await _tableAlter(db, 'merchant', 'TID', 'text');
-    await _tableAlter(db, 'merchant', 'MID', 'text');
-    await _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
-    await _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
-    await _tableAlter(db, 'merchant', 'Password', 'text');
-    await _tableAlter(db, 'merchant', 'Header', 'text');
-    await _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
-    await _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
-    await _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
-    await _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    await _tableAlter(db, 'merchant', 'Address', 'text');
-    await _tableAlter(db, 'merchant', 'TaxID', 'text');
-    await _tableAlter(db, 'merchant', 'Logo', 'text');
+    _tableAlter(db, 'merchant', 'TID', 'text');
+    _tableAlter(db, 'merchant', 'MID', 'text');
+    _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
+    _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
+    _tableAlter(db, 'merchant', 'Password', 'text');
+    _tableAlter(db, 'merchant', 'Header', 'text');
+    _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
+    _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
+    _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
+    _tableAlter(db, 'merchant', 'MaxTip', 'integer');
+    _tableAlter(db, 'merchant', 'Address', 'text');
+    _tableAlter(db, 'merchant', 'TaxID', 'text');
+    _tableAlter(db, 'merchant', 'Logo', 'text');
+  }
 
+  void _CreateTerminalTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE terminal (
+          id integer PRIMARY KEY AUTOINCREMENT,
+          Name TEXT DEFAULT '')
+          ''');
+
+    _tableAlter(db, 'terminal', 'password', 'text');
+    _tableAlter(db, 'terminal', 'techPassword', 'text');
+    _tableAlter(db, 'terminal', 'idTerminal', 'text');
+    _tableAlter(db, 'terminal', 'kin', 'integer');
+    _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
+    _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
+    _tableAlter(db, 'terminal', 'keyIndex', 'integer');
+    _tableAlter(db, 'terminal', 'industry', 'text');
+    _tableAlter(db, 'terminal', 'print', 'text');
+    _tableAlter(db, 'terminal', 'cashback', 'integer');
+    _tableAlter(db, 'terminal', 'installments', 'integer');
+    _tableAlter(db, 'terminal', 'refund', 'integer');
+    _tableAlter(db, 'terminal', 'last4Digits', 'integer');
+    _tableAlter(db, 'terminal', 'passwordVoid', 'integer');
+    _tableAlter(db, 'terminal', 'passwordBatch', 'integer');
+    _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
+    _tableAlter(db, 'terminal', 'maskPan', 'integer');
+    _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+  }
+
+  void _UpgradeTerminalTable(Database db) async {
+    _tableAlter(db, 'terminal', 'password', 'text');
+    _tableAlter(db, 'terminal', 'techPassword', 'text');
+    _tableAlter(db, 'terminal', 'idTerminal', 'text');
+    _tableAlter(db, 'terminal', 'kin', 'integer');
+    _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
+    _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
+    _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
+    _tableAlter(db, 'terminal', 'keyIndex', 'integer');
+    _tableAlter(db, 'terminal', 'industry', 'text');
+    _tableAlter(db, 'terminal', 'print', 'text');
+    _tableAlter(db, 'terminal', 'cashback', 'integer');
+    _tableAlter(db, 'terminal', 'installments', 'integer');
+    _tableAlter(db, 'terminal', 'refund', 'integer');
+    _tableAlter(db, 'terminal', 'last4Digits', 'integer');
+    _tableAlter(db, 'terminal', 'passwordVoid', 'integer');
+    _tableAlter(db, 'terminal', 'passwordBatch', 'integer');
+    _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
+    _tableAlter(db, 'terminal', 'maskPan', 'integer');
+    _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+  }
+
+  void _CreateCommTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE comm (
+          id integer PRIMARY KEY AUTOINCREMENT,
+          Name TEXT DEFAULT '')
+          ''');
+
+    _tableAlter(db, 'comm', 'tpdu', 'text');
+    _tableAlter(db, 'comm', 'nii', 'text');
+    _tableAlter(db, 'comm', 'timout', 'integer');
+    _tableAlter(db, 'comm', 'ip', 'text');
+    _tableAlter(db, 'comm', 'port', 'integer');
+  }
+
+  void _UpgradeCommTable(Database db) async {
+    _tableAlter(db, 'comm', 'tpdu', 'text');
+    _tableAlter(db, 'comm', 'nii', 'text');
+    _tableAlter(db, 'comm', 'timout', 'integer');
+    _tableAlter(db, 'comm', 'ip', 'text');
+    _tableAlter(db, 'comm', 'port', 'integer');
+  }
+
+  void _CreateEmvTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE emv (
+          id integer PRIMARY KEY AUTOINCREMENT,
+          Name TEXT DEFAULT '')
+          ''');
+
+    _tableAlter(db, 'emv', 'terminalType', 'text');
+    _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
+    _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'fallback', 'integer');
+    _tableAlter(db, 'emv', 'forceOnline', 'integer');
+  }
+
+  void _UpgradeEmvTable(Database db) async {
+    _tableAlter(db, 'emv', 'terminalType', 'text');
+    _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
+    _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
+    _tableAlter(db, 'emv', 'fallback', 'integer');
+    _tableAlter(db, 'emv', 'forceOnline', 'integer');
   }
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
-    await _CreateMerchantTable(db);
+    _CreateMerchantTable(db);
+    _CreateTerminalTable(db);
+    _CreateCommTable(db);
+    _CreateEmvTable(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    await _UpgradeMerchantTable(db);
+    _UpgradeMerchantTable(db);
+    _UpgradeTerminalTable(db);
+    _UpgradeCommTable(db);
+    _UpgradeEmvTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name

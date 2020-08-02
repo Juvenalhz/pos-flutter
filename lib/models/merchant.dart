@@ -5,6 +5,7 @@ class Merchant {
   String _MID;
   int _CurrencyCode;
   String _CurrencySymbol;
+  String _CountryCode;
   String _Password;
   String _Header;
   int _Amount_MaxDigtis;
@@ -14,10 +15,13 @@ class Merchant {
   String _Address;
   String _TaxID;
   String _Logo;
+  String _AcquirerCode;
+
 
   Merchant(this._name, this._TID, this._MID,
       [this._CurrencyCode,
       this._CurrencySymbol,
+      this._CountryCode,
       this._Password,
       this._Header,
       this._Amount_MaxDigtis,
@@ -26,7 +30,8 @@ class Merchant {
       this._MaxTip,
       this._Address,
       this._TaxID,
-      this._Logo]);
+      this._Logo,
+      this._AcquirerCode]);
 
   int get id => _id;
   String get name => _name;
@@ -34,6 +39,7 @@ class Merchant {
   String get MID => _MID;
   int get CurrencyCode => _CurrencyCode;
   String get CurrencySymbol => _CurrencySymbol;
+  String get CountryCode => _CountryCode;
   String get Password => _Password;
   String get Header => _Header;
   int get Amount_MaxDigtis => _Amount_MaxDigtis;
@@ -43,6 +49,7 @@ class Merchant {
   String get Address => _Address;
   String get TaxID => _TaxID;
   String get Logo => _Logo;
+  String get AcquirerCode => _AcquirerCode;
 
   set id(int id) {
     this._id = id;
@@ -62,6 +69,10 @@ class Merchant {
 
   set CurrencySymbol(String CurrencySymbol) {
     this._CurrencySymbol = CurrencySymbol;
+  }
+
+  set CountryCode(String CountryCode) {
+    this._CountryCode = CountryCode;
   }
 
   set Password(String Password) {
@@ -99,6 +110,11 @@ class Merchant {
   set Logo(String Logo) {
     this._Logo = Logo;
   }
+
+  set AcquirerCode(String AcquirerCode){
+    this._AcquirerCode = AcquirerCode;
+  }
+
   // Convert a Merchant object into a Map object
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
@@ -110,6 +126,7 @@ class Merchant {
     map['MID'] = _MID;
     map['CurrencyCode'] = _CurrencyCode;
     map['CurrencySymbol'] = _CurrencySymbol;
+    map['CountryCode'] = _CountryCode;
     map['Password'] = _Password;
     map['Header'] = _Header;
     map['Amount_MaxDigtis'] = _Amount_MaxDigtis;
@@ -119,26 +136,29 @@ class Merchant {
     map['Address'] = _Address;
     map['TaxID'] = _TaxID;
     map['Logo'] = _Logo;
+    map['AcquirerCode'] = _AcquirerCode;
 
     return map;
   }
 
   // Extract a Merchant object from a Map object
-  Merchant.fromMap(Map<String, dynamic> map) {
-    this._id = map['id'];
-    this._name = map['Name'];
-    this._TID = map['TID'];
-    this._MID = map['MID'];
-    this._CurrencyCode = map['CurrencyCode'];
-    this._CurrencySymbol = map['CurrencySymbol'];
-    this._Password = map['Password'];
-    this._Header = map['Header'];
-    this._Amount_MaxDigtis = map['Amount_MaxDigtis'];
-    this._Amount_DecimalPosition = map['Amount_DecimalPosition'];
-    this._BatchNumber = map['BatchNumber'];
-    this._MaxTip = map['MaxTip'];
-    this._Address = map['Address'];
-    this._TaxID = map['TaxID'];
-    this._Logo = map['Logo'];
+  Merchant.fromMap(Map<String, dynamic> merchant) {
+    this._id = merchant['id'];
+    this._name = merchant['Name'];
+    this._TID = merchant['TID'];
+    this._MID = merchant['MID'];
+    this._CurrencyCode = merchant['CurrencyCode'];
+    this._CurrencySymbol = merchant['CurrencySymbol'];
+    this._CountryCode = merchant['CountryCode'];
+    this._Password = merchant['Password'];
+    this._Header = merchant['Header'];
+    this._Amount_MaxDigtis = merchant['Amount_MaxDigtis'];
+    this._Amount_DecimalPosition = merchant['Amount_DecimalPosition'];
+    this._BatchNumber = merchant['BatchNumber'];
+    this._MaxTip = merchant['MaxTip'];
+    this._Address = merchant['Address'];
+    this._TaxID = merchant['TaxID'];
+    this._Logo = merchant['Logo'];
+    this._AcquirerCode = merchant['AcquirerCode'];
   }
 }

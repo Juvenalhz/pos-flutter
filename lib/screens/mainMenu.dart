@@ -16,56 +16,45 @@ class MainMenu extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-
           _createHeader(context),
-
-          ExpansionTile(
-            title: Text("Reportes"),
-              leading: Icon(Icons.receipt),
-            children: <Widget>[
-              _createDrawerItem(
-                icon: Icons.calendar_view_day,
-                text: 'Reporte Resumen',
+          ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
+            _createDrawerItem(
+              icon: Icons.calendar_view_day,
+              text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-              ),
-              _createDrawerItem(
-                icon: Icons.receipt,
-                text: 'Reporte Detallado',
+            ),
+            _createDrawerItem(
+              icon: Icons.receipt,
+              text: 'Reporte Detallado',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-              ),
-              _createDrawerItem(
-                icon: Icons.room_service,
-                text: 'Reporte Meseros',
+            ),
+            _createDrawerItem(
+              icon: Icons.room_service,
+              text: 'Reporte Meseros',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-              ),
-            ]
-          ),
-
+            ),
+          ]),
           Divider(),
           _createDrawerItem(
-              icon: Icons.repeat,
-              text: 'Reimpresion',
+            icon: Icons.repeat,
+            text: 'Reimpresion',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.notes)
           ),
           Divider(),
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
-          ExpansionTile(
-            title: Text("Menu Tecnico"),
-            leading: Icon(Icons.settings),
-            children: <Widget>[
-              _createDrawerItem(text: 'Inicializacion'),
-              _createDrawerItem(text: 'Borrar Lote'),
-              _createDrawerItem(text: 'Borrar Reverso'),
-              _createDrawerItem(text: 'Reporte de Parametros'),
-              _createDrawerItem(text: 'Configuracion'),
-            ]
-          ),
-          if(isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion De Pruebas'),
+          ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
+            _createDrawerItem(text: 'Inicializacion'),
+            _createDrawerItem(text: 'Borrar Lote'),
+            _createDrawerItem(text: 'Borrar Reverso'),
+            _createDrawerItem(text: 'Reporte de Parametros'),
+            _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
+          ]),
+          if (isDev) _createDrawerItem(icon: Icons.bug_report, text: 'Inicializacion De Pruebas'),
           ListTile(
             title: Text('0.0.1'),
             onTap: () {},
@@ -96,52 +85,35 @@ class MainMenu extends StatelessWidget {
           Positioned(
             top: 10.0,
             left: 95.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(
-              builder: (context, state) {
-                if (state is MerchantLoaded) {
-                  if ((state.merchant.Logo != null) && (state.merchant.Logo.length > 0)) {
-                    return GestureDetector(
-                        onTap: () {
-                          selectFile(context, state.merchant);
-                        },
-                      child: CircleImage(state.merchant.Logo, 2)
-                    );
-                  }
-                  else{
-                    return GestureDetector(
+            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state is MerchantLoaded) {
+                if ((state.merchant.Logo != null) && (state.merchant.Logo.length > 0)) {
+                  return GestureDetector(
                       onTap: () {
                         selectFile(context, state.merchant);
                       },
-                      child: CircleImage('assets/images/logo.jpg', 1)
-                    );
-                  }
+                      child: CircleImage(state.merchant.Logo, 2));
+                } else {
+                  return GestureDetector(
+                      onTap: () {
+                        selectFile(context, state.merchant);
+                      },
+                      child: CircleImage('assets/images/logo.jpg', 1));
                 }
-                else
-                  return CircleImage('assets/images/logo.jpg', 1);
-              }
-            ),
+              } else
+                return CircleImage('assets/images/logo.jpg', 1);
+            }),
           ),
           Positioned(
-              bottom: 12.0,
-              left: 16.0,
-              child:  BlocBuilder<MerchantBloc, MerchantState>(
-                builder: (context, state){
-                  if (state is MerchantLoaded) {
-                    return Text(state.merchant.name,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w500) );
-                  }
-                  else{
-                    return Text(' ',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w500));
-                  }
-                }
-              ),
+            bottom: 12.0,
+            left: 16.0,
+            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state is MerchantLoaded) {
+                return Text(state.merchant.name, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+              } else {
+                return Text(' ', style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+              }
+            }),
           )
         ]));
   }
@@ -161,18 +133,15 @@ class MainMenu extends StatelessWidget {
     );
   }
 
-  Future<void> selectFile(BuildContext context, Merchant merchant)   async {
+  Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
 
-    File file = await FilePicker.getFile(type: FileType.image );
+    File file = await FilePicker.getFile(type: FileType.image);
     merchant.Logo = file.path;
     merchant.id = 1;
     merchantBloc.add(UpdateMerchant(merchant));
   }
-
-
 }
-
 
 class CircleImage extends StatelessWidget {
   String image;
@@ -180,28 +149,28 @@ class CircleImage extends StatelessWidget {
 
   CircleImage(this.image, this.imageType);
 
-   @override
+  @override
   Widget build(BuildContext context) {
     double _size = 100.0;
     Image img;
 
     if (this.imageType == 1)
-      img = new Image.asset(this.image, height: 70, width: 70, );
-    else if (this.imageType == 2)
-      img = new Image.file(File(this.image), height: 200, width: 200);
+      img = new Image.asset(
+        this.image,
+        height: 70,
+        width: 70,
+      );
+    else if (this.imageType == 2) img = new Image.file(File(this.image), height: 200, width: 200);
 
     return Container(
-            width: _size,
-            height: _size,
-            decoration: new BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              image: new DecorationImage(
-                  fit: BoxFit.fill,
-                  image: img.image,
-              )
-            )
-          );
-
+        width: _size,
+        height: _size,
+        decoration: new BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            image: new DecorationImage(
+              fit: BoxFit.fill,
+              image: img.image,
+            )));
   }
 }
