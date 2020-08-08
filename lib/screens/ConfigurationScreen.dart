@@ -1,9 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'components/title_section_form.dart';
 
 class ConfigurationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -26,48 +30,97 @@ class ConfigurationScreen extends StatelessWidget {
             ),
           ),
         ),
-        body: ListView(
-            children: <Widget>[
-
+        body: ListView(children: <Widget>[
+          TitleSectionForm(title: 'Comercio'),
           Container(
-              width: double.infinity,
-              decoration:
-                BoxDecoration(color: Colors.blue[800]),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 2, 8 , 2),
-                child: Text(
-                  'Comercio',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text('Nombre del Comercio'),
+                    subtitle: Text('subtitle 1\nsubtitule2'),
+                    isThreeLine: true,
                   ),
-                ),
-              ),
-            ),
-
-
-
-
+                  Divider(),
+                  ListTile(
+                    title: Text('Código de Comercio'),
+                    subtitle: Text('subtitle'),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('RIF del Comercio'),
+                    subtitle: Text('subtitle'),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('Ciudad del Comercio'),
+                    subtitle: Text('subtitle'),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('Número de Terminal'),
+                    subtitle: Text('subtitle'),
+                  ),
+                  Divider(),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: size.width / 2.18,
+                        child: ListTile(
+                          title: Text('Código Moneda'),
+                          subtitle: Text('subtitle'),
+                        ),
+                      ),
+                      Container(
+                        width: size.width / 2.18,
+                        child: ListTile(
+                          title: Text('Símbolo de Moneda'),
+                          subtitle: Text('subtitle'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: size.width / 2.18,
+                        child: ListTile(
+                          title: Text('Código Adquiriente'),
+                          subtitle: Text('subtitle'),
+                        ),
+                      ),
+                      Container(
+                        width: size.width / 2.18,
+                        child: ListTile(
+                          title: Text('Código de País'),
+                          subtitle: Text('subtitle'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('Versón de la Aplicación'),
+                    subtitle: Text('subtitle'),
+                  ),
+                ],
+              )),
+          TitleSectionForm(title: 'Terminal'),
           Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Container(
                 width: double.infinity,
-                decoration:
-                    BoxDecoration(
-                        color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Colors.white,
 //                        borderRadius: BorderRadius.circular(10.0),
 //                        border: Border.all(color: Colors.black)
-                    ),
+                ),
                 child: Column(
                   children: <Widget>[
                     ListTile(
-                      title: TextFormField(
-                        decoration: const InputDecoration(
-                            labelText: 'label tile'
-                        ),
-                      initialValue: 'initial value',
-                      ),
+                      title: Text('title'),
+                      subtitle: Text('subtitle'),
                       dense: true,
                     ),
                     Divider(),
@@ -78,154 +131,89 @@ class ConfigurationScreen extends StatelessWidget {
                   ],
                 ),
               )),
-
-
-
-              Container(
+          TitleSectionForm(title: 'Comunicacion'),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Container(
                 width: double.infinity,
-                decoration:
-                BoxDecoration(color: Colors.blue[800]),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 2, 8 , 2),
-                  child: Text(
-                    'Terminal',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
-
-
-
-
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration:
-                    BoxDecoration(
-                      color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Colors.white,
 //                        borderRadius: BorderRadius.circular(10.0),
 //                        border: Border.all(color: Colors.black)
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        ListTile(
-                          title: Text('title'),
-                          subtitle: Text('subtitle'),
-                          dense: true,
-                        ),
-                        Divider(),
-                        ListTile(
-                          title: Text('title'),
-                          subtitle: Text('subtitle'),
-                        ),
-                      ],
-                    ),
-                  )),
-
-
-
-              Container(
-                width: double.infinity,
-                decoration:
-                BoxDecoration(color: Colors.blue[800]),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 2, 8 , 2),
-                  child: Text(
-                    'Comunicacion',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
                 ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration:
-                    BoxDecoration(
-                      color: Colors.white,
-//                        borderRadius: BorderRadius.circular(10.0),
-//                        border: Border.all(color: Colors.black)
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        dataTile('dataTile Title1', 'dataTile value', TextInputType.text),
-                        //Divider(),
-                        dataTile('dataTile Title2', 'dataTile value', TextInputType.number),
-                        //Divider(),
-                        dataTile('dataTile Title3', 'dataTile value', TextInputType.text),
-                        //Divider(),
-                        onOffTile('on / off', 1),
-                      ],
-                    ),
-                  )),
+                child: Column(
+                  children: <Widget>[
+                    dataTile('dataTile Title1', 'dataTile value',
+                        TextInputType.text),
+                    //Divider(),
+                    dataTile('dataTile Title2', 'dataTile value',
+                        TextInputType.number),
+                    //Divider(),
+                    dataTile('dataTile Title3', 'dataTile value',
+                        TextInputType.text),
+                    //Divider(),
+                    onOffTile('on / off', 1),
+                  ],
+                ),
+              )),
         ]),
       ),
     );
   }
 }
 
-Widget dataTile(String myTitle, String value, TextInputType type){
+Widget dataTile(String myTitle, String value, TextInputType type) {
   return ListTile(
     title: TextFormField(
       keyboardType: type,
       validator: (String newValue) {
-        if(newValue.isEmpty){
+        if (newValue.isEmpty) {
           return 'Este campo no puede estar vacio';
         }
         return null;
       },
       decoration: InputDecoration(
-          labelText: myTitle,
-          labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        labelText: myTitle,
+        labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       initialValue: value,
-      onSaved: (String newValue){
+      onSaved: (String newValue) {
         value = newValue;
       },
-
     ),
     //dense: true,
   );
 }
 
-Widget onOffTile(String myTitle, int value){
+Widget onOffTile(String myTitle, int value) {
   return SwitchListTile(
     title: Text(myTitle),
     value: (value == 1) ? true : false,
-    );
+  );
 }
 
 bool isIP(String str) {
-  RegExp _ipv4Maybe = new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
+  RegExp _ipv4Maybe =
+      new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
 
   if (!_ipv4Maybe.hasMatch(str)) {
     return false;
   }
-  
+
   var parts = str.split('.');
   parts.sort((a, b) => int.parse(a) - int.parse(b));
   return int.parse(parts[3]) <= 255;
 }
 
-Widget ipAddressTile(String myTitle, String value){
+Widget ipAddressTile(String myTitle, String value) {
   return ListTile(
     title: TextFormField(
       keyboardType: TextInputType.number,
       validator: (String newValue) {
-        if(newValue.isEmpty){
+        if (newValue.isEmpty) {
           return 'Este campo no puede estar vacio';
         }
-        if(!isIP(newValue))
-          return 'La direccion IP es invalida';
+        if (!isIP(newValue)) return 'La direccion IP es invalida';
 
         return null;
       },
@@ -234,10 +222,9 @@ Widget ipAddressTile(String myTitle, String value){
         labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       initialValue: value,
-      onSaved: (String newValue){
+      onSaved: (String newValue) {
         value = newValue;
       },
-
     ),
     //dense: true,
   );
