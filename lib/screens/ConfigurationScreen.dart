@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'components/title_section_form.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/bloc.dart';
+import 'package:pay/bloc/merchant_bloc.dart';
 
 class ConfigurationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -32,80 +34,92 @@ class ConfigurationScreen extends StatelessWidget {
         ),
         body: ListView(children: <Widget>[
           TitleSectionForm(title: 'Comercio'),
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text('Nombre del Comercio'),
-                    subtitle: Text('subtitle 1\nsubtitule2'),
-                    isThreeLine: true,
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text('Código de Comercio'),
-                    subtitle: Text('subtitle'),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text('RIF del Comercio'),
-                    subtitle: Text('subtitle'),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text('Ciudad del Comercio'),
-                    subtitle: Text('subtitle'),
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text('Número de Terminal'),
-                    subtitle: Text('subtitle'),
-                  ),
-                  Divider(),
-                  Row(
+          BlocBuilder<MerchantBloc, MerchantState>(
+            builder: (context, state) {
+              Widget retWidget = SizedBox();
+              if (state is MerchantLoaded) {
+                retWidget = Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
                     children: <Widget>[
-                      Container(
-                        width: size.width / 2.18,
-                        child: ListTile(
-                          title: Text('Código Moneda'),
-                          subtitle: Text('subtitle'),
-                        ),
+                      ListTile(
+                        title: Text('Nombre del Comercio'),
+                        subtitle: Text('${state.merchant.nameL1}\n'
+                            '${state.merchant.nameL2}'),
+                        isThreeLine: true,
                       ),
-                      Container(
-                        width: size.width / 2.18,
-                        child: ListTile(
-                          title: Text('Símbolo de Moneda'),
-                          subtitle: Text('subtitle'),
-                        ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Código de Comercio'),
+                        subtitle: Text(state.merchant.MID),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('RIF del Comercio'),
+                        subtitle: Text(state.merchant.MID),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Ciudad del Comercio'),
+                        subtitle: Text(state.merchant.City),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Número de Terminal'),
+                        subtitle: Text(state.merchant.TID),
+                      ),
+                      Divider(),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('Código Moneda'),
+                              subtitle:
+                                  Text(state.merchant.CurrencyCode.toString()),
+                            ),
+                          ),
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('Símbolo de Moneda'),
+                              subtitle: Text(state.merchant.CurrencySymbol),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('Código Adquiriente'),
+                              subtitle: Text(state.merchant.AcquirerCode),
+                            ),
+                          ),
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('Código de País'),
+                              subtitle:
+                                  Text(state.merchant.CountryCode.toString()),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Versón de la Aplicación'),
+                        subtitle: Text(state.merchant.id.toString()),
                       ),
                     ],
                   ),
-                  Divider(),
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        width: size.width / 2.18,
-                        child: ListTile(
-                          title: Text('Código Adquiriente'),
-                          subtitle: Text('subtitle'),
-                        ),
-                      ),
-                      Container(
-                        width: size.width / 2.18,
-                        child: ListTile(
-                          title: Text('Código de País'),
-                          subtitle: Text('subtitle'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Text('Versón de la Aplicación'),
-                    subtitle: Text('subtitle'),
-                  ),
-                ],
-              )),
+                );
+              }
+              return retWidget;
+            },
+          ),
           TitleSectionForm(title: 'Terminal'),
           Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
