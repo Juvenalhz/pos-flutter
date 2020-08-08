@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'components/list_tile_two_column.dart';
+import 'package:pay/screens/components/data_tile.dart';
+import 'components/checkbox_item.dart';
+import 'components/item_tile_two_column.dart';
 import 'components/title_section_form.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/bloc.dart';
@@ -10,7 +12,7 @@ import 'package:pay/bloc/merchant_bloc.dart';
 class ConfigurationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    String value = 'dataTile value';
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -60,21 +62,21 @@ class ConfigurationScreen extends StatelessWidget {
                         subtitle: Text(state.merchant.MID),
                       ),
                       Divider(),
-                      ListTileTwoColumn(
+                      ItemTileTwoColumn(
                         leftLabel: Text('RIF del Comercio'),
                         rightLabel: Text('Número de Terminal'),
                         leftItem: Text(state.merchant.TaxID),
                         rightItem: Text(state.merchant.TID),
                       ),
                       Divider(),
-                      ListTileTwoColumn(
+                      ItemTileTwoColumn(
                         leftLabel: Text('Código Moneda'),
                         rightLabel: Text('Símbolo de Moneda'),
                         leftItem: Text(state.merchant.CurrencyCode.toString()),
                         rightItem: Text(state.merchant.CurrencySymbol),
                       ),
                       Divider(),
-                      ListTileTwoColumn(
+                      ItemTileTwoColumn(
                         leftLabel: Text('Código Adquiriente'),
                         rightLabel: Text('Código de País'),
                         leftItem: Text(state.merchant.AcquirerCode),
@@ -104,16 +106,182 @@ class ConfigurationScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: <Widget>[
-                    ListTile(
-                      title: Text('title'),
-                      subtitle: Text('subtitle'),
-                      dense: true,
+                    DataTile(
+                      myTitle: 'Clave Sistema',
+                      value: '000000',
+                    ),
+                    Divider(),
+                    DataTile(
+                      myTitle: 'Mensaje Pin Pad',
+                      value: 'PLATCO',
                     ),
                     Divider(),
                     ListTile(
-                      title: Text('title'),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Tipo de Pin Pad'),
+                          DropdownButton(
+                            onChanged: (value) {},
+                            items: <DropdownMenuItem<dynamic>>[],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: DataTile(
+                        myTitle: 'Min. PIN',
+                        value: '4',
+                      ),
+                      rightLabel: DataTile(
+                        myTitle: 'Máx. PIN',
+                        value: '6',
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: DataTile(
+                        myTitle: 'Master Key',
+                        value: '0',
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Pre-discado',
+                        value: false,
+                        onChanged: (v) {},
+                      ),
+                    ),
+                    Divider(color: Colors.black, thickness: 1.0),
+                    ItemTileTwoColumn(
+                      leftLabel: Text('Número de Lote'),
+                      rightLabel: Text('Terminal ID'),
+                      leftItem: Text('subtitle'),
+                      rightItem: Text('00000000'),
+                    ),
+                    Divider(),
+                    ListTile(
+                      title: Text('Serial Terminal'),
                       subtitle: Text('subtitle'),
                     ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: Text('Tiempo Max. Entrada'),
+                      rightLabel: Text('Porcentaje Propina'),
+                      leftItem: Text('20 Seg.'),
+                      rightItem: Text('20 %'),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: Text('Tipo  Soft.'),
+                      rightLabel: Text('Lectura de Track'),
+                      leftItem: Text('Normal'),
+                      rightItem: Text('Track 1 y Track 2'),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Impresión',
+                        value: true,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Cash back',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Cuotas',
+                        value: false,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Devolución',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Cheque',
+                        value: false,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Check In/\nCheckOut',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'CVV2',
+                        value: false,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: '4 últimos\ndígitos',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Clave\nAnulación',
+                        value: false,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Clave Cierre',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Clave\nDevolución',
+                        value: true,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Enmascarar\nTarjeta',
+                        value: true,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Pre-impresión',
+                        value: true,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Entrada\nManual PAN',
+                        value: false,
+                        onChanged: null,
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      leftLabel: CheckboxItem(
+                        label: 'Confirmación\nde Importe',
+                        value: true,
+                        onChanged: null,
+                      ),
+                      rightLabel: CheckboxItem(
+                        label: 'Ventas Fuera\nde Línea',
+                        value: false,
+                        onChanged: (v) {},
+                      ),
+                    ),
+                    Divider(),
                   ],
                 ),
               )),
@@ -129,14 +297,26 @@ class ConfigurationScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: <Widget>[
-                    dataTile('dataTile Title1', 'dataTile value',
-                        TextInputType.text),
+                    DataTile(
+                      myTitle: 'dataTile Title1',
+                      value: value,
+                      type: TextInputType.text,
+                      onSaved: (String newValue) => value = newValue,
+                    ),
                     //Divider(),
-                    dataTile('dataTile Title2', 'dataTile value',
-                        TextInputType.number),
+                    DataTile(
+                      myTitle: 'dataTile Title2',
+                      value: value,
+                      type: TextInputType.number,
+                      onSaved: (String newValue) => value = newValue,
+                    ),
                     //Divider(),
-                    dataTile('dataTile Title3', 'dataTile value',
-                        TextInputType.text),
+                    DataTile(
+                      myTitle: 'dataTile Title3',
+                      value: value,
+                      type: TextInputType.text,
+                      onSaved: (String newValue) => value = newValue,
+                    ),
                     //Divider(),
                     onOffTile('on / off', 1),
                   ],
@@ -146,29 +326,6 @@ class ConfigurationScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget dataTile(String myTitle, String value, TextInputType type) {
-  return ListTile(
-    title: TextFormField(
-      keyboardType: type,
-      validator: (String newValue) {
-        if (newValue.isEmpty) {
-          return 'Este campo no puede estar vacio';
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: myTitle,
-        labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-      initialValue: value,
-      onSaved: (String newValue) {
-        value = newValue;
-      },
-    ),
-    //dense: true,
-  );
 }
 
 Widget onOffTile(String myTitle, int value) {

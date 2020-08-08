@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ListTileTwoColumn extends StatelessWidget {
+class ItemTileTwoColumn extends StatelessWidget {
   final Widget leftLabel;
   final Widget rightLabel;
   final Widget leftItem;
   final Widget rightItem;
 
-  ListTileTwoColumn(
+  ItemTileTwoColumn(
       {this.leftLabel, this.rightLabel, this.leftItem, this.rightItem});
 
   @override
