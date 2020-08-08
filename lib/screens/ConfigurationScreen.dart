@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'components/list_tile_two_column.dart';
 import 'components/title_section_form.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/bloc.dart';
@@ -59,63 +60,25 @@ class ConfigurationScreen extends StatelessWidget {
                         subtitle: Text(state.merchant.MID),
                       ),
                       Divider(),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('RIF del Comercio'),
-                              subtitle: Text(state.merchant.TaxID),
-                            ),
-                          ),
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('Número de Terminal'),
-                              subtitle: Text(state.merchant.TID),
-                            ),
-                          ),
-                        ],
+                      ListTileTwoColumn(
+                        leftLabel: Text('RIF del Comercio'),
+                        rightLabel: Text('Número de Terminal'),
+                        leftItem: Text(state.merchant.TaxID),
+                        rightItem: Text(state.merchant.TID),
                       ),
                       Divider(),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('Código Moneda'),
-                              subtitle:
-                                  Text(state.merchant.CurrencyCode.toString()),
-                            ),
-                          ),
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('Símbolo de Moneda'),
-                              subtitle: Text(state.merchant.CurrencySymbol),
-                            ),
-                          ),
-                        ],
+                      ListTileTwoColumn(
+                        leftLabel: Text('Código Moneda'),
+                        rightLabel: Text('Símbolo de Moneda'),
+                        leftItem: Text(state.merchant.CurrencyCode.toString()),
+                        rightItem: Text(state.merchant.CurrencySymbol),
                       ),
                       Divider(),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('Código Adquiriente'),
-                              subtitle: Text(state.merchant.AcquirerCode),
-                            ),
-                          ),
-                          Container(
-                            width: size.width / 2.18,
-                            child: ListTile(
-                              title: Text('Código de País'),
-                              subtitle:
-                                  Text(state.merchant.CountryCode.toString()),
-                            ),
-                          ),
-                        ],
+                      ListTileTwoColumn(
+                        leftLabel: Text('Código Adquiriente'),
+                        rightLabel: Text('Código de País'),
+                        leftItem: Text(state.merchant.AcquirerCode),
+                        rightItem: Text(state.merchant.CountryCode.toString()),
                       ),
                       Divider(),
                       ListTile(
