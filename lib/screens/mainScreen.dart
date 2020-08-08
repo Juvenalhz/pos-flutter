@@ -1,11 +1,26 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/utils/communication.dart';
 import 'ConfigurationScreen.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
+
+void testConnection() async {
+  Communication myComm = new Communication('192.168.11.104', 9000, false);
+
+  Uint8List testmessage = new Uint8List.fromList([0,3,3,4,5]);
+  myComm.connect().then((value) {
+    print(value);
+    myComm.sendMessage(testmessage);
+  });
+
+
+}
 
 class MainScreen extends StatelessWidget {
   MainScreen({Key key}) : super(key: key);
@@ -16,6 +31,7 @@ class MainScreen extends StatelessWidget {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
 
+    testConnection();
     merchantBloc.add(GetMerchant(1));
 
     return MaterialApp(
