@@ -83,7 +83,7 @@ class DatabaseHelper {
   void _CreateTerminalTable(Database db) async {
     await db.execute('''
           CREATE TABLE terminal (
-          id integer PRIMARY KEY AUTOINCREMENT,
+          id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
     _tableAlter(db, 'terminal', 'password', 'text');
@@ -156,7 +156,7 @@ class DatabaseHelper {
   void _CreateEmvTable(Database db) async {
     await db.execute('''
           CREATE TABLE emv (
-          id integer PRIMARY KEY AUTOINCREMENT,
+          id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
     _tableAlter(db, 'emv', 'terminalType', 'text');
