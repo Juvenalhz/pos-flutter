@@ -50,23 +50,32 @@ class ConfigurationScreen extends StatelessWidget {
                       ),
                       Divider(),
                       ListTile(
-                        title: Text('Código de Comercio'),
-                        subtitle: Text(state.merchant.MID),
-                      ),
-                      Divider(),
-                      ListTile(
-                        title: Text('RIF del Comercio'),
-                        subtitle: Text(state.merchant.MID),
-                      ),
-                      Divider(),
-                      ListTile(
                         title: Text('Ciudad del Comercio'),
                         subtitle: Text(state.merchant.City),
                       ),
                       Divider(),
                       ListTile(
-                        title: Text('Número de Terminal'),
-                        subtitle: Text(state.merchant.TID),
+                        title: Text('Código de Comercio'),
+                        subtitle: Text(state.merchant.MID),
+                      ),
+                      Divider(),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('RIF del Comercio'),
+                              subtitle: Text(state.merchant.TaxID),
+                            ),
+                          ),
+                          Container(
+                            width: size.width / 2.18,
+                            child: ListTile(
+                              title: Text('Número de Terminal'),
+                              subtitle: Text(state.merchant.TID),
+                            ),
+                          ),
+                        ],
                       ),
                       Divider(),
                       Row(
@@ -110,7 +119,7 @@ class ConfigurationScreen extends StatelessWidget {
                       ),
                       Divider(),
                       ListTile(
-                        title: Text('Versón de la Aplicación'),
+                        title: Text('Versión de la Aplicación'),
                         subtitle: Text(state.merchant.id.toString()),
                       ),
                     ],
