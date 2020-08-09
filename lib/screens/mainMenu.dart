@@ -1,10 +1,13 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/initialization/initialization_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
+
+import 'Initialization.dart';
 
 class MainMenu extends StatelessWidget {
   @override
@@ -48,7 +51,11 @@ class MainMenu extends StatelessWidget {
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(text: 'Inicializacion', onTap: () => Navigator.pushNamed(context, '/initialization')),
+            _createDrawerItem(
+                text: 'Inicializacion',
+                onTap: () {
+                  Navigator.pushNamed(context, '/initialization');
+                }),
             _createDrawerItem(text: 'Borrar Lote'),
             _createDrawerItem(text: 'Borrar Reverso'),
             _createDrawerItem(text: 'Reporte de Parametros'),
