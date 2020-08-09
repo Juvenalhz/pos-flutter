@@ -48,7 +48,7 @@ class MainMenu extends StatelessWidget {
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(text: 'Inicializacion'),
+            _createDrawerItem(text: 'Inicializacion', onTap: () => Navigator.pushNamed(context, '/initialization')),
             _createDrawerItem(text: 'Borrar Lote'),
             _createDrawerItem(text: 'Borrar Reverso'),
             _createDrawerItem(text: 'Reporte de Parametros'),

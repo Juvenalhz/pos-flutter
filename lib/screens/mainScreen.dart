@@ -7,19 +7,18 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/communication.dart';
 import 'ConfigurationScreen.dart';
+import 'Initialization.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
 void testConnection() async {
   Communication myComm = new Communication('192.168.11.104', 9000, false);
 
-  Uint8List testmessage = new Uint8List.fromList([0,3,3,4,5]);
+  Uint8List testmessage = new Uint8List.fromList([0, 3, 3, 4, 5]);
   myComm.connect().then((value) {
     print(value);
     myComm.sendMessage(testmessage);
   });
-
-
 }
 
 class MainScreen extends StatelessWidget {
@@ -39,6 +38,7 @@ class MainScreen extends StatelessWidget {
       title: 'APOS',
       routes: {
         '/configuration': (context) => ConfigurationScreen(),
+        '/initialization': (context) => Initialization(),
       },
       home: Scaffold(
           key: scaffoldKey,
