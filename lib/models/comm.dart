@@ -1,4 +1,4 @@
-class Comm{
+class Comm {
   int _id;
   String _tpdu;
   String _nii;
@@ -13,29 +13,29 @@ class Comm{
   String get nii => this._nii;
   int get timeout => this._timeout;
   String get ip => this._ip;
-  int get port => this.port;
+  int get port => this._port;
 
-  set id(int id){
+  set id(int id) {
     this._id = id;
   }
 
-  set tpdu(String tpdu){
+  set tpdu(String tpdu) {
     this._tpdu = tpdu;
   }
 
-  set nii(String nii){
+  set nii(String nii) {
     this._nii = nii;
   }
 
-  set timeout(int timeout){
+  set timeout(int timeout) {
     this._timeout = timeout;
   }
 
-  set ip(String ip){
+  set ip(String ip) {
     this._ip = ip;
   }
 
-  set port(int port){
+  set port(int port) {
     this._port = port;
   }
 
