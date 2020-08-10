@@ -3,7 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/terminal/terminal_bloc.dart';
+import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/screens/splash.dart';
 import 'ConfigurationScreen.dart';
 import 'Initialization.dart';
@@ -17,9 +21,13 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
+    final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
 
     merchantBloc.add(GetMerchant(1));
+    terminalBloc.add(GetTerminal(1));
+    commBloc.add(GetComm(1));
 
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
