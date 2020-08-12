@@ -18,13 +18,12 @@ abstract class InitializationEvent extends Equatable {
 }
 
 class InitializationConnect extends InitializationEvent {
-  final String address;
-  final int port;
+  Comm comm;
 
-  InitializationConnect(this.address, this.port);
+  InitializationConnect(this.comm);
 
   @override
-  List<Object> get props => [this.address, this.port];
+  List<Object> get props => [this.comm];
 }
 
 class InitializationSend extends InitializationEvent {

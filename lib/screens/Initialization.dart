@@ -14,7 +14,7 @@ class ShowInitializationProgress extends StatelessWidget {
 
     return BlocBuilder<CommBloc, CommState>(builder: (context, state) {
       if (state is CommLoaded) {
-        initializationBloc.add(InitializationConnect(state.comm.ip, state.comm.port));
+        initializationBloc.add(InitializationConnect(state.comm));
         return BlocBuilder<InitializationBloc, InitializationState>(builder: (context, state) {
           if (state is InitializationConnecting)
             return CommProgress('Inicialization', status: 'Conectando').build(context);

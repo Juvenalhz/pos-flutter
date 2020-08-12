@@ -10,13 +10,12 @@ class InitializationInitial extends InitializationState {
 }
 
 class InitializationConnecting extends InitializationState {
-  final String address;
-  final String port;
+  Comm comm;
 
-  InitializationConnecting(this.address, this.port);
+  InitializationConnecting(this.comm);
 
   @override
-  List<Object> get props => [address, port];
+  List<Object> get props => [comm];
 }
 
 class InitializationSending extends InitializationState {

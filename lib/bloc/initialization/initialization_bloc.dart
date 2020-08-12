@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pay/iso8583/hostMessages.dart';
+import 'package:pay/models/comm.dart';
 import 'package:pay/utils/communication.dart';
 
 part 'initialization_event.dart';
@@ -10,7 +12,7 @@ part 'initialization_state.dart';
 
 class InitializationBloc extends Bloc<InitializationEvent, InitializationState> {
   InitializationBloc() : super(InitializationInitial());
-
+  Comm comm;
   Communication connection;
 
   @override
@@ -18,10 +20,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     InitializationEvent event,
   ) async* {
     if (event is InitializationConnect) {
-      connection = new Communication(event.address, event.port, false);
+      comm = event.comm;
+      connection = new Communication(comm.ip, comm.port, false);
       await connection.connect();
       this.add(InitializationSend());
     } else if (event is InitializationSend) {
+      MessageInitialization initialization = new MessageInitialization(comm);
       Uint8List testmessage = new Uint8List.fromList([0, 3, 3, 4, 5]);
       connection.sendMessage(testmessage);
     } else {
