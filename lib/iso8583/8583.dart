@@ -35,7 +35,7 @@ void memDump(String title, Uint8List data) {
   print(title);
   for (i = 0; i < data.length; i++) {
     temp += hex.encode(data.sublist(i, i + 1)).toString() + ' ';
-    if ((i % 32) == 0) {
+    if ((i != 0) && (i % 32) == 0) {
       if (temp.length > 0) {
         print(temp);
         temp = '';
@@ -62,16 +62,23 @@ Uint8List strToBcd(String data) {
 
 int bcd2Int(Uint8List bcd, int len) {
   if ((len > 0) && (len < 9))
-    return int.parse(bcdToStr(bcd.sublist(0, len)), radix: 16);
+    return int.parse(bcdToStr(bcd.sublist(0, len)), radix: 16).toUnsigned(64);
   else
     throw 'Invalid length';
 }
 
-Uint8List int2Bcd(int i) {
+Uint8List int2Bcd(int i, [int size]) {
   String temp = i.toRadixString(16).toString();
-  if (temp.length % 2 == 1) {
-    temp = temp.padLeft(temp.length + 1, '0');
+
+  if ((size == null) || (size == 0)) {
+    if (temp.length % 2 == 1) {
+      temp = temp.padLeft(temp.length + 1, '0');
+    }
   }
+  else{
+    temp = temp.padLeft(size*2, '0');
+  }
+
   return strToBcd(temp);
 }
 
@@ -84,8 +91,10 @@ class Iso8583 {
   Uint8List _Bitmap = new Uint8List(128);
   int _MID;
   List<Map<String, dynamic>> _data;
+  String _tpdu;
+  bool _addLength;
 
-  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec]) {
+  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec, String this._tpdu, bool this._addLength]) {
     if (isoSpec == null) {
       this._isoSpec = new IsoSpecASCII();
     } else {
@@ -266,7 +275,10 @@ class Iso8583 {
   void parseIso() {
     int index = 0;
     int i = 0;
-    _data.removeRange(0, _data.length);
+    //_data.removeRange(0, _data.length);
+
+    if (this._tpdu != null)
+      index += 5;
 
     index = parseMID(_isoMsg, index);
     index = parseBitmap(index);
@@ -341,7 +353,7 @@ class Iso8583 {
       }
     }
 
-    memDump("iso msg:", _isoMsg.sublist(0, index));
+    //memDump("iso msg:", _isoMsg.sublist(0, index));
 
     return index;
   }
@@ -423,18 +435,40 @@ class Iso8583 {
 
   Uint8List buildIso() {
     int index = 0;
+    int lengthIndex = 0;
+
+    if ((this._addLength != null) && (this._addLength == true))
+      index += 2;  // reserve the pace to add the length
+
+    if (this._tpdu != null){
+      Uint8List temp = strToBcd(this._tpdu);
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+      //memDump("iso msg tpdu:", _isoMsg.sublist(0, index));
+    }
+
 
     index = buildMID(index);
-    memDump("iso msg MID:", _isoMsg.sublist(0, index));
+    //memDump("iso msg MID:", _isoMsg.sublist(0, index));
 
     index = buildBitmap(index);
-    memDump("iso msg:", _isoMsg.sublist(0, index));
+    //memDump("iso msg:", _isoMsg.sublist(0, index));
 
     for (var i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) {
         index = buildField(i, index);
-        memDump("iso msg:", _isoMsg.sublist(0, index));
       }
+    }
+
+    if ((this._addLength != null) && (this._addLength == true)) {
+      Uint8List temp = strToBcd((index).toRadixString(16).padLeft(4, '0'));
+      //index = 1;
+      temp.forEach((element) {
+        this._isoMsg[lengthIndex++] = element;
+        index++;
+      });
     }
 
     return _isoMsg.sublist(0, index);

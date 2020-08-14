@@ -26,8 +26,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       this.add(InitializationSend());
     } else if (event is InitializationSend) {
       MessageInitialization initialization = new MessageInitialization(comm);
-      Uint8List testmessage = new Uint8List.fromList([0, 3, 3, 4, 5]);
-      connection.sendMessage(testmessage);
+      connection.sendMessage(await initialization.buildMessage());
     } else {
       print(event);
     }

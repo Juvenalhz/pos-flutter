@@ -27,7 +27,7 @@ class ShowInitializationProgress extends StatelessWidget {
           }
         });
       } else
-        return null;
+        return CommProgress('Inicialization').build(context);
     });
   }
 }
