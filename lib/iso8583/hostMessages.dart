@@ -7,6 +7,7 @@ import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/utils/serialNumber.dart';
 
 class MessageInitialization {
   Comm _comm;
@@ -26,13 +27,15 @@ class MessageInitialization {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
+    String sn = await SerialNumber.serialNumber;
+
     message.setMID(800);
     message.fieldData(3, '9001' + msgSeq.toString().padLeft(2, '0'));
     message.fieldData(11, stan.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.TID);
     message.fieldData(60, '01.00');
-    message.fieldData(62, '1234567890123456');
+    message.fieldData(62, sn);
 
     //message.printMessage();
 
