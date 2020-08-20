@@ -374,12 +374,15 @@ class Iso8583 {
     if (lenType == LT.FIXED) {
       len = maxLength;
 
-      if (contentType == 'n') {
+      if (contentType.contains('n')) {
+        data = data.padLeft(len, '0');
       } else if ((contentType.contains('a')) || (contentType.contains('s'))) {
         //   _isoMsg += AsciiEncoder().convert(len.toString());
+        data = data.padRight(len, ' ');
       } else {
         //  _isoMsg += int2Bcd(len ~/ 2);
       }
+
     } else {
       String lenString;
 
