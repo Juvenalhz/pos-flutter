@@ -12,6 +12,7 @@ import 'package:pay/bloc/merchant_bloc.dart';
 class ConfigurationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     String value = 'dataTile value';
     return SafeArea(
       child: Scaffold(
@@ -67,6 +68,8 @@ class ConfigurationScreen extends StatelessWidget {
                         rightLabel: Text('Número de Terminal'),
                         leftItem: Text(state.merchant.TaxID),
                         rightItem: Text(state.merchant.TID),
+                        leftWidth: size.width / 2.18,
+                        rightWidth: size.width / 2.18,
                       ),
                       Divider(),
                       ItemTileTwoColumn(
@@ -74,6 +77,8 @@ class ConfigurationScreen extends StatelessWidget {
                         rightLabel: Text('Símbolo de Moneda'),
                         leftItem: Text(state.merchant.CurrencyCode.toString()),
                         rightItem: Text(state.merchant.CurrencySymbol),
+                        leftWidth: size.width / 2.18,
+                        rightWidth: size.width / 2.18,
                       ),
                       Divider(),
                       ItemTileTwoColumn(
@@ -81,6 +86,8 @@ class ConfigurationScreen extends StatelessWidget {
                         rightLabel: Text('Código de País'),
                         leftItem: Text(state.merchant.AcquirerCode),
                         rightItem: Text(state.merchant.CountryCode.toString()),
+                        leftWidth: size.width / 2.18,
+                        rightWidth: size.width / 2.18,
                       ),
                       Divider(),
                       ListTile(
@@ -138,6 +145,8 @@ class ConfigurationScreen extends StatelessWidget {
                         myTitle: 'Máx. PIN',
                         value: '6',
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -150,6 +159,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: (v) {},
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(color: Colors.black, thickness: 1.0),
                     ItemTileTwoColumn(
@@ -157,6 +168,8 @@ class ConfigurationScreen extends StatelessWidget {
                       rightLabel: Text('Terminal ID'),
                       leftItem: Text('subtitle'),
                       rightItem: Text('00000000'),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ListTile(
@@ -169,6 +182,8 @@ class ConfigurationScreen extends StatelessWidget {
                       rightLabel: Text('Porcentaje Propina'),
                       leftItem: Text('20 Seg.'),
                       rightItem: Text('20 %'),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -176,6 +191,8 @@ class ConfigurationScreen extends StatelessWidget {
                       rightLabel: Text('Lectura de Track'),
                       leftItem: Text('Normal'),
                       rightItem: Text('Track 1 y Track 2'),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -189,6 +206,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -202,6 +221,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -215,6 +236,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -228,6 +251,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -241,6 +266,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -254,6 +281,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: true,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -267,6 +296,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: null,
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                     ItemTileTwoColumn(
@@ -280,6 +311,8 @@ class ConfigurationScreen extends StatelessWidget {
                         value: false,
                         onChanged: (v) {},
                       ),
+                      leftWidth: size.width / 2.18,
+                      rightWidth: size.width / 2.18,
                     ),
                     Divider(),
                   ],
@@ -298,6 +331,77 @@ class ConfigurationScreen extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     DataTile(
+                      myTitle: 'TPDU',
+                      value: '6000030000',
+                    ),
+                    ItemTileTwoColumn(
+                      contentPadding: EdgeInsets.zero,
+                      leftLabel:
+                          DataTile(myTitle: 'Tiempo de Respuesta', value: '90'),
+                      rightLabel: DataTile(myTitle: 'NII', value: '003'),
+                      leftWidth: size.width / 2.2,
+                      rightWidth: size.width / 3.18,
+                    ),
+                    ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Tipo de Comunicación'),
+                          DropdownButton(
+                            onChanged: (value) {},
+                            items: <DropdownMenuItem<dynamic>>[],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    ItemTileTwoColumn(
+                      contentPadding: EdgeInsets.zero,
+                      leftLabel: DataTile(
+                        myTitle: 'IP Host',
+                        value: ' 192.168.1.1',
+                      ),
+                      rightLabel: DataTile(
+                        myTitle: 'IP POS',
+                        value: '192.168.1.1',
+                      ),
+                      leftWidth: size.width / 2.5,
+                      rightWidth: size.width / 2.5,
+                    ),
+                    ItemTileTwoColumn(
+                      contentPadding: EdgeInsets.zero,
+                      leftLabel: DataTile(
+                        myTitle: 'Mascara',
+                        value: '255.255.255.0',
+                      ),
+                      rightLabel: DataTile(
+                        myTitle: 'Gateway',
+                        value: '192.168.1.1',
+                      ),
+                      leftWidth: size.width / 2.5,
+                      rightWidth: size.width / 2.5,
+                    ),
+                    ItemTileTwoColumn(
+                      contentPadding: EdgeInsets.zero,
+                      leftLabel:
+                          DataTile(myTitle: 'Puerto Host', value: '1500'),
+                      rightLabel: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('Baud Rate'),
+                            DropdownButton(
+                              onChanged: (value) {},
+                              items: <DropdownMenuItem<dynamic>>[],
+                            ),
+                          ],
+                        ),
+                      ),
+                      leftWidth: size.width / 2.5,
+                      rightWidth: size.width / 2.5,
+                    ),
+                    DataTile(
                       myTitle: 'dataTile Title1',
                       value: value,
                       type: TextInputType.text,
@@ -310,14 +414,6 @@ class ConfigurationScreen extends StatelessWidget {
                       type: TextInputType.number,
                       onSaved: (String newValue) => value = newValue,
                     ),
-                    //Divider(),
-                    DataTile(
-                      myTitle: 'dataTile Title3',
-                      value: value,
-                      type: TextInputType.text,
-                      onSaved: (String newValue) => value = newValue,
-                    ),
-                    //Divider(),
                     onOffTile('on / off', 1),
                   ],
                 ),

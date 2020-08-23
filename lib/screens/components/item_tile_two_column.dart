@@ -5,25 +5,37 @@ class ItemTileTwoColumn extends StatelessWidget {
   final Widget rightLabel;
   final Widget leftItem;
   final Widget rightItem;
+  final double leftWidth;
+  final double rightWidth;
+  final EdgeInsetsGeometry contentPadding;
 
-  ItemTileTwoColumn(
-      {this.leftLabel, this.rightLabel, this.leftItem, this.rightItem});
+  ItemTileTwoColumn({
+    this.leftLabel,
+    this.rightLabel,
+    this.leftItem,
+    this.rightItem,
+    @required this.leftWidth,
+    @required this.rightWidth,
+    this.contentPadding,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
-          width: size.width / 2.18,
+          width: leftWidth,
           child: ListTile(
+            contentPadding: contentPadding,
             title: leftLabel,
             subtitle: leftItem,
           ),
         ),
         Container(
-          width: size.width / 2.18,
+          width: rightWidth,
           child: ListTile(
+            contentPadding: contentPadding,
             title: rightLabel,
             subtitle: rightItem,
           ),
