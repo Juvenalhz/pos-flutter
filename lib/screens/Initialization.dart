@@ -20,6 +20,8 @@ class ShowInitializationProgress extends StatelessWidget {
             return CommProgress('Inicialization', status: 'Conectando').build(context);
           else if (state is InitializationSending)
             return CommProgress('Inicialization', status: 'Enviando').build(context);
+          else if (state is InitializationReceiving)
+            return CommProgress('Inicialization', status: 'Recibiendo').build(context);
           else if (state is InitializationInitial)
             return CommProgress('Inicialization').build(context);
           else {

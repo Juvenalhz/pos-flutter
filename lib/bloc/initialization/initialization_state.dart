@@ -22,3 +22,8 @@ class InitializationSending extends InitializationState {
   @override
   List<Object> get props => [];
 }
+
+class InitializationReceiving extends InitializationState {
+  @override
+  List<Object> get props => [];
+}

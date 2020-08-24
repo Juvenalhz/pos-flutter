@@ -9,17 +9,18 @@ import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/utils/serialNumber.dart';
+import 'package:pay/utils/dataUtils.dart';
 
-String AddFiedl62Table(int table, String data){
+String AddFiedl62Table(int table, String data) {
   String temp;
   String tableMsg = table.toString().padLeft(4, '0');
-  switch(table){
-    case 41: 
-      temp = bcdToStr( AsciiEncoder().convert(tableMsg ) );
-      temp += bcdToStr( AsciiEncoder().convert(data.substring(data.length - 16, data.length).padRight(16, ' ') ) );
+  switch (table) {
+    case 41:
+      temp = bcdToStr(AsciiEncoder().convert(tableMsg));
+      temp += bcdToStr(AsciiEncoder().convert(data.substring(data.length - 16, data.length).padRight(16, ' ')));
       break;
   }
-  return (temp.length~/2 - 2).toString().padLeft(4, '0') + temp;
+  return (temp.length ~/ 2 - 2).toString().padLeft(4, '0') + temp;
 }
 
 class MessageInitialization {
@@ -40,9 +41,9 @@ class MessageInitialization {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     String sn = await SerialNumber.serialNumber;
-    String _field62;
+    String field62;
 
-    _field62 = AddFiedl62Table(41, sn);
+    field62 = AddFiedl62Table(41, sn);
 
     message.setMID(800);
     message.fieldData(3, '9000' + msgSeq.toString().padLeft(2, '0'));
@@ -50,11 +51,16 @@ class MessageInitialization {
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.TID);
     message.fieldData(60, '01.00');
-    message.fieldData(62, _field62);
+    message.fieldData(62, field62);
 
     msgSeq++;
     message.printMessage();
 
     return message.buildIso();
+  }
+
+  void parseRenponse(Uint8List response) {
+    message.setIsoContect(response);
+    message.printMessage();
   }
 }
