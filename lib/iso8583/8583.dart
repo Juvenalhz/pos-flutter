@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:pay/utils/dataUtils.dart';
 
 import '8583specs.dart';
 
@@ -28,59 +29,6 @@ enum ISOSPEC {
   ISO_BCD,
 }
 
-void memDump(String title, Uint8List data) {
-  int i = 0;
-  String temp = '';
-
-  print(title);
-  for (i = 0; i < data.length; i++) {
-    temp += hex.encode(data.sublist(i, i + 1)).toString() + ' ';
-    if ((i != 0) && (i % 32) == 0) {
-      if (temp.length > 0) {
-        print(temp);
-        temp = '';
-      }
-    }
-  }
-  if (i == data.length) print(temp);
-}
-
-String bcdToStr(Uint8List data) {
-  return hex.encode(data);
-}
-
-Uint8List strToBcd(String data) {
-  if (data.length != 0) {
-    if (data.length % 2 == 1) {
-      String temp = data.padLeft(data.length + 1, '0');
-      return new Uint8List.fromList(hex.decode(temp));
-    }
-    return new Uint8List.fromList(hex.decode(data));
-  }
-  return null;
-}
-
-int bcd2Int(Uint8List bcd, int len) {
-  if ((len > 0) && (len < 9))
-    return int.parse(bcdToStr(bcd.sublist(0, len)), radix: 16).toUnsigned(64);
-  else
-    throw 'Invalid length';
-}
-
-Uint8List int2Bcd(int i, [int size]) {
-  String temp = i.toRadixString(16).toString();
-
-  if ((size == null) || (size == 0)) {
-    if (temp.length % 2 == 1) {
-      temp = temp.padLeft(temp.length + 1, '0');
-    }
-  }
-  else{
-    temp = temp.padLeft(size*2, '0');
-  }
-
-  return strToBcd(temp);
-}
 
 class Iso8583 {
   //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
@@ -277,8 +225,7 @@ class Iso8583 {
     int i = 0;
     //_data.removeRange(0, _data.length);
 
-    if (this._tpdu != null)
-      index += 5;
+    if (this._tpdu != null) index += 5;
 
     index = parseMID(_isoMsg, index);
     index = parseBitmap(index);
@@ -377,7 +324,6 @@ class Iso8583 {
       if (contentType.contains('n')) {
         data = data.padLeft(len, '0');
       } else if ((contentType.contains('a')) || (contentType.contains('s'))) {
-        //   _isoMsg += AsciiEncoder().convert(len.toString());
         data = data.padRight(len, ' ');
       } else {
         //  _isoMsg += int2Bcd(len ~/ 2);
@@ -440,10 +386,9 @@ class Iso8583 {
     int index = 0;
     int lengthIndex = 0;
 
-    if ((this._addLength != null) && (this._addLength == true))
-      index += 2;  // reserve the pace to add the length
+    if ((this._addLength != null) && (this._addLength == true)) index += 2; // reserve the pace to add the length
 
-    if (this._tpdu != null){
+    if (this._tpdu != null) {
       Uint8List temp = strToBcd(this._tpdu);
 
       temp.forEach((element) {
@@ -451,7 +396,6 @@ class Iso8583 {
       });
       //memDump("iso msg tpdu:", _isoMsg.sublist(0, index));
     }
-
 
     index = buildMID(index);
     //memDump("iso msg MID:", _isoMsg.sublist(0, index));

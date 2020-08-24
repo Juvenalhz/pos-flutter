@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'dart:typed_data';
+import 'package:pay/utils/dataUtils.dart';
 
 class Communication {
   SecureSocket _secureSocket;
@@ -9,19 +10,29 @@ class Communication {
   String _host;
   int _port;
   bool _secure;
+  Uint8List _message;
+  int _size;
+  int _frameSize;
 
-  Communication(this._host, this._port, this._secure);
+  Communication(this._host, this._port, this._secure){
+    _size = 0;
+    _frameSize = 0;
+    _message = new Uint8List(2000);
+  }
 
   Future<bool> connect() async {
     try {
       if (_secure == true) {
         SecurityContext securityContext = SecurityContext();
-        _secureSocket = await SecureSocket.connect(_host, _port, context: securityContext,
-          onBadCertificate: _onBadCertificate, timeout: Duration(seconds: 10),
+        _secureSocket = await SecureSocket.connect(
+          _host,
+          _port,
+          context: securityContext,
+          onBadCertificate: _onBadCertificate,
+          timeout: Duration(seconds: 10),
         );
-      }
-      else {
-        _socket = await Socket.connect(_host, _port/*, timeout: Duration(seconds: 10)*/);
+      } else {
+        _socket = await Socket.connect(_host, _port /*, timeout: Duration(seconds: 10)*/);
       }
     } on SocketException catch (e) {
       print(e.toString());
@@ -33,8 +44,7 @@ class Communication {
 
     if (_secure == true) {
       _secureSocket.setOption(SocketOption.tcpNoDelay, true);
-    }
-    else{
+    } else {
       _socket.setOption(SocketOption.tcpNoDelay, true);
     }
     return true;
@@ -49,32 +59,47 @@ class Communication {
       if (_secureSocket != null) {
         _secureSocket.destroy();
       }
-    }
-    else{
+    } else {
       if (_socket != null) {
         _socket.destroy();
       }
     }
   }
 
-  Uint8List receiveMessage() {
-    Uint8List message;
+  Future<Uint8List> receiveMessage() async {
     if (_secure) {
       if (_secureSocket != null) {
         _secureSocket.listen(_receiveFromSecureSocket, onError: (error) {
           print(error.toString());
         });
       }
-    }
-    else{
+    } else {
       if (_socket != null) {
-        _socket.listen((List<int> event) {
-          print(utf8.decode(event));
-          message = Uint8List.fromList(event);
+        await _socket.listen((data) {
+          print(data.toString());
+            data.forEach((element) {
+            _message[_size++] = element;
+          });
+
+
+//          if (_size == 2){
+//            String temp = bcdToStr(_message.sublist(0, 3));
+//            _frameSize = int.parse(temp, radix: 16);
+//          }
+
+        }, onDone: () {
+          print('done');
+          String temp = bcdToStr(_message.sublist(0, 2));
+          _frameSize = int.parse(temp, radix: 16);
+          return _message.sublist(2, _frameSize + 2);
         });
+
       }
     }
   }
+
+  int get rxSize => this._size;
+  int get frameSize => this._frameSize;
 
   void _receiveFromSecureSocket(data) {
     print(data);
@@ -87,8 +112,7 @@ class Communication {
           print("send bytes len: ${bytes.length}");
           _secureSocket.add(List.from(bytes));
         }
-      }
-      else{
+      } else {
         if (this._socket != null) {
           print("send bytes len: ${bytes.length}");
           this._socket.add(List.from(bytes));
