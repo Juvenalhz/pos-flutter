@@ -60,7 +60,7 @@ class MessageInitialization {
   }
 
   void parseRenponse(Uint8List response) {
-    message.setIsoContect(response);
+    message.setIsoContent(response);
     message.printMessage();
   }
 }

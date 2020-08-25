@@ -71,7 +71,7 @@ class Iso8583 {
     this._strict = value;
   }
 
-  void setIsoContect(Uint8List isoMsg) {
+  void setIsoContent(Uint8List isoMsg) {
     this._isoMsg = isoMsg;
     parseIso();
   }
@@ -314,10 +314,6 @@ class Iso8583 {
     DT lenDataType = _isoSpec.lengthDataType(field);
     String data = this._data.firstWhere((element) => element['field'] == field, orElse: () => null)['data'];
 
-    if (field == 59) {
-      field += 0;
-    }
-
     if (lenType == LT.FIXED) {
       len = maxLength;
 
@@ -372,8 +368,15 @@ class Iso8583 {
       temp.forEach((element) {
         this._isoMsg[index++] = element;
       });
-    } else if ((dataType == DT.BIN) || (dataType == DT.BCD)) {
+    } else if (dataType == DT.BCD) {
       Uint8List temp = strToBcd(data.padLeft(len, '0'));
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    }
+    else if (dataType == DT.BIN){
+      Uint8List temp = AsciiEncoder().convert(data);
 
       temp.forEach((element) {
         this._isoMsg[index++] = element;

@@ -321,7 +321,7 @@ var ContentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 57, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
   {'field': 58, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
   {'field': 59, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
-  {'field': 60, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
+  {'field': 60, 'ContentType': 'b', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
   {'field': 61, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
   {'field': 62, 'ContentType': 'b', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
   {'field': 63, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},

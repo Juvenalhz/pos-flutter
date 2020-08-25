@@ -47,6 +47,7 @@ class Communication {
     } else {
       _socket.setOption(SocketOption.tcpNoDelay, true);
     }
+
     return true;
   }
 
@@ -66,44 +67,50 @@ class Communication {
     }
   }
 
-  Future<Uint8List> receiveMessage() async {
+  Future<Uint8List> receiveMessage() async{
+    bool isDone = false;
     if (_secure) {
       if (_secureSocket != null) {
-        _secureSocket.listen(_receiveFromSecureSocket, onError: (error) {
-          print(error.toString());
-        });
-      }
-    } else {
-      if (_socket != null) {
-        await _socket.listen((data) {
+        _secureSocket.listen((data) {
           print(data.toString());
-            data.forEach((element) {
+          data.forEach((element) {
             _message[_size++] = element;
           });
-
-
-//          if (_size == 2){
-//            String temp = bcdToStr(_message.sublist(0, 3));
-//            _frameSize = int.parse(temp, radix: 16);
-//          }
-
+        }, onError: (error) {
+          print(error.toString());
         }, onDone: () {
           print('done');
           String temp = bcdToStr(_message.sublist(0, 2));
           _frameSize = int.parse(temp, radix: 16);
-          return _message.sublist(2, _frameSize + 2);
+          isDone = true;
+        });
+      }
+    } else {
+      if (_socket != null) {
+        _socket.listen((data) {
+          print(data.toString());
+          data.forEach((element) {
+            _message[_size++] = element;
+          });
+        }, onDone: () {
+          print('done');
+          String temp = bcdToStr(_message.sublist(0, 2));
+          _frameSize = int.parse(temp, radix: 16);
+          isDone = true;
         });
 
       }
     }
+
+    while (isDone == false){
+      await Future.delayed(Duration(seconds: 1));
+    }
+
+    return  _message.sublist(2, _frameSize + 2);
   }
 
   int get rxSize => this._size;
   int get frameSize => this._frameSize;
-
-  void _receiveFromSecureSocket(data) {
-    print(data);
-  }
 
   void sendMessage(final Uint8List bytes) {
     if (bytes != null && bytes.length > 0) {
