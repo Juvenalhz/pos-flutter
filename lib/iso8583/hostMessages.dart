@@ -60,7 +60,9 @@ class MessageInitialization {
   }
 
   void parseRenponse(Uint8List response) {
-    message.setIsoContent(response);
-    message.printMessage();
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);;
+
+    isoResponse.setIsoContent(response);
+    isoResponse.printMessage();
   }
 }

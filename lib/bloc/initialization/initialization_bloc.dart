@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pay/bloc/initializationBloc.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/utils/communication.dart';
@@ -24,14 +25,16 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   ) async* {
     if (event is InitializationConnect) {
       comm = event.comm;
+      yield InitializationConnecting(comm);
       connection = new Communication(comm.ip, comm.port, false);
       await connection.connect();
       this.add(InitializationSend());
+      yield InitializationSending();
     } else if (event is InitializationSend) {
       initialization = new MessageInitialization(comm);
       connection.sendMessage(await initialization.buildMessage());
       this.add(InitializationReceive());
-
+      yield InitializationReceiving();
     } else if (event is InitializationReceive){
 
       if (connection.rxSize == 0)
@@ -43,7 +46,6 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         }
         else
           this.add(InitializationReceive());
-
 
     } else {
       print(event);
