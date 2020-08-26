@@ -17,19 +17,19 @@ class ShowInitializationProgress extends StatelessWidget {
         initializationBloc.add(InitializationConnect(state.comm));
         return BlocBuilder<InitializationBloc, InitializationState>(builder: (context, state) {
           if (state is InitializationConnecting)
-            return CommProgress('Inicialization', status: 'Conectando').build(context);
+            return CommProgress('Inicialización', status: 'Conectando').build(context);
           else if (state is InitializationSending)
-            return CommProgress('Inicialization', status: 'Enviando').build(context);
+            return CommProgress('Inicialización', status: 'Enviando').build(context);
           else if (state is InitializationReceiving)
-            return CommProgress('Inicialization', status: 'Recibiendo').build(context);
+            return CommProgress('Inicialización', status: 'Recibiendo').build(context);
           else if (state is InitializationInitial)
-            return CommProgress('Inicialization').build(context);
+            return CommProgress('Inicialización').build(context);
           else {
-            return CommProgress('Inicialization').build(context);
+            return CommProgress('Inicialización').build(context);
           }
         });
       } else
-        return CommProgress('Inicialization').build(context);
+        return CommProgress('Inicialización').build(context);
     });
   }
 }
