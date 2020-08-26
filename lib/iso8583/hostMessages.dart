@@ -37,7 +37,7 @@ class MessageInitialization {
     this.stan = stan;
   }
 
-  Future<Uint8List> buildMessage() async {
+  Future<Uint8List> buildMessage1() async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     String sn = await SerialNumber.serialNumber;
@@ -59,10 +59,45 @@ class MessageInitialization {
     return message.buildIso();
   }
 
-  void parseRenponse(Uint8List response) {
+  Future<Uint8List> buildMessage2() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    String sn = await SerialNumber.serialNumber;
+    String field62;
+
+    field62 = AddFiedl62Table(41, sn);
+
+    message.setMID(800);
+    message.fieldData(3, '9001' + msgSeq.toString().padLeft(2, '0'));
+    message.fieldData(11, stan.toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(41, merchant.TID);
+    message.fieldData(60, '01.00');
+    message.fieldData(62, field62);
+
+    msgSeq++;
+    message.printMessage();
+
+    return message.buildIso();
+  }
+
+  Map<int, String> parseRenponse(Uint8List response) {
     Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);;
+    Map respMap = new Map<int, String>();
+    int i;
+    Uint8List bitmap;
 
     isoResponse.setIsoContent(response);
     isoResponse.printMessage();
+    bitmap = isoResponse.bitmap();
+
+    for (i=0; i < bitmap.length; i++) {
+      if (bitmap[i] == 1) {
+        print(isoResponse.fieldData(i));
+        respMap[i] = isoResponse.fieldData(i);
+      }
+    }
+
+    return respMap;
   }
 }

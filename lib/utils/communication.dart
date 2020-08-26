@@ -88,7 +88,6 @@ class Communication {
     } else {
       if (_socket != null) {
         _socket.listen((data) {
-          print(data.toString());
           data.forEach((element) {
             _message[_size++] = element;
           });

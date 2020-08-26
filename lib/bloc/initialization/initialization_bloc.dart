@@ -32,7 +32,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       yield InitializationSending();
     } else if (event is InitializationSend) {
       initialization = new MessageInitialization(comm);
-      connection.sendMessage(await initialization.buildMessage());
+      connection.sendMessage(await initialization.buildMessage1());
       this.add(InitializationReceive());
       yield InitializationReceiving();
     } else if (event is InitializationReceive){

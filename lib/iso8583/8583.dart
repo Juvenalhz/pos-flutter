@@ -441,7 +441,6 @@ class Iso8583 {
 
     if (value == null) {
       if (currentField != null) {
-        this._data[index]['data'] = value;
         return this._data[index]['data'].toString();
       } else
         return null;
