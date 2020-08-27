@@ -30,24 +30,26 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       await connection.connect();
       this.add(InitializationSend());
       yield InitializationSending();
-    } else if (event is InitializationSend) {
+    }
+    else if (event is InitializationSend) {
       initialization = new MessageInitialization(comm);
-      connection.sendMessage(await initialization.buildMessage1());
+      connection.sendMessage(await initialization.buildMessage());
+      incrementStan();
       this.add(InitializationReceive());
       yield InitializationReceiving();
-    } else if (event is InitializationReceive){
-
+    }
+    else if (event is InitializationReceive){
       if (connection.rxSize == 0)
         response = await connection.receiveMessage();
-       if (connection.frameSize != 0)
-        {
-          initialization.parseRenponse(response);
+      if (connection.frameSize != 0)
+      {
+        initialization.parseRenponse(response);
+      }
+      else
+        this.add(InitializationReceive());
 
-        }
-        else
-          this.add(InitializationReceive());
-
-    } else {
+    }
+    else {
       print(event);
     }
   }

@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test16.db";
+  static final _databaseName = "test17.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -176,12 +176,33 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'forceOnline', 'integer');
   }
 
+  void _CreateCountersTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE counters (
+          id integer PRIMARY KEY,
+          stan integer )
+          ''');
+  }
+
+  void _UpgradeCountersTable(Database db) async {
+
+  }
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
     _CreateTerminalTable(db);
     _CreateCommTable(db);
     _CreateEmvTable(db);
+    _CreateCountersTable(db);
+
+    Map<String, dynamic> initialCounter = {
+      'id': 1,
+      'stan': 1,
+    };
+
+    await db.insert('counters', initialCounter);
+
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -189,6 +210,7 @@ class DatabaseHelper {
     _UpgradeTerminalTable(db);
     _UpgradeCommTable(db);
     _UpgradeEmvTable(db);
+    _UpgradeCountersTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name
