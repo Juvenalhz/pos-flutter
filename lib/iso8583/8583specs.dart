@@ -2,7 +2,7 @@ import 'dart:core';
 import 'package:intl/intl.dart';
 import '8583.dart';
 
-var validContentTypes = {'a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'} as List<String>;
+const List<String> validContentTypes = ['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'] ;
 const int MID = 9999;
 
 class IsoField {
@@ -73,8 +73,10 @@ class Iso8583Specs {
               IsoField temp = new IsoField(field, dataType: datatype);
               this.fields.add(temp);
               return temp.dataType;
-            } else
+            } else {
+              this.fields[index].dataType = datatype;
               return this.fields[index].dataType;
+            }
           }
           break;
         default:

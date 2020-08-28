@@ -136,7 +136,7 @@ class Iso8583 {
 
     //print('ParseField ' + field.toString());
 
-    if (field == 55) {
+    if (field == 60) {
       field += 0;
     }
 
@@ -478,12 +478,12 @@ class Iso8583 {
     return _isoSpec.description(field, value);
   }
 
-  DT dataType(String field, [DT value]) {
+  DT dataType(int field, [DT value]) {
     return _isoSpec.dataType(field, value);
   }
 
-  String contentType(String field, [String value]) {
-    return _isoSpec.contectType(field, value);
+  String contentType(int field, [String value]) {
+    return _isoSpec.contentType(field, value);
   }
 
   void printMessage() {

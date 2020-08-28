@@ -67,6 +67,7 @@ class MessageInitialization {
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.TID);
+    message.contentType(60, 'ans');
     message.fieldData(60, '01.00');
     message.fieldData(62, field62);
 
@@ -81,6 +82,9 @@ class MessageInitialization {
     Map respMap = new Map<int, String>();
     int i;
     Uint8List bitmap;
+
+    isoResponse.dataType(60, DT.BIN);
+    isoResponse.dataType(62, DT.BIN);
 
     isoResponse.setIsoContent(response);
     isoResponse.printMessage();
