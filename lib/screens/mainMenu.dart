@@ -1,7 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/terminal/terminal_bloc.dart';
+import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
@@ -11,6 +15,8 @@ class MainMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
+    final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
 
     return Drawer(
       child: ListView(
@@ -47,13 +53,18 @@ class MainMenu extends StatelessWidget {
           Divider(),
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
-          ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(text: 'Inicializacion'),
-            _createDrawerItem(text: 'Borrar Lote'),
-            _createDrawerItem(text: 'Borrar Reverso'),
-            _createDrawerItem(text: 'Reporte de Parametros'),
-            _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
-          ]),
+          ExpansionTile(
+              title: Text("Menu Tecnico"),
+              leading: Icon(Icons.settings),
+              children: <Widget>[
+                _createDrawerItem(text: 'Inicializacion'),
+                _createDrawerItem(text: 'Borrar Lote'),
+                _createDrawerItem(text: 'Borrar Reverso'),
+                _createDrawerItem(text: 'Reporte de Parametros'),
+                _createDrawerItem(
+                    text: 'Configuracion',
+                    onTap: () => Navigator.pushNamed(context, '/configuration')),
+              ]),
           if (isDev)
             _createDrawerItem(
               icon: Icons.bug_report,
@@ -61,6 +72,8 @@ class MainMenu extends StatelessWidget {
               onTap: () async {
                 await testConfig().createTestConfiguration();
                 merchantBloc.add(GetMerchant(1));
+                terminalBloc.add(GetTerminal(1));
+                commBloc.add(GetComm(1));
                 Navigator.of(context).pop();
               },
             ),
@@ -118,9 +131,13 @@ class MainMenu extends StatelessWidget {
             left: 16.0,
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
-                return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(state.merchant.nameL1,
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
-                return Text(' ', style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(' ',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               }
             }),
           )

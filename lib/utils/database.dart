@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test15.db";
+  static final _databaseName = "test17.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -24,7 +24,8 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   void _tableAlter(Database db, String table, String column, String type) async {
@@ -140,7 +141,7 @@ class DatabaseHelper {
 
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'integer');
+    _tableAlter(db, 'comm', 'timeout', 'integer');
     _tableAlter(db, 'comm', 'ip', 'text');
     _tableAlter(db, 'comm', 'port', 'integer');
   }
@@ -148,7 +149,7 @@ class DatabaseHelper {
   void _UpgradeCommTable(Database db) async {
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'integer');
+    _tableAlter(db, 'comm', 'timeout', 'integer');
     _tableAlter(db, 'comm', 'ip', 'text');
     _tableAlter(db, 'comm', 'port', 'integer');
   }
