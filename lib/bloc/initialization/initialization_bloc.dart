@@ -6,9 +6,15 @@ import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pay/iso8583/hostMessages.dart';
+import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
+import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/models/terminal.dart';
+import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
 
 part 'initialization_event.dart';
@@ -34,34 +40,30 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       await connection.connect();
       this.add(InitializationSend());
       yield InitializationSending();
-    }
-    else if (event is InitializationSend) {
+    } else if (event is InitializationSend) {
       initialization = new MessageInitialization(comm);
       connection.sendMessage(await initialization.buildMessage());
       incrementStan();
       this.add(InitializationReceive());
       yield InitializationReceiving();
-    }
-    else if (event is InitializationReceive){
-      if (connection.rxSize == 0)
-        response = await connection.receiveMessage();
-      if (connection.frameSize != 0)
-      {
+    } else if (event is InitializationReceive) {
+      if (connection.rxSize == 0) response = await connection.receiveMessage();
+      if (connection.frameSize != 0) {
         MerchantRepository merchantRepository = new MerchantRepository();
+        TerminalRepository terminalRepository = new TerminalRepository();
+        EmvRepository emvRepository = new EmvRepository();
         Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+        Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
         Map<int, String> respMap = initialization.parseRenponse(response);
 
         newComm = comm;
-        if (respMap[43] != null)
-          processField43(respMap[43], merchant);
-        if (respMap[60] != null)
-          processField60(respMap[60], merchant, newComm);
-      }
-      else
+        if (respMap[43] != null) processField43(respMap[43], merchant);
+        if (respMap[60] != null) processField60(respMap[60], merchant, newComm, terminal, emv);
+        if (respMap[62] != null) processField62(respMap[62], merchant);
+      } else
         this.add(InitializationReceive());
-
-    }
-    else {
+    } else {
       print(event);
     }
   }
@@ -77,7 +79,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     await merchantRepository.updateMerchant(merchant);
   }
 
-  void processField60(String data, Merchant merchant, Comm comm) async {
+  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv) async {
     MerchantRepository merchantRepository = new MerchantRepository();
 
     merchant.MID = ascii.decode(hex.decode(data.substring(0, 30)));
@@ -88,5 +90,65 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     comm.tpdu = data.substring(70, 80);
     comm.nii = data.substring(80, 84);
+
+    if ((int.parse(data.substring(84, 86)) & 0x01) != 0) terminal.amountConfirmation = 1;
+    if ((int.parse(data.substring(84, 86)) & 0x02) != 0) emv.fallback = 1;
+    if ((int.parse(data.substring(84, 86)) & 0x04) != 0) emv.forceOnline = 1;
+
+    //todo: extract aquirer parameters [86 - 122]
+
+    terminal.password = ascii.decode(hex.decode(data.substring(122, 130)));
+    terminal.maxTipPercentage = int.parse(data.substring(130, 132));
+    newComm.timeout = int.parse(data.substring(132, 136));
+    String test2 = data.substring(136, 140);
+    terminal.timeoutPrompt = int.parse(data.substring(136, 140));
+
+    //todo: call android channel to set the date and time of the device
+    String dateAndTime = data.substring(140, 152);
+    merchant.CountryCode = int.parse(data.substring(152, 156));
+  }
+
+  void processField62(String data, Merchant merchant) async {
+    int index = 0;
+    int size;
+    int table;
+    int i;
+    String tableData;
+
+    while (index < data.length) {
+      i = 0;
+      size = int.parse(data.substring(index, index + 4));
+      index += 4;
+
+      table = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))));
+      index += 4;
+
+      tableData = data.substring(index, index + (size - 2) * 2);
+      index += tableData.length;
+
+      switch (table) {
+        case 2:
+          {
+            merchant.BatchNumber = int.parse(ascii.decode(hex.decode(tableData)));
+          }
+          break;
+        case 7:
+          {
+            AcquirerRepository acquirerRepository = new AcquirerRepository();
+            while (i < tableData.length) {
+              Acquirer acquirer = new Acquirer(0, '', '');
+              acquirer.id = int.parse(ascii.decode(hex.decode(tableData.substring(i, i + 4))));
+              i += 4;
+              acquirer.name = ascii.decode(hex.decode(tableData.substring(i, i + 40)));
+              i += 40;
+              acquirer.rif = ascii.decode(hex.decode(tableData.substring(i, i + 26)));
+              i += 26;
+              await acquirerRepository.deleteacquirer(acquirer.id);
+              await acquirerRepository.createacquirer(acquirer);
+            }
+          }
+          break;
+      }
+    }
   }
 }

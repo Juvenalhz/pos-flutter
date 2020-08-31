@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test17.db";
+  static final _databaseName = "test18.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -184,8 +184,21 @@ class DatabaseHelper {
           ''');
   }
 
-  void _UpgradeCountersTable(Database db) async {
+  void _UpgradeCountersTable(Database db) async {}
 
+  void _CreateAcquirerTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE acquirer (
+          id integer PRIMARY KEY AUTOINCREMENT )
+          ''');
+
+    _tableAlter(db, 'acquirer', 'name', 'text');
+    _tableAlter(db, 'acquirer', 'rif', 'text');
+  }
+
+  void _UpgradeAcquirerTable(Database db) async {
+    _tableAlter(db, 'acquirer', 'name', 'text');
+    _tableAlter(db, 'acquirer', 'rif', 'text');
   }
 
   // SQL code to create the database table
@@ -195,6 +208,7 @@ class DatabaseHelper {
     _CreateCommTable(db);
     _CreateEmvTable(db);
     _CreateCountersTable(db);
+    _CreateAcquirerTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -202,7 +216,6 @@ class DatabaseHelper {
     };
 
     await db.insert('counters', initialCounter);
-
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -211,6 +224,7 @@ class DatabaseHelper {
     _UpgradeCommTable(db);
     _UpgradeEmvTable(db);
     _UpgradeCountersTable(db);
+    _UpgradeAcquirerTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name
