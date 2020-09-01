@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
 import 'package:pay/bloc/merchant/merchant_state.dart';
@@ -12,9 +12,10 @@ import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/screens/components/data_tile.dart';
+import 'package:pay/utils/dropdown_items.dart';
+import 'package:pay/utils/input_validation.dart';
 import 'components/checkbox_item.dart';
 import 'components/item_tile_two_column.dart';
-import 'components/title_section_form.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ConfigurationScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
   Merchant _merchant;
   Terminal _terminal;
   Comm _comm;
+  String pinPadType = DropDownItems.typePinpadList[1];
   final _formKey = GlobalKey<FormState>();
   final _kTabs = <Tab>[
     Tab(icon: Icon(Icons.location_city), text: 'Comercio'),
@@ -152,46 +154,58 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                   builder: (context, state) {
                     Widget retWidget = SizedBox();
                     if (state is TerminalLoaded) {
-                      _terminal = state.terminal;
+                      if (_terminal == null) _terminal = state.terminal;
                       retWidget = ListView(
                         padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                         children: <Widget>[
                           DataTile(
-                              myTitle: 'Clave Sistema', value: _terminal.password, type: _tNumber),
-                          DataTile(myTitle: 'Mensaje Pin Pad', value: _terminal.industry),
+                            myTitle: 'Clave Sistema',
+                            value: _terminal.password,
+                            type: _tNumber,
+                            maxLength: 6,
+                            onSaved: (nValue) => _terminal.password = nValue,
+                            onChanged: (nValue) => _terminal.password = nValue,
+                            validator: (nValue) => InputValidation.defaultPasswordValidator(nValue),
+                          ),
+                          DataTile(
+                              myTitle: 'Mensaje Pin Pad',
+                              value: _terminal.industry,
+                              maxLength: 16,
+                              validator: (nValue) => InputValidation.requiredField(nValue)),
                           ItemTileTwoColumn(
                             contentPadding: EdgeInsets.zero,
                             leftLabel: DataTile(
                                 myTitle: 'Min. PIN',
                                 value: _terminal.minPinDigits.toString(),
-                                type: _tNumber),
+                                type: _tNumber,
+                                maxLength: 2,
+                                validator: (nValue) => InputValidation.requiredField(nValue)),
                             rightLabel: DataTile(
                                 myTitle: 'Máx. PIN',
                                 value: _terminal.maxPinDigits.toString(),
-                                type: _tNumber),
+                                type: _tNumber,
+                                maxLength: 2,
+                                validator: (nValue) => InputValidation.requiredField(nValue)),
                             leftWidth: size.width / 2.5,
                             rightWidth: size.width / 2.5,
                           ),
                           ItemTileTwoColumn(
-                            contentPadding: EdgeInsets.zero,
+                            contentPadding: EdgeInsets.only(right: 16.0),
                             leftLabel: DataTile(
                                 myTitle: 'Master Key',
                                 value: _terminal.keyIndex.toString(),
-                                type: _tNumber),
-                            rightLabel: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text('Tipo de Pin Pad'),
-                                  DropdownButton(
-                                    onChanged: (value) {},
-                                    items: <DropdownMenuItem<dynamic>>[],
-                                  ),
-                                ],
-                              ),
+                                type: _tNumber,
+                                maxLength: 1,
+                                validator: (nValue) => InputValidation.requiredField(nValue)),
+                            rightLabel: Text('Tipo de Pin Pad'),
+                            rightTrailing: DropdownButton(
+                              onChanged: (value) {
+                                pinPadType = value;
+                              },
+                              value: pinPadType,
+                              items: DropDownItems.dropDownTypePinpad,
                             ),
-                            leftWidth: size.width / 3.5,
+                            leftWidth: size.width / 3.0,
                             rightWidth: size.width / 1.8,
                           ),
                           SizedBox(height: 10.0),
@@ -310,27 +324,52 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                     retWidget = ListView(
                       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                       children: <Widget>[
-                        DataTile(myTitle: 'TPDU', value: _comm.tpdu, type: _tNumber),
+                        DataTile(
+                          myTitle: 'TPDU',
+                          value: _comm.tpdu,
+                          type: _tNumber,
+                          maxLength: 10,
+                          formatInput: [FilteringTextInputFormatter.digitsOnly],
+                          validator: (nValue) => InputValidation.tpduValidator(nValue),
+                        ),
                         ItemTileTwoColumn(
                           contentPadding: EdgeInsets.zero,
                           leftLabel: DataTile(
                             myTitle: 'Tiempo de Respuesta',
                             value: _comm.timeout.toString(),
                             type: _tNumber,
+                            maxLength: 3,
+                            formatInput: [FilteringTextInputFormatter.digitsOnly],
+                            validator: (nValue) => InputValidation.requiredField(nValue),
                           ),
                           rightLabel: DataTile(
                             myTitle: 'NII',
                             value: _comm.nii,
                             type: _tNumber,
+                            maxLength: 3,
+                            formatInput: [FilteringTextInputFormatter.digitsOnly],
+                            validator: (nValue) => InputValidation.requiredField(nValue),
                           ),
                           leftWidth: size.width / 2.26,
                           rightWidth: size.width / 2.8,
                         ),
                         ItemTileTwoColumn(
                           contentPadding: EdgeInsets.zero,
-                          leftLabel: DataTile(myTitle: 'IP POS', value: _comm.ip, type: _tNumber),
+                          leftLabel: DataTile(
+                            myTitle: 'IP POS',
+                            value: _comm.ip,
+                            type: _tNumber,
+                            maxLength: 15,
+                            validator: (nValue) => InputValidation.ipv4Validator(nValue),
+                          ),
                           rightLabel: DataTile(
-                              myTitle: 'Puerto Host', value: _comm.port.toString(), type: _tNumber),
+                            myTitle: 'Puerto Host',
+                            value: _comm.port.toString(),
+                            type: _tNumber,
+                            maxLength: 5,
+                            formatInput: [FilteringTextInputFormatter.digitsOnly],
+                            validator: (nValue) => InputValidation.requiredField(nValue),
+                          ),
                           leftWidth: size.width / 2.26,
                           rightWidth: size.width / 2.8,
                         ),

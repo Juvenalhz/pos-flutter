@@ -5,6 +5,7 @@ class ItemTileTwoColumn extends StatelessWidget {
   final Widget rightLabel;
   final Widget leftItem;
   final Widget rightItem;
+  final Widget rightTrailing;
   final double leftWidth;
   final double rightWidth;
   final EdgeInsetsGeometry contentPadding;
@@ -14,6 +15,7 @@ class ItemTileTwoColumn extends StatelessWidget {
     this.rightLabel,
     this.leftItem,
     this.rightItem,
+    this.rightTrailing,
     @required this.leftWidth,
     @required this.rightWidth,
     this.contentPadding,
@@ -38,6 +40,7 @@ class ItemTileTwoColumn extends StatelessWidget {
             contentPadding: contentPadding,
             title: rightLabel,
             subtitle: rightItem,
+            trailing: rightTrailing,
           ),
         ),
       ],
