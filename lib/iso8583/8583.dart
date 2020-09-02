@@ -29,7 +29,6 @@ enum ISOSPEC {
   ISO_BCD,
 }
 
-
 class Iso8583 {
   //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
   bool _strict;
@@ -324,7 +323,6 @@ class Iso8583 {
       } else {
         //  _isoMsg += int2Bcd(len ~/ 2);
       }
-
     } else {
       String lenString;
 
@@ -374,8 +372,7 @@ class Iso8583 {
       temp.forEach((element) {
         this._isoMsg[index++] = element;
       });
-    }
-    else if (dataType == DT.BIN){
+    } else if (dataType == DT.BIN) {
       Uint8List temp = AsciiEncoder().convert(data);
 
       temp.forEach((element) {
@@ -451,9 +448,9 @@ class Iso8583 {
         this._data.add(temp);
         return temp['data'].toString();
       } else
-        this._data[field]['data'] = value;
+        this._data[index]['data'] = value;
 
-      return this._data[field]['data'].toString();
+      return this._data[index]['data'].toString();
     }
   }
 

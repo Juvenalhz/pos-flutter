@@ -9,14 +9,14 @@ import 'package:pay/utils/database.dart';
 import 'package:pay/utils/serialNumber.dart';
 import 'package:pay/utils/dataUtils.dart';
 
-Future<int> getStan() async{
+Future<int> getStan() async {
   final appdb = DatabaseHelper.instance;
 
   Map<String, dynamic> counters = await appdb.queryById('counters', 1);
   return counters['stan'];
 }
 
-void incrementStan() async{
+void incrementStan() async {
   final appdb = DatabaseHelper.instance;
 
   Map<String, dynamic> counters = await appdb.queryById('counters', 1);
@@ -49,7 +49,6 @@ class MessageInitialization {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);
   }
 
-
   Future<Uint8List> buildMessage() async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
@@ -78,19 +77,20 @@ class MessageInitialization {
   }
 
   Map<int, String> parseRenponse(Uint8List response) {
-    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);;
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);
     Map respMap = new Map<int, String>();
     int i;
     Uint8List bitmap;
 
     isoResponse.dataType(60, DT.BIN);
+    isoResponse.dataType(61, DT.BIN);
     isoResponse.dataType(62, DT.BIN);
 
     isoResponse.setIsoContent(response);
     isoResponse.printMessage();
     bitmap = isoResponse.bitmap();
 
-    for (i=0; i < bitmap.length; i++) {
+    for (i = 0; i < bitmap.length; i++) {
       if (bitmap[i] == 1) {
         respMap[i] = isoResponse.fieldData(i);
       }

@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test18.db";
+  static final _databaseName = "test19.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -201,6 +201,35 @@ class DatabaseHelper {
     _tableAlter(db, 'acquirer', 'rif', 'text');
   }
 
+  void _CreateBinTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE bin (
+          id integer PRIMARY KEY AUTOINCREMENT )
+          ''');
+
+    _tableAlter(db, 'bin', 'type', 'text');
+    _tableAlter(db, 'bin', 'binLow', 'integer');
+    _tableAlter(db, 'bin', 'binHigh', 'integer');
+    _tableAlter(db, 'bin', 'cardType', 'integer');
+    _tableAlter(db, 'bin', 'brand', 'text');
+    _tableAlter(db, 'bin', 'cashback', 'integer');
+    _tableAlter(db, 'bin', 'pin', 'integer');
+    _tableAlter(db, 'bin', 'manualEntry', 'integer');
+    _tableAlter(db, 'bin', 'fallback', 'integer');
+  }
+
+  void _UpgradeBinTable(Database db) async {
+    _tableAlter(db, 'bin', 'type', 'text');
+    _tableAlter(db, 'bin', 'binLow', 'integer');
+    _tableAlter(db, 'bin', 'binHigh', 'integer');
+    _tableAlter(db, 'bin', 'cardType', 'integer');
+    _tableAlter(db, 'bin', 'brand', 'text');
+    _tableAlter(db, 'bin', 'cashback', 'integer');
+    _tableAlter(db, 'bin', 'pin', 'integer');
+    _tableAlter(db, 'bin', 'manualEntry', 'integer');
+    _tableAlter(db, 'bin', 'fallback', 'integer');
+  }
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
@@ -209,6 +238,7 @@ class DatabaseHelper {
     _CreateEmvTable(db);
     _CreateCountersTable(db);
     _CreateAcquirerTable(db);
+    _CreateBinTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -225,6 +255,7 @@ class DatabaseHelper {
     _UpgradeEmvTable(db);
     _UpgradeCountersTable(db);
     _UpgradeAcquirerTable(db);
+    _UpgradeBinTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name
@@ -275,5 +306,10 @@ class DatabaseHelper {
   Future<int> deleteAll(String table) async {
     Database db = await instance.database;
     return await db.delete(table);
+  }
+
+  Future<int> deleteRows(String table, {String where, List<dynamic> whereArgs}) async {
+    Database db = await instance.database;
+    return await db.delete(table, where: where, whereArgs: whereArgs);
   }
 }

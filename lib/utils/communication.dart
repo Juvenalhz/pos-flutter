@@ -13,11 +13,14 @@ class Communication {
   Uint8List _message;
   int _size;
   int _frameSize;
+  bool _listenSet;
+  bool _isDone;
 
-  Communication(this._host, this._port, this._secure){
+  Communication(this._host, this._port, this._secure) {
     _size = 0;
     _frameSize = 0;
     _message = new Uint8List(2000);
+    _listenSet = false;
   }
 
   Future<bool> connect() async {
@@ -67,8 +70,10 @@ class Communication {
     }
   }
 
-  Future<Uint8List> receiveMessage() async{
-    bool isDone = false;
+  Future<Uint8List> receiveMessage() async {
+    _isDone = false;
+    _message.fillRange(0, _message.length, 0);
+
     if (_secure) {
       if (_secureSocket != null) {
         _secureSocket.listen((data) {
@@ -82,30 +87,39 @@ class Communication {
           print('done');
           String temp = bcdToStr(_message.sublist(0, 2));
           _frameSize = int.parse(temp, radix: 16);
-          isDone = true;
+          _isDone = true;
         });
       }
     } else {
-      if (_socket != null) {
+      if ((_socket != null) && (_listenSet == false)) {
         _socket.listen((data) {
           data.forEach((element) {
             _message[_size++] = element;
+
+            if (_size == 2) {
+              String temp = bcdToStr(_message.sublist(0, 2));
+              _frameSize = int.parse(temp, radix: 16);
+            }
+
+            if (_size == _frameSize + 2) {
+              _isDone = true;
+            }
           });
         }, onDone: () {
           print('done');
           String temp = bcdToStr(_message.sublist(0, 2));
           _frameSize = int.parse(temp, radix: 16);
-          isDone = true;
+          _isDone = true;
         });
-
+        _listenSet = true;
       }
     }
 
-    while (isDone == false){
+    while (_isDone == false) {
       await Future.delayed(Duration(seconds: 1));
     }
 
-    return  _message.sublist(2, _frameSize + 2);
+    return _message.sublist(2, _frameSize + 2);
   }
 
   int get rxSize => this._size;
@@ -125,5 +139,7 @@ class Communication {
         }
       }
     }
+    _size = 0;
+    _frameSize = 0;
   }
 }

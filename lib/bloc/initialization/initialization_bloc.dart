@@ -7,15 +7,18 @@ import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/acquirer.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/dataUtils.dart';
 
 part 'initialization_event.dart';
 part 'initialization_state.dart';
@@ -26,7 +29,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   Comm newComm;
   Communication connection;
   MessageInitialization initialization;
-  Uint8List response;
+
   int rxSize;
 
   @override
@@ -35,19 +38,23 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   ) async* {
     if (event is InitializationConnect) {
       comm = event.comm;
+      initialization = new MessageInitialization(comm);
+
       yield InitializationConnecting(comm);
       connection = new Communication(comm.ip, comm.port, false);
       await connection.connect();
       this.add(InitializationSend());
       yield InitializationSending();
     } else if (event is InitializationSend) {
-      initialization = new MessageInitialization(comm);
       connection.sendMessage(await initialization.buildMessage());
       incrementStan();
       this.add(InitializationReceive());
       yield InitializationReceiving();
     } else if (event is InitializationReceive) {
-      if (connection.rxSize == 0) response = await connection.receiveMessage();
+      Uint8List response;
+      if (connection.rxSize == 0) {
+        response = await connection.receiveMessage();
+      }
       if (connection.frameSize != 0) {
         MerchantRepository merchantRepository = new MerchantRepository();
         TerminalRepository terminalRepository = new TerminalRepository();
@@ -58,9 +65,23 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         Map<int, String> respMap = initialization.parseRenponse(response);
 
         newComm = comm;
-        if (respMap[43] != null) processField43(respMap[43], merchant);
-        if (respMap[60] != null) processField60(respMap[60], merchant, newComm, terminal, emv);
+        if (respMap[43] != null) {
+          processField43(respMap[43], merchant);
+        }
+        if (respMap[60] != null) {
+          processField60(respMap[60], merchant, newComm, terminal, emv);
+        }
+        if (respMap[61] != null) {
+          if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '1')) {
+            ProcessField61BIN(respMap[61]);
+          }
+        }
         if (respMap[62] != null) processField62(respMap[62], merchant);
+
+        if (respMap[3].substring(5, 6) == '1') {
+          this.add(InitializationSend());
+          yield InitializationSending();
+        }
       } else
         this.add(InitializationReceive());
     } else {
@@ -106,6 +127,25 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     //todo: call android channel to set the date and time of the device
     String dateAndTime = data.substring(140, 152);
     merchant.CountryCode = int.parse(data.substring(152, 156));
+  }
+
+  void ProcessField61BIN(String data) async {
+    BinRepository binRepository = new BinRepository();
+    var bin = new Bin();
+    int index = 0;
+
+    while (index < data.length) {
+      bin.type = ascii.decode(hex.decode(data.substring(index + 2, index + 4)));
+      bin.binLow = int.parse(data.substring(index + 4, index + 12));
+      bin.binHigh = int.parse(data.substring(index + 12, index + 20));
+      bin.cardType = int.parse(data.substring(index + 20, index + 22));
+      bin.brand = ascii.decode(hex.decode(data.substring(index + 22, index + 46))).trim();
+      bin.cashback = int.parse(ascii.decode(hex.decode(data.substring(index + 46, index + 48))));
+      bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index + 48, index + 50))));
+      bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index + 50, index + 52))));
+      bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index + 52, index + 54))));
+      index += 54;
+    }
   }
 
   void processField62(String data, Merchant merchant) async {
