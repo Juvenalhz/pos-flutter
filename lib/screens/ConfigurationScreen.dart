@@ -25,11 +25,13 @@ class ConfigurationScreen extends StatefulWidget {
   _ConfigurationScreenState createState() => _ConfigurationScreenState();
 }
 
-class _ConfigurationScreenState extends State<ConfigurationScreen> {
+class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerProviderStateMixin {
   TextInputType _tNumber = TextInputType.number;
   Merchant _merchant;
   Terminal _terminal;
   Comm _comm;
+  TabController _tabController;
+  int _indexTab;
   final _formKey = GlobalKey<FormState>();
   final _kTabs = <Tab>[
     Tab(icon: Icon(Icons.location_city), text: 'Comercio'),
@@ -47,6 +49,28 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
     } else {
       print('form dont save');
     }
+  }
+
+  void _showToast(BuildContext context) {
+    final scaffold = Scaffold.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: const Text('Debe guardar, para cambiar de pestaña'),
+        action: SnackBarAction(label: 'DESCARTAR', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(initialIndex: 0, length: _kTabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -79,7 +103,16 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                     ),
                   ),
                 ),
-                bottom: TabBar(tabs: _kTabs),
+                bottom: TabBar(
+                  controller: _tabController,
+                  tabs: _kTabs,
+                  onTap: (index) {
+                    if (config.changes) {
+                      _tabController.index = _indexTab;
+                      _showToast(context);
+                    }
+                  },
+                ),
                 actions: [
                   Padding(
                     padding: EdgeInsets.only(right: 10.0),
@@ -97,6 +130,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
               body: Form(
                 key: _formKey,
                 child: TabBarView(
+                  controller: _tabController,
                   physics: config.changes ? NeverScrollableScrollPhysics() : ScrollPhysics(),
                   children: [
                     BlocBuilder<MerchantBloc, MerchantState>(
@@ -161,6 +195,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         Widget retWidget = SizedBox();
                         if (state is TerminalLoaded) {
                           if (_terminal == null) _terminal = state.terminal;
+                          _indexTab = 1;
                           retWidget = ListView(
                             padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                             children: <Widget>[
@@ -362,6 +397,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         Widget retWidget = SizedBox();
                         if (state is CommLoaded) {
                           if (_comm == null) _comm = state.comm;
+                          _indexTab = 2;
                           retWidget = ListView(
                             padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                             children: <Widget>[
