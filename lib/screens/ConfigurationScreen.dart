@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
 import 'package:pay/bloc/merchant/merchant_state.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
+import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/terminal/terminal_state.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
@@ -35,17 +37,37 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   final _formKey = GlobalKey<FormState>();
   final _kTabs = <Tab>[
     Tab(icon: Icon(Icons.location_city), text: 'Comercio'),
-    Tab(icon: Icon(Icons.perm_device_info), text: 'Terminal'),
+    Tab(icon: Icon(Icons.perm_device_information), text: 'Terminal'),
     Tab(icon: Icon(Icons.network_wifi), text: 'Comunicación'),
     Tab(icon: Icon(Icons.payment), text: 'EMV'),
   ];
 
   void submit(BuildContext context) {
     final form = _formKey.currentState;
+    final terminalBloc = BlocProvider.of<TerminalBloc>(context);
+    final commBloc = BlocProvider.of<CommBloc>(context);
+
     if (form.validate()) {
       form.save();
       Provider.of<ConfigViewModel>(context, listen: false).updateChanges(false);
       print('form save');
+
+      switch (_indexTab) {
+        case 1:
+          _terminal.id = 1;
+          terminalBloc.add(UpdateTerminal(_terminal));
+          terminalBloc.add(GetTerminal(1));
+          break;
+        case 2:
+          _comm.id = 1;
+          commBloc.add(UpdateComm(_comm));
+          commBloc.add(GetComm(1));
+          break;
+        default:
+          break;
+      }
+
+      // Navigator.of(context).pop();
     } else {
       print('form dont save');
     }
@@ -56,7 +78,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     scaffold.showSnackBar(
       SnackBar(
         content: const Text('Debe guardar, para cambiar de pestaña'),
-        action: SnackBarAction(label: 'DESCARTAR', onPressed: scaffold.hideCurrentSnackBar),
+        // action: SnackBarAction(label: 'DESCARTAR', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -181,7 +203,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ),
                                 ListTile(
                                   title: Text('Versión de la Aplicación'),
-                                  subtitle: Text(_merchant.id.toString()),
+                                  subtitle: Text('Buscar versión del gradle'),
                                 ),
                               ],
                             ),
@@ -203,6 +225,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   myTitle: 'Clave Sistema',
                                   value: _terminal.password,
                                   type: _tNumber,
+                                  obscureText: true,
                                   maxLength: 6,
                                   onSaved: (nValue) => _terminal.password = nValue,
                                   onChanged: (nValue) {
@@ -286,11 +309,14 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 leftLabel: Text('Número de Lote'),
                                 rightLabel: Text('Terminal ID'),
                                 leftItem: Text('subtitle'),
+                                //TODO: asignar campo valido
                                 rightItem: Text(_terminal.idTerminal),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
-                              ListTile(title: Text('Serial Terminal'), subtitle: Text('subtitle')),
+                              ListTile(
+                                  title: Text('Serial Terminal'),
+                                  subtitle: Text('llamar al channel')),
                               ItemTileTwoColumn(
                                 leftLabel: Text('Tiempo Max. Entrada'),
                                 rightLabel: Text('Porcentaje Propina'),

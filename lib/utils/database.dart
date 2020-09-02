@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test17.db";
+  static final _databaseName = "test1.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class

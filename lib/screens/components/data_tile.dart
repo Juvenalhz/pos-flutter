@@ -9,6 +9,7 @@ class DataTile extends StatelessWidget {
   final Function onSaved;
   final Function onChanged;
   final Function validator;
+  final bool obscureText;
   final List<TextInputFormatter> formatInput;
 
   DataTile({
@@ -20,6 +21,7 @@ class DataTile extends StatelessWidget {
     this.onChanged,
     this.validator,
     this.formatInput,
+    this.obscureText,
   });
 
   @override
@@ -30,6 +32,7 @@ class DataTile extends StatelessWidget {
         keyboardType: type,
         validator: validator,
         inputFormatters: formatInput,
+        obscureText: obscureText != null ? obscureText : false,
         decoration: InputDecoration(
           labelText: myTitle,
           labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

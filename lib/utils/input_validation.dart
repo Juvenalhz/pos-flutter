@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 class InputValidation {
   static final tpduNumber = RegExp(r'(^[0-9]{10}$)');
+  static final passNumber = RegExp(r'(^[0-9]{6}$)');
   static final ipv4 = RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
 
   static String tpduValidator(String value) {
     if (value == null || value.isEmpty)
       return 'Este campo es requerido';
     else if (!tpduNumber.hasMatch(value.trim()))
-      return 'TPDU no valido';
+      return 'El TPDU debe ser de 10 digitos';
     else
       return null;
   }
@@ -16,8 +17,8 @@ class InputValidation {
   static String defaultPasswordValidator(String value) {
     if (value == null || value.isEmpty)
       return 'Este campo es requerido';
-    else if (value.length <= 3)
-      return 'Clave muy corta';
+    else if (!passNumber.hasMatch(value.trim()))
+      return 'La clave debe ser de 6 digitos';
     else
       return null;
   }
