@@ -312,4 +312,9 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(table, where: where, whereArgs: whereArgs);
   }
+
+  Future<int> queryRowCountArguments(String table, {String where}) async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table WHERE $where'));
+  }
 }
