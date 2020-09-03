@@ -40,6 +40,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     Tab(icon: Icon(Icons.perm_device_information), text: 'Terminal'),
     Tab(icon: Icon(Icons.network_wifi), text: 'Comunicación'),
     Tab(icon: Icon(Icons.payment), text: 'EMV'),
+    Tab(icon: Icon(Icons.account_balance), text: 'Adquiriente'),
   ];
 
   void submit(BuildContext context) {
@@ -126,6 +127,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                   ),
                 ),
                 bottom: TabBar(
+                  isScrollable: true,
                   controller: _tabController,
                   tabs: _kTabs,
                   onTap: (index) {
@@ -512,6 +514,46 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         }
                         return retWidget;
                       },
+                    ),
+                    ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                      children: <Widget>[
+                        ItemTileTwoColumn(
+                          leftLabel: Text('Tipo de Terminal'),
+                          leftItem: Text('22'),
+                          rightLabel: Text('Terminal Capabilities'),
+                          rightItem: Text('E0F8C8'),
+                          leftWidth: size.width / 2.6,
+                          rightWidth: size.width / 1.9,
+                        ),
+                        ListTile(
+                          title: Text('Terminal Additional Capabilities'),
+                          subtitle: Text('F0000F0F001'),
+                        ),
+                        ItemTileTwoColumn(
+                          leftLabel: CheckboxItem(
+                            label: 'Fallback',
+                            value: true,
+                            onChanged: null,
+                          ),
+                          rightLabel: CheckboxItem(
+                            label: 'Forzar Online',
+                            value: false,
+                            onChanged: (v) {},
+                          ),
+                          leftWidth: size.width / 2.18,
+                          rightWidth: size.width / 2.18,
+                        ),
+                        ItemTileTwoColumn(
+                          leftLabel: CheckboxItem(
+                            label: 'Selección\nAutomatica',
+                            value: false,
+                            onChanged: (v) {},
+                          ),
+                          leftWidth: size.width / 2.18,
+                          rightWidth: size.width / 2.18,
+                        ),
+                      ],
                     ),
                     ListView(
                       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
