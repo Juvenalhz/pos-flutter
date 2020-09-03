@@ -144,6 +144,14 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index + 48, index + 50))));
       bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index + 50, index + 52))));
       bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index + 52, index + 54))));
+
+      if (await binRepository.existBin(bin) == true) {
+        if (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A') {
+          await binRepository.createBin(bin);
+        } else {
+          await binRepository.deleteBin(bin);
+        }
+      }
       index += 54;
     }
   }
