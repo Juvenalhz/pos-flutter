@@ -118,7 +118,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     //todo: extract aquirer parameters [86 - 122]
 
-    terminal.password = ascii.decode(hex.decode(data.substring(122, 130)));
+    terminal.techPassword = ascii.decode(hex.decode(data.substring(122, 130)));
     terminal.maxTipPercentage = int.parse(data.substring(130, 132));
     newComm.timeout = int.parse(data.substring(132, 136));
     String test2 = data.substring(136, 140);
