@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test19.db";
+  static final _databaseName = "test20.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -230,6 +230,41 @@ class DatabaseHelper {
     _tableAlter(db, 'bin', 'fallback', 'integer');
   }
 
+  void _CreateAidTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE aid (
+          id integer PRIMARY KEY AUTOINCREMENT )
+          ''');
+
+    _tableAlter(db, 'aid', 'aid', 'text');
+    _tableAlter(db, 'aid', 'floorLimit', 'integer');
+    _tableAlter(db, 'aid', 'version', 'integer');
+    _tableAlter(db, 'aid', 'tacDenial', 'text');
+    _tableAlter(db, 'aid', 'tacOnline', 'text');
+    _tableAlter(db, 'aid', 'tacDefault', 'text');
+    _tableAlter(db, 'aid', 'exactMatch', 'integer');
+    _tableAlter(db, 'aid', 'thresholdAmount', 'integer');
+    _tableAlter(db, 'aid', 'targetPercentage', 'integer');
+    _tableAlter(db, 'aid', 'maxTargetPercentage', 'integer');
+    _tableAlter(db, 'aid', 'tdol', 'text');
+    _tableAlter(db, 'aid', 'ddol', 'text');
+  }
+
+  void _UpgradeAidTable(Database db) async {
+    _tableAlter(db, 'aid', 'aid', 'text');
+    _tableAlter(db, 'aid', 'floorLimit', 'integer');
+    _tableAlter(db, 'aid', 'version', 'integer');
+    _tableAlter(db, 'aid', 'tacDenial', 'text');
+    _tableAlter(db, 'aid', 'tacOnline', 'text');
+    _tableAlter(db, 'aid', 'tacDefault', 'text');
+    _tableAlter(db, 'aid', 'exactMatch', 'integer');
+    _tableAlter(db, 'aid', 'thresholdAmount', 'integer');
+    _tableAlter(db, 'aid', 'targetPercentage', 'integer');
+    _tableAlter(db, 'aid', 'maxTargetPercentage', 'integer');
+    _tableAlter(db, 'aid', 'tdol', 'text');
+    _tableAlter(db, 'aid', 'ddol', 'text');
+  }
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
@@ -239,6 +274,7 @@ class DatabaseHelper {
     _CreateCountersTable(db);
     _CreateAcquirerTable(db);
     _CreateBinTable(db);
+    _CreateAidTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -256,6 +292,7 @@ class DatabaseHelper {
     _UpgradeCountersTable(db);
     _UpgradeAcquirerTable(db);
     _UpgradeBinTable(db);
+    _UpgradeAidTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name

@@ -5,14 +5,17 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/acquirer.dart';
+import 'package:pay/models/aid.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
@@ -74,6 +77,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         if (respMap[61] != null) {
           if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '1')) {
             ProcessField61BIN(respMap[61]);
+          } else if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '2')) {
+            processField61AID(respMap[61]);
+          } else if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '3')) {
+            processField61PubKey(respMap[61]);
           }
         }
         if (respMap[62] != null) processField62(respMap[62], merchant);
@@ -91,42 +98,60 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
   void processField43(String data, Merchant merchant) async {
     MerchantRepository merchantRepository = new MerchantRepository();
+    int index = 0;
 
-    merchant.NameL1 = data.substring(0, 20).trim();
-    merchant.NameL2 = data.substring(20, 40).trim();
-    merchant.City = data.substring(40, 60).trim();
-    merchant.TaxID = data.substring(60, 73).trim();
+    merchant.NameL1 = data.substring(index, index + 20).trim();
+    index += 20;
+    merchant.NameL2 = data.substring(index, index + 20).trim();
+    index += 20;
+    merchant.City = data.substring(index, index + 20).trim();
+    index += 20;
+    merchant.TaxID = data.substring(index, index + 13).trim();
 
     await merchantRepository.updateMerchant(merchant);
   }
 
   void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv) async {
     MerchantRepository merchantRepository = new MerchantRepository();
+    int index = 0;
 
-    merchant.MID = ascii.decode(hex.decode(data.substring(0, 30)));
-    merchant.TID = data.substring(30, 32);
-    merchant.CurrencyCode = int.parse(data.substring(32, 36));
-    merchant.CurrencySymbol = ascii.decode(hex.decode(data.substring(36, 44)));
-    merchant.AcquirerCode = data.substring(44, 46);
+    merchant.MID = ascii.decode(hex.decode(data.substring(index, index + 30)));
+    index += 30;
+    merchant.TID = data.substring(index, index + 2);
+    index += 2;
+    merchant.CurrencyCode = int.parse(data.substring(index, index + 4));
+    index += 4;
+    merchant.CurrencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    index += 8;
+    merchant.AcquirerCode = data.substring(index, index + 2);
+    index += 2 + 24; //phone numbers are skipped
 
-    comm.tpdu = data.substring(70, 80);
-    comm.nii = data.substring(80, 84);
+    comm.tpdu = data.substring(index, index + 10);
+    index += 10;
+    comm.nii = data.substring(index, index + 4);
+    index += 4;
 
-    if ((int.parse(data.substring(84, 86)) & 0x01) != 0) terminal.amountConfirmation = 1;
-    if ((int.parse(data.substring(84, 86)) & 0x02) != 0) emv.fallback = 1;
-    if ((int.parse(data.substring(84, 86)) & 0x04) != 0) emv.forceOnline = 1;
+    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = 1;
+    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = 1;
+    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = 1;
 
+    index += 2;
     //todo: extract aquirer parameters [86 - 122]
+    index += 6 * 6;
 
-    terminal.password = ascii.decode(hex.decode(data.substring(122, 130)));
-    terminal.maxTipPercentage = int.parse(data.substring(130, 132));
-    newComm.timeout = int.parse(data.substring(132, 136));
-    String test2 = data.substring(136, 140);
-    terminal.timeoutPrompt = int.parse(data.substring(136, 140));
+    terminal.password = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    index += 8;
+    terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
+    index += 2;
+    newComm.timeout = int.parse(data.substring(index, index + 4));
+    index += 4;
+    terminal.timeoutPrompt = int.parse(data.substring(index, index + 4));
+    index += 4;
 
     //todo: call android channel to set the date and time of the device
-    String dateAndTime = data.substring(140, 152);
-    merchant.CountryCode = int.parse(data.substring(152, 156));
+    String dateAndTime = data.substring(index, index + 12);
+    index += 12;
+    merchant.CountryCode = int.parse(data.substring(index, index + 4));
   }
 
   void ProcessField61BIN(String data) async {
@@ -135,26 +160,85 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     int index = 0;
 
     while (index < data.length) {
-      bin.type = ascii.decode(hex.decode(data.substring(index + 2, index + 4)));
-      bin.binLow = int.parse(data.substring(index + 4, index + 12));
-      bin.binHigh = int.parse(data.substring(index + 12, index + 20));
-      bin.cardType = int.parse(data.substring(index + 20, index + 22));
-      bin.brand = ascii.decode(hex.decode(data.substring(index + 22, index + 46))).trim();
-      bin.cashback = int.parse(ascii.decode(hex.decode(data.substring(index + 46, index + 48))));
-      bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index + 48, index + 50))));
-      bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index + 50, index + 52))));
-      bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index + 52, index + 54))));
+      bool addBin = false;
+      bool binExist;
 
-      if (await binRepository.existBin(bin) == true) {
-        if (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A') {
-          await binRepository.createBin(bin);
-        } else {
-          await binRepository.deleteBin(bin);
-        }
+      addBin = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
+      index += 2;
+      bin.type = ascii.decode(hex.decode(data.substring(index, index + 2)));
+      index += 2;
+      bin.binLow = int.parse(data.substring(index, index + 8));
+      index += 8;
+      bin.binHigh = int.parse(data.substring(index, index + 8));
+      index += 8;
+      bin.cardType = int.parse(data.substring(index, index + 2));
+      index += 2;
+      bin.brand = ascii.decode(hex.decode(data.substring(index, index + 24))).trim();
+      index += 24;
+      bin.cashback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      index += 2;
+      bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      index += 2;
+      bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      index += 2;
+      bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      index += 2;
+
+      binExist = await binRepository.existBin(bin);
+      if ((addBin) && (!binExist)) {
+        await binRepository.createBin(bin);
+      } else if ((!addBin) && (binExist)) {
+        await binRepository.deleteBin(bin);
       }
-      index += 54;
     }
   }
+
+  void processField61AID(String data) async {
+    AidRepository aidRepository = new AidRepository();
+    var aid = new AID();
+    int index = 0;
+
+    while (index < data.length) {
+      bool addAid = false;
+      bool aidExist;
+
+      addAid = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
+      index += 2;
+      aid.aid = ascii.decode(hex.decode(data.substring(index, index + 32))).trim();
+      index += 32;
+      aid.floorLimit = int.parse(data.substring(index, index + 12));
+      index += 12;
+      aid.version = int.parse(data.substring(index, index + 4));
+      index += 4;
+      aid.tacDenial = data.substring(index, index + 10);
+      index += 10;
+      aid.tacOnline = data.substring(index, index + 10);
+      index += 10;
+      aid.tacDefault = data.substring(index, index + 10);
+      index += 10;
+      aid.exactMatch = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      index += 2;
+      aid.thresholdAmount = int.parse(data.substring(index, index + 12));
+      index += 12;
+      aid.targetPercentage = int.parse(data.substring(index, index + 2));
+      index += 2;
+      aid.maxTargetPercentage = int.parse(data.substring(index, index + 2));
+      index += 2;
+      aid.tdol = ascii.decode(hex.decode(data.substring(index, index + 64))).trim();
+      index += 64;
+      aid.ddol = ascii.decode(hex.decode(data.substring(index, index + 64))).trim();
+      index += 64;
+
+      aidExist = await aidRepository.existAid(aid);
+      if ((addAid) && (!aidExist)) {
+        await aidRepository.createAid(aid);
+      } else if ((!addAid) && (aidExist)) {
+        await aidRepository.deleteAid(aid);
+      }
+    }
+  }
+
+  void processField61PubKey(String data) {}
 
   void processField62(String data, Merchant merchant) async {
     int index = 0;
