@@ -139,7 +139,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     //todo: extract aquirer parameters [86 - 122]
     index += 6 * 6;
 
-    terminal.password = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    terminal.TechPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
     terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
     index += 2;
