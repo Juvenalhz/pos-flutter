@@ -13,12 +13,14 @@ import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/models/pubkey.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/dataUtils.dart';
@@ -139,7 +141,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     //todo: extract aquirer parameters [86 - 122]
     index += 6 * 6;
 
-    terminal.TechPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
     terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
     index += 2;
@@ -238,7 +240,38 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     }
   }
 
-  void processField61PubKey(String data) {}
+  void processField61PubKey(String data) async {
+    PubKeyRepository pubkeyRepository = new PubKeyRepository();
+    var pubkey = new PubKey();
+    int index = 0;
+
+    while (index < data.length) {
+      bool addPubKey = false;
+      bool pubKeyExist;
+
+      addPubKey = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
+      index += 2;
+      pubkey.index = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))));
+      index += 4;
+      pubkey.rid = data.substring(index, index + 10);
+      index += 10;
+      pubkey.exponent = data.substring(index, index + 2);
+      index += 2;
+      pubkey.expDate = data.substring(index, index + 6);
+      index += 6;
+      pubkey.length = int.parse(data.substring(index, index + 4));
+      index += 4;
+      pubkey.modulus = data.substring(index, index + pubkey.length);
+      index += pubkey.length;
+
+      pubKeyExist = await pubkeyRepository.existPubKey(pubkey);
+      if ((addPubKey) && (!pubKeyExist)) {
+        await pubkeyRepository.createPubKey(pubkey);
+      } else if ((!addPubKey) && (pubKeyExist)) {
+        await pubkeyRepository.deletePubKey(pubkey);
+      }
+    }
+  }
 
   void processField62(String data, Merchant merchant) async {
     int index = 0;

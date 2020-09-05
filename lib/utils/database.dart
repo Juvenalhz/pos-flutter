@@ -265,6 +265,29 @@ class DatabaseHelper {
     _tableAlter(db, 'aid', 'ddol', 'text');
   }
 
+  void _CreatePubKeyTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE pubkey (
+          id integer PRIMARY KEY AUTOINCREMENT )
+          ''');
+
+    _tableAlter(db, 'pubkey', 'index', 'integer');
+    _tableAlter(db, 'pubkey', 'rid', 'text');
+    _tableAlter(db, 'pubkey', 'exponent', 'text');
+    _tableAlter(db, 'pubkey', 'expDate', 'text');
+    _tableAlter(db, 'pubkey', 'length', 'integer');
+    _tableAlter(db, 'pubkey', 'modulus', 'text');
+  }
+
+  void _UpgradePubKeyTable(Database db) async {
+    _tableAlter(db, 'pubkey', 'index', 'integer');
+    _tableAlter(db, 'pubkey', 'rid', 'text');
+    _tableAlter(db, 'pubkey', 'exponent', 'text');
+    _tableAlter(db, 'pubkey', 'expDate', 'text');
+    _tableAlter(db, 'pubkey', 'length', 'integer');
+    _tableAlter(db, 'pubkey', 'modulus', 'text');
+  }
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
@@ -275,6 +298,7 @@ class DatabaseHelper {
     _CreateAcquirerTable(db);
     _CreateBinTable(db);
     _CreateAidTable(db);
+    _CreatePubKeyTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -293,6 +317,7 @@ class DatabaseHelper {
     _UpgradeAcquirerTable(db);
     _UpgradeBinTable(db);
     _UpgradeAidTable(db);
+    _UpgradePubKeyTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name

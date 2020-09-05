@@ -10,7 +10,7 @@ class AidRepository {
 
   Future updateAid(AID aid) => appdb.update('aid', aid.id, aid.toMap());
 
-  Future deleteAid(AID aid) => appdb.deleteRows('aid', where: 'aod = ? ', whereArgs: [aid.aid]);
+  Future deleteAid(AID aid) => appdb.deleteRows('aid', where: 'aid = ? ', whereArgs: [aid.aid]);
 
   Future getCountAids() => appdb.queryRowCount('aid');
 
