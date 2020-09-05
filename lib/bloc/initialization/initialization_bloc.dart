@@ -261,8 +261,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       index += 6;
       pubkey.length = int.parse(data.substring(index, index + 4));
       index += 4;
-      pubkey.modulus = data.substring(index, index + pubkey.length);
-      index += pubkey.length;
+      pubkey.modulus = data.substring(index, index + (pubkey.length * 2));
+      index += (pubkey.length * 2);
 
       pubKeyExist = await pubkeyRepository.existPubKey(pubkey);
       if ((addPubKey) && (!pubKeyExist)) {
