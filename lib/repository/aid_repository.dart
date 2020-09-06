@@ -15,7 +15,7 @@ class AidRepository {
   Future getCountAids() => appdb.queryRowCount('aid');
 
   Future<bool> existAid(AID aid) async {
-    String where = "aid =  '''${aid.aid}'''";
+    String where = "aid = '${aid.aid}'";
     int i = await appdb.queryRowCountArguments('aid', where: where);
     if (i == 0)
       return false;

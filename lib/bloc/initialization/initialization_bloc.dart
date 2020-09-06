@@ -76,20 +76,25 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         if (respMap[60] != null) {
           processField60(respMap[60], merchant, newComm, terminal, emv);
         }
-        if (respMap[61] != null) {
-          if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '1')) {
+        if ((respMap[3] != null) && (respMap[61] != null)) {
+          if (respMap[3].substring(3, 4) == '1') {
             ProcessField61BIN(respMap[61]);
-          } else if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '2')) {
+          } else if (respMap[3].substring(3, 4) == '2') {
             processField61AID(respMap[61]);
-          } else if ((respMap[3] != null) && (respMap[3].substring(3, 4) == '3')) {
+          } else if (respMap[3].substring(3, 4) == '3') {
             processField61PubKey(respMap[61]);
           }
         }
-        if (respMap[62] != null) processField62(respMap[62], merchant);
+        if (respMap[62] != null) {
+          processField62(respMap[62], merchant);
+        }
 
         if (respMap[3].substring(5, 6) == '1') {
           this.add(InitializationSend());
           yield InitializationSending();
+        } else {
+          connection.disconnect();
+          yield InitializationCompleted();
         }
       } else
         this.add(InitializationReceive());
@@ -210,7 +215,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       index += 32;
       aid.floorLimit = int.parse(data.substring(index, index + 12));
       index += 12;
-      aid.version = int.parse(data.substring(index, index + 4));
+      aid.version = int.parse(data.substring(index, index + 4), radix: 16);
       index += 4;
       aid.tacDenial = data.substring(index, index + 10);
       index += 10;
@@ -251,7 +256,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       addPubKey = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
       index += 2;
-      pubkey.index = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))));
+      pubkey.keyIndex = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
       index += 4;
       pubkey.rid = data.substring(index, index + 10);
       index += 10;

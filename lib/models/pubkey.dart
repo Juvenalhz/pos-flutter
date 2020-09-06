@@ -1,6 +1,6 @@
 class PubKey {
   int _id;
-  int _index;
+  int _keyIndex;
   String _rid;
   String _exponent;
   String _expDate;
@@ -10,7 +10,7 @@ class PubKey {
   PubKey();
 
   int get id => this._id;
-  int get index => this._index;
+  int get keyIndex => this._keyIndex;
   String get rid => this._rid;
   String get exponent => this._exponent;
   String get expDate => this._expDate;
@@ -21,8 +21,8 @@ class PubKey {
     this._id = id;
   }
 
-  set index(int index) {
-    this._index = index;
+  set keyIndex(int keyIndex) {
+    this._keyIndex = keyIndex;
   }
 
   set rid(String rid) {
@@ -49,7 +49,7 @@ class PubKey {
     var map = Map<String, dynamic>();
 
     map['id'] = this._id;
-    map['index'] = this._index;
+    map['keyIndex'] = this._keyIndex;
     map['rid'] = this._rid;
     map['exponent'] = this._exponent;
     map['expDate'] = this._expDate;
@@ -61,7 +61,7 @@ class PubKey {
 
   PubKey.fromMap(Map<String, dynamic> pubKey) {
     this._id = pubKey['id'];
-    this._index = pubKey['index'];
+    this._keyIndex = pubKey['keyIndex'];
     this._rid = pubKey['rid'];
     this._exponent = pubKey['exponent'];
     this._expDate = pubKey['expDate'];

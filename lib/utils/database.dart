@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test20.db";
+  static final _databaseName = "test23db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -271,7 +271,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'pubkey', 'index', 'integer');
+    _tableAlter(db, 'pubkey', 'keyIndex', 'integer');
     _tableAlter(db, 'pubkey', 'rid', 'text');
     _tableAlter(db, 'pubkey', 'exponent', 'text');
     _tableAlter(db, 'pubkey', 'expDate', 'text');
@@ -280,7 +280,7 @@ class DatabaseHelper {
   }
 
   void _UpgradePubKeyTable(Database db) async {
-    _tableAlter(db, 'pubkey', 'index', 'integer');
+    _tableAlter(db, 'pubkey', 'keyIndex', 'integer');
     _tableAlter(db, 'pubkey', 'rid', 'text');
     _tableAlter(db, 'pubkey', 'exponent', 'text');
     _tableAlter(db, 'pubkey', 'expDate', 'text');

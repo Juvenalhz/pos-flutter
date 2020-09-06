@@ -27,3 +27,8 @@ class InitializationReceiving extends InitializationState {
   @override
   List<Object> get props => [];
 }
+
+class InitializationCompleted extends InitializationState {
+  @override
+  List<Object> get props => [];
+}
