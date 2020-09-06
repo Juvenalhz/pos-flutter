@@ -2,13 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
-import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
-
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 
-class ShowInitializationProgress extends StatelessWidget {
+class Initialization extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
@@ -30,13 +28,13 @@ class ShowInitializationProgress extends StatelessWidget {
             else if (state is InitializationCompleted)
               return AlertDialog(
                 title: Text(
-                  'Inicializacion',
+                  'Inicialización',
                   style: TextStyle(color: Color(0xFF0D47A1)),
                 ),
                 content: SingleChildScrollView(
                   child: ListBody(
                     children: <Widget>[
-                      Text('processo completado.'),
+                      Text('processo de inicialización completado.'),
                     ],
                   ),
                 ),
@@ -59,17 +57,6 @@ class ShowInitializationProgress extends StatelessWidget {
         } else
           return CommProgress('Inicialización').build(context);
       }),
-    );
-  }
-}
-
-class Initialization extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: BlocProvider<InitializationBloc>(create: (context) => InitializationBloc(), child: ShowInitializationProgress()),
-      ),
     );
   }
 }
