@@ -62,6 +62,7 @@ class MainScreen extends StatelessWidget {
                           child: Center(
                               child: Text(
                             state.merchant.nameL1,
+                            textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                           )),
                         ),
@@ -82,8 +83,7 @@ class MainScreen extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-                              color: Colors.white),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                           child: AmountEntry('Monto:'),
                         ),
                       ])),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CommProgress extends StatelessWidget {
-  String title;
-  String status;
+  final String title;
+  final String status;
 
   CommProgress(this.title, {this.status});
 

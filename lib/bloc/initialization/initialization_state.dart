@@ -32,3 +32,8 @@ class InitializationCompleted extends InitializationState {
   @override
   List<Object> get props => [];
 }
+
+class InitializationFailed extends InitializationState {
+  @override
+  List<Object> get props => [];
+}

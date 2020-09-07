@@ -69,32 +69,37 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
         Map<int, String> respMap = initialization.parseRenponse(response);
 
-        newComm = comm;
-        if (respMap[43] != null) {
-          processField43(respMap[43], merchant);
-        }
-        if (respMap[60] != null) {
-          processField60(respMap[60], merchant, newComm, terminal, emv);
-        }
-        if ((respMap[3] != null) && (respMap[61] != null)) {
-          if (respMap[3].substring(3, 4) == '1') {
-            ProcessField61BIN(respMap[61]);
-          } else if (respMap[3].substring(3, 4) == '2') {
-            processField61AID(respMap[61]);
-          } else if (respMap[3].substring(3, 4) == '3') {
-            processField61PubKey(respMap[61]);
+        if ((respMap[39] != null) && (respMap[39] == '00')) {
+          newComm = comm;
+          if (respMap[43] != null) {
+            processField43(respMap[43], merchant);
           }
-        }
-        if (respMap[62] != null) {
-          processField62(respMap[62], merchant);
-        }
+          if (respMap[60] != null) {
+            processField60(respMap[60], merchant, newComm, terminal, emv);
+          }
+          if ((respMap[3] != null) && (respMap[61] != null)) {
+            if (respMap[3].substring(3, 4) == '1') {
+              ProcessField61BIN(respMap[61]);
+            } else if (respMap[3].substring(3, 4) == '2') {
+              processField61AID(respMap[61]);
+            } else if (respMap[3].substring(3, 4) == '3') {
+              processField61PubKey(respMap[61]);
+            }
+          }
+          if (respMap[62] != null) {
+            processField62(respMap[62], merchant);
+          }
 
-        if (respMap[3].substring(5, 6) == '1') {
-          this.add(InitializationSend());
-          yield InitializationSending();
+          if (respMap[3].substring(5, 6) == '1') {
+            this.add(InitializationSend());
+            yield InitializationSending();
+          } else {
+            connection.disconnect();
+            yield InitializationCompleted();
+          }
         } else {
           connection.disconnect();
-          yield InitializationCompleted();
+          yield InitializationFailed();
         }
       } else
         this.add(InitializationReceive());
