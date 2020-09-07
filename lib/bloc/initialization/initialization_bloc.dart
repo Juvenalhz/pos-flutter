@@ -24,6 +24,7 @@ import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/dataUtils.dart';
+import 'package:pay/utils/datetime.dart';
 
 part 'initialization_event.dart';
 part 'initialization_state.dart';
@@ -125,6 +126,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
   void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv) async {
     MerchantRepository merchantRepository = new MerchantRepository();
+    SetDateTime newDateTime = new SetDateTime();
     int index = 0;
 
     merchant.MID = ascii.decode(hex.decode(data.substring(index, index + 30)));
@@ -160,8 +162,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     terminal.timeoutPrompt = int.parse(data.substring(index, index + 4));
     index += 4;
 
-    //todo: call android channel to set the date and time of the device
     String dateAndTime = data.substring(index, index + 12);
+    newDateTime.dateTime = dateAndTime;
+
     index += 12;
     merchant.CountryCode = int.parse(data.substring(index, index + 4));
   }
