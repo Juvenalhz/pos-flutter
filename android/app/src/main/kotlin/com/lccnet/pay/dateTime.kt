@@ -4,8 +4,6 @@ import androidx.annotation.NonNull
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import java.time.LocalDateTime
-import java.time.Month
 import java.util.*
 
 
@@ -29,13 +27,11 @@ class SetDateTime : MethodChannel.MethodCallHandler {
             val hour = dateTime?.substring(6, 8)?.toInt()
             val min = dateTime?.substring(8, 10)?.toInt()
             val seg = dateTime?.substring(10, 12)?.toInt()
-
-            val calendar: Calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance()
 
             if ((month != null) && (day != null) && (hour != null) && (min != null) && (seg != null))  {
-                calendar.set( year, month, day, hour, min, seg)
+                calendar.set(year, month, day, hour, min, seg)
             }
-
         } else {
             result.notImplemented()
         }
