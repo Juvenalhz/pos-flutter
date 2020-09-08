@@ -72,11 +72,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
           newComm = comm;
+          Map acquirerIndicators = new Map<int, String>();
           if (respMap[43] != null) {
             processField43(respMap[43], merchant);
           }
           if (respMap[60] != null) {
-            processField60(respMap[60], merchant, newComm, terminal, emv);
+            processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
@@ -88,7 +89,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             }
           }
           if (respMap[62] != null) {
-            processField62(respMap[62], merchant);
+            processField62(respMap[62], merchant, acquirerIndicators);
           }
 
           if (respMap[3].substring(5, 6) == '1') {
@@ -124,7 +125,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     await merchantRepository.updateMerchant(merchant);
   }
 
-  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv) async {
+  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     SetDateTime newDateTime = new SetDateTime();
     int index = 0;
@@ -151,7 +152,18 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]
-    index += 6 * 6;
+    acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(1, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(2, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(3, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(4, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
+    index += 6;
 
     terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
@@ -286,11 +298,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     }
   }
 
-  void processField62(String data, Merchant merchant) async {
+  void processField62(String data, Merchant merchant, Map<int, String> acquirerIndicator) async {
     int index = 0;
     int size;
     int table;
     int i;
+    int j = 0;
     String tableData;
 
     while (index < data.length) {
@@ -321,6 +334,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
               i += 40;
               acquirer.rif = ascii.decode(hex.decode(tableData.substring(i, i + 26)));
               i += 26;
+
               await acquirerRepository.deleteacquirer(acquirer.id);
               await acquirerRepository.createacquirer(acquirer);
             }

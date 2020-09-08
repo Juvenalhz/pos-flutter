@@ -42,23 +42,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT,
           NameL1 TEXT DEFAULT '')
           ''');
-
-    _tableAlter(db, 'merchant', 'NameL2', 'text');
-    _tableAlter(db, 'merchant', 'TID', 'text');
-    _tableAlter(db, 'merchant', 'MID', 'text');
-    _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
-    _tableAlter(db, 'merchant', 'CountryCode', 'integer');
-    _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
-    _tableAlter(db, 'merchant', 'Password', 'text');
-    _tableAlter(db, 'merchant', 'Header', 'text');
-    _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
-    _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
-    _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
-    _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    _tableAlter(db, 'merchant', 'City', 'text');
-    _tableAlter(db, 'merchant', 'TaxID', 'text');
-    _tableAlter(db, 'merchant', 'Logo', 'text');
-    _tableAlter(db, 'merchant', 'AcquirerCode', 'text');
+    await _UpgradeMerchantTable(db);
   }
 
   void _UpgradeMerchantTable(Database db) async {
@@ -86,26 +70,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'terminal', 'password', 'text');
-    _tableAlter(db, 'terminal', 'techPassword', 'text');
-    _tableAlter(db, 'terminal', 'idTerminal', 'text');
-    _tableAlter(db, 'terminal', 'kin', 'integer');
-    _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
-    _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
-    _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
-    _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
-    _tableAlter(db, 'terminal', 'keyIndex', 'integer');
-    _tableAlter(db, 'terminal', 'industry', 'text');
-    _tableAlter(db, 'terminal', 'print', 'text');
-    _tableAlter(db, 'terminal', 'cashback', 'integer');
-    _tableAlter(db, 'terminal', 'installments', 'integer');
-    _tableAlter(db, 'terminal', 'refund', 'integer');
-    _tableAlter(db, 'terminal', 'last4Digits', 'integer');
-    _tableAlter(db, 'terminal', 'passwordVoid', 'integer');
-    _tableAlter(db, 'terminal', 'passwordBatch', 'integer');
-    _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
-    _tableAlter(db, 'terminal', 'maskPan', 'integer');
-    _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+    await _UpgradeTerminalTable(db);
   }
 
   void _UpgradeTerminalTable(Database db) async {
@@ -138,12 +103,7 @@ class DatabaseHelper {
           Name TEXT DEFAULT '')
           ''');
 
-    _tableAlter(db, 'comm', 'tpdu', 'text');
-    _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'integer');
-    _tableAlter(db, 'comm', 'ip', 'text');
-    _tableAlter(db, 'comm', 'port', 'integer');
-    _tableAlter(db, 'comm', 'headerLength', 'integer');
+    await _UpgradeCommTable(db);
   }
 
   void _UpgradeCommTable(Database db) async {
@@ -161,11 +121,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'emv', 'terminalType', 'text');
-    _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
-    _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
-    _tableAlter(db, 'emv', 'fallback', 'integer');
-    _tableAlter(db, 'emv', 'forceOnline', 'integer');
+    await _UpgradeEmvTable(db);
   }
 
   void _UpgradeEmvTable(Database db) async {
@@ -192,13 +148,27 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'acquirer', 'name', 'text');
-    _tableAlter(db, 'acquirer', 'rif', 'text');
+    await _UpgradeAcquirerTable(db);
   }
 
   void _UpgradeAcquirerTable(Database db) async {
     _tableAlter(db, 'acquirer', 'name', 'text');
     _tableAlter(db, 'acquirer', 'rif', 'text');
+    _tableAlter(db, 'acquirer', 'industryType', 'integer');
+    _tableAlter(db, 'acquirer', 'cashback', 'integer');
+    _tableAlter(db, 'acquirer', 'installmets', 'integer');
+    _tableAlter(db, 'acquirer', 'refund', 'integer');
+    _tableAlter(db, 'acquirer', 'provimillas', 'integer');
+    _tableAlter(db, 'acquirer', 'cheque', 'integer');
+    _tableAlter(db, 'acquirer', 'checkIncheckOut', 'integer');
+    _tableAlter(db, 'acquirer', 'saleOffline', 'integer');
+    _tableAlter(db, 'acquirer', 'cvv2', 'integer');
+    _tableAlter(db, 'acquirer', 'last4Digits', 'integer');
+    _tableAlter(db, 'acquirer', 'passwordVoid', 'integer');
+    _tableAlter(db, 'acquirer', 'passwordSettlement', 'integer');
+    _tableAlter(db, 'acquirer', 'maskPan', 'integer');
+    _tableAlter(db, 'acquirer', 'prePrint', 'integer');
+    _tableAlter(db, 'acquirer', 'manualEntry', 'integer');
   }
 
   void _CreateBinTable(Database db) async {
@@ -207,15 +177,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'bin', 'type', 'text');
-    _tableAlter(db, 'bin', 'binLow', 'integer');
-    _tableAlter(db, 'bin', 'binHigh', 'integer');
-    _tableAlter(db, 'bin', 'cardType', 'integer');
-    _tableAlter(db, 'bin', 'brand', 'text');
-    _tableAlter(db, 'bin', 'cashback', 'integer');
-    _tableAlter(db, 'bin', 'pin', 'integer');
-    _tableAlter(db, 'bin', 'manualEntry', 'integer');
-    _tableAlter(db, 'bin', 'fallback', 'integer');
+    await _UpgradeBinTable(db);
   }
 
   void _UpgradeBinTable(Database db) async {
@@ -236,18 +198,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'aid', 'aid', 'text');
-    _tableAlter(db, 'aid', 'floorLimit', 'integer');
-    _tableAlter(db, 'aid', 'version', 'integer');
-    _tableAlter(db, 'aid', 'tacDenial', 'text');
-    _tableAlter(db, 'aid', 'tacOnline', 'text');
-    _tableAlter(db, 'aid', 'tacDefault', 'text');
-    _tableAlter(db, 'aid', 'exactMatch', 'integer');
-    _tableAlter(db, 'aid', 'thresholdAmount', 'integer');
-    _tableAlter(db, 'aid', 'targetPercentage', 'integer');
-    _tableAlter(db, 'aid', 'maxTargetPercentage', 'integer');
-    _tableAlter(db, 'aid', 'tdol', 'text');
-    _tableAlter(db, 'aid', 'ddol', 'text');
+    await _UpgradeAidTable(db);
   }
 
   void _UpgradeAidTable(Database db) async {
@@ -271,12 +222,7 @@ class DatabaseHelper {
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    _tableAlter(db, 'pubkey', 'keyIndex', 'integer');
-    _tableAlter(db, 'pubkey', 'rid', 'text');
-    _tableAlter(db, 'pubkey', 'exponent', 'text');
-    _tableAlter(db, 'pubkey', 'expDate', 'text');
-    _tableAlter(db, 'pubkey', 'length', 'integer');
-    _tableAlter(db, 'pubkey', 'modulus', 'text');
+    await _UpgradePubKeyTable(db);
   }
 
   void _UpgradePubKeyTable(Database db) async {
