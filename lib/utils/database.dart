@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test23db";
+  static final _databaseName = "test24db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -166,6 +166,7 @@ class DatabaseHelper {
     _tableAlter(db, 'acquirer', 'last4Digits', 'integer');
     _tableAlter(db, 'acquirer', 'passwordVoid', 'integer');
     _tableAlter(db, 'acquirer', 'passwordSettlement', 'integer');
+    _tableAlter(db, 'acquirer', 'passwordRefund', 'integer');
     _tableAlter(db, 'acquirer', 'maskPan', 'integer');
     _tableAlter(db, 'acquirer', 'prePrint', 'integer');
     _tableAlter(db, 'acquirer', 'manualEntry', 'integer');

@@ -298,12 +298,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     }
   }
 
-  void processField62(String data, Merchant merchant, Map<int, String> acquirerIndicator) async {
+  void processField62(String data, Merchant merchant, Map<int, String> acquirerIndicators) async {
     int index = 0;
     int size;
     int table;
     int i;
-    int j = 0;
+    int j = 1;
     String tableData;
 
     while (index < data.length) {
@@ -326,6 +326,13 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         case 7:
           {
             AcquirerRepository acquirerRepository = new AcquirerRepository();
+            if (acquirerIndicators[0] != '000000') {
+              Acquirer acquirer = new Acquirer(0, 'Platco', '');
+
+              acquirer.setIndicators(acquirerIndicators[0]);
+              await acquirerRepository.deleteacquirer(acquirer.id);
+              await acquirerRepository.createacquirer(acquirer);
+            }
             while (i < tableData.length) {
               Acquirer acquirer = new Acquirer(0, '', '');
               acquirer.id = int.parse(ascii.decode(hex.decode(tableData.substring(i, i + 4))));
@@ -334,6 +341,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
               i += 40;
               acquirer.rif = ascii.decode(hex.decode(tableData.substring(i, i + 26)));
               i += 26;
+              acquirer.setIndicators(acquirerIndicators[j++]);
 
               await acquirerRepository.deleteacquirer(acquirer.id);
               await acquirerRepository.createacquirer(acquirer);
