@@ -138,7 +138,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     index += 4;
     merchant.CurrencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
-    merchant.AcquirerCode = data.substring(index, index + 2);
+    merchant.AcquirerCode = int.parse(data.substring(index, index + 2));
     index += 2 + 24; //phone numbers are skipped
 
     comm.tpdu = data.substring(index, index + 10);

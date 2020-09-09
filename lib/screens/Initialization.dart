@@ -2,7 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
+import 'package:pay/bloc/merchant/merchant_bloc.dart';
+import 'package:pay/bloc/merchant/merchant_event.dart';
+import 'package:pay/bloc/terminal/terminal_bloc.dart';
+import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 
@@ -76,6 +81,13 @@ class InitializationAlert extends StatelessWidget {
             style: TextStyle(color: Color(0xFF0D47A1)),
           ),
           onPressed: () {
+            final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+            final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
+            final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
+
+            merchantBloc.add(GetMerchant(1));
+            terminalBloc.add(GetTerminal(1));
+            commBloc.add(GetComm(1));
             Navigator.of(context).pop();
           },
         ),

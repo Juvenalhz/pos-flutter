@@ -54,6 +54,7 @@ class MessageInitialization {
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     String sn = await SerialNumber.serialNumber;
     String field62;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
 
     field62 = AddFiedl62Table(41, sn);
 
@@ -71,7 +72,10 @@ class MessageInitialization {
     message.fieldData(62, field62);
 
     msgSeq++;
-    message.printMessage();
+
+    if (isDev) {
+      message.printMessage();
+    }
 
     return message.buildIso();
   }
@@ -81,13 +85,17 @@ class MessageInitialization {
     Map respMap = new Map<int, String>();
     int i;
     Uint8List bitmap;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
 
     isoResponse.dataType(60, DT.BIN);
     isoResponse.dataType(61, DT.BIN);
     isoResponse.dataType(62, DT.BIN);
 
     isoResponse.setIsoContent(response);
-    isoResponse.printMessage();
+    if (isDev) {
+      isoResponse.printMessage();
+    }
+
     bitmap = isoResponse.bitmap();
 
     for (i = 0; i < bitmap.length; i++) {
