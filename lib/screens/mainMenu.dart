@@ -1,8 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/bloc.dart';
-import 'package:pay/bloc/merchant_bloc.dart';
+import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/comm/comm_event.dart';
+import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/terminal/terminal_bloc.dart';
+import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
@@ -12,6 +15,8 @@ class MainMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDev = (const String.fromEnvironment('dev') == 'true');
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
+    final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
 
     return Drawer(
       child: ListView(
@@ -49,7 +54,11 @@ class MainMenu extends StatelessWidget {
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(text: 'Inicializacion'),
+            _createDrawerItem(
+                text: 'Inicializacion',
+                onTap: () {
+                  Navigator.pushNamed(context, '/initialization');
+                }),
             _createDrawerItem(text: 'Borrar Lote'),
             _createDrawerItem(text: 'Borrar Reverso'),
             _createDrawerItem(text: 'Reporte de Parametros'),
@@ -62,6 +71,8 @@ class MainMenu extends StatelessWidget {
               onTap: () async {
                 await testConfig().createTestConfiguration();
                 merchantBloc.add(GetMerchant(1));
+                terminalBloc.add(GetTerminal(1));
+                commBloc.add(GetComm(1));
                 Navigator.of(context).pop();
               },
             ),

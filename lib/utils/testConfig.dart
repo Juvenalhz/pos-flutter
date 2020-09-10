@@ -70,8 +70,9 @@ class testConfig {
       'tpdu': '0000900000',
       'nii': '111',
       'timout': 60,
-      'ip': '192.168.11.104',
+      'ip': '192.168.11.209',
       'port': 9000,
+      'headerLength': 2,
     };
 
     await appdb.deleteAll('comm');
@@ -100,5 +101,7 @@ class testConfig {
     await _CreateTerminal();
     await _CreateComm();
     await _CreateEmv();
+
+    await appdb.deleteAll('bin');
   }
 }

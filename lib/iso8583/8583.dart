@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:pay/utils/dataUtils.dart';
 
 import '8583specs.dart';
 
@@ -28,53 +29,6 @@ enum ISOSPEC {
   ISO_BCD,
 }
 
-void memDump(String title, Uint8List data) {
-  int i = 0;
-  String temp = '';
-
-  print(title);
-  for (i = 0; i < data.length; i++) {
-    temp += hex.encode(data.sublist(i, i + 1)).toString() + ' ';
-    if ((i % 32) == 0) {
-      if (temp.length > 0) {
-        print(temp);
-        temp = '';
-      }
-    }
-  }
-  if (i == data.length) print(temp);
-}
-
-String bcdToStr(Uint8List data) {
-  return hex.encode(data);
-}
-
-Uint8List strToBcd(String data) {
-  if (data.length != 0) {
-    if (data.length % 2 == 1) {
-      String temp = data.padLeft(data.length + 1, '0');
-      return new Uint8List.fromList(hex.decode(temp));
-    }
-    return new Uint8List.fromList(hex.decode(data));
-  }
-  return null;
-}
-
-int bcd2Int(Uint8List bcd, int len) {
-  if ((len > 0) && (len < 9))
-    return int.parse(bcdToStr(bcd.sublist(0, len)), radix: 16);
-  else
-    throw 'Invalid length';
-}
-
-Uint8List int2Bcd(int i) {
-  String temp = i.toRadixString(16).toString();
-  if (temp.length % 2 == 1) {
-    temp = temp.padLeft(temp.length + 1, '0');
-  }
-  return strToBcd(temp);
-}
-
 class Iso8583 {
   //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
   bool _strict;
@@ -84,8 +38,10 @@ class Iso8583 {
   Uint8List _Bitmap = new Uint8List(128);
   int _MID;
   List<Map<String, dynamic>> _data;
+  String _tpdu;
+  bool _addLength;
 
-  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec]) {
+  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec, String this._tpdu, bool this._addLength]) {
     if (isoSpec == null) {
       this._isoSpec = new IsoSpecASCII();
     } else {
@@ -114,7 +70,7 @@ class Iso8583 {
     this._strict = value;
   }
 
-  void setIsoContect(Uint8List isoMsg) {
+  void setIsoContent(Uint8List isoMsg) {
     this._isoMsg = isoMsg;
     parseIso();
   }
@@ -179,7 +135,7 @@ class Iso8583 {
 
     //print('ParseField ' + field.toString());
 
-    if (field == 55) {
+    if (field == 60) {
       field += 0;
     }
 
@@ -266,7 +222,9 @@ class Iso8583 {
   void parseIso() {
     int index = 0;
     int i = 0;
-    _data.removeRange(0, _data.length);
+    //_data.removeRange(0, _data.length);
+
+    if (this._tpdu != null) index += 5;
 
     index = parseMID(_isoMsg, index);
     index = parseBitmap(index);
@@ -341,7 +299,7 @@ class Iso8583 {
       }
     }
 
-    memDump("iso msg:", _isoMsg.sublist(0, index));
+    //memDump("iso msg:", _isoMsg.sublist(0, index));
 
     return index;
   }
@@ -355,16 +313,13 @@ class Iso8583 {
     DT lenDataType = _isoSpec.lengthDataType(field);
     String data = this._data.firstWhere((element) => element['field'] == field, orElse: () => null)['data'];
 
-    if (field == 59) {
-      field += 0;
-    }
-
     if (lenType == LT.FIXED) {
       len = maxLength;
 
-      if (contentType == 'n') {
+      if (contentType.contains('n')) {
+        data = data.padLeft(len, '0');
       } else if ((contentType.contains('a')) || (contentType.contains('s'))) {
-        //   _isoMsg += AsciiEncoder().convert(len.toString());
+        data = data.padRight(len, ' ');
       } else {
         //  _isoMsg += int2Bcd(len ~/ 2);
       }
@@ -411,8 +366,14 @@ class Iso8583 {
       temp.forEach((element) {
         this._isoMsg[index++] = element;
       });
-    } else if ((dataType == DT.BIN) || (dataType == DT.BCD)) {
+    } else if (dataType == DT.BCD) {
       Uint8List temp = strToBcd(data.padLeft(len, '0'));
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+    } else if (dataType == DT.BIN) {
+      Uint8List temp = AsciiEncoder().convert(data);
 
       temp.forEach((element) {
         this._isoMsg[index++] = element;
@@ -423,18 +384,38 @@ class Iso8583 {
 
   Uint8List buildIso() {
     int index = 0;
+    int lengthIndex = 0;
+
+    if ((this._addLength != null) && (this._addLength == true)) index += 2; // reserve the pace to add the length
+
+    if (this._tpdu != null) {
+      Uint8List temp = strToBcd(this._tpdu);
+
+      temp.forEach((element) {
+        this._isoMsg[index++] = element;
+      });
+      //memDump("iso msg tpdu:", _isoMsg.sublist(0, index));
+    }
 
     index = buildMID(index);
-    memDump("iso msg MID:", _isoMsg.sublist(0, index));
+    //memDump("iso msg MID:", _isoMsg.sublist(0, index));
 
     index = buildBitmap(index);
-    memDump("iso msg:", _isoMsg.sublist(0, index));
+    //memDump("iso msg:", _isoMsg.sublist(0, index));
 
     for (var i = 0; i < _Bitmap.length; i++) {
       if (_Bitmap[i] == 1) {
         index = buildField(i, index);
-        memDump("iso msg:", _isoMsg.sublist(0, index));
       }
+    }
+
+    if ((this._addLength != null) && (this._addLength == true)) {
+      Uint8List temp = strToBcd((index).toRadixString(16).padLeft(4, '0'));
+      //index = 1;
+      temp.forEach((element) {
+        this._isoMsg[lengthIndex++] = element;
+        index++;
+      });
     }
 
     return _isoMsg.sublist(0, index);
@@ -457,7 +438,6 @@ class Iso8583 {
 
     if (value == null) {
       if (currentField != null) {
-        this._data[index]['data'] = value;
         return this._data[index]['data'].toString();
       } else
         return null;
@@ -468,9 +448,9 @@ class Iso8583 {
         this._data.add(temp);
         return temp['data'].toString();
       } else
-        this._data[field]['data'] = value;
+        this._data[index]['data'] = value;
 
-      return this._data[field]['data'].toString();
+      return this._data[index]['data'].toString();
     }
   }
 
@@ -495,12 +475,12 @@ class Iso8583 {
     return _isoSpec.description(field, value);
   }
 
-  DT dataType(String field, [DT value]) {
+  DT dataType(int field, [DT value]) {
     return _isoSpec.dataType(field, value);
   }
 
-  String contentType(String field, [String value]) {
-    return _isoSpec.contectType(field, value);
+  String contentType(int field, [String value]) {
+    return _isoSpec.contentType(field, value);
   }
 
   void printMessage() {

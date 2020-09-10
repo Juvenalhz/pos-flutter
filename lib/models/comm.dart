@@ -1,42 +1,48 @@
-class Comm{
+class Comm {
   int _id;
   String _tpdu;
   String _nii;
   int _timeout;
   String _ip;
   int _port;
+  int _headerLength;
 
-  Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port);
+  Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port, this._headerLength);
 
   int get id => this._id;
   String get tpdu => this._tpdu;
   String get nii => this._nii;
   int get timeout => this._timeout;
   String get ip => this._ip;
-  int get port => this.port;
+  int get port => this._port;
+  int get headerLength => this._headerLength;
 
-  set id(int id){
+  set id(int id) {
     this._id = id;
   }
 
-  set tpdu(String tpdu){
+  set tpdu(String tpdu) {
     this._tpdu = tpdu;
   }
 
-  set nii(String nii){
+  set nii(String nii) {
     this._nii = nii;
   }
 
-  set timeout(int timeout){
+  set timeout(int timeout) {
     this._timeout = timeout;
   }
 
-  set ip(String ip){
+  set ip(String ip) {
     this._ip = ip;
   }
 
-  set port(int port){
+  set port(int port) {
     this._port = port;
+  }
+
+  set headerLength(int headerLength) {
+    this._headerLength = headerLength;
   }
 
   Map<String, dynamic> toMap() {
@@ -48,6 +54,7 @@ class Comm{
     map['timeout'] = this._timeout;
     map['ip'] = this._ip;
     map['port'] = this._port;
+    map['headerLength'] = this._headerLength;
 
     return map;
   }
@@ -59,5 +66,6 @@ class Comm{
     this._timeout = comm['timeout'];
     this._ip = comm['ip'];
     this._port = comm['port'];
+    this._headerLength = comm['headerLength'];
   }
 }
