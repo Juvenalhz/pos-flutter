@@ -33,8 +33,13 @@ String AddFiedl62Table(int table, String data) {
   String tableMsg = table.toString().padLeft(4, '0');
   switch (table) {
     case 41:
+      String serial;
       temp = bcdToStr(AsciiEncoder().convert(tableMsg));
-      temp += bcdToStr(AsciiEncoder().convert(data.substring(data.length - 16, data.length).padRight(16, ' ')));
+      if (data.length >= 16)
+        serial = data.substring(data.length - 16, data.length).padRight(16, ' ');
+      else
+        serial = data.padRight(16, ' ');
+      temp += bcdToStr(AsciiEncoder().convert(serial));
       break;
   }
   return (temp.length ~/ 2 - 2).toString().padLeft(4, '0') + temp;

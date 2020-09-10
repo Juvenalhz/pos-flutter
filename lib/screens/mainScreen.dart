@@ -60,11 +60,14 @@ class MainScreen extends StatelessWidget {
                             ),
                           ),
                           child: Center(
-                              child: Text(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
+                                child: Text(
                             state.merchant.nameL1,
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                          )),
+                          ),
+                              )),
                         ),
                         Positioned(
                           left: 6,
