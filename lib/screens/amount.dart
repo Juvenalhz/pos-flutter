@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/screens/transaction.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
@@ -250,17 +253,22 @@ class _AmountEntryState extends State<AmountEntry> {
   }
 
   Widget btnEnter() {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
           if (this.entryText.contains('Monto')) {
-            this.trans.putIfAbsent('amount', () => int.parse(amount));
-            Navigator.pushNamed(context, '/tip', arguments: trans);
+            transactionBloc.add(TransAddAmount(int.parse(amount)));
+            Navigator.pushNamed(context, '/transaction');
+            //this.trans.putIfAbsent('amount', () => int.parse(amount));
+            //Navigator.pushNamed(context, '/tip', arguments: trans);
           } else if (this.entryText.contains('Propina')) {
-            this.trans.putIfAbsent('tip', () => int.parse(amount));
-            Navigator.pushNamed(context, '/confirmation', arguments: trans);
+            transactionBloc.add(TransAddTip(int.parse(amount)));
+            //this.trans.putIfAbsent('tip', () => int.parse(amount));
+            //Navigator.pushNamed(context, '/confirmation', arguments: trans);
           }
         },
         color: Colors.green,
