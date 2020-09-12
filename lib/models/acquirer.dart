@@ -159,25 +159,25 @@ class Acquirer {
     return map;
   }
 
-  Acquirer.fromMap(Map<String, dynamic> Acquirer) {
-    this._id = Acquirer['id'];
-    this._name = Acquirer['name'];
-    this._rif = Acquirer['rif'];
-    this._industryType = Acquirer['industryType'];
-    this._cashback = Acquirer['cashback'];
-    this._installmets = Acquirer['installmets'];
-    this._refund = Acquirer['refund'];
-    this._provimillas = Acquirer['rif'];
-    this._cheque = Acquirer['cheque'];
-    this._checkIncheckOut = Acquirer['checkIncheckOut'];
-    this._saleOffline = Acquirer['saleOffline'];
-    this._cvv2 = Acquirer['cvv2'];
-    this._last4Digits = Acquirer['last4Digits'];
-    this._passwordVoid = Acquirer['passwordVoid'];
-    this._passwordSettlement = Acquirer['passwordSettlement'];
-    this._maskPan = Acquirer['maskPan'];
-    this._prePrint = Acquirer['prePrint'];
-    this._manualEntry = Acquirer['manualEntry'];
+  Acquirer.fromMap(Map<String, dynamic> acquirer) {
+    this._id = acquirer['id'];
+    this._name = acquirer['name'];
+    this._rif = acquirer['rif'];
+    this._industryType = acquirer['industryType'];
+    this._cashback = acquirer['cashback'];
+    this._installmets = acquirer['installmets'];
+    this._refund = acquirer['refund'];
+    this._provimillas = acquirer['rif'];
+    this._cheque = acquirer['cheque'];
+    this._checkIncheckOut = acquirer['checkIncheckOut'];
+    this._saleOffline = acquirer['saleOffline'];
+    this._cvv2 = acquirer['cvv2'];
+    this._last4Digits = acquirer['last4Digits'];
+    this._passwordVoid = acquirer['passwordVoid'];
+    this._passwordSettlement = acquirer['passwordSettlement'];
+    this._maskPan = acquirer['maskPan'];
+    this._prePrint = acquirer['prePrint'];
+    this._manualEntry = acquirer['manualEntry'];
   }
 
   setIndicators(String indicator) {
