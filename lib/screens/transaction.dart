@@ -15,6 +15,7 @@ class Transaction extends StatelessWidget {
           return TipScreen();
           // steps of the transaction flow
         } else
+          //TODO: change the default screen to something valid
           return SplashScreen();
       }),
     );
