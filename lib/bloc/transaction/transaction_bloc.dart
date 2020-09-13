@@ -10,20 +10,26 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionBloc() : super(TransactionInitial());
   var trans = new Trans();
-
+  TransactionEvent lastEvent;
   @override
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
-    if (event is TransactionInitial) {
+    if (event is TransBack) {
+      if (lastEvent is TransAddTip) {
+        trans.tip = 0;
+        yield TransactionAddAmount();
+      }
+    } else if (event is TransactionInitial) {
       yield TransactionAddAmount();
     } else if (event is TransAddAmount) {
       trans.baseAmount = event.amount;
-      yield TransactionAddTip();
+      yield TransactionAddTip(trans);
     } else if (event is TransAddTip) {
       trans.tip = event.tip;
     } else if (event is TransAskConfirmation) {
       yield TransactionAskConfirmation();
     }
+    lastEvent = event;
   }
 }

@@ -15,8 +15,11 @@ class TransactionAddAmount extends TransactionState {
 }
 
 class TransactionAddTip extends TransactionState {
+  Trans trans;
+
+  TransactionAddTip(this.trans);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransactionAskConfirmation extends TransactionState {

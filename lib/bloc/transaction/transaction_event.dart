@@ -23,3 +23,8 @@ class TransAskConfirmation extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
