@@ -58,7 +58,7 @@ class _AmountEntryState extends State<AmountEntry> {
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
             )),
-        SizedBox(height: 5.0),
+        SizedBox(height: 15.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -111,7 +111,7 @@ class _AmountEntryState extends State<AmountEntry> {
 
   Widget btn(btntext, Color btnColor) {
     return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
+      padding: EdgeInsets.only(bottom: 15.0),
       child: FlatButton(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -223,7 +223,7 @@ class _AmountEntryState extends State<AmountEntry> {
 
   Widget btnClear() {
     return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
+      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
       child: FlatButton(
         child: Icon(Icons.backspace, size: 35, color: Colors.blueGrey),
         onPressed: () {
@@ -253,7 +253,7 @@ class _AmountEntryState extends State<AmountEntry> {
 
   Widget btnEnter() {
     return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
+      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {},
