@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/models/trans.dart';
 import 'package:pay/screens/transaction.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
-  Map<String, dynamic> trans;
+  Trans trans;
 
   AmountEntry(this.entryText, this.trans);
 
@@ -20,7 +21,7 @@ class _AmountEntryState extends State<AmountEntry> {
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
-  Map<String, dynamic> trans;
+  Trans trans;
 
   _AmountEntryState(this.entryText, this.trans);
 

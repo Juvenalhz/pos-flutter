@@ -12,7 +12,7 @@ class Transaction extends StatelessWidget {
     return Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
         if (state is TransactionAddTip) {
-          return TipScreen();
+          return TipScreen(state.trans);
           // steps of the transaction flow
         } else
           //TODO: change the default screen to something valid

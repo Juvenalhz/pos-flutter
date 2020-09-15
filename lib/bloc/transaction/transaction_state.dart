@@ -10,13 +10,21 @@ class TransactionInitial extends TransactionState {
 }
 
 class TransactionAddAmount extends TransactionState {
+  final Trans trans;
+
+  TransactionAddAmount(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransactionAddTip extends TransactionState {
+  final Trans trans;
+
+  TransactionAddTip(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransactionAskConfirmation extends TransactionState {

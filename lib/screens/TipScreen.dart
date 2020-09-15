@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pay/models/trans.dart';
 
 import 'amount.dart';
 
 class TipScreen extends StatelessWidget {
-  var trans = new Map<String, dynamic>();
+  Trans trans;
 
+  TipScreen(this.trans);
   @override
   Widget build(BuildContext context) {
-    trans = ModalRoute.of(context).settings.arguments;
-
     return Scaffold(
       body: Column(
         children: <Widget>[

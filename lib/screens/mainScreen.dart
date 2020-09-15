@@ -8,6 +8,7 @@ import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transaction.dart';
 import 'ConfigurationScreen.dart';
@@ -26,7 +27,7 @@ class MainScreen extends StatelessWidget {
     final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
-    var trans = new Map<String, dynamic>();
+    var trans = new Trans();
 
     merchantBloc.add(GetMerchant(1));
     terminalBloc.add(GetTerminal(1));
@@ -91,8 +92,7 @@ class MainScreen extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-                              color: Colors.white),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                           child: AmountEntry('Monto:', trans),
                         ),
                       ])),

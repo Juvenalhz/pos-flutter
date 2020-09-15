@@ -16,10 +16,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionEvent event,
   ) async* {
     if (event is TransactionInitial) {
-      yield TransactionAddAmount();
+      yield TransactionAddAmount(trans);
     } else if (event is TransAddAmount) {
       trans.baseAmount = event.amount;
-      yield TransactionAddTip();
+      yield TransactionAddTip(trans);
     } else if (event is TransAddTip) {
       trans.tip = event.tip;
     } else if (event is TransAskConfirmation) {
