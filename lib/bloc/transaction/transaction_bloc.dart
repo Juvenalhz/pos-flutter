@@ -10,7 +10,7 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionBloc() : super(TransactionInitial());
   var trans = new Trans();
-
+  TransactionEvent lastEvent;
   @override
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
@@ -25,5 +25,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransAskConfirmation) {
       yield TransactionAskConfirmation();
     }
+    lastEvent = event;
   }
 }

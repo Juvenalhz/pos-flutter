@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/screens/splash.dart';
 import 'TipScreen.dart';
+import 'mainScreen.dart';
 
 class Transaction extends StatelessWidget {
   @override
@@ -11,7 +12,9 @@ class Transaction extends StatelessWidget {
 
     return Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
-        if (state is TransactionAddTip) {
+        if (state is TransactionAddAmount) {
+          return (MainScreen());
+        } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
           // steps of the transaction flow
         } else
