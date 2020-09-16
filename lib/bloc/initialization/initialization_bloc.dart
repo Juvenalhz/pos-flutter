@@ -127,6 +127,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
   void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    EmvRepository emvRepository = new EmvRepository();
     SetDateTime newDateTime = new SetDateTime();
     int index = 0;
 
@@ -149,6 +151,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = 1;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = 1;
     if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = 1;
+
+    emv.CountryCode = merchant.CountryCode;
+    emv.CurrencyCode = merchant.CurrencyCode;
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]
@@ -179,6 +184,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     index += 12;
     merchant.CountryCode = int.parse(data.substring(index, index + 4));
+
+    await merchantRepository.updateMerchant(merchant);
+    await terminalRepository.updateTerminal(terminal);
+    await emvRepository.updateEmv(emv);
   }
 
   void ProcessField61BIN(String data) async {

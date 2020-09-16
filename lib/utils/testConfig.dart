@@ -89,6 +89,8 @@ class testConfig {
       'addTermCapabilities': 'F0000F0F001',
       'fallback': 1,
       'forceOnline': 1,
+      'CurrencyCode': 0,
+      'CountryCode': 0,
     };
 
     await appdb.deleteAll('emv');

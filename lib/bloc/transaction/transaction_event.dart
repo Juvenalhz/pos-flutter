@@ -28,3 +28,8 @@ class TransBack extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransGetCard extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

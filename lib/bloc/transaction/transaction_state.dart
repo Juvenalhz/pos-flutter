@@ -31,3 +31,12 @@ class TransactionAskConfirmation extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionGetCard extends TransactionState {
+  final Trans trans;
+
+  TransactionGetCard(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

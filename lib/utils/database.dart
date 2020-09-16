@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test25.db";
+  static final _databaseName = "test26.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -130,6 +130,8 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
     _tableAlter(db, 'emv', 'fallback', 'integer');
     _tableAlter(db, 'emv', 'forceOnline', 'integer');
+    _tableAlter(db, 'emv', 'CurrencyCode', 'integer');
+    _tableAlter(db, 'emv', 'CountryCode', 'integer');
   }
 
   void _CreateCountersTable(Database db) async {

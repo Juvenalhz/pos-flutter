@@ -17,6 +17,9 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
           // steps of the transaction flow
+        } else if (state is TransactionGetCard) {
+          transactionBloc.add(TransGetCard());
+          return SplashScreen();
         } else
           //TODO: change the default screen to something valid
           return SplashScreen();
