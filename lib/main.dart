@@ -11,6 +11,7 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'bloc/comm/comm_bloc.dart';
 import 'bloc/initialization/initialization_bloc.dart';
 import 'bloc/terminal/terminal_bloc.dart';
+import 'bloc/transaction/transaction_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class InitializationApp extends StatelessWidget {
           create: (context) => CommBloc(commRepository: commRepository),
         ),
         BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
+        BlocProvider<TransactionBloc>(create: (context) => TransactionBloc()),
       ], child: MainScreen()),
     ));
   }

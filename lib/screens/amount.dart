@@ -1,14 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/models/trans.dart';
+import 'package:pay/screens/transaction.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
+  Trans trans;
 
-  AmountEntry(this.entryText);
+  AmountEntry(this.entryText, this.trans);
 
   @override
-  _AmountEntryState createState() => _AmountEntryState(entryText);
+  _AmountEntryState createState() => _AmountEntryState(entryText, trans);
 }
 
 class _AmountEntryState extends State<AmountEntry> {
@@ -16,8 +21,9 @@ class _AmountEntryState extends State<AmountEntry> {
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
+  Trans trans;
 
-  _AmountEntryState(this.entryText);
+  _AmountEntryState(this.entryText, this.trans);
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +55,7 @@ class _AmountEntryState extends State<AmountEntry> {
                     fontSize: 20,
                     fontFamily: 'RobotoMono',
                   )),
-              style: TextStyle(
-                fontSize: 33,
-                fontFamily: 'RobotoMono',
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyle(fontSize: 33, fontFamily: 'RobotoMono', fontWeight: FontWeight.bold),
               textAlign: TextAlign.right,
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
@@ -114,8 +116,8 @@ class _AmountEntryState extends State<AmountEntry> {
       padding: EdgeInsets.only(bottom: 15.0),
       child: FlatButton(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: btnColor)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: btnColor)
         ),
         child: Text(
           btntext,
@@ -177,8 +179,8 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -214,8 +216,8 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -244,25 +246,38 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
   }
 
   Widget btnEnter() {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
     return Container(
       padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
-        onPressed: () {},
+        onPressed: () {
+          if (this.entryText.contains('Monto')) {
+            transactionBloc.add(TransAddAmount(int.parse(amount)));
+            Navigator.pushNamed(context, '/transaction');
+            //this.trans.putIfAbsent('amount', () => int.parse(amount));
+            //Navigator.pushNamed(context, '/tip', arguments: trans);
+          } else if (this.entryText.contains('Propina')) {
+            transactionBloc.add(TransAddTip(int.parse(amount)));
+            //this.trans.putIfAbsent('tip', () => int.parse(amount));
+            //Navigator.pushNamed(context, '/confirmation', arguments: trans);
+          }
+        },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );

@@ -8,6 +8,7 @@ import 'package:pay/bloc/merchant/merchant_bloc.dart';
 import 'package:pay/bloc/merchant/merchant_event.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/models/comm.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 
@@ -16,14 +17,18 @@ class Initialization extends StatelessWidget {
   Widget build(BuildContext context) {
     final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
+    Comm comm;
 
     return WillPopScope(
       child: Container(
         child: BlocBuilder<CommBloc, CommState>(builder: (context, state) {
           if (state is CommLoaded) {
-            initializationBloc.add(InitializationConnect(state.comm));
+            comm = state.comm;
             return BlocBuilder<InitializationBloc, InitializationState>(builder: (context, state) {
-              if (state is InitializationConnecting)
+              if (state is InitializationInitial) {
+                initializationBloc.add(InitializationConnect(comm));
+                return CommProgress('Inicialización').build(context);
+              } else if (state is InitializationConnecting)
                 return CommProgress('Inicialización', status: 'Conectando').build(context);
               else if (state is InitializationSending)
                 return CommProgress('Inicialización', status: 'Enviando').build(context);

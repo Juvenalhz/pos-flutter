@@ -8,9 +8,12 @@ import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/screens/transaction.dart';
 import 'ConfigurationScreen.dart';
 import 'Initialization.dart';
+import 'TipScreen.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
@@ -24,6 +27,7 @@ class MainScreen extends StatelessWidget {
     final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
+    var trans = new Trans();
 
     merchantBloc.add(GetMerchant(1));
     terminalBloc.add(GetTerminal(1));
@@ -35,6 +39,8 @@ class MainScreen extends StatelessWidget {
       routes: {
         '/configuration': (context) => ConfigurationScreen(),
         '/initialization': (context) => Initialization(),
+        //'/tip': (contex) => TipScreen(),
+        '/transaction': (contex) => Transaction(),
       },
       home: Scaffold(
           key: scaffoldKey,
@@ -61,13 +67,13 @@ class MainScreen extends StatelessWidget {
                           ),
                           child: Center(
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
-                                child: Text(
-                            state.merchant.nameL1,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                              )),
+                            padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
+                            child: Text(
+                              state.merchant.nameL1,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                            ),
+                          )),
                         ),
                         Positioned(
                           left: 6,
@@ -87,7 +93,7 @@ class MainScreen extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                          child: AmountEntry('Monto:'),
+                          child: AmountEntry('Monto:', trans),
                         ),
                       ])),
                     ],
