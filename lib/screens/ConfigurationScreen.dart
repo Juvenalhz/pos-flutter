@@ -559,36 +559,20 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                       children: <Widget>[
                         ItemTileTwoColumn(
-                          leftLabel: Text('Tipo de Terminal'),
-                          leftItem: Text('22'),
-                          rightLabel: Text('Terminal Capabilities'),
-                          rightItem: Text('E0F8C8'),
-                          leftWidth: size.width / 2.6,
-                          rightWidth: size.width / 1.9,
-                        ),
-                        ListTile(
-                          title: Text('Terminal Additional Capabilities'),
-                          subtitle: Text('F0000F0F001'),
-                        ),
-                        ItemTileTwoColumn(
-                          leftLabel: CheckboxItem(
-                            label: 'Fallback',
-                            value: true,
-                            onChanged: null,
-                          ),
-                          rightLabel: CheckboxItem(
-                            label: 'Forzar Online',
-                            value: false,
-                            onChanged: (v) {},
-                          ),
+                          leftLabel: Text('Código Adquiriente'),
+                          leftItem: Text('01'),
+                          rightLabel: Text('Nombre Adquiriente'),
+                          rightItem: Text('Banco Mercantil qwer'),
                           leftWidth: size.width / 2.18,
                           rightWidth: size.width / 2.18,
                         ),
                         ItemTileTwoColumn(
-                          leftLabel: CheckboxItem(
-                            label: 'Selección\nAutomatica',
-                            value: false,
-                            onChanged: (v) {},
+                          leftLabel: Text('RIF Adquiriente'),
+                          leftItem: Text('0101010101011'),
+                          rightLabel: CheckboxItem(
+                            label: 'Activo',
+                            value: true,
+                            onChanged: null,
                           ),
                           leftWidth: size.width / 2.18,
                           rightWidth: size.width / 2.18,
