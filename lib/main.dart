@@ -9,6 +9,7 @@ import 'package:pay/utils/database.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 
 import 'bloc/comm/comm_bloc.dart';
+import 'bloc/initialization/initialization_bloc.dart';
 import 'bloc/terminal/terminal_bloc.dart';
 
 void main() {
@@ -37,6 +38,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<CommBloc>(
           create: (context) => CommBloc(commRepository: commRepository),
         ),
+        BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
       ], child: MainScreen()),
     ));
   }

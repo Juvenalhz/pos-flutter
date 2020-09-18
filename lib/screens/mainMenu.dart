@@ -53,18 +53,17 @@ class MainMenu extends StatelessWidget {
           Divider(),
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
-          ExpansionTile(
-              title: Text("Menu Tecnico"),
-              leading: Icon(Icons.settings),
-              children: <Widget>[
-                _createDrawerItem(text: 'Inicializacion'),
-                _createDrawerItem(text: 'Borrar Lote'),
-                _createDrawerItem(text: 'Borrar Reverso'),
-                _createDrawerItem(text: 'Reporte de Parametros'),
-                _createDrawerItem(
-                    text: 'Configuracion',
-                    onTap: () => Navigator.pushNamed(context, '/configuration')),
-              ]),
+          ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
+            _createDrawerItem(
+                text: 'Inicializacion',
+                onTap: () {
+                  Navigator.pushNamed(context, '/initialization');
+                }),
+            _createDrawerItem(text: 'Borrar Lote'),
+            _createDrawerItem(text: 'Borrar Reverso'),
+            _createDrawerItem(text: 'Reporte de Parametros'),
+            _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
+          ]),
           if (isDev)
             _createDrawerItem(
               icon: Icons.bug_report,
@@ -131,13 +130,9 @@ class MainMenu extends StatelessWidget {
             left: 16.0,
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
-                return Text(state.merchant.nameL1,
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
-                return Text(' ',
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(' ', style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               }
             }),
           )

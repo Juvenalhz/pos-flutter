@@ -16,7 +16,7 @@ class Merchant {
   String _City;
   String _TaxID;
   String _Logo;
-  String _AcquirerCode;
+  int _AcquirerCode;
 
   Merchant(this._nameL1, this._TID, this._MID,
       [this._nameL2,
@@ -51,7 +51,7 @@ class Merchant {
   String get City => _City;
   String get TaxID => _TaxID;
   String get Logo => _Logo;
-  String get AcquirerCode => _AcquirerCode;
+  int get AcquirerCode => _AcquirerCode;
 
   set id(int id) {
     this._id = id;
@@ -121,7 +121,7 @@ class Merchant {
     this._Logo = Logo;
   }
 
-  set AcquirerCode(String AcquirerCode) {
+  set AcquirerCode(int AcquirerCode) {
     this._AcquirerCode = AcquirerCode;
   }
 

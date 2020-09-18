@@ -2,7 +2,7 @@ import 'dart:core';
 import 'package:intl/intl.dart';
 import '8583.dart';
 
-var validContentTypes = {'a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'} as List<String>;
+const List<String> validContentTypes = ['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'] ;
 const int MID = 9999;
 
 class IsoField {
@@ -73,8 +73,10 @@ class Iso8583Specs {
               IsoField temp = new IsoField(field, dataType: datatype);
               this.fields.add(temp);
               return temp.dataType;
-            } else
+            } else {
+              this.fields[index].dataType = datatype;
               return this.fields[index].dataType;
+            }
           }
           break;
         default:
@@ -304,7 +306,7 @@ var ContentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 40, 'ContentType': 'an', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Service restriction code'},
   {'field': 41, 'ContentType': 'ans', 'MaxLen': 8, 'LenType': LT.FIXED, 'description': 'Card acceptor terminal identification'},
   {'field': 42, 'ContentType': 'ans', 'MaxLen': 15, 'LenType': LT.FIXED, 'description': 'Card acceptor identification code'},
-  {'field': 43, 'ContentType': 'ans', 'MaxLen': 40, 'LenType': LT.FIXED, 'description': 'Card acceptor name/location'},
+  {'field': 43, 'ContentType': 'ans', 'MaxLen': 73, 'LenType': LT.FIXED, 'description': 'Card acceptor name/location'},
   {'field': 44, 'ContentType': 'an', 'MaxLen': 25, 'LenType': LT.LLVAR, 'description': 'Additional response data'},
   {'field': 45, 'ContentType': 'an', 'MaxLen': 76, 'LenType': LT.LLVAR, 'description': 'Track 1 data'},
   {'field': 46, 'ContentType': 'an', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Additional data - ISO'},

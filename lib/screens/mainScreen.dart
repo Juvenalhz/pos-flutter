@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,7 @@ import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/screens/splash.dart';
 import 'ConfigurationScreen.dart';
+import 'Initialization.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
@@ -31,6 +34,7 @@ class MainScreen extends StatelessWidget {
       title: 'APOS',
       routes: {
         '/configuration': (context) => ConfigurationScreen(),
+        '/initialization': (context) => Initialization(),
       },
       home: Scaffold(
           key: scaffoldKey,
@@ -56,10 +60,14 @@ class MainScreen extends StatelessWidget {
                             ),
                           ),
                           child: Center(
-                              child: Text(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
+                                child: Text(
                             state.merchant.nameL1,
+                            textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                          )),
+                          ),
+                              )),
                         ),
                         Positioned(
                           left: 6,
@@ -78,8 +86,7 @@ class MainScreen extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-                              color: Colors.white),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                           child: AmountEntry('Monto:'),
                         ),
                       ])),

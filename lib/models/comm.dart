@@ -5,8 +5,9 @@ class Comm {
   int _timeout;
   String _ip;
   int _port;
+  int _headerLength;
 
-  Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port);
+  Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port, this._headerLength);
 
   int get id => this._id;
   String get tpdu => this._tpdu;
@@ -14,6 +15,7 @@ class Comm {
   int get timeout => this._timeout;
   String get ip => this._ip;
   int get port => this._port;
+  int get headerLength => this._headerLength;
 
   set id(int id) {
     this._id = id;
@@ -39,6 +41,10 @@ class Comm {
     this._port = port;
   }
 
+  set headerLength(int headerLength) {
+    this._headerLength = headerLength;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -48,6 +54,7 @@ class Comm {
     map['timeout'] = this._timeout;
     map['ip'] = this._ip;
     map['port'] = this._port;
+    map['headerLength'] = this._headerLength;
 
     return map;
   }
@@ -59,5 +66,6 @@ class Comm {
     this._timeout = comm['timeout'];
     this._ip = comm['ip'];
     this._port = comm['port'];
+    this._headerLength = comm['headerLength'];
   }
 }
