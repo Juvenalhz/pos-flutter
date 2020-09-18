@@ -2,29 +2,43 @@ package com.lccnet.pay
 
 import android.os.Build
 import androidx.annotation.NonNull
+import android.content.Context
 import com.ingenico.lar.bc.Pinpad
+import com.ingenico.lar.bc.PinpadCallbacks
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 
-class Emv : MethodChannel.MethodCallHandler {
+class Emv : MethodChannel.MethodCallHandler, PinpadCallbacks {
 
-    private val pinpad: Pinpad? = null
+    private var pinpad : Pinpad? = null
+    val params = HashMap<String, Any>()
 
-    companion object {
-        /** Plugin registration.  */
-        fun registerWith(@NonNull flutterEngine: FlutterEngine){
-            val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "pinpad")
-            channel.setMethodCallHandler(Emv())
-
-            val params = HashMap<String, Any>()
-            params[Pinpad.PARAM_CONTEXT] = this
-            pinpad = Pinpad.build(params, this)
-        }
+    /** Plugin registration.  */
+    fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
+        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "pinpad")
+        channel.setMethodCallHandler(Emv())
+        params[Pinpad.PARAM_CONTEXT] = context
+        pinpad = Pinpad.build(params, this)
     }
 
+    override fun onShowMessage(p0: Int, p1: String?): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowPinEntry(p0: String?, p1: Long, p2: Int): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAbort() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowMenu(p0: Int, p1: String?, p2: Array<out String>?, p3: PinpadCallbacks.MenuResult?) {
+        TODO("Not yet implemented")
+    }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "loadTables") {
@@ -115,9 +129,9 @@ class Emv : MethodChannel.MethodCallHandler {
 
         if (Build.MODEL.contains("APOS")){
             if (pinpad != null) {
-                if (pinpad.tableLoadInit("emv init") == Pinpad.PP_TABEXP) {
-                    for (s in tables) pinpad.tableLoadRec(s)
-                    pinpad.tableLoadEnd()
+                if (pinpad!!.tableLoadInit("emv init") == Pinpad.PP_TABEXP) {
+                    for (s in tables) pinpad!!.tableLoadRec(s)
+                    pinpad!!.tableLoadEnd()
                 }
             }
         }

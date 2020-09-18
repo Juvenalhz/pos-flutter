@@ -3,7 +3,7 @@ package com.lccnet.pay
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 
-class MainActivity: FlutterActivity() {
+    class MainActivity: FlutterActivity() {
     var sn = SerialNumber
     var dt = SetDateTime
     var emv = Emv
@@ -12,6 +12,7 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         sn.registerWith(flutterEngine)
         dt.registerWith(flutterEngine)
-        emv.registerWith(flutterEngine)
+        emv.registerWith(flutterEngine, this.context)
+
     }
 }
