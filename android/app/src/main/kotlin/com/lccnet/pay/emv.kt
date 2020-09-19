@@ -3,42 +3,26 @@ package com.lccnet.pay
 import android.os.Build
 import androidx.annotation.NonNull
 import android.content.Context
-import com.ingenico.lar.bc.Pinpad
-import com.ingenico.lar.bc.PinpadCallbacks
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 
-class Emv : MethodChannel.MethodCallHandler, PinpadCallbacks {
+class Emv : MethodChannel.MethodCallHandler{
 
-    private var pinpad : Pinpad? = null
-    val params = HashMap<String, Any>()
+    private final var pinpad : PinpadManager? = null
 
     /** Plugin registration.  */
     fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "pinpad")
         channel.setMethodCallHandler(Emv())
-        params[Pinpad.PARAM_CONTEXT] = context
-        pinpad = Pinpad.build(params, this)
+
+        if (Build.MODEL.contains("APOS")) {
+            this.pinpad = PinpadManager.init(context)
+        }
     }
 
-    override fun onShowMessage(p0: Int, p1: String?): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun onShowPinEntry(p0: String?, p1: Long, p2: Int): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun onAbort() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onShowMenu(p0: Int, p1: String?, p2: Array<out String>?, p3: PinpadCallbacks.MenuResult?) {
-        TODO("Not yet implemented")
-    }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "loadTables") {
@@ -127,15 +111,9 @@ class Emv : MethodChannel.MethodCallHandler, PinpadCallbacks {
             }
         }
 
-        if (Build.MODEL.contains("APOS")){
-            if (pinpad != null) {
-                if (pinpad!!.tableLoadInit("emv init") == Pinpad.PP_TABEXP) {
-                    for (s in tables) pinpad!!.tableLoadRec(s)
-                    pinpad!!.tableLoadEnd()
-                }
-            }
+        if (Build.MODEL.contains("APOS")) {
+            PinpadManager.me().updateTables(tables)
         }
-
     }
 
 }
