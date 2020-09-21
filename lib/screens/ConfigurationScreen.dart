@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
@@ -16,6 +17,7 @@ import 'package:pay/models/terminal.dart';
 import 'package:pay/screens/components/data_tile.dart';
 import 'package:pay/utils/dropdown_items.dart';
 import 'package:pay/utils/input_validation.dart';
+import 'package:pay/utils/serialNumber.dart';
 import 'package:pay/viewModel/config_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'components/checkbox_item.dart';
@@ -28,6 +30,7 @@ class ConfigurationScreen extends StatefulWidget {
 }
 
 class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerProviderStateMixin {
+  String _serialNumber;
   TextInputType _tNumber = TextInputType.number;
   Merchant _merchant;
   Terminal _terminal;
@@ -42,6 +45,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     Tab(icon: Icon(Icons.payment), text: 'EMV'),
     Tab(icon: Icon(Icons.account_balance), text: 'Adquiriente'),
   ];
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
 
   void submit(BuildContext context) {
     final form = _formKey.currentState;
@@ -88,12 +97,22 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   void initState() {
     super.initState();
     _tabController = TabController(initialIndex: 0, length: _kTabs.length, vsync: this);
+    _initPackageInfo();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    String sn = await SerialNumber.serialNumber;
+    setState(() {
+      _packageInfo = info;
+      _serialNumber = sn;
+    });
   }
 
   @override
@@ -168,7 +187,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                               children: <Widget>[
                                 ListTile(
                                   title: Text('Nombre del Comercio'),
-                                  subtitle: Text('${_merchant.nameL1}\n ${_merchant.nameL2}'),
+                                  subtitle: Text('${_merchant.nameL1}\n${_merchant.nameL2}'),
                                   isThreeLine: true,
                                 ),
                                 ListTile(
@@ -198,14 +217,14 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ItemTileTwoColumn(
                                   leftLabel: Text('Código Adquiriente'),
                                   rightLabel: Text('Código de País'),
-                                  leftItem: Text(_merchant.AcquirerCode),
+                                  leftItem: Text(_merchant.AcquirerCode.toString()),
                                   rightItem: Text(_merchant.CountryCode.toString()),
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),
                                 ListTile(
                                   title: Text('Versión de la Aplicación'),
-                                  subtitle: Text('Buscar versión del gradle'),
+                                  subtitle: Text(_packageInfo.version),
                                 ),
                               ],
                             ),
@@ -291,17 +310,6 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       _terminal.keyIndex = int.parse(nValue);
                                     },
                                     validator: (nValue) => InputValidation.requiredField(nValue)),
-                                rightLabel: Text('Tipo de Pin Pad'),
-                                rightTrailing: DropdownButton(
-                                  onChanged: (value) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .setDropDownChoice(value);
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
-                                  },
-                                  value: config.dropDownChoice,
-                                  items: DropDownItems.dropDownTypePinpad,
-                                ),
                                 leftWidth: size.width / 3.0,
                                 rightWidth: size.width / 1.8,
                               ),
@@ -316,9 +324,14 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
-                              ListTile(
-                                  title: Text('Serial Terminal'),
-                                  subtitle: Text('llamar al channel')),
+                              ItemTileTwoColumn(
+                                leftLabel: Text('Serial Terminal'),
+                                rightLabel: Text('Tipo de Pin Pad'),
+                                leftItem: Text(_serialNumber),
+                                rightItem: Text('Interno'),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),
                               ItemTileTwoColumn(
                                 leftLabel: Text('Tiempo Max. Entrada'),
                                 rightLabel: Text('Porcentaje Propina'),
