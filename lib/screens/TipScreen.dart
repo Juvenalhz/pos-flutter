@@ -15,6 +15,7 @@ class TipScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     trans = ModalRoute.of(context).settings.arguments;
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -41,7 +42,9 @@ class TipScreen extends StatelessWidget {
                     child: IconButton(
                       color: Colors.white,
                       icon: Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        transactionBloc.add(TransAddAmount(trans.baseAmount));
+                      },
                     ),
                   ),
                   Center(
@@ -89,8 +92,8 @@ class TipScreen extends StatelessWidget {
                 color: Color(0xFF0D47A1),
               ),
               Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                 child: AmountEntry('Propina:', trans),
               ),
             ])),

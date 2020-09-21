@@ -28,6 +28,10 @@ class TransactionAddTip extends TransactionState {
 }
 
 class TransactionAskConfirmation extends TransactionState {
+  final Trans trans;
+
+  TransactionAskConfirmation(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }

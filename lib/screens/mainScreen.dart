@@ -9,6 +9,7 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transaction.dart';
 import 'ConfigurationScreen.dart';
@@ -39,7 +40,6 @@ class MainScreen extends StatelessWidget {
       routes: {
         '/configuration': (context) => ConfigurationScreen(),
         '/initialization': (context) => Initialization(),
-        //'/tip': (contex) => TipScreen(),
         '/transaction': (contex) => Transaction(),
       },
       home: Scaffold(
@@ -92,7 +92,8 @@ class MainScreen extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+                              color: Colors.white),
                           child: AmountEntry('Monto:', trans),
                         ),
                       ])),

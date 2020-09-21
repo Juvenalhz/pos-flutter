@@ -20,11 +20,20 @@ class TransAddTip extends TransactionEvent {
 }
 
 class TransAskConfirmation extends TransactionEvent {
+  Trans trans;
+
+  TransAskConfirmation(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TransBack extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
 
-class TransBack extends TransactionEvent {
+class TransConfirmOK extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
