@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/screens/Confirmation.dart';
@@ -24,7 +25,7 @@ class Transaction extends StatelessWidget {
 
         } else
           //TODO: change the default screen to something valid
-          return SplashScreen();
+          return Scaffold();
       }),
     );
   }

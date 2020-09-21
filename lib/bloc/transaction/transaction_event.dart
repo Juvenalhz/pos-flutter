@@ -13,24 +13,31 @@ class TransAddAmount extends TransactionEvent {
   const TransAddAmount([this.amount]);
 }
 
+class TransAskAmount extends TransactionEvent {
+  final int amount;
+
+  const TransAskAmount([this.amount]);
+}
+
 class TransAddTip extends TransactionEvent {
   final int tip;
 
   const TransAddTip([this.tip]);
 }
 
+class TransAskTip extends TransactionEvent {
+  final int tip;
+
+  const TransAskTip([this.tip]);
+}
+
 class TransAskConfirmation extends TransactionEvent {
-  Trans trans;
+  final Trans trans;
 
   TransAskConfirmation(this.trans);
 
   @override
   List<Object> get props => [trans];
-}
-
-class TransBack extends TransactionEvent {
-  @override
-  List<Object> get props => [];
 }
 
 class TransConfirmOK extends TransactionEvent {

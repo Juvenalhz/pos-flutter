@@ -43,7 +43,7 @@ class TipScreen extends StatelessWidget {
                       color: Colors.white,
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
-                        transactionBloc.add(TransAddAmount(trans.baseAmount));
+                        transactionBloc.add(TransAskAmount(trans.baseAmount));
                       },
                     ),
                   ),
@@ -52,6 +52,7 @@ class TipScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
                         child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
                           if (state is TransactionAddTip) {
+                            trans = state.trans;
                             int amount = state.trans.baseAmount;
                             String formattedAmount;
                             var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
@@ -92,8 +93,8 @@ class TipScreen extends StatelessWidget {
                 color: Color(0xFF0D47A1),
               ),
               Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                 child: AmountEntry('Propina:', trans),
               ),
             ])),

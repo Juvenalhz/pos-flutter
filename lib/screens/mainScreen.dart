@@ -30,10 +30,6 @@ class MainScreen extends StatelessWidget {
     var scaffoldKey = GlobalKey<ScaffoldState>();
     var trans = new Trans();
 
-    merchantBloc.add(GetMerchant(1));
-    terminalBloc.add(GetTerminal(1));
-    commBloc.add(GetComm(1));
-
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
       title: 'APOS',
@@ -47,6 +43,12 @@ class MainScreen extends StatelessWidget {
           drawer: MainMenu(),
           body: SafeArea(
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state == null) {
+                merchantBloc.add(GetMerchant(1));
+                terminalBloc.add(GetTerminal(1));
+                commBloc.add(GetComm(1));
+                return SplashScreen();
+              }
               if (state is MerchantLoaded) {
                 return Scaffold(
                   body: Column(
@@ -92,8 +94,7 @@ class MainScreen extends StatelessWidget {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-                              color: Colors.white),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                           child: AmountEntry('Monto:', trans),
                         ),
                       ])),

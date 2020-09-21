@@ -44,7 +44,7 @@ class Confirmation extends StatelessWidget {
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
                         //TODO: select the correct event, if the tip is off should be main screen
-                        transactionBloc.add(TransAddTip(0));
+                        transactionBloc.add(TransAskTip(0));
                       },
                     ),
                   ),
@@ -83,8 +83,8 @@ class Confirmation extends StatelessWidget {
                 color: Color(0xFF0D47A1),
               ),
               Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                 child: Center(
                   child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
                     if (state is TransactionAskConfirmation) {
