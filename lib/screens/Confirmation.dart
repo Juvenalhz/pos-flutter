@@ -145,7 +145,9 @@ class Confirmation extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
         child: Icon(Icons.cancel, size: 35, color: Colors.white),
-        onPressed: () {},
+        onPressed: () {
+          transactionBloc.add(TransAskAmount());
+        },
         color: Colors.red,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
