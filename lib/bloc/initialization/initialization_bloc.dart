@@ -147,8 +147,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0)
       terminal.amountConfirmation = true;
-    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = 1;
-    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = 1;
+    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]

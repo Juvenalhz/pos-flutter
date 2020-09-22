@@ -6,12 +6,15 @@ import 'package:package_info/package_info.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
+import 'package:pay/bloc/emv/emv_bloc.dart';
+import 'package:pay/bloc/emv/emv_state.dart';
 import 'package:pay/bloc/merchant/merchant_state.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/terminal/terminal_state.dart';
 import 'package:pay/models/comm.dart';
+import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/screens/components/data_tile.dart';
@@ -35,6 +38,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   Merchant _merchant;
   Terminal _terminal;
   Comm _comm;
+  Emv _emv;
   TabController _tabController;
   int _indexTab;
   final _formKey = GlobalKey<FormState>();
@@ -541,45 +545,55 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         return retWidget;
                       },
                     ),
-                    ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                      children: <Widget>[
-                        ItemTileTwoColumn(
-                          leftLabel: Text('Tipo de Terminal'),
-                          leftItem: Text('22'),
-                          rightLabel: Text('Terminal Capabilities'),
-                          rightItem: Text('E0F8C8'),
-                          leftWidth: size.width / 2.6,
-                          rightWidth: size.width / 1.9,
-                        ),
-                        ListTile(
-                          title: Text('Terminal Additional Capabilities'),
-                          subtitle: Text('F0000F0F001'),
-                        ),
-                        ItemTileTwoColumn(
-                          leftLabel: CheckboxItem(
-                            label: 'Fallback',
-                            value: true,
-                            onChanged: null,
-                          ),
-                          rightLabel: CheckboxItem(
-                            label: 'Forzar Online',
-                            value: false,
-                            onChanged: (v) {},
-                          ),
-                          leftWidth: size.width / 2.18,
-                          rightWidth: size.width / 2.18,
-                        ),
-                        ItemTileTwoColumn(
-                          leftLabel: CheckboxItem(
-                            label: 'Selección\nAutomatica',
-                            value: false,
-                            onChanged: (v) {},
-                          ),
-                          leftWidth: size.width / 2.18,
-                          rightWidth: size.width / 2.18,
-                        ),
-                      ],
+                    BlocBuilder<EmvBloc, EmvState>(
+                      builder: (context, state) {
+                        Widget retWidget = SizedBox();
+                        if (state is EmvLoaded) {
+                          _emv = state.emv;
+                          retWidget = ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                            children: <Widget>[
+                              ItemTileTwoColumn(
+                                leftLabel: Text('Tipo de Terminal'),
+                                leftItem: Text(_emv.terminalType),
+                                rightLabel: Text('Terminal Capabilities'),
+                                rightItem: Text(_emv.terminalCapabilities),
+                                leftWidth: size.width / 2.6,
+                                rightWidth: size.width / 1.9,
+                              ),
+                              ListTile(
+                                title: Text('Terminal Additional Capabilities'),
+                                subtitle: Text(_emv.addTermCapabilities),
+                              ),
+                              ItemTileTwoColumn(
+                                leftLabel: CheckboxItem(
+                                  label: 'Fallback',
+                                  value: _emv.fallback,
+                                  onChanged: null,
+                                ),
+                                rightLabel: CheckboxItem(
+                                  label: 'Forzar Online',
+                                  value: _emv.forceOnline,
+                                  onChanged: null,
+                                  // onChanged: (v) {},
+                                ),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),
+                              /*ItemTileTwoColumn(
+                                leftLabel: CheckboxItem(
+                                  label: 'Selección\nAutomatica',
+                                  value: false,
+                                  onChanged: (v) {},
+                                ),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),*/
+                            ],
+                          );
+                        }
+                        return retWidget;
+                      },
                     ),
                     ListView(
                       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),

@@ -1,42 +1,44 @@
-class Emv{
+import 'package:pay/utils/dataUtils.dart';
+
+class Emv {
   int _id;
   String _terminalType;
   String _terminalCapabilities;
   String _addTermCapabilities;
-  int _fallback;
-  int _forceOnline;
+  bool _fallback;
+  bool _forceOnline;
 
-  Emv(this._id, this._terminalType, this._terminalCapabilities,
-      this._addTermCapabilities, this._fallback, this._forceOnline);
+  Emv(this._id, this._terminalType, this._terminalCapabilities, this._addTermCapabilities,
+      this._fallback, this._forceOnline);
 
   int get id => this._id;
   String get terminalType => this._terminalType;
   String get terminalCapabilities => this._terminalCapabilities;
   String get addTermCapabilities => this._addTermCapabilities;
-  int get fallback => this._fallback;
-  int get forceOnline => this._forceOnline;
+  bool get fallback => this._fallback;
+  bool get forceOnline => this._forceOnline;
 
-  set id(int id){
+  set id(int id) {
     this._id = id;
   }
 
-  set terminalType(String terminalType){
+  set terminalType(String terminalType) {
     this._terminalType = terminalType;
   }
 
-  set terminalCapabilities(String terminalCapabilities){
+  set terminalCapabilities(String terminalCapabilities) {
     this._terminalCapabilities = terminalCapabilities;
   }
 
-  set addTermCapabilities(String addTermCapabilities){
+  set addTermCapabilities(String addTermCapabilities) {
     this._addTermCapabilities = addTermCapabilities;
   }
 
-  set fallback(int fallback){
+  set fallback(bool fallback) {
     this._fallback = fallback;
   }
 
-  set forceOnline(int forceOnline){
+  set forceOnline(bool forceOnline) {
     this._forceOnline = forceOnline;
   }
 
@@ -47,8 +49,8 @@ class Emv{
     map['terminalType'] = this._terminalType;
     map['terminalCapabilities'] = this._terminalCapabilities;
     map['addTermCapabilities'] = this._addTermCapabilities;
-    map['fallback'] = this._fallback;
-    map['forceOnline'] = this._forceOnline;
+    map['fallback'] = boolToInt(this._fallback);
+    map['forceOnline'] = boolToInt(this._forceOnline);
 
     return map;
   }
@@ -58,7 +60,7 @@ class Emv{
     this._terminalType = emv['terminalType'];
     this._terminalCapabilities = emv['terminalCapabilities'];
     this._addTermCapabilities = emv['addTermCapabilities'];
-    this._fallback = emv['fallback'];
-    this._forceOnline = emv['forceOnline'];
+    this._fallback = intToBool(emv['fallback']);
+    this._forceOnline = intToBool(emv['forceOnline']);
   }
 }

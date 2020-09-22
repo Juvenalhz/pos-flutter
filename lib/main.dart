@@ -1,7 +1,9 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/repository/comm_repository.dart';
+import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/mainScreen.dart';
@@ -22,6 +24,7 @@ class InitializationApp extends StatelessWidget {
   MerchantRepository merchantRepository = new MerchantRepository();
   TerminalRepository terminalRepository = new TerminalRepository();
   CommRepository commRepository = new CommRepository();
+  EmvRepository emvRepository = new EmvRepository();
   final appdb = DatabaseHelper.instance;
 
   @override
@@ -37,6 +40,9 @@ class InitializationApp extends StatelessWidget {
         ),
         BlocProvider<CommBloc>(
           create: (context) => CommBloc(commRepository: commRepository),
+        ),
+        BlocProvider<EmvBloc>(
+          create: (context) => EmvBloc(emvRepository: emvRepository),
         ),
         BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
       ], child: MainScreen()),
