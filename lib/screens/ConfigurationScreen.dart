@@ -318,7 +318,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                               ItemTileTwoColumn(
                                 leftLabel: Text('Número de Lote'),
                                 rightLabel: Text('Terminal ID'),
-                                leftItem: Text('subtitle'),
+                                leftItem: Text(_merchant.BatchNumber.toString()),
                                 //TODO: asignar campo valido
                                 rightItem: Text(_terminal.idTerminal),
                                 leftWidth: size.width / 2.18,
@@ -340,69 +340,82 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
-                              ItemTileTwoColumn(
+                              /*ItemTileTwoColumn(
                                 leftLabel: Text('Tipo  Soft.'),
                                 rightLabel: Text('Lectura de Track'),
                                 leftItem: Text('Normal'),
                                 rightItem: Text('Track 1 y Track 2'),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
-                              ),
+                              ),*/
                               ItemTileTwoColumn(
-                                leftLabel:
-                                    CheckboxItem(label: 'Impresión', value: true, onChanged: null),
-                                rightLabel:
-                                    CheckboxItem(label: 'Cash back', value: false, onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel:
-                                    CheckboxItem(label: 'Cuotas', value: false, onChanged: null),
+                                leftLabel: CheckboxItem(
+                                    label: 'Impresión', value: _terminal.print, onChanged: null),
                                 rightLabel: CheckboxItem(
-                                    label: 'Devolución', value: false, onChanged: null),
+                                    label: 'Cash back', value: _terminal.cashback, onChanged: null),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
                               ItemTileTwoColumn(
+                                leftLabel: CheckboxItem(
+                                    label: 'Cuotas',
+                                    value: _terminal.installments,
+                                    onChanged: null),
+                                rightLabel: CheckboxItem(
+                                    label: 'Devolución', value: _terminal.refund, onChanged: null),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),
+                              /*ItemTileTwoColumn(
                                 leftLabel:
                                     CheckboxItem(label: 'Cheque', value: false, onChanged: null),
                                 rightLabel: CheckboxItem(
                                     label: 'Check In/\nCheckOut', value: false, onChanged: null),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
-                              ),
+                              ),*/
                               ItemTileTwoColumn(
-                                leftLabel:
-                                    CheckboxItem(label: 'CVV2', value: false, onChanged: null),
+                                /*leftLabel:
+                                    CheckboxItem(label: 'CVV2', value: false, onChanged: null),*/
+                                leftLabel: CheckboxItem(
+                                  label: 'Confirmación\nde Importe',
+                                  value: _terminal.amountConfirmation,
+                                  onChanged: null,
+                                ),
                                 rightLabel: CheckboxItem(
-                                    label: '4 últimos\ndígitos', value: false, onChanged: null),
+                                    label: '4 últimos\ndígitos',
+                                    value: _terminal.last4Digits,
+                                    onChanged: null),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
                               ItemTileTwoColumn(
                                 leftLabel: CheckboxItem(
-                                    label: 'Clave\nAnulación', value: false, onChanged: null),
+                                    label: 'Clave\nAnulación',
+                                    value: _terminal.passwordVoid,
+                                    onChanged: null),
                                 rightLabel: CheckboxItem(
-                                    label: 'Clave Cierre', value: false, onChanged: null),
+                                    label: 'Clave Cierre',
+                                    value: _terminal.passwordBatch,
+                                    onChanged: null),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
                               ItemTileTwoColumn(
                                 leftLabel: CheckboxItem(
                                   label: 'Clave\nDevolución',
-                                  value: true,
+                                  value: _terminal.passwordRefund,
                                   onChanged: null,
                                 ),
                                 rightLabel: CheckboxItem(
                                   label: 'Enmascarar\nTarjeta',
-                                  value: true,
+                                  value: _terminal.maskPan,
                                   onChanged: null,
                                 ),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
                               ),
-                              ItemTileTwoColumn(
+                              /*ItemTileTwoColumn(
                                 leftLabel: CheckboxItem(
                                     label: 'Pre-impresión', value: true, onChanged: null),
                                 rightLabel: CheckboxItem(
@@ -412,8 +425,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
+                              ),*/
+                              /*ItemTileTwoColumn(
                                 leftLabel: CheckboxItem(
                                   label: 'Confirmación\nde Importe',
                                   value: true,
@@ -426,7 +439,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ),
                                 leftWidth: size.width / 2.18,
                                 rightWidth: size.width / 2.18,
-                              ),
+                              ),*/
                             ],
                           );
                         }

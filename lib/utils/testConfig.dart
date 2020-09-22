@@ -69,7 +69,7 @@ class testConfig {
       'Name': 'Platco',
       'tpdu': '0000900000',
       'nii': '111',
-      'timout': 60,
+      'timeout': 60,
       'ip': '192.168.11.209',
       'port': 9000,
       'headerLength': 2,
