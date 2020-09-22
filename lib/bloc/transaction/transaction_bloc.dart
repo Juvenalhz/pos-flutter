@@ -20,7 +20,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionAddAmount(trans);
     } else if (event is TransAddAmount) {
       trans.baseAmount = event.amount;
-      trans.total += event.amount;
+      trans.total = event.amount;
       yield TransactionAddTip(trans);
     } else if (event is TransAskAmount) {
       trans.baseAmount = event.amount;

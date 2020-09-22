@@ -95,12 +95,18 @@ class TipScreen extends StatelessWidget {
               Container(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                child: AmountEntry('Propina:', trans),
+                child: AmountEntry('Propina:', onClickEnter),
               ),
             ])),
           ],
         ),
       ),
     );
+  }
+
+  void onClickEnter(BuildContext context, int amount) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddTip(amount));
   }
 }

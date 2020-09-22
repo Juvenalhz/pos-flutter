@@ -8,6 +8,7 @@ import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
@@ -28,7 +29,6 @@ class MainScreen extends StatelessWidget {
     final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
-    var trans = new Trans();
 
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
@@ -95,7 +95,7 @@ class MainScreen extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                          child: AmountEntry('Monto:', trans),
+                          child: AmountEntry('Monto:', onClickEnter),
                         ),
                       ])),
                     ],
@@ -133,5 +133,14 @@ class MainScreen extends StatelessWidget {
             }),
           )),
     );
+  }
+
+  void onClickEnter(BuildContext context, int amount) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    if (amount > 0) {
+      transactionBloc.add(TransAddAmount(amount));
+      Navigator.pushNamed(context, '/transaction');
+    }
   }
 }
