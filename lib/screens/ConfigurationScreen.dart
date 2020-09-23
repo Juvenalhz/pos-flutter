@@ -134,6 +134,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
           length: _kTabs.length,
           child: Consumer<ConfigViewModel>(
             builder: (context, config, child) => Scaffold(
+              resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 title: Text("Configuracion"),
                 leading: IconButton(
@@ -247,208 +248,232 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         if (state is TerminalLoaded) {
                           if (_terminal == null) _terminal = state.terminal;
                           _indexTab = 1;
-                          retWidget = ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                            children: <Widget>[
-                              DataTile(
-                                  myTitle: 'Clave Sistema',
-                                  value: _terminal.password,
-                                  type: _tNumber,
-                                  obscureText: true,
-                                  maxLength: 6,
-                                  onSaved: (nValue) => _terminal.password = nValue,
-                                  onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
-                                    _terminal.password = nValue;
-                                  },
-                                  validator: (nValue) =>
-                                      InputValidation.defaultPasswordValidator(nValue)),
-                              DataTile(
-                                  myTitle: 'Mensaje Pin Pad',
-                                  value: _terminal.industry,
-                                  maxLength: 16,
-                                  onSaved: (nValue) => _terminal.industry = nValue,
-                                  onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
-                                    _terminal.industry = nValue;
-                                  },
-                                  validator: (nValue) => InputValidation.requiredField(nValue)),
-                              ItemTileTwoColumn(
-                                contentPadding: EdgeInsets.zero,
-                                leftLabel: DataTile(
-                                    myTitle: 'Min. PIN',
-                                    value: _terminal.minPinDigits.toString(),
-                                    type: _tNumber,
-                                    maxLength: 2,
-                                    onSaved: (nValue) => _terminal.minPinDigits = int.parse(nValue),
-                                    onChanged: (nValue) {
-                                      Provider.of<ConfigViewModel>(context, listen: false)
-                                          .updateChanges(true);
-                                      _terminal.minPinDigits = int.parse(nValue);
-                                    },
-                                    validator: (nValue) => InputValidation.requiredField(nValue)),
-                                rightLabel: DataTile(
-                                    myTitle: 'Máx. PIN',
-                                    value: _terminal.maxPinDigits.toString(),
-                                    type: _tNumber,
-                                    maxLength: 2,
-                                    onSaved: (nValue) => _terminal.maxPinDigits = int.parse(nValue),
-                                    onChanged: (nValue) {
-                                      Provider.of<ConfigViewModel>(context, listen: false)
-                                          .updateChanges(true);
-                                      _terminal.maxPinDigits = int.parse(nValue);
-                                    },
-                                    validator: (nValue) => InputValidation.requiredField(nValue)),
-                                leftWidth: size.width / 2.5,
-                                rightWidth: size.width / 2.5,
-                              ),
-                              ItemTileTwoColumn(
-                                contentPadding: EdgeInsets.only(right: 16.0),
-                                leftLabel: DataTile(
-                                    myTitle: 'Master Key',
-                                    value: _terminal.keyIndex.toString(),
-                                    type: _tNumber,
-                                    maxLength: 1,
-                                    onSaved: (nValue) => _terminal.keyIndex = int.parse(nValue),
-                                    onChanged: (nValue) {
-                                      Provider.of<ConfigViewModel>(context, listen: false)
-                                          .updateChanges(true);
-                                      _terminal.keyIndex = int.parse(nValue);
-                                    },
-                                    validator: (nValue) => InputValidation.requiredField(nValue)),
-                                leftWidth: size.width / 3.0,
-                                rightWidth: size.width / 1.8,
-                              ),
-                              SizedBox(height: 10.0),
-                              Divider(color: Colors.black54, thickness: 0.6),
-                              ItemTileTwoColumn(
-                                leftLabel: Text('Número de Lote'),
-                                rightLabel: Text('Terminal ID'),
-                                leftItem: Text(_merchant.BatchNumber.toString()),
-                                //TODO: asignar campo valido
-                                rightItem: Text(_terminal.idTerminal),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: Text('Serial Terminal'),
-                                rightLabel: Text('Tipo de Pin Pad'),
-                                leftItem: Text(_serialNumber),
-                                rightItem: Text('Interno'),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: Text('Tiempo Max. Entrada'),
-                                rightLabel: Text('Porcentaje Propina'),
-                                leftItem: Text(_terminal.timeoutPrompt.toString()),
-                                rightItem: Text(_terminal.maxTipPercentage.toString()),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              /*ItemTileTwoColumn(
-                                leftLabel: Text('Tipo  Soft.'),
-                                rightLabel: Text('Lectura de Track'),
-                                leftItem: Text('Normal'),
-                                rightItem: Text('Track 1 y Track 2'),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),*/
-                              ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                    label: 'Impresión', value: _terminal.print, onChanged: null),
-                                rightLabel: CheckboxItem(
-                                    label: 'Cash back', value: _terminal.cashback, onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                    label: 'Cuotas',
-                                    value: _terminal.installments,
-                                    onChanged: null),
-                                rightLabel: CheckboxItem(
-                                    label: 'Devolución', value: _terminal.refund, onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              /*ItemTileTwoColumn(
-                                leftLabel:
-                                    CheckboxItem(label: 'Cheque', value: false, onChanged: null),
-                                rightLabel: CheckboxItem(
-                                    label: 'Check In/\nCheckOut', value: false, onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),*/
-                              ItemTileTwoColumn(
-                                /*leftLabel:
-                                    CheckboxItem(label: 'CVV2', value: false, onChanged: null),*/
-                                leftLabel: CheckboxItem(
-                                  label: 'Confirmación\nde Importe',
-                                  value: _terminal.amountConfirmation,
-                                  onChanged: null,
-                                ),
-                                rightLabel: CheckboxItem(
-                                    label: '4 últimos\ndígitos',
-                                    value: _terminal.last4Digits,
-                                    onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                    label: 'Clave\nAnulación',
-                                    value: _terminal.passwordVoid,
-                                    onChanged: null),
-                                rightLabel: CheckboxItem(
-                                    label: 'Clave Cierre',
-                                    value: _terminal.passwordBatch,
-                                    onChanged: null),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                  label: 'Clave\nDevolución',
-                                  value: _terminal.passwordRefund,
-                                  onChanged: null,
-                                ),
-                                rightLabel: CheckboxItem(
-                                  label: 'Enmascarar\nTarjeta',
-                                  value: _terminal.maskPan,
-                                  onChanged: null,
-                                ),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),
-                              /*ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                    label: 'Pre-impresión', value: true, onChanged: null),
-                                rightLabel: CheckboxItem(
-                                  label: 'Entrada\nManual PAN',
-                                  value: false,
-                                  onChanged: null,
-                                ),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),*/
-                              /*ItemTileTwoColumn(
-                                leftLabel: CheckboxItem(
-                                  label: 'Confirmación\nde Importe',
-                                  value: true,
-                                  onChanged: null,
-                                ),
-                                rightLabel: CheckboxItem(
-                                  label: 'Ventas Fuera\nde Línea',
-                                  value: false,
-                                  onChanged: (v) {},
-                                ),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
-                              ),*/
-                            ],
+                          retWidget = BlocBuilder<AcquirerBloc, AcquirerState>(
+                            builder: (context, state) {
+                              Widget retWidget = SizedBox();
+                              if (state is AcquirerLoaded) {
+                                _acquirer = state.acquirer;
+                                retWidget = ListView(
+                                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                                  children: <Widget>[
+                                    DataTile(
+                                        myTitle: 'Clave Sistema',
+                                        value: _terminal.password,
+                                        type: _tNumber,
+                                        obscureText: true,
+                                        maxLength: 6,
+                                        onSaved: (nValue) => _terminal.password = nValue,
+                                        onChanged: (nValue) {
+                                          Provider.of<ConfigViewModel>(context, listen: false)
+                                              .updateChanges(true);
+                                          _terminal.password = nValue;
+                                        },
+                                        validator: (nValue) =>
+                                            InputValidation.defaultPasswordValidator(nValue)),
+                                    DataTile(
+                                        myTitle: 'Mensaje Pin Pad',
+                                        value: _terminal.industry,
+                                        maxLength: 16,
+                                        onSaved: (nValue) => _terminal.industry = nValue,
+                                        onChanged: (nValue) {
+                                          Provider.of<ConfigViewModel>(context, listen: false)
+                                              .updateChanges(true);
+                                          _terminal.industry = nValue;
+                                        },
+                                        validator: (nValue) =>
+                                            InputValidation.requiredField(nValue)),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.zero,
+                                      leftLabel: DataTile(
+                                          myTitle: 'Min. PIN',
+                                          value: _terminal.minPinDigits.toString(),
+                                          type: _tNumber,
+                                          maxLength: 2,
+                                          onSaved: (nValue) =>
+                                              _terminal.minPinDigits = int.parse(nValue),
+                                          onChanged: (nValue) {
+                                            Provider.of<ConfigViewModel>(context, listen: false)
+                                                .updateChanges(true);
+                                            _terminal.minPinDigits = int.parse(nValue);
+                                          },
+                                          validator: (nValue) =>
+                                              InputValidation.requiredField(nValue)),
+                                      rightLabel: DataTile(
+                                          myTitle: 'Máx. PIN',
+                                          value: _terminal.maxPinDigits.toString(),
+                                          type: _tNumber,
+                                          maxLength: 2,
+                                          onSaved: (nValue) =>
+                                              _terminal.maxPinDigits = int.parse(nValue),
+                                          onChanged: (nValue) {
+                                            Provider.of<ConfigViewModel>(context, listen: false)
+                                                .updateChanges(true);
+                                            _terminal.maxPinDigits = int.parse(nValue);
+                                          },
+                                          validator: (nValue) =>
+                                              InputValidation.requiredField(nValue)),
+                                      leftWidth: size.width / 2.5,
+                                      rightWidth: size.width / 2.5,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.only(right: 16.0),
+                                      leftLabel: DataTile(
+                                          myTitle: 'Master Key',
+                                          value: _terminal.keyIndex.toString(),
+                                          type: _tNumber,
+                                          maxLength: 1,
+                                          onSaved: (nValue) =>
+                                              _terminal.keyIndex = int.parse(nValue),
+                                          onChanged: (nValue) {
+                                            Provider.of<ConfigViewModel>(context, listen: false)
+                                                .updateChanges(true);
+                                            _terminal.keyIndex = int.parse(nValue);
+                                          },
+                                          validator: (nValue) =>
+                                              InputValidation.requiredField(nValue)),
+                                      leftWidth: size.width / 3.0,
+                                      rightWidth: size.width / 1.8,
+                                    ),
+                                    SizedBox(height: 10.0),
+                                    Divider(color: Colors.black54, thickness: 0.6),
+                                    ItemTileTwoColumn(
+                                      leftLabel: Text('Número de Lote'),
+                                      rightLabel: Text('Terminal ID'),
+                                      leftItem: Text(_merchant.BatchNumber.toString()),
+                                      //TODO: asignar campo valido
+                                      rightItem: Text(_terminal.idTerminal),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: Text('Serial Terminal'),
+                                      rightLabel: Text('Tipo de Pin Pad'),
+                                      leftItem: Text(_serialNumber),
+                                      rightItem: Text('Interno'),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: Text('Tiempo Max. Entrada'),
+                                      rightLabel: Text('Porcentaje Propina'),
+                                      leftItem: Text(_terminal.timeoutPrompt.toString()),
+                                      rightItem: Text(_terminal.maxTipPercentage.toString()),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    /*ItemTileTwoColumn(
+                                  leftLabel: Text('Tipo  Soft.'),
+                                  rightLabel: Text('Lectura de Track'),
+                                  leftItem: Text('Normal'),
+                                  rightItem: Text('Track 1 y Track 2'),
+                                  leftWidth: size.width / 2.18,
+                                  rightWidth: size.width / 2.18,
+                                ),*/
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión',
+                                          value: _terminal.print,
+                                          onChanged: null),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Cash back',
+                                          value: _terminal.cashback,
+                                          onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'Cuotas',
+                                          value: _terminal.installments,
+                                          onChanged: null),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Devolución',
+                                          value: _terminal.refund,
+                                          onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'Cheque',
+                                          value: _acquirer.cheque,
+                                          onChanged: null),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Check In/\nCheckOut',
+                                          value: _acquirer.checkIncheckOut,
+                                          onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'CVV2', value: _acquirer.cvv2, onChanged: null),
+                                      rightLabel: CheckboxItem(
+                                          label: '4 últimos\ndígitos',
+                                          value: _terminal.last4Digits,
+                                          onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'Clave\nAnulación',
+                                          value: _terminal.passwordVoid,
+                                          onChanged: null),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Clave Cierre',
+                                          value: _terminal.passwordBatch,
+                                          onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                        label: 'Clave\nDevolución',
+                                        value: _terminal.passwordRefund,
+                                        onChanged: null,
+                                      ),
+                                      rightLabel: CheckboxItem(
+                                        label: 'Enmascarar\nTarjeta',
+                                        value: _terminal.maskPan,
+                                        onChanged: null,
+                                      ),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                        label: 'Pre-impresión',
+                                        value: _acquirer.prePrint,
+                                        onChanged: null,
+                                      ),
+                                      rightLabel: CheckboxItem(
+                                        label: 'Entrada\nManual PAN',
+                                        value: _acquirer.manualEntry,
+                                        onChanged: null,
+                                      ),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                        label: 'Confirmación\nde Importe',
+                                        value: _terminal.amountConfirmation,
+                                        onChanged: null,
+                                      ),
+                                      rightLabel: CheckboxItem(
+                                        label: 'Ventas Fuera\nde Línea',
+                                        value: _acquirer.saleOffline,
+                                        onChanged: null,
+                                      ),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                  ],
+                                );
+                              }
+                              return retWidget;
+                            },
                           );
                         }
                         return retWidget;
@@ -513,7 +538,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                               ItemTileTwoColumn(
                                 contentPadding: EdgeInsets.zero,
                                 leftLabel: DataTile(
-                                  myTitle: 'IP POS',
+                                  myTitle: 'IP Host',
                                   value: _comm.ip,
                                   type: _tNumber,
                                   maxLength: 15,
@@ -609,7 +634,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                             children: <Widget>[
                               ItemTileTwoColumn(
                                 leftLabel: Text('Código Adquiriente'),
-                                leftItem: Text('01'),
+                                leftItem: Text(_merchant.AcquirerCode.toString()),
                                 rightLabel: Text('Nombre Adquiriente'),
                                 rightItem: Text(_acquirer.name),
                                 leftWidth: size.width / 2.18,
