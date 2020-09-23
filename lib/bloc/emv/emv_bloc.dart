@@ -19,9 +19,9 @@ class EmvBloc extends Bloc<EmvEvent, EmvState> {
     yield EmvLoading();
 
     if (event is GetEmv) {
-      int numTerminals = await emvRepository.getCountEmvs();
+      int numEmvs = await emvRepository.getCountEmvs();
 
-      if (numTerminals == 0) {
+      if (numEmvs == 0) {
         yield EmvMissing();
       } else {
         Map<String, dynamic> emvMap = await emvRepository.getEmv(event.id);
@@ -33,8 +33,8 @@ class EmvBloc extends Bloc<EmvEvent, EmvState> {
       }
     } else if (event is UpdateEmv) {
       yield EmvLoading();
-      await emvRepository.updateEmv(event.terminal);
-      yield EmvGet(id: event.terminal.id);
+      await emvRepository.updateEmv(event.emv);
+      yield EmvGet(id: event.emv.id);
     }
   }
 }

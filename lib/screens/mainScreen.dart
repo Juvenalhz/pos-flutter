@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_event.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
@@ -26,12 +28,14 @@ class MainScreen extends StatelessWidget {
     final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     final EmvBloc emvBloc = BlocProvider.of<EmvBloc>(context);
+    final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
 
     merchantBloc.add(GetMerchant(1));
     terminalBloc.add(GetTerminal(1));
     commBloc.add(GetComm(1));
     emvBloc.add(GetEmv(1));
+    acquirerBloc.add(GetAcquirer(1));
 
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,

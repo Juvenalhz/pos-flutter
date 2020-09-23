@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
+import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_state.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
@@ -13,6 +15,7 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/terminal/terminal_state.dart';
+import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
@@ -39,6 +42,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   Terminal _terminal;
   Comm _comm;
   Emv _emv;
+  Acquirer _acquirer;
   TabController _tabController;
   int _indexTab;
   final _formKey = GlobalKey<FormState>();
@@ -595,29 +599,38 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         return retWidget;
                       },
                     ),
-                    ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                      children: <Widget>[
-                        ItemTileTwoColumn(
-                          leftLabel: Text('Código Adquiriente'),
-                          leftItem: Text('01'),
-                          rightLabel: Text('Nombre Adquiriente'),
-                          rightItem: Text('Banco Mercantil qwer'),
-                          leftWidth: size.width / 2.18,
-                          rightWidth: size.width / 2.18,
-                        ),
-                        ItemTileTwoColumn(
-                          leftLabel: Text('RIF Adquiriente'),
-                          leftItem: Text('0101010101011'),
-                          rightLabel: CheckboxItem(
-                            label: 'Activo',
-                            value: true,
-                            onChanged: null,
-                          ),
-                          leftWidth: size.width / 2.18,
-                          rightWidth: size.width / 2.18,
-                        ),
-                      ],
+                    BlocBuilder<AcquirerBloc, AcquirerState>(
+                      builder: (context, state) {
+                        Widget retWidget = SizedBox();
+                        if (state is AcquirerLoaded) {
+                          _acquirer = state.acquirer;
+                          retWidget = ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                            children: <Widget>[
+                              ItemTileTwoColumn(
+                                leftLabel: Text('Código Adquiriente'),
+                                leftItem: Text('01'),
+                                rightLabel: Text('Nombre Adquiriente'),
+                                rightItem: Text(_acquirer.name),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),
+                              ItemTileTwoColumn(
+                                leftLabel: Text('RIF Adquiriente'),
+                                leftItem: Text(_acquirer.rif),
+                                rightLabel: CheckboxItem(
+                                  label: 'Activo',
+                                  value: true,
+                                  onChanged: null,
+                                ),
+                                leftWidth: size.width / 2.18,
+                                rightWidth: size.width / 2.18,
+                              ),
+                            ],
+                          );
+                        }
+                        return retWidget;
+                      },
                     ),
                   ],
                 ),

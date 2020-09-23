@@ -37,7 +37,7 @@ class EmvTerminal extends EmvEvent {
 }
 
 class UpdateEmv extends EmvEvent {
-  final Emv terminal;
+  final Emv emv;
 
-  const UpdateEmv(this.terminal);
+  const UpdateEmv(this.emv);
 }
