@@ -7,4 +7,9 @@ class Pinpad {
   void loadTables(Map<String, dynamic> emv, List<Map<String, dynamic>> aids, List<Map<String, dynamic>> pubKeys) async {
     await _channel.invokeMethod('loadTables', {'emv': emv, 'aids': aids, 'pubKeys': pubKeys});
   }
+
+  void getCard(Map<String, dynamic> trans) async {
+    await _channel.invokeMethod('getCard', {'trans': trans});
+  }
+
 }

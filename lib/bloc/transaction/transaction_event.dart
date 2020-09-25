@@ -29,7 +29,21 @@ class TransBack extends TransactionEvent {
   List<Object> get props => [];
 }
 
-class TransGetCard extends TransactionEvent {
+class TransLoadEmvTables extends TransactionEvent {
   @override
   List<Object> get props => [];
+}
+
+class TransWaitEmvTablesLoaded extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransGetCard extends TransactionEvent {
+  final Trans trans;
+
+  const TransGetCard([this.trans]);
+
+  @override
+  List<Object> get props => [this.trans];
 }

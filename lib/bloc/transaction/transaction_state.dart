@@ -32,6 +32,16 @@ class TransactionAskConfirmation extends TransactionState {
   List<Object> get props => [];
 }
 
+class TransactionLoadEmvTable extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionWaitEmvTablesLoaded extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
 class TransactionGetCard extends TransactionState {
   final Trans trans;
 
