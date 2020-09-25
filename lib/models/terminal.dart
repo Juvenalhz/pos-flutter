@@ -1,4 +1,6 @@
-class Terminal{
+import 'package:pay/utils/dataUtils.dart';
+
+class Terminal {
   int _id;
   String _password;
   String _techPassword;
@@ -10,37 +12,37 @@ class Terminal{
   int _maxTipPercentage;
   int _keyIndex;
   String _industry;
-  String _print;
-  int _cashback;
-  int _installments;
-  int _refund;
-  int _last4Digits;
-  int _passwordVoid;
-  int _passwordBatch;
-  int _passwordRefund;
-  int _maskPan;
-  int _amountConfirmation;
+  bool _print;
+  bool _cashback;
+  bool _installments;
+  bool _refund;
+  bool _last4Digits;
+  bool _passwordVoid;
+  bool _passwordBatch;
+  bool _passwordRefund;
+  bool _maskPan;
+  bool _amountConfirmation;
 
   Terminal(this._id, this._idTerminal,
-    [this._password,
-    this._techPassword,
-    this._kin,
-    this._minPinDigits,
-    this._maxPinDigits,
-    this._timeoutPrompt,
-    this._maxTipPercentage,
-    this._keyIndex,
-    this._industry,
-    this._print,
-    this._cashback,
-    this._installments,
-    this._refund,
-    this._last4Digits,
-    this._passwordVoid,
-    this._passwordBatch,
-    this._passwordRefund,
-    this._maskPan,
-    this._amountConfirmation]);
+      [this._password,
+      this._techPassword,
+      this._kin,
+      this._minPinDigits,
+      this._maxPinDigits,
+      this._timeoutPrompt,
+      this._maxTipPercentage,
+      this._keyIndex,
+      this._industry,
+      this._print,
+      this._cashback,
+      this._installments,
+      this._refund,
+      this._last4Digits,
+      this._passwordVoid,
+      this._passwordBatch,
+      this._passwordRefund,
+      this._maskPan,
+      this._amountConfirmation]);
 
   int get id => _id;
   String get password => _password;
@@ -53,34 +55,34 @@ class Terminal{
   int get maxTipPercentage => _maxTipPercentage;
   int get keyIndex => _keyIndex;
   String get industry => _industry;
-  String get print => _print;
-  int get cashback => _cashback;
-  int get installments => _installments;
-  int get refund => _refund;
-  int get last4Digits => _last4Digits;
-  int get passwordVoid => _passwordVoid;
-  int get passwordBatch => _passwordBatch;
-  int get passwordRefund => _passwordRefund;
-  int get maskPan => _maskPan;
-  int get amountConfirmation => _amountConfirmation;
+  bool get print => _print;
+  bool get cashback => _cashback;
+  bool get installments => _installments;
+  bool get refund => _refund;
+  bool get last4Digits => _last4Digits;
+  bool get passwordVoid => _passwordVoid;
+  bool get passwordBatch => _passwordBatch;
+  bool get passwordRefund => _passwordRefund;
+  bool get maskPan => _maskPan;
+  bool get amountConfirmation => _amountConfirmation;
 
   set id(int id) {
     this._id = id;
   }
 
-  set password(String password){
+  set password(String password) {
     this._password = password;
   }
 
-  set techPassword(String techPassword){
+  set techPassword(String techPassword) {
     this._techPassword = techPassword;
   }
 
-  set idTerminal(String idTerminal){
+  set idTerminal(String idTerminal) {
     this._idTerminal = idTerminal;
   }
 
-  set kin(int kin){
+  set kin(int kin) {
     this._kin = kin;
   }
 
@@ -88,63 +90,63 @@ class Terminal{
     this._minPinDigits = minPinDigits;
   }
 
-  set maxPinDigits(int maxPinDigits){
+  set maxPinDigits(int maxPinDigits) {
     this._maxPinDigits = maxPinDigits;
   }
 
-  set timeoutPrompt(int timeoutPrompt){
+  set timeoutPrompt(int timeoutPrompt) {
     this._timeoutPrompt = timeoutPrompt;
   }
 
-  set maxTipPercentage(int maxTipPercentage){
+  set maxTipPercentage(int maxTipPercentage) {
     this._maxTipPercentage = maxTipPercentage;
   }
 
-  set keyIndex(int keyIndex){
+  set keyIndex(int keyIndex) {
     this._keyIndex = keyIndex;
   }
 
-  set industry(String industry){
+  set industry(String industry) {
     this._industry = industry;
   }
 
-  set print(String print){
+  set print(bool print) {
     this._print = print;
   }
 
-  set cashback(int cashback){
+  set cashback(bool cashback) {
     this._cashback = cashback;
   }
 
-  set installments(int installments){
+  set installments(bool installments) {
     this._installments = installments;
   }
 
-  set refund(int refund){
+  set refund(bool refund) {
     this._refund = refund;
   }
 
-  set last4Digits(int last4Digits){
+  set last4Digits(bool last4Digits) {
     this._last4Digits = last4Digits;
   }
 
-  set passwordVoid(int passwordVoid){
+  set passwordVoid(bool passwordVoid) {
     this._passwordVoid = passwordVoid;
   }
 
-  set passwordBatch(int passwordBatch){
+  set passwordBatch(bool passwordBatch) {
     this._passwordBatch = passwordBatch;
   }
 
-  set passwordRefund(int passwordRefund){
+  set passwordRefund(bool passwordRefund) {
     this._passwordRefund = passwordRefund;
   }
 
-  set maskPan(int maskPan){
+  set maskPan(bool maskPan) {
     this._maskPan = maskPan;
   }
 
-  set amountConfirmation(int amountConfirmation){
+  set amountConfirmation(bool amountConfirmation) {
     this._amountConfirmation = amountConfirmation;
   }
 
@@ -162,16 +164,16 @@ class Terminal{
     map['maxTipPercentage'] = this._maxTipPercentage;
     map['keyIndex'] = this._keyIndex;
     map['industry'] = this._industry;
-    map['print'] = this._print;
-    map['cashback'] = this._cashback;
-    map['installments'] = this._installments;
-    map['refund'] = this._refund;
-    map['last4Digits'] = this._last4Digits;
-    map['passwordVoid'] = this._passwordVoid;
-    map['passwordBatch'] = this._passwordBatch;
-    map['passwordRefund'] = this._passwordRefund;
-    map['maskPan'] = this._maskPan;
-    map['amountConfirmation'] = this._amountConfirmation;
+    map['print'] = boolToString(this._print);
+    map['cashback'] = boolToInt(this._cashback);
+    map['installments'] = boolToInt(this._installments);
+    map['refund'] = boolToInt(this._refund);
+    map['last4Digits'] = boolToInt(this._last4Digits);
+    map['passwordVoid'] = boolToInt(this._passwordVoid);
+    map['passwordBatch'] = boolToInt(this._passwordBatch);
+    map['passwordRefund'] = boolToInt(this._passwordRefund);
+    map['maskPan'] = boolToInt(this._maskPan);
+    map['amountConfirmation'] = boolToInt(this._amountConfirmation);
 
     return map;
   }
@@ -188,17 +190,15 @@ class Terminal{
     this._maxTipPercentage = terminal['maxTipPercentage'];
     this._keyIndex = terminal['keyIndex'];
     this._industry = terminal['industry'];
-    this._print = terminal['print'];
-    this._cashback = terminal['cashback'];
-    this._installments = terminal['installments'];
-    this._refund = terminal['refund'];
-    this._last4Digits = terminal['last4Digits'];
-    this._passwordVoid = terminal['passwordVoid'];
-    this._passwordBatch = terminal['passwordBatch'];
-    this._passwordBatch = terminal['passwordRefund'];
-    this._maskPan = terminal['maskPan'];
-    this._amountConfirmation = terminal['amountConfirmation'];
+    this._print = stringToBool(terminal['print']);
+    this._cashback = intToBool(terminal['cashback']);
+    this._installments = intToBool(terminal['installments']);
+    this._refund = intToBool(terminal['refund']);
+    this._last4Digits = intToBool(terminal['last4Digits']);
+    this._passwordVoid = intToBool(terminal['passwordVoid']);
+    this._passwordBatch = intToBool(terminal['passwordBatch']);
+    this._passwordRefund = intToBool(terminal['passwordRefund']);
+    this._maskPan = intToBool(terminal['maskPan']);
+    this._amountConfirmation = intToBool(terminal['amountConfirmation']);
   }
-
 }
-
