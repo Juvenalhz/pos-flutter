@@ -1,7 +1,10 @@
 package com.lccnet.pay;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.ingenico.lar.bc.Pinpad;
@@ -11,6 +14,12 @@ import com.ingenico.lar.bc.PinpadOutputHandler;
 import com.ingenico.lar.bc.apos.PinpadProviderAPOS;
 
 import java.util.HashMap;
+
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.view.FlutterView;
+
+import static java.lang.Thread.sleep;
 
 /**
  * A singleton interface to BC's Pinpad API to ease state sharing between the Activities of the
@@ -24,6 +33,9 @@ public class PinpadManager implements PinpadCallbacks {
 
     // the singleton instance
     static private PinpadManager myself = null;
+    HashMap<String, Object> params;
+    static private FlutterView flutterView = null;
+    static private MethodChannel methodChannel = null;
 
     /**
      * Initialize this {@code PinpadManager} instance.
@@ -96,16 +108,20 @@ public class PinpadManager implements PinpadCallbacks {
 
     private PinpadManager(Context context) {
         Log.d(TAG, "building Pinpad with " + context);
-        HashMap<String, Object> params = new HashMap<>();
+        params = new HashMap<>();
         params.put(Pinpad.PARAM_CONTEXT, context);
 
-        this.pinpad = Pinpad.build(params, this);
-        if (this.pinpad == null) {
-            Log.e(TAG, "error building Pinpad");
-            throw new UnsupportedOperationException("Pinpad construction error");
-        }
-        else{
-            this.setCallbacks(this);
+        this.flutterView = new FlutterView(context);
+        this.methodChannel = new MethodChannel(flutterView, "com.lccnet.pay/emvCallbacks");
+
+        if (Build.MODEL.contains("APOS")) {
+            this.pinpad = Pinpad.build(params, this);
+            if (this.pinpad == null) {
+                Log.e(TAG, "error building Pinpad");
+                throw new UnsupportedOperationException("Pinpad construction error");
+            } else {
+                this.setCallbacks(this);
+            }
         }
     }
 
@@ -123,26 +139,43 @@ public class PinpadManager implements PinpadCallbacks {
      */
     public void updateTables(String[] tables) {
 
-        PinpadManager.me().abort();
+        this.callbacks = callbacks;
 
-        //this.callbacks = callbacks;
-
-        //int ret = pinpad.tableLoadInit("00" + TIMESTAMP);
-
-
-
-        new Thread(() -> {
-            pinpad.open();
-            if (pinpad.tableLoadInit("00" + TIMESTAMP) == Pinpad.PP_TABEXP) {
-                for (final String s : tables){
-                    pinpad.tableLoadRec(s);
+        if (Build.MODEL.contains("APOS")) {
+            PinpadManager.me().abort();
+            new Thread(() -> {
+                pinpad.open();
+                if (pinpad.tableLoadInit("00" + TIMESTAMP) == Pinpad.PP_TABEXP) {
+                    for (final String s : tables) {
+                        pinpad.tableLoadRec(s);
+                    }
+                    pinpad.tableLoadEnd();
                 }
-                pinpad.tableLoadEnd();
-            }
-        }).start();
 
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        methodChannel.invokeMethod("tablesLoaded", "");
+                    }
+                });
 
-
+            }).start();
+        }
+        else{
+            new Thread(() -> {
+                try {
+                    sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        methodChannel.invokeMethod("tablesLoaded", "");
+                    }
+                });
+            }).start();
+        }
     }
 
     public void abort() {
@@ -209,24 +242,31 @@ public class PinpadManager implements PinpadCallbacks {
 
     @Override
     public int onShowMessage(int i, String s) {
-        return (callbacks != null) ? callbacks.onShowMessage(i, s) : 0;
+        //return (callbacks != null) ?
+        formatMessage(i, s);
+        return 0;
     }
 
     @Override
     public int onShowPinEntry(String s, long l, int i) {
-        return (callbacks != null) ? callbacks.onShowPinEntry(s, l, i) : 0;
+        //return (callbacks != null) ? callbacks.onShowPinEntry(s, l, i);
+        return 0;
     }
 
     @Override
     public void onAbort() {
-        if (callbacks != null) callbacks.onAbort();
+        //if (callbacks != null) callbacks.onAbort();
     }
 
     @Override
     public void onShowMenu(int i, String s, String[] strings, MenuResult menuResult) {
         // if callbacks have not been set, arbitrarily select first menu entry
-        if (callbacks != null) callbacks.onShowMenu(i, s, strings, menuResult);
-        else menuResult.setResult(0, 0);
+        //if (callbacks != null) callbacks.onShowMenu(i, s, strings, menuResult);
+       // else menuResult.setResult(0, 0);
+
+        menuResult.setResult(0, 0);
+
     }
 }
+
 

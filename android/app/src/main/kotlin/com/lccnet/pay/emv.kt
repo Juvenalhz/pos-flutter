@@ -1,44 +1,79 @@
 package com.lccnet.pay
 
-import android.os.Build
-import androidx.annotation.NonNull
 import android.content.Context
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import androidx.annotation.NonNull
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.view.FlutterView
 import java.util.*
-
 
 class Emv : MethodChannel.MethodCallHandler{
 
     private final var pinpad : PinpadManager? = null
+
+    private var emv : HashMap<String, Any?>? = null
+    private var aids : List<HashMap<String, Any?>>? = null
+    private var pubKeys : List<HashMap<String, Any?>>? = null
+    private val tables = arrayOfNulls<String>(150)
+    private var context: Context? = null
+    private var callbackChannel : MethodChannel? = null
 
     /** Plugin registration.  */
     fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "pinpad")
         channel.setMethodCallHandler(Emv())
 
-        if (Build.MODEL.contains("APOS")) {
+//        if (Build.MODEL.contains("APOS")) {
             this.pinpad = PinpadManager.init(context)
-        }
+//        }
+
+
+        Thread {
+            try {
+                Thread.sleep(5000)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                var flutterView: FlutterView? = null
+                var methodChannel: MethodChannel? = null
+
+                flutterView = FlutterView(context)
+                methodChannel = MethodChannel(flutterView, "com.lccnet.pay/emvCallbacks")
+                methodChannel.invokeMethod("tablesLoaded", "")
+            }
+        }.start()
     }
 
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "loadTables") {
-            val emv : HashMap<String, Any?>? = call.argument("emv")
-            val aids : List<HashMap<String, Any?>>? = call.argument("aids")
-            val pubKeys : List<HashMap<String, Any?>>? = call.argument("pubKeys")
+            emv = call.argument("emv")
+            aids = call.argument("aids")
+            pubKeys = call.argument("pubKeys")
 
             loadTables(emv, aids, pubKeys)
 
-        } else {
+        } else if (call.method == "getCard") {
+            val trans : HashMap<String, Any?>? = call.argument("trans")
+
+            if (trans != null) {
+                getCard(trans["total"] as Int)
+            }
+        }
+        else {
             result.notImplemented()
         }
     }
 
-    fun loadTables(emv: HashMap<String, Any?>?, aids: List<HashMap<String, Any?>>?, pubKeys: List<HashMap<String, Any?>>?){
-        val tables = arrayOfNulls<String>(150)
+    private fun loadTables(emv: HashMap<String, Any?>?, aids: List<HashMap<String, Any?>>?, pubKeys: List<HashMap<String, Any?>>?){
+
         var i : Int = 0
 
         if (aids != null) {
@@ -111,9 +146,77 @@ class Emv : MethodChannel.MethodCallHandler{
             }
         }
 
-        if (Build.MODEL.contains("APOS")) {
+        //if (Build.MODEL.contains("APOS")) {
             PinpadManager.me().updateTables(tables)
-        }
+        //}
+
+
     }
 
+    private fun currentDate(): String? {
+        val now = Calendar.getInstance()
+        return String.format(Locale.US, "%02d%02d%02d",
+                now[Calendar.YEAR] % 100,
+                now[Calendar.MONTH],
+                now[Calendar.DAY_OF_MONTH])
+    }
+
+    private fun currentTime(): String? {
+        val now = Calendar.getInstance()
+        return String.format(Locale.US, "%02d%02d%02d",
+                now[Calendar.HOUR],
+                now[Calendar.MINUTE],
+                now[Calendar.SECOND])
+    }
+
+    private fun getCard(amount: Int){
+
+        if (Build.MODEL.contains("APOS")) {
+
+            var getCardInput = "00"            // Network ID filter - allways 0
+                getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
+                getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
+                getCardInput += currentDate()       // Transaction date (YYMMDD)
+                getCardInput += currentTime()       // Transaction time (HHMMSS)
+                getCardInput += PinpadManager.TIMESTAMP  // 10-digit table timestamp
+                getCardInput += "00"                // filling digits
+                getCardInput += "0"                // 1 to allow CTLS, 0 to force disable
+
+
+            val readCard = getCard()
+
+            readCard.getCardData(amount)
+
+//            Thread {
+//
+//                PinpadManager.me().open()
+//
+//                var ret = PinpadManager.me().getCard(getCardInput )
+//
+//
+//                Log.i("emv", "getCard: $ret")
+//
+//
+//                if (ret == Pinpad.PP_TABEXP) {
+//                    Thread {
+//                        PinpadManager.me().updateTables(this.tables)
+//                        PinpadManager.me().resumeGetCard()
+//                    }.start()
+//                }
+//
+//                Log.i("emv", "getCard: $ret")
+//            }.start()
+//
+//
+//
+//
+//
+//            Thread.sleep(15000)
+
+            Log.i("emv", "getCard -- out")
+        }
+        else{
+
+        }
+    }
 }
