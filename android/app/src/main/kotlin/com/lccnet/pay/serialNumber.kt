@@ -20,7 +20,7 @@ class SerialNumber : MethodChannel.MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "getSerialNumber") {
-          result.success(Build.getSerial())
+          result.success(Build.SERIAL)
         } else {
             result.notImplemented()
         }
