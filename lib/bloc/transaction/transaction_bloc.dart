@@ -14,19 +14,12 @@ part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-
+  Pinpad pinpad;
   var trans = new Trans();
-  TransactionEvent lastEvent;
   BuildContext context;
-  Pinpad pp;
 
-  TransactionBloc(this.context) : super(TransactionInitial()){
-    init(context);
-  }
+  TransactionBloc(this.context) : super(TransactionInitial());
 
-  void init(BuildContext context){
-    pp = new Pinpad(this.context);
-  }
     @override
     Stream<TransactionState> mapEventToState(TransactionEvent event,  ) async* {
 
@@ -43,7 +36,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.tip = event.tip;
         trans.total += event.tip;
         yield TransactionLoadEmvTable();
-        this.add(TransLoadEmvTables());
+        //this.add(TransLoadEmvTables());
       }
       else if (event is TransAskConfirmation) {
         yield TransactionAskConfirmation();
@@ -55,15 +48,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
         List<Map<String, dynamic>> aids = await aidRepository.getAids();
         List<Map<String, dynamic>> pubKeys = await pubKeyRepository.getPubKeys();
-        pp.loadTables(emv.toMap(), aids, pubKeys);
+        pinpad  = event.pinpad;
+        pinpad.loadTables(emv.toMap(), aids, pubKeys);
         this.add(TransWaitEmvTablesLoaded());
         yield TransactionWaitEmvTablesLoaded();
       }
       else if (event is TransGetCard){
-        pp.getCard(event.trans.toMap());
+        pinpad.getCard(trans.toMap());
       }
 
-      lastEvent = event;
     }
   }
 

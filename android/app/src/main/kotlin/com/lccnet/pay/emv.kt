@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
+import com.ingenico.lar.bc.Pinpad
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -29,7 +30,7 @@ class Emv : MethodChannel.MethodCallHandler{
         channel.setMethodCallHandler(Emv())
 
 //        if (Build.MODEL.contains("APOS")) {
-            this.pinpad = PinpadManager.init(context, flutterEngine)
+            this.pinpad = PinpadManager.init(context, channel)
 //        }
 
     }
@@ -169,31 +170,26 @@ class Emv : MethodChannel.MethodCallHandler{
 
             readCard.getCardData(amount)
 
-//            Thread {
-//
-//                PinpadManager.me().open()
-//
-//                var ret = PinpadManager.me().getCard(getCardInput )
-//
-//
-//                Log.i("emv", "getCard: $ret")
-//
-//
-//                if (ret == Pinpad.PP_TABEXP) {
-//                    Thread {
-//                        PinpadManager.me().updateTables(this.tables)
-//                        PinpadManager.me().resumeGetCard()
-//                    }.start()
-//                }
-//
-//                Log.i("emv", "getCard: $ret")
-//            }.start()
-//
-//
-//
-//
-//
-//            Thread.sleep(15000)
+            Thread {
+
+                PinpadManager.me().open()
+
+                var ret = PinpadManager.me().getCard(getCardInput )
+
+
+                Log.i("emv", "getCard: $ret")
+
+
+                if (ret == Pinpad.PP_TABEXP) {
+                    Thread {
+                        PinpadManager.me().updateTables(this.tables)
+                        PinpadManager.me().resumeGetCard()
+                    }.start()
+                }
+
+                Log.i("emv", "getCard: $ret")
+            }.start()
+
 
             Log.i("emv", "getCard -- out")
         }

@@ -29,8 +29,6 @@ class InitializationApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    EmvCallbacks emvCallbacks = new EmvCallbacks(context);
-
     return MaterialApp(
       home: Scaffold(
         body: MultiBlocProvider(providers: [

@@ -30,8 +30,12 @@ class TransBack extends TransactionEvent {
 }
 
 class TransLoadEmvTables extends TransactionEvent {
+  Pinpad pinpad;
+
+  TransLoadEmvTables(this.pinpad);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [this.pinpad];
 }
 
 class TransWaitEmvTablesLoaded extends TransactionEvent {

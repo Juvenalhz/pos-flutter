@@ -34,8 +34,6 @@ public class PinpadManager implements PinpadCallbacks {
     // the singleton instance
     static private PinpadManager myself = null;
     HashMap<String, Object> params;
-    static private FlutterView flutterView = null;
-    static private MethodChannel methodChannel = null;
 
     /**
      * Initialize this {@code PinpadManager} instance.
@@ -43,18 +41,18 @@ public class PinpadManager implements PinpadCallbacks {
      * @return The singleton instance (the same as will be returned by {@link #me()}.
      * @throws UnsupportedOperationException in any error creating the {@code Pinpad} instance.
      */
-    public static PinpadManager init(Context context, FlutterEngine flutterEngine) {
+    public static PinpadManager init(Context context, MethodChannel channel) {
         Log.d(TAG, "PinpadManager.init(" + context + ")");
-        if (myself == null) myself = new PinpadManager(context, flutterEngine);
+        if (myself == null) myself = new PinpadManager(context, channel);
 
         return myself;
     }
 
-    private PinpadManager(Context context, FlutterEngine flutterEngine) {
+    private PinpadManager(Context context, MethodChannel channel) {
         Log.d(TAG, "building Pinpad with " + context);
         params = new HashMap<>();
         params.put(Pinpad.PARAM_CONTEXT, context);
-        params.put("FlutterEngine", flutterEngine);
+        params.put("MethodChannel", channel);
 
         if (Build.MODEL.contains("APOS")) {
             this.pinpad = Pinpad.build(params, this);
@@ -139,7 +137,9 @@ public class PinpadManager implements PinpadCallbacks {
      */
     public void updateTables(String[] tables) {
 
-        this.callbacks = callbacks;
+        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+
+        params.put("emvTables", tables);
 
         if (Build.MODEL.contains("APOS")) {
             PinpadManager.me().abort();
@@ -155,7 +155,7 @@ public class PinpadManager implements PinpadCallbacks {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        methodChannel.invokeMethod("tablesLoaded", "");
+                        channel.invokeMethod("tablesLoaded", "");
                     }
                 });
 
@@ -169,12 +169,11 @@ public class PinpadManager implements PinpadCallbacks {
                     e.printStackTrace();
                 }
 
-                FlutterEngine flutterEngine = (FlutterEngine) params.get("FlutterEngine");
-                MethodChannel methodChannel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "pinpad");
+
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        methodChannel.invokeMethod("tablesLoaded", "");
+                        channel.invokeMethod("tablesLoaded", "");
                     }
                 });
             }).start();
@@ -189,17 +188,49 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.open();
     }
 
-    public int getCard(final String input, final PinpadCallbacks callbacks, final PinpadOutputHandler handler) {
-        this.callbacks = callbacks;
-        return pinpad.getCard(input, handler);
+    public int getCard(final String input) {
+        //this.callbacks = callbacks;
+
+        int ret = pinpad.getCard(input, output -> {
+            Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
+            if (output.getResultCode() == Pinpad.PP_CANCEL) {
+                Log.i(TAG, "Pinpad.PP_CANCEL");
+            } else if (output.getResultCode() == Pinpad.PP_OK) {
+                final String out = output.getOutput();
+                final int cardType = Integer.parseInt(out.substring(0, 2));
+                final int readStatus = Integer.parseInt(out.substring(2, 3));
+                final int appType = Integer.parseInt(out.substring(3, 5));
+                final int appNetID = Integer.parseInt(out.substring(5, 7));
+                final int recordID = Integer.parseInt(out.substring(7, 9));
+                final TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
+                final int panLen = Integer.parseInt(out.substring(233, 235));
+                final String pan = out.substring(235, 235 + panLen);
+                final int PANSequenceNumber = Integer.parseInt(out.substring(254, 256));
+                final String appLabel = out.substring(256, 272).trim();
+                final String serviceCode = out.substring(272, 275);
+                final String cardholderName = out.substring(275, 301).trim();
+                final String expiryDate = out.substring(301, 307);
+
+                Log.i(TAG, "Pinpad.PP_OK");
+
+
+            }
+        });
+        if (ret == Pinpad.PP_TABEXP) {
+            new Thread(() -> {
+                String[] emvTables = (String[]) params.get("emvTables");
+                updateTables(emvTables);
+                resumeGetCard();
+            }).start();
+        }
+        return ret;
     }
 
     public int resumeGetCard() {
         return pinpad.resumeGetCard();
     }
 
-    public int goOnChip(final String input, final String tags, final PinpadCallbacks callbacks, final PinpadOutputHandler handler) {
-        this.callbacks = callbacks;
+    public int goOnChip(final String input, final String tags, final PinpadOutputHandler handler) {
         return pinpad.goOnChip(input, tags, null, handler);
     }
 
@@ -207,13 +238,11 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.finishChip(input, tags);
     }
 
-    public int removeCard(final String message, final PinpadCallbacks callbacks, final PinpadOutputHandler handler) {
-        this.callbacks = callbacks;
+    public int removeCard(final String message, final PinpadOutputHandler handler) {
         return pinpad.removeCard(message, handler );
     }
 
-    public int checkEvent(final String input, final PinpadCallbacks callbacks, final PinpadOutputHandler handler) {
-        this.callbacks = callbacks;
+    public int checkEvent(final String input, final PinpadOutputHandler handler) {
         return pinpad.checkEvent(input, handler);
     }
 
