@@ -43,16 +43,34 @@ public class PinpadManager implements PinpadCallbacks {
      * @return The singleton instance (the same as will be returned by {@link #me()}.
      * @throws UnsupportedOperationException in any error creating the {@code Pinpad} instance.
      */
-    public static PinpadManager init(Context context) {
+    public static PinpadManager init(Context context, FlutterEngine flutterEngine) {
         Log.d(TAG, "PinpadManager.init(" + context + ")");
-        if (myself == null) myself = new PinpadManager(context);
+        if (myself == null) myself = new PinpadManager(context, flutterEngine);
 
         return myself;
     }
 
+    private PinpadManager(Context context, FlutterEngine flutterEngine) {
+        Log.d(TAG, "building Pinpad with " + context);
+        params = new HashMap<>();
+        params.put(Pinpad.PARAM_CONTEXT, context);
+        params.put("FlutterEngine", flutterEngine);
+
+        if (Build.MODEL.contains("APOS")) {
+            this.pinpad = Pinpad.build(params, this);
+            if (this.pinpad == null) {
+                Log.e(TAG, "error building Pinpad");
+                throw new UnsupportedOperationException("Pinpad construction error");
+            } else {
+                this.setCallbacks(this);
+            }
+        }
+    }
+
+
     /**
      * Return the <i>already initialized</i> {@code PinpadManager} instance, or {@code null} if none.
-     * @return The {@code PinpadManager} instance of {@code null} if {@link #init(Context)} has not
+     * @return The {@code PinpadManager} instance of {@code null} if  has not
      *  been called yet.
      */
     static PinpadManager me() {
@@ -106,24 +124,6 @@ public class PinpadManager implements PinpadCallbacks {
     private Pinpad pinpad;
     private PinpadCallbacks callbacks;
 
-    private PinpadManager(Context context) {
-        Log.d(TAG, "building Pinpad with " + context);
-        params = new HashMap<>();
-        params.put(Pinpad.PARAM_CONTEXT, context);
-
-        this.flutterView = new FlutterView(context);
-        this.methodChannel = new MethodChannel(flutterView, "com.lccnet.pay/emvCallbacks");
-
-        if (Build.MODEL.contains("APOS")) {
-            this.pinpad = Pinpad.build(params, this);
-            if (this.pinpad == null) {
-                Log.e(TAG, "error building Pinpad");
-                throw new UnsupportedOperationException("Pinpad construction error");
-            } else {
-                this.setCallbacks(this);
-            }
-        }
-    }
 
     /**
      * Change the callbacks that will be called by {@code Pinpad}.
@@ -168,6 +168,9 @@ public class PinpadManager implements PinpadCallbacks {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                FlutterEngine flutterEngine = (FlutterEngine) params.get("FlutterEngine");
+                MethodChannel methodChannel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "pinpad");
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {

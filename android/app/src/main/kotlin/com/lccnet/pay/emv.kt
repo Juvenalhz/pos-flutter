@@ -29,28 +29,10 @@ class Emv : MethodChannel.MethodCallHandler{
         channel.setMethodCallHandler(Emv())
 
 //        if (Build.MODEL.contains("APOS")) {
-            this.pinpad = PinpadManager.init(context)
+            this.pinpad = PinpadManager.init(context, flutterEngine)
 //        }
 
-
-        Thread {
-            try {
-                Thread.sleep(5000)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-            Handler(Looper.getMainLooper()).post {
-                var flutterView: FlutterView? = null
-                var methodChannel: MethodChannel? = null
-
-                flutterView = FlutterView(context)
-                methodChannel = MethodChannel(flutterView, "com.lccnet.pay/emvCallbacks")
-                methodChannel.invokeMethod("tablesLoaded", "")
-            }
-        }.start()
     }
-
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "loadTables") {
