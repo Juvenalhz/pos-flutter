@@ -96,7 +96,7 @@ public class getCard implements PinpadCallbacks {
             Log.i(TAG, "onShowMessage2");
         }
 
-        final String message = PinpadManager.formatMessage(i, s);
+        final String message = "";// = PinpadManager.formatMessage(i, s);
         if (message != null) {
             Log.i(TAG, "onShowMessage3");
         }

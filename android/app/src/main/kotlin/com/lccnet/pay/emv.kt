@@ -2,15 +2,12 @@ package com.lccnet.pay
 
 import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
 import com.ingenico.lar.bc.Pinpad
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.view.FlutterView
 import java.util.*
 
 class Emv : MethodChannel.MethodCallHandler{
@@ -154,47 +151,42 @@ class Emv : MethodChannel.MethodCallHandler{
 
     private fun getCard(amount: Int){
 
-        if (Build.MODEL.contains("APOS")) {
 
-            var getCardInput = "00"            // Network ID filter - allways 0
-                getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
-                getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
-                getCardInput += currentDate()       // Transaction date (YYMMDD)
-                getCardInput += currentTime()       // Transaction time (HHMMSS)
-                getCardInput += PinpadManager.TIMESTAMP  // 10-digit table timestamp
-                getCardInput += "00"                // filling digits
-                getCardInput += "0"                // 1 to allow CTLS, 0 to force disable
+        var getCardInput = "00"            // Network ID filter - allways 0
+            getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
+            getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
+            getCardInput += currentDate()       // Transaction date (YYMMDD)
+            getCardInput += currentTime()       // Transaction time (HHMMSS)
+            getCardInput += PinpadManager.TIMESTAMP  // 10-digit table timestamp
+            getCardInput += "00"                // filling digits
+            getCardInput += "0"                // 1 to allow CTLS, 0 to force disable
 
 
-            val readCard = getCard()
+//            val readCard = getCard()
+//
+//            readCard.getCardData(amount)
 
-            readCard.getCardData(amount)
-
-            Thread {
-
+        Thread {
+            if (Build.MODEL.contains("APOS")) {
                 PinpadManager.me().open()
+            }
 
-                var ret = PinpadManager.me().getCard(getCardInput )
+            var ret = PinpadManager.me().getCard(getCardInput)
+            Log.i("emv", "getCard: $ret")
 
+            if (ret == Pinpad.PP_TABEXP) {
+                Thread {
+                    PinpadManager.me().updateTables(this.tables)
+                    PinpadManager.me().resumeGetCard()
+                }.start()
+            }
 
-                Log.i("emv", "getCard: $ret")
-
-
-                if (ret == Pinpad.PP_TABEXP) {
-                    Thread {
-                        PinpadManager.me().updateTables(this.tables)
-                        PinpadManager.me().resumeGetCard()
-                    }.start()
-                }
-
-                Log.i("emv", "getCard: $ret")
-            }.start()
+            Log.i("emv", "getCard: $ret")
+        }.start()
 
 
-            Log.i("emv", "getCard -- out")
-        }
-        else{
+        Log.i("emv", "getCard -- out")
 
-        }
+
     }
 }

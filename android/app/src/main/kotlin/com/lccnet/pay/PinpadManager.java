@@ -75,50 +75,7 @@ public class PinpadManager implements PinpadCallbacks {
         return myself;
     }
 
-    /**
-     * Return the message that shall be used for an {@code onShowMessage} with {@code id} and extra parameter {@code s}.
-     * @return The message to show or {@code null} if no message shall be shown!
-     */
-    static String formatMessage(int id, final String s) {
-        switch (id) {
-            case PinpadCallbacks.TEXT_S:
-                return s;
-            case PinpadCallbacks.PROCESSING:
-                return "Processing...";
-            case PinpadCallbacks.INSERT_SWIPE_CARD:
-                return "Insert or Swipe Card";
-            case PinpadCallbacks.TAP_INSERT_SWIPE_CARD:
-                return "Tap, Insert or Swipe Card";
-            case PinpadCallbacks.SELECT:
-                return "Select";
-            case PinpadCallbacks.SELECTED_S:
-                return "Selected: " + s;
-            case PinpadCallbacks.INVALID_APP:
-                return "Invalid Application";
-            case PinpadCallbacks.WRONG_PIN_S:
-                return "Wrong PIN (" + s + " left)";
-            case PinpadCallbacks.PIN_LAST_TRY:
-                return "PIN Last Try!";
-            case PinpadCallbacks.PIN_BLOCKED:
-                return "PIN Blocked!";
-            case PinpadCallbacks.CARD_BLOCKED:
-                return "Card Blocked!";
-            case PinpadCallbacks.REMOVE_CARD:
-                return "Please, Remove Card";
-            case PinpadCallbacks.UPDATING_TABLES:
-                return "Updating Tables...";
-            case PinpadCallbacks.SECOND_TAP:
-                return "Please Tap Card Again";
-            case PinpadCallbacks.PIN_VERIFIED:
-            case PinpadCallbacks.UPDATING_RECORD:
-            case PinpadCallbacks.PIN_STARTING:
-            default:
-                return null;
-        }
-    }
-
     public final static String TIMESTAMP = "0000000002";
-
     private Pinpad pinpad;
     private PinpadCallbacks callbacks;
 
@@ -133,12 +90,10 @@ public class PinpadManager implements PinpadCallbacks {
     }
 
     /**
-     * Update the BC tables given whatever the applicatison must be using.
+     * Update the BC tables given whatever the application must be using.
      */
     public void updateTables(String[] tables) {
-
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-
         params.put("emvTables", tables);
 
         if (Build.MODEL.contains("APOS")) {
@@ -164,11 +119,12 @@ public class PinpadManager implements PinpadCallbacks {
         else{
             new Thread(() -> {
                 try {
-                    sleep(2000);
+                    // simulate loading of the emv data
+                    this.onShowMessage(PinpadCallbacks.UPDATING_TABLES, "");
+                    sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -189,41 +145,62 @@ public class PinpadManager implements PinpadCallbacks {
     }
 
     public int getCard(final String input) {
-        //this.callbacks = callbacks;
+        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
 
-        int ret = pinpad.getCard(input, output -> {
-            Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
-            if (output.getResultCode() == Pinpad.PP_CANCEL) {
-                Log.i(TAG, "Pinpad.PP_CANCEL");
-            } else if (output.getResultCode() == Pinpad.PP_OK) {
-                final String out = output.getOutput();
-                final int cardType = Integer.parseInt(out.substring(0, 2));
-                final int readStatus = Integer.parseInt(out.substring(2, 3));
-                final int appType = Integer.parseInt(out.substring(3, 5));
-                final int appNetID = Integer.parseInt(out.substring(5, 7));
-                final int recordID = Integer.parseInt(out.substring(7, 9));
-                final TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
-                final int panLen = Integer.parseInt(out.substring(233, 235));
-                final String pan = out.substring(235, 235 + panLen);
-                final int PANSequenceNumber = Integer.parseInt(out.substring(254, 256));
-                final String appLabel = out.substring(256, 272).trim();
-                final String serviceCode = out.substring(272, 275);
-                final String cardholderName = out.substring(275, 301).trim();
-                final String expiryDate = out.substring(301, 307);
+        if (Build.MODEL.contains("APOS")) {
+            int ret = pinpad.getCard(input, output -> {
+                Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
+                if (output.getResultCode() == Pinpad.PP_CANCEL) {
+                    Log.i(TAG, "Pinpad.PP_CANCEL");
+                } else if (output.getResultCode() == Pinpad.PP_OK) {
+                    final String out = output.getOutput();
+                    final int cardType = Integer.parseInt(out.substring(0, 2));
+                    final int readStatus = Integer.parseInt(out.substring(2, 3));
+                    final int appType = Integer.parseInt(out.substring(3, 5));
+                    final int appNetID = Integer.parseInt(out.substring(5, 7));
+                    final int recordID = Integer.parseInt(out.substring(7, 9));
+                    final TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
+                    final int panLen = Integer.parseInt(out.substring(233, 235));
+                    final String pan = out.substring(235, 235 + panLen);
+                    final int PANSequenceNumber = Integer.parseInt(out.substring(254, 256));
+                    final String appLabel = out.substring(256, 272).trim();
+                    final String serviceCode = out.substring(272, 275);
+                    final String cardholderName = out.substring(275, 301).trim();
+                    final String expiryDate = out.substring(301, 307);
 
-                Log.i(TAG, "Pinpad.PP_OK");
-
-
+                    Log.i(TAG, "Pinpad.PP_OK");
+                }
+            });
+            if (ret == Pinpad.PP_TABEXP) {
+                new Thread(() -> {
+                    String[] emvTables = (String[]) params.get("emvTables");
+                    updateTables(emvTables);
+                    resumeGetCard();
+                }).start();
             }
-        });
-        if (ret == Pinpad.PP_TABEXP) {
-            new Thread(() -> {
-                String[] emvTables = (String[]) params.get("emvTables");
-                updateTables(emvTables);
-                resumeGetCard();
-            }).start();
+            return ret;
         }
-        return ret;
+        else{
+            new Thread(() -> {
+                try {
+                    // simulate loading of the emv data
+                    this.onShowMessage(PinpadCallbacks.PROCESSING, "");
+                    sleep(200);
+                    this.onShowMessage(PinpadCallbacks.INSERT_SWIPE_CARD, "");
+                    sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("cardRead", "");
+                    }
+                });
+            }).start();
+            return 0;
+        }
     }
 
     public int resumeGetCard() {
@@ -274,8 +251,17 @@ public class PinpadManager implements PinpadCallbacks {
 
     @Override
     public int onShowMessage(int i, String s) {
-        //return (callbacks != null) ?
-        formatMessage(i, s);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("id", i);
+                params.put("msg", s);
+                channel.invokeMethod("showMessage", params);
+            }
+        });
+
         return 0;
     }
 
@@ -292,9 +278,14 @@ public class PinpadManager implements PinpadCallbacks {
 
     @Override
     public void onShowMenu(int i, String s, String[] strings, MenuResult menuResult) {
-        // if callbacks have not been set, arbitrarily select first menu entry
-        //if (callbacks != null) callbacks.onShowMenu(i, s, strings, menuResult);
-       // else menuResult.setResult(0, 0);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                channel.invokeMethod("tablesLoaded", "");
+            }
+        });
 
         menuResult.setResult(0, 0);
 

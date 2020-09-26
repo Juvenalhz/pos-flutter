@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/screens/splash.dart';
-import 'package:pay/utils/emvCallbacks.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
 import 'commProgress.dart';
@@ -19,17 +18,17 @@ class Transaction extends StatelessWidget {
         if (state is TransactionAddAmount) {
           return (MainScreen());
         } else if (state is TransactionAddTip) {
-
           // steps of the transaction flow
           transactionBloc.add(TransLoadEmvTables(pinpad));
 
           return TipScreen(state.trans);
-
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
           return SplashScreen();
-        }else if (state is TransactionWaitEmvTablesLoaded){
+        } else if (state is TransactionWaitEmvTablesLoaded) {
           return CommProgress('Espere, por favor', status: 'Configrando tablas EMV...').build(context);
+        } else if (state is TransactionShowMessage) {
+          return CommProgress('Procesando', status: state.message).build(context);
         } else
           //TODO: change the default screen to something valid
           return SplashScreen();

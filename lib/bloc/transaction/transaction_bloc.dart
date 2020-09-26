@@ -20,43 +20,38 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
-    @override
-    Stream<TransactionState> mapEventToState(TransactionEvent event,  ) async* {
-
-
-      if (event is TransactionInitial) {
-        yield TransactionAddAmount(trans);
-      }
-      else if (event is TransAddAmount) {
-        trans.baseAmount = event.amount;
-        trans.total = event.amount;
-        yield TransactionAddTip(trans);
-      }
-      else if (event is TransAddTip) {
-        trans.tip = event.tip;
-        trans.total += event.tip;
-        yield TransactionLoadEmvTable();
-        //this.add(TransLoadEmvTables());
-      }
-      else if (event is TransAskConfirmation) {
-        yield TransactionAskConfirmation();
-      }
-      else if (event is TransLoadEmvTables) {
-        EmvRepository emvRepository = new EmvRepository();
-        AidRepository aidRepository = new AidRepository();
-        PubKeyRepository pubKeyRepository = new PubKeyRepository();
-        Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
-        List<Map<String, dynamic>> aids = await aidRepository.getAids();
-        List<Map<String, dynamic>> pubKeys = await pubKeyRepository.getPubKeys();
-        pinpad  = event.pinpad;
-        pinpad.loadTables(emv.toMap(), aids, pubKeys);
-        this.add(TransWaitEmvTablesLoaded());
-        yield TransactionWaitEmvTablesLoaded();
-      }
-      else if (event is TransGetCard){
-        pinpad.getCard(trans.toMap());
-      }
-
+  @override
+  Stream<TransactionState> mapEventToState(
+    TransactionEvent event,
+  ) async* {
+    if (event is TransactionInitial) {
+      yield TransactionAddAmount(trans);
+    } else if (event is TransAddAmount) {
+      trans.baseAmount = event.amount;
+      trans.total = event.amount;
+      yield TransactionAddTip(trans);
+    } else if (event is TransAddTip) {
+      trans.tip = event.tip;
+      trans.total += event.tip;
+      yield TransactionLoadEmvTable();
+      //this.add(TransLoadEmvTables());
+    } else if (event is TransAskConfirmation) {
+      yield TransactionAskConfirmation();
+    } else if (event is TransLoadEmvTables) {
+      EmvRepository emvRepository = new EmvRepository();
+      AidRepository aidRepository = new AidRepository();
+      PubKeyRepository pubKeyRepository = new PubKeyRepository();
+      Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+      List<Map<String, dynamic>> aids = await aidRepository.getAids();
+      List<Map<String, dynamic>> pubKeys = await pubKeyRepository.getPubKeys();
+      pinpad = event.pinpad;
+      pinpad.loadTables(emv.toMap(), aids, pubKeys);
+      this.add(TransWaitEmvTablesLoaded());
+      yield TransactionWaitEmvTablesLoaded();
+    } else if (event is TransShowMessage) {
+      yield TransactionShowMessage(event.message);
+    } else if (event is TransGetCard) {
+      pinpad.getCard(trans.toMap());
     }
   }
-
+}

@@ -7,7 +7,6 @@ import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/mainScreen.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/bloc/merchantBloc.dart';
-import 'package:pay/utils/emvCallbacks.dart';
 
 import 'bloc/comm/comm_bloc.dart';
 import 'bloc/initialization/initialization_bloc.dart';
@@ -28,24 +27,21 @@ class InitializationApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-      home: Scaffold(
-        body: MultiBlocProvider(providers: [
-          BlocProvider<MerchantBloc>(
-            create: (context) => MerchantBloc(merchantRepository: merchantRepository),
-          ),
-          BlocProvider<TerminalBloc>(
-            create: (context) => TerminalBloc(terminalRepository: terminalRepository),
-          ),
-          BlocProvider<CommBloc>(
-            create: (context) => CommBloc(commRepository: commRepository),
-          ),
-          BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
-          BlocProvider<TransactionBloc>(create: (context) => TransactionBloc(context)),
-        ],
-        child: MainScreen()),
-      )
-    );
+        home: Scaffold(
+      body: MultiBlocProvider(providers: [
+        BlocProvider<MerchantBloc>(
+          create: (context) => MerchantBloc(merchantRepository: merchantRepository),
+        ),
+        BlocProvider<TerminalBloc>(
+          create: (context) => TerminalBloc(terminalRepository: terminalRepository),
+        ),
+        BlocProvider<CommBloc>(
+          create: (context) => CommBloc(commRepository: commRepository),
+        ),
+        BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
+        BlocProvider<TransactionBloc>(create: (context) => TransactionBloc(context)),
+      ], child: MainScreen()),
+    ));
   }
 }

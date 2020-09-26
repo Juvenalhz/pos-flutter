@@ -50,3 +50,12 @@ class TransactionGetCard extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionShowMessage extends TransactionState {
+  final String message;
+
+  TransactionShowMessage(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
