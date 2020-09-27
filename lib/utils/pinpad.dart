@@ -28,11 +28,11 @@ class Pinpad {
       transactionBloc.add(TransGetCard());
     } else if (call.method == 'showMessage') {
       final params = call.arguments;
-
       transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
     } else if (call.method == 'cardRead') {
+      final params = call.arguments;
       // card read succesfully
-      transactionBloc.add(TransGetCard());
+      transactionBloc.add(TransCardRead(params));
     }
     return 0;
   }

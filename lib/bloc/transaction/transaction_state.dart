@@ -59,3 +59,12 @@ class TransactionShowMessage extends TransactionState {
   @override
   List<Object> get props => [message];
 }
+
+class TransactionCardRead extends TransactionState {
+  final Trans trans;
+
+  TransactionCardRead(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

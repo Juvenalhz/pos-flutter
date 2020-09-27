@@ -146,6 +146,7 @@ public class PinpadManager implements PinpadCallbacks {
 
     public int getCard(final String input) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+        HashMap<String, Object> card = new HashMap<>();
 
         if (Build.MODEL.contains("APOS")) {
             int ret = pinpad.getCard(input, output -> {
@@ -154,21 +155,32 @@ public class PinpadManager implements PinpadCallbacks {
                     Log.i(TAG, "Pinpad.PP_CANCEL");
                 } else if (output.getResultCode() == Pinpad.PP_OK) {
                     final String out = output.getOutput();
-                    final int cardType = Integer.parseInt(out.substring(0, 2));
-                    final int readStatus = Integer.parseInt(out.substring(2, 3));
-                    final int appType = Integer.parseInt(out.substring(3, 5));
-                    final int appNetID = Integer.parseInt(out.substring(5, 7));
-                    final int recordID = Integer.parseInt(out.substring(7, 9));
-                    final TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
+
+                    card.put("cardType", Integer.parseInt(out.substring(0, 2)));
+                    card.put("readStatus", Integer.parseInt(out.substring(2, 3)));
+                    card.put("readStatus", Integer.parseInt(out.substring(2, 3)));
+                    card.put("appType", Integer.parseInt(out.substring(3, 5)));
+                    card.put("appNetID", Integer.parseInt(out.substring(5, 7)));
+                    card.put("recordID", Integer.parseInt(out.substring(7, 9)));
+                    final PinpadManager.TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
+                    card.put("track1", tracks.track1);
+                    card.put("track2", tracks.track2);
                     final int panLen = Integer.parseInt(out.substring(233, 235));
-                    final String pan = out.substring(235, 235 + panLen);
-                    final int PANSequenceNumber = Integer.parseInt(out.substring(254, 256));
-                    final String appLabel = out.substring(256, 272).trim();
-                    final String serviceCode = out.substring(272, 275);
-                    final String cardholderName = out.substring(275, 301).trim();
-                    final String expiryDate = out.substring(301, 307);
+                    card.put("pan", out.substring(235, 235 + panLen));
+                    card.put("PANSequenceNumber", Integer.parseInt(out.substring(254, 256)));
+                    card.put("appLabel", out.substring(256, 272).trim());
+                    card.put("serviceCode", out.substring(272, 275));
+                    card.put("cardholderName", out.substring(275, 301).trim());
+                    card.put("expDate", out.substring(301, 307));
 
                     Log.i(TAG, "Pinpad.PP_OK");
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            channel.invokeMethod("cardRead", card);
+                        }
+                    });
                 }
             });
             if (ret == Pinpad.PP_TABEXP) {
@@ -188,6 +200,9 @@ public class PinpadManager implements PinpadCallbacks {
                     sleep(200);
                     this.onShowMessage(PinpadCallbacks.INSERT_SWIPE_CARD, "");
                     sleep(200);
+
+                    card.put("pan", "5454545454545454");
+                    card.put("expDate", "1225");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -195,7 +210,7 @@ public class PinpadManager implements PinpadCallbacks {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        channel.invokeMethod("cardRead", "");
+                        channel.invokeMethod("cardRead", card);
                     }
                 });
             }).start();
