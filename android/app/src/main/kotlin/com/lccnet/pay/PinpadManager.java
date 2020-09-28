@@ -201,8 +201,27 @@ public class PinpadManager implements PinpadCallbacks {
                     this.onShowMessage(PinpadCallbacks.INSERT_SWIPE_CARD, "");
                     sleep(200);
 
-                    card.put("pan", "5454545454545454");
-                    card.put("expDate", "1225");
+                    // test data for swipe card
+//                    card.put("track2", "4034467912409037=230112100000105000");
+//                    card.put("track1", "B4034467912409037^07675009725$10000$^2301121000000000000000105000000");
+//                    card.put("expDate", "2301");
+//                    card.put("pan", "4034467912409037");
+
+                    // test data for chip card
+                    card.put("appNetID", 1);
+                    card.put("serviceCode", "201");
+                    card.put("appType", 1);
+                    card.put("cardType", 3);
+                    card.put("PANSequenceNumber", 1);
+                    card.put("cardholderName", "UAT USA/Test Card 01");
+                    card.put("pan", "4761739001010119");
+                    card.put("track2", "4761739001010119=22122011143804400000");
+                    card.put("appLabel", "VISA CREDIT");
+                    card.put("recordID", 3);
+                    card.put("expDate", "221231");
+                    card.put("track1", "");
+                    card.put("readStatus", 0);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

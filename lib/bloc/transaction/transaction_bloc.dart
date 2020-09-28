@@ -51,7 +51,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransShowMessage) {
       yield TransactionShowMessage(event.message);
     } else if (event is TransGetCard) {
-      //pinpad.getCard(trans.toMap());
+      pinpad.getCard(trans.toMap());
     } else if (event is TransCardRead) {
       print(event.card.toString());
       yield TransactionCardRead(trans);
