@@ -150,8 +150,6 @@ class Emv : MethodChannel.MethodCallHandler{
     }
 
     private fun getCard(amount: Int){
-
-
         var getCardInput = "00"            // Network ID filter - allways 0
             getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
             getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
@@ -160,11 +158,6 @@ class Emv : MethodChannel.MethodCallHandler{
             getCardInput += PinpadManager.TIMESTAMP  // 10-digit table timestamp
             getCardInput += "00"                // filling digits
             getCardInput += "0"                // 1 to allow CTLS, 0 to force disable
-
-
-//            val readCard = getCard()
-//
-//            readCard.getCardData(amount)
 
         Thread {
             if (Build.MODEL.contains("APOS")) {
@@ -180,13 +173,6 @@ class Emv : MethodChannel.MethodCallHandler{
                     PinpadManager.me().resumeGetCard()
                 }.start()
             }
-
-            Log.i("emv", "getCard: $ret")
         }.start()
-
-
-        Log.i("emv", "getCard -- out")
-
-
     }
 }

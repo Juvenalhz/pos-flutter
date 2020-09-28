@@ -61,10 +61,10 @@ class TransShowMessage extends TransactionEvent {
   List<Object> get props => [this.message];
 }
 
-class TransCardRead extends TransactionEvent {
+class TransCardWasRead extends TransactionEvent {
   final Map<String, dynamic> card;
 
-  const TransCardRead([this.card]);
+  const TransCardWasRead([this.card]);
 
   @override
   List<Object> get props => [this.card];

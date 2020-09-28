@@ -52,8 +52,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionShowMessage(event.message);
     } else if (event is TransGetCard) {
       pinpad.getCard(trans.toMap());
-    } else if (event is TransCardRead) {
+    } else if (event is TransCardWasRead) {
       print(event.card.toString());
+
+      if (event.card['serviceCode'] != null) trans.serviceCode = event.card['serviceCode'];
+      if (event.card['appType'] != null) trans.appType = event.card['appType'];
+      if (event.card['cardType'] != null) trans.cardType = event.card['cardType'];
+      if (event.card['PANSequenceNumber'] != null) trans.panSequenceNumber = event.card['PANSequenceNumber'];
+      if (event.card['cardholderName'] != null) trans.cardholderName = event.card['cardholderName'];
+      if (event.card['pan'] != null) trans.pan = event.card['pan'];
+      if (event.card['track1'] != null) trans.track1 = event.card['track1'];
+      if (event.card['track2'] != null) trans.track2 = event.card['track2'];
+      if (event.card['expDate'] != null) trans.expDate = event.card['expDate'];
+      if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
+
       yield TransactionCardRead(trans);
     }
   }

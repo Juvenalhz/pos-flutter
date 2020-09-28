@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,9 +31,14 @@ class Pinpad {
       final params = call.arguments;
       transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
     } else if (call.method == 'cardRead') {
-      final params = call.arguments;
-      // card read succesfully
-      transactionBloc.add(TransCardRead(params));
+      var params = new Map<String, dynamic>();
+
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+
+      // card read successfully
+      transactionBloc.add(TransCardWasRead(params));
     }
     return 0;
   }

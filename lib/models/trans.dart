@@ -27,6 +27,14 @@ class Trans {
   String _authNumber = '';
   String _hostRRN = '';
   String _emvTags = '';
+  int _appType = 0;
+  int _cardType = 0;
+  int _panSequenceNumber = 0;
+  String _cardholderName = '';
+  String _pan = '';
+  String _track1 = '';
+  String _track2 = '';
+  String _appLabel = '';
 
   Trans();
 
@@ -58,6 +66,14 @@ class Trans {
   String get authNumber => this._authNumber;
   String get hostRRN => this._hostRRN;
   String get emvTags => this._emvTags;
+  int get appType => this._appType;
+  int get cardType => this._cardType;
+  int get panSequenceNumber => this._panSequenceNumber;
+  String get cardholderName => this._cardholderName;
+  String get pan => this._pan;
+  String get track1 => this._track1;
+  String get track2 => this._track2;
+  String get appLabel => this._appLabel;
 
   set id(int id) {
     this._id = id;
@@ -169,6 +185,38 @@ class Trans {
 
   set emvTags(String emvTags) {
     this._emvTags = emvTags;
+  }
+
+  set appType(int appType) {
+    this._appType = appType;
+  }
+
+  set cardType(int cardType) {
+    this._cardType = cardType;
+  }
+
+  set panSequenceNumber(int panSequenceNumber) {
+    this._panSequenceNumber = panSequenceNumber;
+  }
+
+  set cardholderName(String cardholderName) {
+    this._cardholderName = cardholderName;
+  }
+
+  set pan(String pan) {
+    this._pan = pan;
+  }
+
+  set track1(String track1) {
+    this._track1 = track1;
+  }
+
+  set track2(String track2) {
+    this._track2 = track2;
+  }
+
+  set appLabel(String appLabel) {
+    this._appLabel = appLabel;
   }
 
   Map<String, dynamic> toMap() {
