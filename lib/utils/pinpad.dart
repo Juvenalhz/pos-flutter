@@ -39,7 +39,6 @@ class Pinpad {
       // card read successfully
       transactionBloc.add(TransCardWasRead(params));
     } else if (call.method == 'showMenu') {
-      print("call.arguments.toString()");
       print(call.arguments.toString());
 
       return 1;
