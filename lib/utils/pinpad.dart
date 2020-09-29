@@ -36,9 +36,13 @@ class Pinpad {
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
-
       // card read successfully
       transactionBloc.add(TransCardWasRead(params));
+    } else if (call.method == 'showMenu') {
+      print("call.arguments.toString()");
+      print(call.arguments.toString());
+
+      return 1;
     }
     return 0;
   }
