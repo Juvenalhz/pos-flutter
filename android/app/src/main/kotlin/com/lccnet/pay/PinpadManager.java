@@ -1,25 +1,20 @@
 package com.lccnet.pay;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
+import java.util.HashMap;
+import static java.lang.Thread.sleep;
+import io.flutter.plugin.common.MethodChannel;
 import com.ingenico.lar.bc.Pinpad;
 import com.ingenico.lar.bc.PinpadCallbacks;
 import com.ingenico.lar.bc.PinpadOutput;
 import com.ingenico.lar.bc.PinpadOutputHandler;
 import com.ingenico.lar.bc.apos.PinpadProviderAPOS;
 
-import java.util.HashMap;
 
-import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.view.FlutterView;
-
-import static java.lang.Thread.sleep;
 
 /**
  * A singleton interface to BC's Pinpad API to ease state sharing between the Activities of the
@@ -289,10 +284,10 @@ public class PinpadManager implements PinpadCallbacks {
             @Override
             public void run() {
                 MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                HashMap<String, Object> params = new HashMap<>();
-                params.put("id", i);
-                params.put("msg", s);
-                channel.invokeMethod("showMessage", params);
+                HashMap<String, Object> methodParams = new HashMap<>();
+                methodParams.put("id", i);
+                methodParams.put("msg", s);
+                channel.invokeMethod("showMessage", methodParams);
             }
         });
 
@@ -317,11 +312,35 @@ public class PinpadManager implements PinpadCallbacks {
             @Override
             public void run() {
                 MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                channel.invokeMethod("tablesLoaded", "");
+                HashMap<String, Object> methodParams = new HashMap<>();
+
+                HashMap<String, String> test = new HashMap<>();
+                int i;
+                for(i=0; i<strings.length; i++){
+                    test.put(new Integer(i).toString(), strings[i]);
+                }
+
+                methodParams.put("menuOptions", test);
+
+                channel.invokeMethod("showMenu", methodParams, new MethodChannel.Result() {
+
+                    @Override
+                    public void success(Object o) {
+                        if ((int)o >= 0) {
+                            menuResult.setResult(Pinpad.PP_OK, (int) o);
+                        }
+                        else
+                            menuResult.setResult(Pinpad.PP_CANCEL, 0);
+                    }
+
+                    @Override
+                    public void error(String s, String s1, Object o) {}
+
+                    @Override
+                    public void notImplemented() {}
+                });
             }
         });
-
-        menuResult.setResult(0, 0);
 
     }
 }
