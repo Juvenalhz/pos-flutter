@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import java.util.HashMap;
+import java.util.Map;
+
 import static java.lang.Thread.sleep;
 import io.flutter.plugin.common.MethodChannel;
 import com.ingenico.lar.bc.Pinpad;
@@ -196,6 +198,20 @@ public class PinpadManager implements PinpadCallbacks {
                     this.onShowMessage(PinpadCallbacks.INSERT_SWIPE_CARD, "");
                     sleep(200);
 
+                    // test menu selection
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            HashMap<Integer, String> menu = new HashMap<>();
+//                            menu.put(0, "Credito");
+//                            menu.put(1, "Debito");
+//
+//                            channel.invokeMethod("showMenu", menu);
+//                        }
+//                    });
+//
+//                    sleep(10000);
+
                     // test data for swipe card
 //                    card.put("track2", "4034467912409037=230112100000105000");
 //                    card.put("track1", "B4034467912409037^07675009725$10000$^2301121000000000000000105000000");
@@ -308,21 +324,24 @@ public class PinpadManager implements PinpadCallbacks {
     @Override
     public void onShowMenu(int i, String s, String[] strings, MenuResult menuResult) {
 
+        if (strings.length == 1) {
+            menuResult.setResult(Pinpad.PP_OK, 0);
+            return;
+        }
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 MethodChannel channel = (MethodChannel) params.get("MethodChannel");
                 HashMap<String, Object> methodParams = new HashMap<>();
 
-                HashMap<String, String> test = new HashMap<>();
+                HashMap<Integer, String> menuItems = new HashMap<>();
                 int i;
                 for(i=0; i<strings.length; i++){
-                    test.put(new Integer(i).toString(), strings[i]);
+                    menuItems.put(i, strings[i]);
                 }
 
-                methodParams.put("menuOptions", test);
-
-                channel.invokeMethod("showMenu", methodParams, new MethodChannel.Result() {
+                channel.invokeMethod("showMenu", menuItems, new MethodChannel.Result() {
 
                     @Override
                     public void success(Object o) {

@@ -42,8 +42,7 @@ class Pinpad {
       // card read successfully
       transactionBloc.add(TransCardWasRead(params));
     } else if (call.method == 'showMenu') {
-      print(call.arguments.toString());
-      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('mi menu')));
+      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments)));
       return result;
     }
     return 0;
