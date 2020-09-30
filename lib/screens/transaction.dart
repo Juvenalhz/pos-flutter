@@ -27,7 +27,7 @@ class Transaction extends StatelessWidget {
           //transactionBloc.add(TransLoadEmvTables());
           return SplashScreen();
         } else if (state is TransactionWaitEmvTablesLoaded) {
-          return TransMessage('Espere, por favor').build(context);
+          return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
           return TransMessage(state.message).build(context);
         } else
