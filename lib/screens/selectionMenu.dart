@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 
 class SelectionMenu extends StatefulWidget {
@@ -13,7 +12,6 @@ class SelectionMenu extends StatefulWidget {
 }
 
 class _SelectionMenuState extends State<SelectionMenu> {
-
   @override
   Widget build(BuildContext context) {
     List<int> _listGroup = List.generate(widget.items.length, (i) => i);
@@ -35,7 +33,10 @@ class _SelectionMenuState extends State<SelectionMenu> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Divider(thickness: 2, color: Colors.black87,)
+              Divider(
+                thickness: 2,
+                color: Colors.black87,
+              )
             ],
           ),
         ),
@@ -44,56 +45,38 @@ class _SelectionMenuState extends State<SelectionMenu> {
           height: 220,
           child: ListView.builder(
               itemCount: widget.items.length,
-              itemBuilder: (BuildContext context, int Index) {
-                int i = Index + 1;
+              itemBuilder: (BuildContext context, int index) {
                 return RadioListTile<int>(
                     title: Text(
-                      widget.items[Index],
+                      widget.items[index],
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black,
                         //fontWeight: FontWeight.bold,
                       ),
                     ),
-                    value: _listGroup[Index],
-                    groupValue: _selection,
-                    onChanged: (int value) {
+                    value: index,
+                    //groupValue: _selection,
+                    onChanged: (int value) async {
                       setState(() {
                         _selection = value;
                       });
-                      Navigator.pop(context, value);
-                    }
-                );
-              }
-              )
 
-
-                 /* ListTile(
-                  title: Row(
-                    children: [
-                      Text(
-                        widget.items[Index],
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          //fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  leading: Radio(
-                    value: Index,
-                    //groupValue: _selection,
-                    onChanged: (int value) {
-                      //setState(() {
-                      //  _selection = value;
-                      //});
-                      Navigator.pop(context, value);
-                    },
-                  ),*/
-
-    )
+                      //await Future.delayed(Duration(milliseconds: 500));
+                      //Navigator.pop(context, value);
+                    });
+              })),
+      // actions: <Widget>[
+      //   FlatButton(
+      //     child: Text(
+      //       'OK',
+      //       style: TextStyle(color: Color(0xFF0D47A1)),
+      //     ),
+      //     onPressed: () {
+      //       Navigator.pop(context, _selection);
+      //     },
+      //   ),
+      // ],
     );
-
   }
 }
