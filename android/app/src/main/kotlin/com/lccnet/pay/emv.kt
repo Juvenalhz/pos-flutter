@@ -5,6 +5,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
 import com.ingenico.lar.bc.Pinpad
+import com.ingenico.lar.bc.PinpadCallbacks
+import com.ingenico.lar.bc.PinpadOutputHandler
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -46,7 +48,14 @@ class Emv : MethodChannel.MethodCallHandler{
             if (trans != null) {
                 getCard(trans["total"] as Int)
             }
+        } else if (call.method == "goOnChip"){
+            val trans : HashMap<String, Any?>? = call.argument("trans")
+
+            if (trans != null) {
+                goOnChip(trans["total"] as Int, trans["cashback"] as Int)
+            }
         }
+        
         else {
             result.notImplemented()
         }
@@ -174,5 +183,9 @@ class Emv : MethodChannel.MethodCallHandler{
                 }.start()
             }
         }.start()
+    }
+
+    fun goOnChip(total: Int, cashBack: Int): Int {
+        return PinpadManager.me().goOnChip(total, cashBack)
     }
 }

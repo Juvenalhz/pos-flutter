@@ -68,3 +68,12 @@ class TransactionCardRead extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionOnChipDone extends TransactionState {
+  final Trans trans;
+
+  TransactionOnChipDone(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

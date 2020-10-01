@@ -52,6 +52,15 @@ class TransGetCard extends TransactionEvent {
   List<Object> get props => [this.trans];
 }
 
+class TransGoOnChip extends TransactionEvent {
+  final Trans trans;
+
+  const TransGoOnChip([this.trans]);
+
+  @override
+  List<Object> get props => [this.trans];
+}
+
 class TransShowMessage extends TransactionEvent {
   final String message;
 

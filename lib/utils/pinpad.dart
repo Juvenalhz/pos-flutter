@@ -21,6 +21,10 @@ class Pinpad {
     await _channel.invokeMethod('getCard', {'trans': trans});
   }
 
+  void goOnChip(Map<String, dynamic> trans) async {
+    await _channel.invokeMethod('goOnChip', {'trans': trans});
+  }
+
   Pinpad(this.context) {
     _channel.setMethodCallHandler(this._callHandler);
     transactionBloc = BlocProvider.of<TransactionBloc>(this.context);

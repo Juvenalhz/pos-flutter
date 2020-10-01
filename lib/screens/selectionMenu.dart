@@ -2,73 +2,98 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 
-class SelectionMenu extends StatelessWidget {
+class SelectionMenu extends StatefulWidget {
   final String title;
   final LinkedHashMap items;
 
   SelectionMenu(this.title, this.items);
 
   @override
+  _SelectionMenuState createState() => _SelectionMenuState();
+}
+
+class _SelectionMenuState extends State<SelectionMenu> {
+
+  @override
   Widget build(BuildContext context) {
+    List<int> _listGroup = List.generate(widget.items.length, (i) => i);
+    int _selection = null;
+
     return AlertDialog(
       title: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          gradient: LinearGradient(
-            begin: Alignment(0.0, 0.6),
-            end: Alignment(0.0, 0.0),
-            colors: <Color>[
-              Color(0xFF0D47A1),
-              Colors.blue,
-            ],
-          ),
-        ),
+        height: 87,
         child: Center(
-          child: Text(
-            this.title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              //fontWeight: FontWeight.bold,
-            ),
+          child: Column(
+            children: [
+              Text(
+                this.widget.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 30,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Divider(thickness: 2, color: Colors.black87,)
+            ],
           ),
         ),
       ),
       content: Container(
           height: 220,
           child: ListView.builder(
-              itemCount: items.length,
+              itemCount: widget.items.length,
               itemBuilder: (BuildContext context, int Index) {
                 int i = Index + 1;
-                return GestureDetector(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          '$i ) ',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          items[Index],
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                return RadioListTile<int>(
+                    title: Text(
+                      widget.items[Index],
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        //fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context, Index);
-                  },
+                    value: _listGroup[Index],
+                    groupValue: _selection,
+                    onChanged: (int value) {
+                      setState(() {
+                        _selection = value;
+                      });
+                      Navigator.pop(context, value);
+                    }
                 );
-              })),
+              }
+              )
+
+
+                 /* ListTile(
+                  title: Row(
+                    children: [
+                      Text(
+                        widget.items[Index],
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  leading: Radio(
+                    value: Index,
+                    //groupValue: _selection,
+                    onChanged: (int value) {
+                      //setState(() {
+                      //  _selection = value;
+                      //});
+                      Navigator.pop(context, value);
+                    },
+                  ),*/
+
+    )
     );
+
   }
 }

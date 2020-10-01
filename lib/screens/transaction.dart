@@ -21,7 +21,6 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           // steps of the transaction flow
           transactionBloc.add(TransLoadEmvTables(pinpad));
-
           return TipScreen(state.trans);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
@@ -29,8 +28,12 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
-          return TransMessage(state.message).build(context);
-        } else
+          return TransMessage(state.message);
+        } else if (state is TransactionCardRead){
+          // TODO: add
+          return TransMessage(state.trans.appLabel);
+        }
+        else
           //TODO: change the default screen to something valid
           return SplashScreen();
       }),

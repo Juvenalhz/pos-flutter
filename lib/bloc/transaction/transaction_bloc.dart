@@ -67,6 +67,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
 
       yield TransactionCardRead(trans);
+      this.add(TransGoOnChip(trans));
+    } else if (event is TransGoOnChip) {
+      pinpad.goOnChip(trans.toMap());
     }
   }
 }
