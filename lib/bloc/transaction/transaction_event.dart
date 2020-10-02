@@ -30,7 +30,7 @@ class TransBack extends TransactionEvent {
 }
 
 class TransLoadEmvTables extends TransactionEvent {
-  Pinpad pinpad;
+  final Pinpad pinpad;
 
   TransLoadEmvTables(this.pinpad);
 

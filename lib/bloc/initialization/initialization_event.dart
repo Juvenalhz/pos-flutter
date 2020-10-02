@@ -18,7 +18,7 @@ abstract class InitializationEvent extends Equatable {
 }
 
 class InitializationConnect extends InitializationEvent {
-  Comm comm;
+  final Comm comm;
 
   InitializationConnect(this.comm);
 

@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/aid.dart';

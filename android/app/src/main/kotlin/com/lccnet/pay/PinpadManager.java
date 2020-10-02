@@ -176,7 +176,6 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("cardType", cardType);
                     card.put("entryMode", entryMode(cardType));
                     card.put("readStatus", Integer.parseInt(out.substring(2, 3)));
-                    card.put("readStatus", Integer.parseInt(out.substring(2, 3)));
                     card.put("appType", Integer.parseInt(out.substring(3, 5)));
                     card.put("appNetID", Integer.parseInt(out.substring(5, 7)));
                     card.put("recordID", Integer.parseInt(out.substring(7, 9)));
@@ -381,53 +380,78 @@ public class PinpadManager implements PinpadCallbacks {
     public int goOnChip(int amount, int cashBack) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> onChipData = new HashMap<>();
+        int ret = Pinpad.PP_ERRCARD;
+        
+        if (Build.MODEL.contains("APOS")) {
+            //TODO: need to pass inforamtion about the keys, and other emv params
+            // key index, floor limit, target percentage, threshold value, max target percentage
+            // input parameters to GoOnChip
+            final String goOnChipInput = String.format(Locale.US, "%012d%012d%d%d%d%d%02d%-32s%d%s%02d%s%02d000",
+                    amount,     // Transaction amount
+                    cashBack,        // Transaction cashback amount
+                    0,                                                     // Is PAN black-listed? (0/1)
+                    1,                                                     // Must go online? (0/1)
+                    0,                                                     // Unused (was used for TIBC Easy-Entry, not supported)
+                    3,                                                     // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
+                    2,                                                     // Key index for online PIN
+                    "00000000000000000000000000000000",                    // WK for PIN capture (if mode == 1) (hex, 32 digits)
+                    1,                                                     // Enable EMV risk management? (0/1)
+                    "00000000",                                            // Terminal Floor Limit (hex, 8 digits)
+                    25,                                                    // Target Percentage to be used for Biased Random Selection
+                    "00000000",                                            // Threshold Value for Biased Random Selection (hex, 8 digits)
+                    25                                                     // Maximum Target Percentage to be used for Biased Random Selection
+            );
 
-        //TODO: need to pass inforamtion about the keys, and other emv params
-        // input parameters to GoOnChip
-        final String goOnChipInput = String.format(Locale.US, "%012d%012d%d%d%d%d%02d%-32s%d%s%02d%s%02d000",
-                amount,     // Transaction amount
-                cashBack,        // Transaction cashback amount
-                0,                                                     // Is PAN black-listed? (0/1)
-                1,                                                     // Must go online? (0/1)
-                0,                                                     // Unused (was used for TIBC Easy-Entry, not supported)
-                3,                                                     // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
-                2,                                                     // Key index for online PIN
-                "00000000000000000000000000000000",                    // WK for PIN capture (if mode == 1) (hex, 32 digits)
-                1,                                                     // Enable EMV risk management? (0/1)
-                "00000000",                                            // Terminal Floor Limit (hex, 8 digits)
-                25,                                                    // Target Percentage to be used for Biased Random Selection
-                "00000000",                                            // Threshold Value for Biased Random Selection (hex, 8 digits)
-                25                                                     // Maximum Target Percentage to be used for Biased Random Selection
-        );
+            // list of tags that GoOnChip should return
+            final String goOnChipTagList = "828E959B9F109F179F269F279F349F369F37";
+            final String goOnChipTags = String.format(Locale.US, "%03d%s",
+                    goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
+                    goOnChipTagList                        // List of tags, hex-coded
+            );
 
-        // list of tags that GoOnChip should return
-        final String goOnChipTagList = "828E959B9F109F179F269F279F349F369F37";
-        final String goOnChipTags = String.format(Locale.US, "%03d%s",
-                goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
-                goOnChipTagList                        // List of tags, hex-coded
-        );
+            ret = pinpad.goOnChip(goOnChipInput, goOnChipTags, null, output -> {
 
-        final int ret = pinpad.goOnChip(goOnChipInput, goOnChipTags, null, output -> {
+                Log.i(TAG, "goOnChip output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
 
-            Log.i(TAG, "goOnChip output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
+                if (output.getResultCode() != Pinpad.PP_OK) {
+                    // error
+                    Log.i(TAG, "goOnChip error");
+                } else {
+                    // parse response
+                    final String out = output.getOutput();
+                    onChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
+                    onChipData.put("signature", Integer.parseInt(out.substring(1, 2)));
+                    onChipData.put("didOfflinePIN", Integer.parseInt(out.substring(2, 3)));
+                    onChipData.put("triesLeft", Integer.parseInt(out.substring(3, 4)));
+                    onChipData.put("isBlockedPIN", Integer.parseInt(out.substring(4, 5)));
+                    onChipData.put("didOnlinePIN", Integer.parseInt(out.substring(5, 6)));
+                    onChipData.put("onlinePINBlock", out.substring(6, 22));
+                    onChipData.put("PINKSN", out.substring(22, 42));
+                    final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
+                    onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));
 
-            if (output.getResultCode() != Pinpad.PP_OK) {
-                // error
-                Log.i(TAG, "goOnChip error");
-            }
-            else {
-                // parse response
-                final String out = output.getOutput();
-                onChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
-                onChipData.put("signature", Integer.parseInt(out.substring(1, 2)));
-                onChipData.put("didOfflinePIN", Integer.parseInt(out.substring(2, 3)));
-                onChipData.put("triesLeft", Integer.parseInt(out.substring(3, 4)));
-                onChipData.put("isBlockedPIN", Integer.parseInt(out.substring(4, 5)));
-                onChipData.put("didOnlinePIN", Integer.parseInt(out.substring(5, 6)));
-                onChipData.put("onlinePINBlock", out.substring(6, 22));
-                onChipData.put("PINKSN", out.substring(22, 42));
-                final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
-                onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            channel.invokeMethod("onChipDone", onChipData);
+                        }
+                    });
+                }
+            });
+
+            Log.i(TAG, "goOnChip: " + ret);
+        }
+        else {
+            new Thread(() -> {
+                onChipData.put("onlinePINBlock", "F52B3F2AAB59202D");
+                onChipData.put("signature", 0);
+                onChipData.put("PINKSN", "FFFF0000000000000036");
+                onChipData.put("didOnlinePIN", 1);
+                onChipData.put("didOfflinePIN", 0);
+                onChipData.put("decision", 2);
+                onChipData.put("emvTags", "82021C008E0E000000000000000042035E031F00950580800480009B0268009F100706010A03A0B8009F2608418EEF3143FF86479F2701809F34034203009F3602014B9F3704906DBDE1");
+                onChipData.put("isBlockedPIN", 1);
+                onChipData.put("triesLeft", 0);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -435,11 +459,8 @@ public class PinpadManager implements PinpadCallbacks {
                         channel.invokeMethod("onChipDone", onChipData);
                     }
                 });
-            }
-        });
-
-        Log.i(TAG, "goOnChip: " + ret);
-
+            }).start();
+        }
         return ret;
     }
 
@@ -458,6 +479,8 @@ public class PinpadManager implements PinpadCallbacks {
                 if (amount != 0)
                     sb.append("$ ").append(amount / 100).append('.').append(String.format(Locale.US, "%02d", amount % 100)).append('\n');
                 for (int i = 0; i < digits; i++) sb.append('\u25CF');
+
+                onShowMessage(0, sb.toString());
                 //textView.setText(sb.toString());
             }
         });

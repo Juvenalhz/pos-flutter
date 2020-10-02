@@ -8,14 +8,18 @@ class SelectionMenu extends StatefulWidget {
   SelectionMenu(this.title, this.items);
 
   @override
-  _SelectionMenuState createState() => _SelectionMenuState();
+  _SelectionMenuState createState() => _SelectionMenuState(title, items);
 }
 
 class _SelectionMenuState extends State<SelectionMenu> {
+  final String title;
+  final LinkedHashMap items;
+
+  _SelectionMenuState(this.title, this.items);
+
   @override
   Widget build(BuildContext context) {
-    List<int> _listGroup = List.generate(widget.items.length, (i) => i);
-    int _selection = null;
+    int _selection = items.length;
 
     return AlertDialog(
       title: Container(
@@ -24,7 +28,7 @@ class _SelectionMenuState extends State<SelectionMenu> {
           child: Column(
             children: [
               Text(
-                this.widget.title,
+                this.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -44,11 +48,11 @@ class _SelectionMenuState extends State<SelectionMenu> {
       content: Container(
           height: 220,
           child: ListView.builder(
-              itemCount: widget.items.length,
+              itemCount: items.length,
               itemBuilder: (BuildContext context, int index) {
                 return RadioListTile<int>(
                     title: Text(
-                      widget.items[index],
+                      items[index],
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black,
@@ -56,27 +60,16 @@ class _SelectionMenuState extends State<SelectionMenu> {
                       ),
                     ),
                     value: index,
-                    //groupValue: _selection,
-                    onChanged: (int value) async {
+                    groupValue: _selection,
+                    onChanged: (int value) {
                       setState(() {
                         _selection = value;
                       });
 
-                      //await Future.delayed(Duration(milliseconds: 500));
-                      //Navigator.pop(context, value);
+                      Navigator.pop(context, value);
                     });
               })),
-      // actions: <Widget>[
-      //   FlatButton(
-      //     child: Text(
-      //       'OK',
-      //       style: TextStyle(color: Color(0xFF0D47A1)),
-      //     ),
-      //     onPressed: () {
-      //       Navigator.pop(context, _selection);
-      //     },
-      //   ),
-      // ],
+
     );
   }
 }
