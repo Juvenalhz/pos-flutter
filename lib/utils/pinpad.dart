@@ -21,8 +21,8 @@ class Pinpad {
     await _channel.invokeMethod('getCard', {'trans': trans});
   }
 
-  void goOnChip(Map<String, dynamic> trans) async {
-    await _channel.invokeMethod('goOnChip', {'trans': trans});
+  void goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
+    await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
   }
 
   Pinpad(this.context) {

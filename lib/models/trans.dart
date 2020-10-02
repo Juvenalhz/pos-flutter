@@ -35,6 +35,7 @@ class Trans {
   String _track1 = '';
   String _track2 = '';
   String _appLabel = '';
+  int _aidID = 0;
 
   Trans();
 
@@ -74,6 +75,7 @@ class Trans {
   String get track1 => this._track1;
   String get track2 => this._track2;
   String get appLabel => this._appLabel;
+  int get aidID => this._aidID;
 
   set id(int id) {
     this._id = id;
@@ -219,6 +221,10 @@ class Trans {
     this._appLabel = appLabel;
   }
 
+  set aidID(int aidID) {
+    this._aidID = aidID;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -250,6 +256,7 @@ class Trans {
     map['authNumber'] = this._authNumber;
     map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
+    map['aidID'] = this._aidID;
 
     return map;
   }
@@ -283,5 +290,6 @@ class Trans {
     this._authNumber = trans['authNumber'];
     this._hostRRN = trans['hostRRN'];
     this._emvTags = trans['emvTags'];
+    this._aidID = trans['aidID'];
   }
 }

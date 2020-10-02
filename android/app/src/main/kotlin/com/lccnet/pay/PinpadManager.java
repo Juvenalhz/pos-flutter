@@ -243,6 +243,7 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("serviceCode", "201");
                     card.put("appType", 1);
                     card.put("cardType", 3);
+                    card.put("entryMode", 51);
                     card.put("PANSequenceNumber", 1);
                     card.put("cardholderName", "UAT USA/Test Card 01");
                     card.put("pan", "4761739001010119");
@@ -272,9 +273,9 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.resumeGetCard();
     }
 
-    public int goOnChip(final String input, final String tags, final PinpadOutputHandler handler) {
-        return pinpad.goOnChip(input, tags, null, handler);
-    }
+//    public int goOnChip(final String input, final String tags, final PinpadOutputHandler handler) {
+//        return pinpad.goOnChip(input, tags, null, handler);
+//    }
 
     public PinpadOutput finishChip(final String input, final String tags) {
         return pinpad.finishChip(input, tags);
@@ -377,29 +378,27 @@ public class PinpadManager implements PinpadCallbacks {
 
     }
 
-    public int goOnChip(int amount, int cashBack) {
+    public int goOnChip(int amount, int cashBack, int keyIndex, HashMap<String, Object> aid) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> onChipData = new HashMap<>();
         int ret = Pinpad.PP_ERRCARD;
         
         if (Build.MODEL.contains("APOS")) {
-            //TODO: need to pass inforamtion about the keys, and other emv params
-            // key index, floor limit, target percentage, threshold value, max target percentage
             // input parameters to GoOnChip
-            final String goOnChipInput = String.format(Locale.US, "%012d%012d%d%d%d%d%02d%-32s%d%s%02d%s%02d000",
+            final String goOnChipInput = String.format(Locale.US, "%012d%012d%d%d%d%d%02d%-32s%d%08x%02d%08X%02d000",
                     amount,     // Transaction amount
                     cashBack,        // Transaction cashback amount
-                    0,                                                     // Is PAN black-listed? (0/1)
-                    1,                                                     // Must go online? (0/1)
-                    0,                                                     // Unused (was used for TIBC Easy-Entry, not supported)
-                    3,                                                     // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
-                    2,                                                     // Key index for online PIN
-                    "00000000000000000000000000000000",                    // WK for PIN capture (if mode == 1) (hex, 32 digits)
-                    1,                                                     // Enable EMV risk management? (0/1)
-                    "00000000",                                            // Terminal Floor Limit (hex, 8 digits)
-                    25,                                                    // Target Percentage to be used for Biased Random Selection
-                    "00000000",                                            // Threshold Value for Biased Random Selection (hex, 8 digits)
-                    25                                                     // Maximum Target Percentage to be used for Biased Random Selection
+                    0,                                    // Is PAN black-listed? (0/1)
+                    1,                                    // Must go online? (0/1)
+                    0,                                    // Unused (was used for TIBC Easy-Entry, not supported)
+                    keyIndex,                                    // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
+                    2,                                    // Key index for online PIN
+                    "00000000000000000000000000000000",   // WK for PIN capture (if mode == 1) (hex, 32 digits)
+                    1,                                    // Enable EMV risk management? (0/1)
+                    aid.get("floorLimit"),                // Terminal Floor Limit (hex, 8 digits)
+                    aid.get("targetPercentage"),          // Target Percentage to be used for Biased Random Selection
+                    aid.get("thresholdAmount"),           // Threshold Value for Biased Random Selection (hex, 8 digits)
+                    aid.get("maxTargetPercentage")        // Maximum Target Percentage to be used for Biased Random Selection
             );
 
             // list of tags that GoOnChip should return

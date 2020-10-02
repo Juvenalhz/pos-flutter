@@ -50,9 +50,11 @@ class Emv : MethodChannel.MethodCallHandler{
             }
         } else if (call.method == "goOnChip"){
             val trans : HashMap<String, Any?>? = call.argument("trans")
+            val aid : HashMap<String, Any?>? = call.argument("aid")
+            val keyIndex : Int? = call.argument("keyIndex")
 
-            if (trans != null) {
-                goOnChip(trans["total"] as Int, trans["cashback"] as Int)
+            if ((trans != null) && (aid != null) && (keyIndex != null)) {
+                goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex,  aid)
             }
         }
         
@@ -185,7 +187,7 @@ class Emv : MethodChannel.MethodCallHandler{
         }.start()
     }
 
-    fun goOnChip(total: Int, cashBack: Int): Int {
-        return PinpadManager.me().goOnChip(total, cashBack)
+    fun goOnChip(total : Int, cashBack : Int, keyIndex: Int, aid : HashMap<String, Any?>): Int {
+        return PinpadManager.me().goOnChip(total, cashBack, keyIndex, aid)
     }
 }

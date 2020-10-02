@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pay/models/aid.dart';
 import 'package:pay/models/emv.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
+import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/pinpad.dart';
 
 part 'transaction_event.dart';
@@ -65,11 +68,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['track2'] != null) trans.track2 = event.card['track2'];
       if (event.card['expDate'] != null) trans.expDate = event.card['expDate'];
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
+      if (event.card['recordID'] != null) trans.aidID = event.card['recordID'];
 
       yield TransactionCardRead(trans);
       this.add(TransGoOnChip(trans));
     } else if (event is TransGoOnChip) {
-      pinpad.goOnChip(trans.toMap());
+      AidRepository aidRepository = new AidRepository();
+      TerminalRepository terminalRepository = new TerminalRepository();
+      AID aid = AID.fromMap(await aidRepository.getAid(trans.aidID));
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+      pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap());
     }
   }
 }
