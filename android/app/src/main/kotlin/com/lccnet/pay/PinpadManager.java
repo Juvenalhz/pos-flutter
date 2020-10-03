@@ -281,51 +281,85 @@ public class PinpadManager implements PinpadCallbacks {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> finishChipData = new HashMap<>();
 
-        final int failedOnline = (hostResponse.length() != 0) ? 0 : 1;
-        final String arc = (hostResponse.length() != 0) ? hostResponse : "Z3";
-        final String finishChipInput = String.format(Locale.US, "%d%d%s%03d%s000",
-                failedOnline,                    // Error communicating with host? (0/1) -- note the negative! ("1" means communication OK)
-                0,                                      // EMV full grade (0) or partial grade (1)
-                arc,                                    // Authorization Response Code from host
-                responseTags.length() / 2,       // Length of tags returned from host (bit 55) *in bytes*
-                responseTags                     // Hex of tags returned from host
-        );
+        if (Build.MODEL.contains("APOS")) {
+            final int failedOnline = (hostResponse.length() != 0) ? 0 : 1;
+            final String arc = (hostResponse.length() != 0) ? hostResponse : "Z3";
+            final String finishChipInput = String.format(Locale.US, "%d%d%s%03d%s000",
+                    failedOnline,                    // Error communicating with host? (0/1) -- note the negative! ("1" means communication OK)
+                    0,                                      // EMV full grade (0) or partial grade (1)
+                    arc,                                    // Authorization Response Code from host
+                    responseTags.length() / 2,       // Length of tags returned from host (bit 55) *in bytes*
+                    responseTags                     // Hex of tags returned from host
+            );
 
-        final String finishChipTagList = "9F269F27";
-        final String finishChipTags = String.format(Locale.US, "%03d%s", finishChipTagList.length() / 2, finishChipTagList);
+            final String finishChipTagList = "9F269F27";
+            final String finishChipTags = String.format(Locale.US, "%03d%s", finishChipTagList.length() / 2, finishChipTagList);
 
-        final PinpadOutput output = pinpad.finishChip(finishChipInput, finishChipTags);
+            final PinpadOutput output = pinpad.finishChip(finishChipInput, finishChipTags);
 
-        if (output.getResultCode() != Pinpad.PP_OK) {
-            // TODO: processing error
-        } else {
-            final String out = output.getOutput();
+            if (output.getResultCode() != Pinpad.PP_OK) {
+                // TODO: processing error
+            } else {
+                final String out = output.getOutput();
 
-            finishChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
-            final int tagsLen = Integer.parseInt(out.substring(1, 4));
-            finishChipData.put("tags", out.substring(4, 4 + tagsLen * 2));
-        }
+                finishChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
+                final int tagsLen = Integer.parseInt(out.substring(1, 4));
+                finishChipData.put("tags", out.substring(4, 4 + tagsLen * 2));
+            }
 
-        // if chip, ask user to remove card
-        if (entryMode == MODE_CHIP) {
-            pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+            // if chip, ask user to remove card
+            if (entryMode == MODE_CHIP) {
+                pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            channel.invokeMethod("cardRemoved", finishChipData);
+                        }
+                    });
+
+                });
+            } else {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         channel.invokeMethod("cardRemoved", finishChipData);
                     }
                 });
+            }
+            return output.getResultCode();
+        }
+        else {
 
-            });
-        } else {
+            finishChipData.put("decision", 0);
+            finishChipData.put("tags", "9F260820C42A2070F6B4F89F270140");
+
+            new Thread(() -> {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HashMap<String, Object> methodParams = new HashMap<>();
+                        methodParams.put("id", 0);
+                        methodParams.put("msg", "Retire Tarjeta");
+                        channel.invokeMethod("showMessage", methodParams);
+                        try {
+                            sleep(1500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                          channel.invokeMethod("cardRead", finishChipData);
+                    }
+                });
+            }).start();
+
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    channel.invokeMethod("cardRemoved", finishChipData);
+
                 }
             });
+
+            return 0;
         }
-        return output.getResultCode();
     }
 
     public static class TrackData {

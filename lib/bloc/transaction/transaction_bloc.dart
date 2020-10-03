@@ -61,6 +61,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['serviceCode'] != null) trans.serviceCode = event.card['serviceCode'];
       if (event.card['appType'] != null) trans.appType = event.card['appType'];
       if (event.card['cardType'] != null) trans.cardType = event.card['cardType'];
+      if (event.card['entryMode'] != null) trans.entryMode = event.card['entryMode'];
       if (event.card['PANSequenceNumber'] != null) trans.panSequenceNumber = event.card['PANSequenceNumber'];
       if (event.card['cardholderName'] != null) trans.cardholderName = event.card['cardholderName'];
       if (event.card['pan'] != null) trans.pan = event.card['pan'];
