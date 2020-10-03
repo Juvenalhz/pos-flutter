@@ -77,3 +77,23 @@ class TransactionOnChipDone extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionProcessCard extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionOnlineTransaction extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionProcessResponse extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionFinshChip extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

@@ -32,6 +32,10 @@ import com.ingenico.lar.bc.apos.PinpadProviderAPOS;
 public class PinpadManager implements PinpadCallbacks {
 
     final static String TAG = "PinpadManager";
+    final int MODE_MAG = 21;
+    final int MODE_CHIP = 51;
+    final int MODE_CTLS = 3;
+    final int MODE_CTLS_MS = 4;
 
     // the singleton instance
     static private PinpadManager myself = null;
@@ -146,26 +150,22 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.open();
     }
 
-    private static int entryMode(int cardType) {
-        final int MODE_MAG = 21;
-        final int MODE_CHIP = 51;
-        final int MODE_CTLS = 3;
-        final int MODE_CTLS_MS = 4;
-
+    private int entryMode(int cardType) {
         switch (cardType) {
-            case 0: return MODE_MAG;
-            case 3: return MODE_CHIP;
-            case 5: return MODE_CTLS_MS;
-            case 6: return MODE_CTLS;
+            case 0: return this.MODE_MAG;
+            case 3: return this.MODE_CHIP;
+            case 5: return this.MODE_CTLS_MS;
+            case 6: return this.MODE_CTLS;
             default: return -1;
         }
     }
     public int getCard(final String input) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> card = new HashMap<>();
+        int ret = 0;
 
         if (Build.MODEL.contains("APOS")) {
-            int ret = pinpad.getCard(input, output -> {
+            ret = pinpad.getCard(input, output -> {
                 Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
                 if (output.getResultCode() == Pinpad.PP_CANCEL) {
                     Log.i(TAG, "Pinpad.PP_CANCEL");
@@ -219,6 +219,7 @@ public class PinpadManager implements PinpadCallbacks {
                     sleep(200);
 
                     // test menu selection
+                    // this section is to simulate app. selection menu
 //                    new Handler(Looper.getMainLooper()).post(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -233,6 +234,9 @@ public class PinpadManager implements PinpadCallbacks {
 //                    sleep(10000);
 
                     // test data for swipe card
+                    // this is to test mag stripe card
+//                    card.put("cardType", 0);
+//                    card.put("entryMode", 21);
 //                    card.put("track2", "4034467912409037=230112100000105000");
 //                    card.put("track1", "B4034467912409037^07675009725$10000$^2301121000000000000000105000000");
 //                    card.put("expDate", "2301");
@@ -265,7 +269,7 @@ public class PinpadManager implements PinpadCallbacks {
                     }
                 });
             }).start();
-            return 0;
+            return ret;
         }
     }
 
@@ -273,20 +277,55 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.resumeGetCard();
     }
 
-//    public int goOnChip(final String input, final String tags, final PinpadOutputHandler handler) {
-//        return pinpad.goOnChip(input, tags, null, handler);
-//    }
+    public int finishChip(final String hostResponse, final int entryMode, final String responseTags) {
+        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+        HashMap<String, Object> finishChipData = new HashMap<>();
 
-    public PinpadOutput finishChip(final String input, final String tags) {
-        return pinpad.finishChip(input, tags);
-    }
+        final int failedOnline = (hostResponse.length() != 0) ? 0 : 1;
+        final String arc = (hostResponse.length() != 0) ? hostResponse : "Z3";
+        final String finishChipInput = String.format(Locale.US, "%d%d%s%03d%s000",
+                failedOnline,                    // Error communicating with host? (0/1) -- note the negative! ("1" means communication OK)
+                0,                                      // EMV full grade (0) or partial grade (1)
+                arc,                                    // Authorization Response Code from host
+                responseTags.length() / 2,       // Length of tags returned from host (bit 55) *in bytes*
+                responseTags                     // Hex of tags returned from host
+        );
 
-    public int removeCard(final String message, final PinpadOutputHandler handler) {
-        return pinpad.removeCard(message, handler );
-    }
+        final String finishChipTagList = "9F269F27";
+        final String finishChipTags = String.format(Locale.US, "%03d%s", finishChipTagList.length() / 2, finishChipTagList);
 
-    public int checkEvent(final String input, final PinpadOutputHandler handler) {
-        return pinpad.checkEvent(input, handler);
+        final PinpadOutput output = pinpad.finishChip(finishChipInput, finishChipTags);
+
+        if (output.getResultCode() != Pinpad.PP_OK) {
+            // TODO: processing error
+        } else {
+            final String out = output.getOutput();
+
+            finishChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
+            final int tagsLen = Integer.parseInt(out.substring(1, 4));
+            finishChipData.put("tags", out.substring(4, 4 + tagsLen * 2));
+        }
+
+        // if chip, ask user to remove card
+        if (entryMode == MODE_CHIP) {
+            pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("cardRemoved", finishChipData);
+                    }
+                });
+
+            });
+        } else {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    channel.invokeMethod("cardRemoved", finishChipData);
+                }
+            });
+        }
+        return output.getResultCode();
     }
 
     public static class TrackData {
@@ -485,6 +524,8 @@ public class PinpadManager implements PinpadCallbacks {
         });
         return Pinpad.PP_OK;
     }
+
+
 }
 
 

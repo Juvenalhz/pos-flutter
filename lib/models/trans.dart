@@ -36,6 +36,7 @@ class Trans {
   String _track2 = '';
   String _appLabel = '';
   int _aidID = 0;
+  String _responseEmvTags = '';
 
   Trans();
 
@@ -76,6 +77,7 @@ class Trans {
   String get track2 => this._track2;
   String get appLabel => this._appLabel;
   int get aidID => this._aidID;
+  String get responseEmvTags => this._responseEmvTags;
 
   set id(int id) {
     this._id = id;
@@ -225,6 +227,10 @@ class Trans {
     this._aidID = aidID;
   }
 
+  set responseEmvTags(String responseEmvTags) {
+    this._responseEmvTags = responseEmvTags;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -257,6 +263,7 @@ class Trans {
     map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
+    map['responseEmvTags'] = this._responseEmvTags;
 
     return map;
   }
@@ -291,5 +298,6 @@ class Trans {
     this._hostRRN = trans['hostRRN'];
     this._emvTags = trans['emvTags'];
     this._aidID = trans['aidID'];
+    this._responseEmvTags = trans['responseEmvTags'];
   }
 }

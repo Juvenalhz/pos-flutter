@@ -78,3 +78,23 @@ class TransCardWasRead extends TransactionEvent {
   @override
   List<Object> get props => [this.card];
 }
+
+class TransProcessCard extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransOnlineTransaction extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransProcessResponse extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransFinshChip extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

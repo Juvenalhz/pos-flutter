@@ -46,7 +46,7 @@ class Emv : MethodChannel.MethodCallHandler{
             val trans : HashMap<String, Any?>? = call.argument("trans")
 
             if (trans != null) {
-                getCard(trans["total"] as Int)
+                result.success(getCard(trans["total"] as Int))
             }
         } else if (call.method == "goOnChip"){
             val trans : HashMap<String, Any?>? = call.argument("trans")
@@ -54,7 +54,15 @@ class Emv : MethodChannel.MethodCallHandler{
             val keyIndex : Int? = call.argument("keyIndex")
 
             if ((trans != null) && (aid != null) && (keyIndex != null)) {
-                goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex,  aid)
+                result.success(goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex,  aid))
+            }
+        } else if (call.method == "finishChip"){
+            val respCode : String? = call.argument("respCode")
+            val entryMode : Int? = call.argument("entryMode")
+            val respEmvTags : String? = call.argument("respEmvTags")
+
+            if ((respCode != null) && (entryMode != null) && (respEmvTags != null) ){
+                result.success(finishChip(respCode, entryMode, respEmvTags))
             }
         }
         
@@ -160,7 +168,8 @@ class Emv : MethodChannel.MethodCallHandler{
                 now[Calendar.SECOND])
     }
 
-    private fun getCard(amount: Int){
+    private fun getCard(amount: Int) : Int{
+        var ret : Int = 0
         var getCardInput = "00"            // Network ID filter - allways 0
             getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
             getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
@@ -175,7 +184,7 @@ class Emv : MethodChannel.MethodCallHandler{
                 PinpadManager.me().open()
             }
 
-            var ret = PinpadManager.me().getCard(getCardInput)
+            ret = PinpadManager.me().getCard(getCardInput)
             Log.i("emv", "getCard: $ret")
 
             if (ret == Pinpad.PP_TABEXP) {
@@ -185,9 +194,15 @@ class Emv : MethodChannel.MethodCallHandler{
                 }.start()
             }
         }.start()
+
+        return ret
     }
 
-    fun goOnChip(total : Int, cashBack : Int, keyIndex: Int, aid : HashMap<String, Any?>): Int {
+    private fun goOnChip(total : Int, cashBack : Int, keyIndex: Int, aid : HashMap<String, Any?>): Int {
         return PinpadManager.me().goOnChip(total, cashBack, keyIndex, aid)
+    }
+
+    private fun finishChip(respCode : String, entryMode : Int, respEmvTags : String): Int{
+        return PinpadManager.me().finishChip(respCode, entryMode, respEmvTags)
     }
 }
