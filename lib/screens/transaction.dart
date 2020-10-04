@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
@@ -22,6 +24,8 @@ class Transaction extends StatelessWidget {
           // steps of the transaction flow
           transactionBloc.add(TransLoadEmvTables(pinpad));
           return TipScreen(state.trans);
+        } else if (state is TransactionAskConfirmation) {
+          return Confirmation(trans: state.trans);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
           return SplashScreen();
@@ -29,13 +33,12 @@ class Transaction extends StatelessWidget {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
           return TransMessage(state.message);
-        } else if (state is TransactionCardRead){
+        } else if (state is TransactionCardRead) {
           // TODO: add
           return TransMessage(state.trans.appLabel);
-        }
-        else
+        } else
           //TODO: change the default screen to something valid
-          return SplashScreen();
+          return Scaffold();
       }),
     );
   }

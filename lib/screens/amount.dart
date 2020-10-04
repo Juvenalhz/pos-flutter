@@ -7,12 +7,12 @@ import 'package:pay/models/trans.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
-  Trans trans;
+  Function(BuildContext, int) onClickEnter;
 
-  AmountEntry(this.entryText, this.trans);
+  AmountEntry(this.entryText, this.onClickEnter);
 
   @override
-  _AmountEntryState createState() => _AmountEntryState(entryText, trans);
+  _AmountEntryState createState() => _AmountEntryState(entryText, onClickEnter);
 }
 
 class _AmountEntryState extends State<AmountEntry> {
@@ -20,9 +20,9 @@ class _AmountEntryState extends State<AmountEntry> {
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
-  Trans trans;
+  Function(BuildContext, int) onClickEnter;
 
-  _AmountEntryState(this.entryText, this.trans);
+  _AmountEntryState(this.entryText, this.onClickEnter);
 
   @override
   Widget build(BuildContext context) {
@@ -260,16 +260,7 @@ class _AmountEntryState extends State<AmountEntry> {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          if (this.entryText.contains('Monto')) {
-            transactionBloc.add(TransAddAmount(int.parse(amount)));
-            Navigator.pushNamed(context, '/transaction');
-            //this.trans.putIfAbsent('amount', () => int.parse(amount));
-            //Navigator.pushNamed(context, '/tip', arguments: trans);
-          } else if (this.entryText.contains('Propina')) {
-            transactionBloc.add(TransAddTip(int.parse(amount)));
-            //this.trans.putIfAbsent('tip', () => int.parse(amount));
-            //Navigator.pushNamed(context, '/confirmation', arguments: trans);
-          }
+          this.onClickEnter(context, int.parse(amount));
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),

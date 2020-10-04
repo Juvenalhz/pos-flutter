@@ -15,6 +15,7 @@ class TipScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     trans = ModalRoute.of(context).settings.arguments;
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -41,7 +42,9 @@ class TipScreen extends StatelessWidget {
                     child: IconButton(
                       color: Colors.white,
                       icon: Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        transactionBloc.add(TransAskAmount(trans.baseAmount));
+                      },
                     ),
                   ),
                   Center(
@@ -49,6 +52,7 @@ class TipScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
                         child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
                           if (state is TransactionAddTip) {
+                            trans = state.trans;
                             int amount = state.trans.baseAmount;
                             String formattedAmount;
                             var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
@@ -91,12 +95,18 @@ class TipScreen extends StatelessWidget {
               Container(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                child: AmountEntry('Propina:', trans),
+                child: AmountEntry('Propina:', onClickEnter),
               ),
             ])),
           ],
         ),
       ),
     );
+  }
+
+  void onClickEnter(BuildContext context, int amount) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddTip(amount));
   }
 }

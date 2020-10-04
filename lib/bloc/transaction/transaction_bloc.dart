@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
+import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
@@ -33,13 +34,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       yield TransactionAddTip(trans);
+    } else if (event is TransAskAmount) {
+      trans.baseAmount = event.amount;
+      trans.tip = 0;
+      yield TransactionAddAmount(trans);
     } else if (event is TransAddTip) {
       trans.tip = event.tip;
       trans.total += event.tip;
-      yield TransactionLoadEmvTable();
-      //this.add(TransLoadEmvTables());
+      this.add(TransAskConfirmation(trans));
+    } else if (event is TransAskTip) {
+      trans.tip = event.tip;
+      yield TransactionAddTip(trans);
     } else if (event is TransAskConfirmation) {
-      yield TransactionAskConfirmation();
+      yield TransactionAskConfirmation(trans);
     } else if (event is TransLoadEmvTables) {
       EmvRepository emvRepository = new EmvRepository();
       AidRepository aidRepository = new AidRepository();

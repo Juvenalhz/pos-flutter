@@ -6,7 +6,9 @@ import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transaction.dart';
 import 'ConfigurationScreen.dart';
@@ -24,11 +26,6 @@ class MainScreen extends StatelessWidget {
     final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
     final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     var scaffoldKey = GlobalKey<ScaffoldState>();
-    var trans = new Trans();
-
-    merchantBloc.add(GetMerchant(1));
-    terminalBloc.add(GetTerminal(1));
-    commBloc.add(GetComm(1));
 
     return MaterialApp(
       debugShowCheckedModeBanner: isDev,
@@ -36,7 +33,6 @@ class MainScreen extends StatelessWidget {
       routes: {
         '/configuration': (context) => ConfigurationScreen(),
         '/initialization': (context) => Initialization(),
-        //'/tip': (contex) => TipScreen(),
         '/transaction': (contex) => Transaction(),
       },
       home: Scaffold(
@@ -44,6 +40,12 @@ class MainScreen extends StatelessWidget {
           drawer: MainMenu(),
           body: SafeArea(
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state == null) {
+                merchantBloc.add(GetMerchant(1));
+                terminalBloc.add(GetTerminal(1));
+                commBloc.add(GetComm(1));
+                return SplashScreen();
+              }
               if (state is MerchantLoaded) {
                 return Scaffold(
                   body: Column(
@@ -90,7 +92,7 @@ class MainScreen extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                          child: AmountEntry('Monto:', trans),
+                          child: AmountEntry('Monto:', onClickEnter),
                         ),
                       ])),
                     ],
@@ -128,5 +130,14 @@ class MainScreen extends StatelessWidget {
             }),
           )),
     );
+  }
+
+  void onClickEnter(BuildContext context, int amount) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    if (amount > 0) {
+      transactionBloc.add(TransAddAmount(amount));
+      Navigator.pushNamed(context, '/transaction');
+    }
   }
 }
