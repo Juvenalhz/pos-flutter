@@ -97,6 +97,14 @@ class TransactionProcessResponse extends TransactionState {
   List<Object> get props => [];
 }
 
+class TransactionCompleted extends TransactionState {
+  final Trans trans;
+  TransactionCompleted(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
 class TransactionFinshChip extends TransactionState {
   @override
   List<Object> get props => [];

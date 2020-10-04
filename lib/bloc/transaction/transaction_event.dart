@@ -7,6 +7,11 @@ abstract class TransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class TransStartTransaction extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class TransAddAmount extends TransactionEvent {
   final int amount;
 
@@ -41,8 +46,12 @@ class TransAskConfirmation extends TransactionEvent {
 }
 
 class TransConfirmOK extends TransactionEvent {
+  Pinpad pinpad;
+
+  TransConfirmOK(this.pinpad);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [pinpad];
 }
 
 class TransLoadEmvTables extends TransactionEvent {
@@ -113,4 +122,13 @@ class TransProcessResponse extends TransactionEvent {
 class TransFinshChip extends TransactionEvent {
   @override
   List<Object> get props => [];
+}
+
+class TransCardRemoved extends TransactionEvent {
+  final Map<String, dynamic> finishData;
+
+  TransCardRemoved([this.finishData]);
+
+  @override
+  List<Object> get props => [this.finishData];
 }

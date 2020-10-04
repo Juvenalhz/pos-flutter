@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/utils/pinpad.dart';
 
 import 'amount.dart';
 
 class Confirmation extends StatelessWidget {
   Trans trans;
-
-  Confirmation({this.trans});
+  Pinpad pinpad;
+  Confirmation({this.trans, this.pinpad});
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +168,7 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransConfirmOK());
+          transactionBloc.add(TransConfirmOK(pinpad));
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),

@@ -37,6 +37,8 @@ class Trans {
   String _appLabel = '';
   int _aidID = 0;
   String _responseEmvTags = '';
+  int _cardDecision = 0;
+  String _finishTags = '';
 
   Trans();
 
@@ -78,6 +80,8 @@ class Trans {
   String get appLabel => this._appLabel;
   int get aidID => this._aidID;
   String get responseEmvTags => this._responseEmvTags;
+  int get cardDecision => this._cardDecision;
+  String get finishTags => this._finishTags;
 
   set id(int id) {
     this._id = id;
@@ -231,6 +235,14 @@ class Trans {
     this._responseEmvTags = responseEmvTags;
   }
 
+  set cardDecision(int cardDecision) {
+    this._cardDecision = cardDecision;
+  }
+
+  set finishTags(String finishTags) {
+    this._finishTags = finishTags;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -264,6 +276,8 @@ class Trans {
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
     map['responseEmvTags'] = this._responseEmvTags;
+    map['cardDecision'] = this._cardDecision;
+    map['finishTags'] = this._finishTags;
 
     return map;
   }
@@ -299,5 +313,7 @@ class Trans {
     this._emvTags = trans['emvTags'];
     this._aidID = trans['aidID'];
     this._responseEmvTags = trans['responseEmvTags'];
+    this._cardDecision = trans['cardDecision'];
+    this._finishTags = trans['finishTags'];
   }
 }

@@ -28,7 +28,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
+    print(event.toString());
     if (event is TransactionInitial) {
+      yield TransactionAddAmount(trans);
+    } else if (event is TransStartTransaction) {
       yield TransactionAddAmount(trans);
     } else if (event is TransAddAmount) {
       trans.baseAmount = event.amount;
@@ -47,6 +50,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionAddTip(trans);
     } else if (event is TransAskConfirmation) {
       yield TransactionAskConfirmation(trans);
+    } else if (event is TransConfirmOK) {
+      this.add(TransLoadEmvTables(event.pinpad));
     } else if (event is TransLoadEmvTables) {
       EmvRepository emvRepository = new EmvRepository();
       AidRepository aidRepository = new AidRepository();
@@ -63,8 +68,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransGetCard) {
       pinpad.getCard(trans.toMap());
     } else if (event is TransCardWasRead) {
-      print(event.card.toString());
-
       if (event.card['serviceCode'] != null) trans.serviceCode = event.card['serviceCode'];
       if (event.card['appType'] != null) trans.appType = event.card['appType'];
       if (event.card['cardType'] != null) trans.cardType = event.card['cardType'];
@@ -94,6 +97,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransProcessResponse) {
     } else if (event is TransFinshChip) {
       pinpad.finishChip("00", trans.entryMode, trans.responseEmvTags);
+    } else if (event is TransCardRemoved) {
+      if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
+      if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
+
+      yield TransactionCompleted(trans);
+      //this.add(TransStartTransaction());
     }
   }
 }

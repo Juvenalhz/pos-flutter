@@ -53,6 +53,14 @@ class Pinpad {
     } else if (call.method == 'showMenu') {
       final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments)));
       return result;
+    } else if (call.method == 'cardRemoved') {
+      var params = new Map<String, dynamic>();
+
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+
+      transactionBloc.add(TransCardRemoved(params));
     }
     return 0;
   }

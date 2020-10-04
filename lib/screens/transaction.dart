@@ -21,11 +21,9 @@ class Transaction extends StatelessWidget {
         if (state is TransactionAddAmount) {
           return (MainScreen());
         } else if (state is TransactionAddTip) {
-          // steps of the transaction flow
-          transactionBloc.add(TransLoadEmvTables(pinpad));
           return TipScreen(state.trans);
         } else if (state is TransactionAskConfirmation) {
-          return Confirmation(trans: state.trans);
+          return Confirmation(trans: state.trans, pinpad: pinpad);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
           return SplashScreen();
@@ -36,9 +34,12 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionCardRead) {
           // TODO: add
           return TransMessage(state.trans.appLabel);
+        } else if (state is TransactionCompleted) {
+          transactionBloc.add(TransStartTransaction());
+          return TransMessage("Transacción Completada");
         } else
           //TODO: change the default screen to something valid
-          return Scaffold();
+          return TransMessage('procesessing!!');
       }),
     );
   }
