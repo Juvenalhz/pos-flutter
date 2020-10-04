@@ -132,3 +132,8 @@ class TransCardRemoved extends TransactionEvent {
   @override
   List<Object> get props => [this.finishData];
 }
+
+class TransShowPinAmount extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

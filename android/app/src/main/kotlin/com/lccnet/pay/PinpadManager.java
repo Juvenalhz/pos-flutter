@@ -552,8 +552,13 @@ public class PinpadManager implements PinpadCallbacks {
                     sb.append("$ ").append(amount / 100).append('.').append(String.format(Locale.US, "%02d", amount % 100)).append('\n');
                 for (int i = 0; i < digits; i++) sb.append('\u25CF');
 
-                onShowMessage(0, sb.toString());
-                //textView.setText(sb.toString());
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                        channel.invokeMethod("showPinAmount", null);
+                    }
+                });
             }
         });
         return Pinpad.PP_OK;

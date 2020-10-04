@@ -36,6 +36,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransAddAmount) {
       trans.baseAmount = event.amount;
       trans.total = event.amount;
+      trans.type = 'Compra';
       yield TransactionAddTip(trans);
     } else if (event is TransAskAmount) {
       trans.baseAmount = event.amount;
@@ -83,6 +84,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       yield TransactionCardRead(trans);
       this.add(TransGoOnChip(trans));
+    } else if (event is TransShowPinAmount) {
+      yield TransactionShowPinAmount(trans);
     } else if (event is TransGoOnChip) {
       AidRepository aidRepository = new AidRepository();
       TerminalRepository terminalRepository = new TerminalRepository();

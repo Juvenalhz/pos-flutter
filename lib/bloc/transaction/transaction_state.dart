@@ -109,3 +109,11 @@ class TransactionFinshChip extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionShowPinAmount extends TransactionState {
+  final Trans trans;
+  TransactionShowPinAmount(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/models/trans.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
@@ -26,6 +28,7 @@ class Transaction extends StatelessWidget {
           return Confirmation(trans: state.trans, pinpad: pinpad);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
+          print('show splash screen');
           return SplashScreen();
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
@@ -34,6 +37,8 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionCardRead) {
           // TODO: add
           return TransMessage(state.trans.appLabel);
+        } else if (state is TransactionShowPinAmount) {
+          return PinEntryMessage(state.trans);
         } else if (state is TransactionCompleted) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Completada");
@@ -41,6 +46,49 @@ class Transaction extends StatelessWidget {
           //TODO: change the default screen to something valid
           return TransMessage('procesessing!!');
       }),
+    );
+  }
+}
+
+class PinEntryMessage extends StatelessWidget {
+  final Trans trans;
+
+  PinEntryMessage(this.trans);
+
+  @override
+  Widget build(BuildContext context) {
+    var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+
+    return Material(
+      child: Scaffold(
+        body: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: 190),
+            Center(
+              child: Text(
+                this.trans.type,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                formatter.format(this.trans.total / 100),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
