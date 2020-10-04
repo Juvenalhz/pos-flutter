@@ -25,8 +25,9 @@ class Pinpad {
     await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
   }
 
-  void finishChip(String respCode, int entryMode, String respEmvTags) async {
-    await _channel.invokeMapMethod('finishChip', {'respCode': respCode, 'entryMode': entryMode, 'respEmvTags': respEmvTags});
+  Future<int> finishChip(String respCode, int entryMode, String respEmvTags) async {
+    int ret = await _channel.invokeMethod('finishChip', {'respCode': respCode, 'entryMode': entryMode, 'respEmvTags': respEmvTags});
+    return ret;
   }
 
   Pinpad(this.context) {

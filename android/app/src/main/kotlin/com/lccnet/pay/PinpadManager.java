@@ -346,7 +346,7 @@ public class PinpadManager implements PinpadCallbacks {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                          channel.invokeMethod("cardRead", finishChipData);
+                        channel.invokeMethod("cardRemoved", finishChipData);
                     }
                 });
             }).start();
