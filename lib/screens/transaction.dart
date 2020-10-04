@@ -64,7 +64,18 @@ class PinEntryMessage extends StatelessWidget {
         body: Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 190),
+            SizedBox(height: 50),
+            Center(
+              child: Text(
+                'Ingrese PIN:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 130),
             Center(
               child: Text(
                 this.trans.type,

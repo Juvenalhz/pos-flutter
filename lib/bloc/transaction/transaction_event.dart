@@ -119,7 +119,7 @@ class TransProcessResponse extends TransactionEvent {
   List<Object> get props => [];
 }
 
-class TransFinshChip extends TransactionEvent {
+class TransFinishChip extends TransactionEvent {
   @override
   List<Object> get props => [];
 }

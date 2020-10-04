@@ -63,7 +63,10 @@ class Pinpad {
       transactionBloc.add(TransCardRemoved(params));
     } else if (call.method == 'showPinAmount') {
       transactionBloc.add(TransShowPinAmount());
+    } else if (call.method == 'onChipDone') {
+      transactionBloc.add(TransFinishChip());
     }
+
     return 0;
   }
 

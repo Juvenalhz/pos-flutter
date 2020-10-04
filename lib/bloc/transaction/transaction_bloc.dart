@@ -93,12 +93,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
       pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap());
-      this.add(TransFinshChip());
+      //this.add(TransFinshChip());
       yield TransactionFinshChip();
     } else if (event is TransProcessCard) {
     } else if (event is TransOnlineTransaction) {
     } else if (event is TransProcessResponse) {
-    } else if (event is TransFinshChip) {
+    } else if (event is TransFinishChip) {
       pinpad.finishChip("00", trans.entryMode, trans.responseEmvTags);
     } else if (event is TransCardRemoved) {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
