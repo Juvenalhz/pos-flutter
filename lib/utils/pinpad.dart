@@ -17,8 +17,9 @@ class Pinpad {
     await _channel.invokeMethod('loadTables', {'emv': emv, 'aids': aids, 'pubKeys': pubKeys});
   }
 
-  void getCard(Map<String, dynamic> trans) async {
-    await _channel.invokeMethod('getCard', {'trans': trans});
+  Future<int> getCard(Map<String, dynamic> trans) async {
+    int ret = await _channel.invokeMethod('getCard', {'trans': trans});
+    return ret;
   }
 
   void goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {

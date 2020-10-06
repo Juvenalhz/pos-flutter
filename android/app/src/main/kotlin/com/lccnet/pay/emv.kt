@@ -170,14 +170,14 @@ class Emv : MethodChannel.MethodCallHandler{
 
     private fun getCard(amount: Int) : Int{
         var ret : Int = 0
-        var getCardInput = "00"            // Network ID filter - allways 0
+        var getCardInput = "00"                 // Network ID filter - allways 0
             getCardInput += "99"                // Application type filter (credit, debit, "99" for all)
             getCardInput += amount.toString().padStart(12, '0') // Transaction amount with 1/100 cents ("100" = 1.00)
             getCardInput += currentDate()       // Transaction date (YYMMDD)
             getCardInput += currentTime()       // Transaction time (HHMMSS)
             getCardInput += PinpadManager.TIMESTAMP  // 10-digit table timestamp
             getCardInput += "00"                // filling digits
-            getCardInput += "0"                // 1 to allow CTLS, 0 to force disable
+            getCardInput += "0"                 // 1 to allow CTLS, 0 to force disable
 
         Thread {
             if (Build.MODEL.contains("APOS")) {
