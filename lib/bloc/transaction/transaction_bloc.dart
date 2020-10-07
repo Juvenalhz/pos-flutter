@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
-import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
@@ -111,7 +110,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card analisys (BIN, Debit/Credit)
     else if (event is TransProcessCard) {
-      this.add(TransGoOnChip(trans));
+      if (event.trans.cardType == pinpad.MAG_STRIPE)
+        this.add(TransOnlineTransaction(event.trans));
+      else
+        this.add(TransGoOnChip(trans));
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
@@ -128,19 +130,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionShowPinAmount(trans);
     }
     // analyze chip desition online/offline/decline by chip
-    else if (event is TransGoOnChipDecision){
-      int i = 0;
-      i++;
+    else if (event is TransGoOnChipDecision) {
+      this.add(TransOnlineTransaction(trans));
     }
     // start online process
     else if (event is TransOnlineTransaction) {
+      this.add(TransProcessResponse(trans));
     }
     //
     else if (event is TransProcessResponse) {
+      if (event.trans.cardType == pinpad.CHIP)
+        this.add(TransFinishChip(trans));
     }
     //
     else if (event is TransFinishChip) {
-      pinpad.finishChip("00", trans.entryMode, trans.responseEmvTags);
+      pinpad.finishChip("00", event.trans.entryMode, event.trans.responseEmvTags);
     } else if (event is TransCardRemoved) {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];

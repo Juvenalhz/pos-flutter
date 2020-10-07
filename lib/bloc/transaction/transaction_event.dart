@@ -46,7 +46,7 @@ class TransAskConfirmation extends TransactionEvent {
 }
 
 class TransConfirmOK extends TransactionEvent {
-  Pinpad pinpad;
+  final Pinpad pinpad;
 
   TransConfirmOK(this.pinpad);
 
@@ -122,20 +122,31 @@ class TransGoOnChipDecision extends TransactionEvent {
   List<Object> get props => [chipDoneData];
 }
 
-
 class TransOnlineTransaction extends TransactionEvent {
+  final Trans trans;
+
+  TransOnlineTransaction(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransProcessResponse extends TransactionEvent {
+  final Trans trans;
+
+  TransProcessResponse(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransFinishChip extends TransactionEvent {
+  final Trans trans;
+
+  TransFinishChip(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
 
 class TransCardRemoved extends TransactionEvent {

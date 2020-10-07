@@ -601,7 +601,7 @@ public class PinpadManager implements PinpadCallbacks {
             isvm =  true;
         }
 
-        return false;
+        return isvm;
     }
 }
 

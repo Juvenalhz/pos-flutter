@@ -9,6 +9,11 @@ import 'package:pay/screens/selectionMenu.dart';
 import 'package:pay/screens/transMessage.dart';
 
 class Pinpad {
+  final int MAG_STRIPE = 0;
+  final int CHIP = 3;
+  final int CLESS_MS = 5;
+  final int CLESS_EMV = 6;
+
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');
   TransactionBloc transactionBloc;
@@ -70,7 +75,7 @@ class Pinpad {
       call.arguments.forEach((key, value) {
         chipDoneData[key] = value;
       });
-      transactionBloc.add(TransChipDecision(chipDoneData));
+      transactionBloc.add(TransGoOnChipDecision(chipDoneData));
     }
 
     return 0;

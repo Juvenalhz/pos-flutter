@@ -22,7 +22,6 @@ import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
-import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/datetime.dart';
 
 part 'initialization_event.dart';
@@ -80,7 +79,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
-              ProcessField61BIN(respMap[61]);
+              processField61BIN(respMap[61]);
             } else if (respMap[3].substring(3, 4) == '2') {
               processField61AID(respMap[61]);
             } else if (respMap[3].substring(3, 4) == '3') {
@@ -189,7 +188,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     await emvRepository.updateEmv(emv);
   }
 
-  void ProcessField61BIN(String data) async {
+  void processField61BIN(String data) async {
     BinRepository binRepository = new BinRepository();
     var bin = new Bin();
     int index = 0;
