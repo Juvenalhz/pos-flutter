@@ -105,9 +105,23 @@ class TransCardWasRead extends TransactionEvent {
 }
 
 class TransProcessCard extends TransactionEvent {
+  final Trans trans;
+
+  TransProcessCard(this.trans);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [trans];
 }
+
+class TransGoOnChipDecision extends TransactionEvent {
+  final Map<String, dynamic> chipDoneData;
+
+  TransGoOnChipDecision(this.chipDoneData);
+
+  @override
+  List<Object> get props => [chipDoneData];
+}
+
 
 class TransOnlineTransaction extends TransactionEvent {
   @override

@@ -65,7 +65,12 @@ class Pinpad {
     } else if (call.method == 'showPinAmount') {
       transactionBloc.add(TransShowPinAmount());
     } else if (call.method == 'onChipDone') {
-      transactionBloc.add(TransFinishChip());
+      var chipDoneData = new Map<String, dynamic>();
+
+      call.arguments.forEach((key, value) {
+        chipDoneData[key] = value;
+      });
+      transactionBloc.add(TransChipDecision(chipDoneData));
     }
 
     return 0;
