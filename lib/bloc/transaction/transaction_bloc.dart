@@ -88,7 +88,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // read card from pinpad
     else if (event is TransGetCard) {
-      if (pinpad.getCard(trans.toMap()) != 0) {
+      if (await pinpad.getCard(trans.toMap()) != 0) {
         trans.clear();
         yield TransactionError();
       }
@@ -125,7 +125,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       AID aid = AID.fromMap(await aidRepository.getAid(trans.aidID));
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-      if (pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
+      if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
         yield TransactionFinshChip();
       }
       else {
@@ -151,17 +151,24 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransFinishChip) {
-      if (pinpad.finishChip("00", event.trans.entryMode, event.trans.responseEmvTags) != 0) {
+      if (await pinpad.finishChip("00", event.trans.entryMode, event.trans.responseEmvTags) != 0) {
         //TODO: if approved reversal may be needed at this point
         trans.clear();
         yield TransactionError();
       }
-    } else if (event is TransCardRemoved) {
+    }
+    // card was removed at the end of the emv flow - this the normal scenario
+    else if (event is TransCardRemoved) {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
       yield TransactionCompleted(trans);
       //this.add(TransStartTransaction());
+    }
+    // pinpad error detected
+    else if (event is TransCardError) {
+      trans.clear();
+      yield TransactionError();
     }
   }
 }

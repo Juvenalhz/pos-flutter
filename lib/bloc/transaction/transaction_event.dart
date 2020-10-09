@@ -162,3 +162,8 @@ class TransShowPinAmount extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransCardError extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

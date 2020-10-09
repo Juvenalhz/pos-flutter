@@ -196,8 +196,8 @@ public class PinpadManager implements PinpadCallbacks {
 
             ret = pinpad.getCard(input, output -> {
                 Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
-                if (output.getResultCode() == Pinpad.PP_CANCEL) {
-                    Log.i(TAG, "Pinpad.PP_CANCEL");
+                if (output.getResultCode() != Pinpad.PP_OK) {
+                    Log.i(TAG, "Pinpad result code error");
                 } else if (output.getResultCode() == Pinpad.PP_OK) {
                     final String out = output.getOutput();
 
@@ -220,14 +220,16 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("expDate", out.substring(301, 307));
 
                     Log.i(TAG, "Pinpad.PP_OK");
-
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            channel.invokeMethod("cardRead", card);
-                        }
-                    });
                 }
+
+                card.put("resultCode", output.getResultCode());
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("cardRead", card);
+                    }
+                });
             });
             if (ret == Pinpad.PP_TABEXP) {
                 new Thread(() -> {
@@ -364,13 +366,17 @@ public class PinpadManager implements PinpadCallbacks {
                     final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
                     onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            channel.invokeMethod("onChipDone", onChipData);
-                        }
-                    });
+
                 }
+
+                onChipData.put("resultCode", output.getResultCode());
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("onChipDone", onChipData);
+                    }
+                });
             });
 
             Log.i(TAG, "goOnChip: " + ret);
@@ -421,6 +427,7 @@ public class PinpadManager implements PinpadCallbacks {
 
             if (output.getResultCode() != Pinpad.PP_OK) {
                 // TODO: processing error
+                Log.i(TAG, "finishChip error");
             } else {
                 final String out = output.getOutput();
 

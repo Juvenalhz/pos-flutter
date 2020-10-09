@@ -43,6 +43,8 @@ class Pinpad {
   }
 
   Future<dynamic> _callHandler(MethodCall call) async {
+    var params = new Map<String, dynamic>();
+
     if (call.method == 'tablesLoaded') {
       // emv tables loaded finished, go to next state
       transactionBloc.add(TransGetCard());
@@ -50,19 +52,18 @@ class Pinpad {
       final params = call.arguments;
       transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
     } else if (call.method == 'cardRead') {
-      var params = new Map<String, dynamic>();
-
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
-      // card read successfully
-      transactionBloc.add(TransCardWasRead(params));
+
+      if (params['resultCode'] == 0) {
+        // card read successfully
+        transactionBloc.add(TransCardWasRead(params));
+      }
     } else if (call.method == 'showMenu') {
       final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments)));
       return result;
     } else if (call.method == 'cardRemoved') {
-      var params = new Map<String, dynamic>();
-
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
@@ -71,14 +72,18 @@ class Pinpad {
     } else if (call.method == 'showPinAmount') {
       transactionBloc.add(TransShowPinAmount());
     } else if (call.method == 'onChipDone') {
-      var chipDoneData = new Map<String, dynamic>();
-
       call.arguments.forEach((key, value) {
-        chipDoneData[key] = value;
+        params[key] = value;
       });
-      transactionBloc.add(TransGoOnChipDecision(chipDoneData));
+      transactionBloc.add(TransGoOnChipDecision(params));
     }
 
+    if  ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
+      if (params['resultCode'] != 0){
+        // error was triggered, like pulling the card out
+        transactionBloc.add(TransCardError());
+      }
+    }
     return 0;
   }
 
