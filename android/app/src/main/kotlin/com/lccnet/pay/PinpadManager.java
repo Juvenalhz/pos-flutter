@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
+
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -159,12 +161,39 @@ public class PinpadManager implements PinpadCallbacks {
             default: return -1;
         }
     }
-    public int getCard(final String input) {
+
+    private String currentDate() {
+        Calendar now = Calendar.getInstance();
+        return String.format(Locale.US, "%02d%02d%02d",
+                now.get(Calendar.YEAR) % 100,
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private String currentTime() {
+        Calendar now = Calendar.getInstance();
+        return String.format(Locale.US, "%02d%02d%02d",
+                now.get(Calendar.HOUR),
+                now.get(Calendar.MINUTE),
+                now.get(Calendar.SECOND));
+    }
+
+    public int getCard(final int amount) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> card = new HashMap<>();
         int ret = 0;
 
         if (Build.MODEL.contains("APOS")) {
+            final String input = String.format(Locale.US, "%02d%02d%012d%s%s%s00%d",
+                    0,         // Network ID filter (inconsequential outside BR and for POS)
+                    99,              // Application type filter (credit, debit, "99" for all)
+                    amount,          // Transaction amount with 1/100 cents ("100" = 1.00)
+                    currentDate(),   // Transaction date (YYMMDD)
+                    currentTime(),   // Transaction time (HHMMSS)
+                    PinpadManager.TIMESTAMP, // 10-digit table timestamp
+                    1                // 1 to allow CTLS, 0 to force disable
+            );
+
             ret = pinpad.getCard(input, output -> {
                 Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
                 if (output.getResultCode() == Pinpad.PP_CANCEL) {
@@ -212,7 +241,8 @@ public class PinpadManager implements PinpadCallbacks {
         else if (isEmulator()){
             new Thread(() -> {
                 try {
-                    Boolean simulateMagStripe = input.substring(14,16).contains("83");
+                    // flag to simulate mag stripe, should be true if the amount ends with 83 cents
+                    Boolean simulateMagStripe = ((amount % 100) == 83);
                     // simulate loading of the emv data
                     this.onShowMessage(PinpadCallbacks.PROCESSING, "");
                     sleep(200);

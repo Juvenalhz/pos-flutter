@@ -316,4 +316,46 @@ class Trans {
     this._cardDecision = trans['cardDecision'];
     this._finishTags = trans['finishTags'];
   }
+
+  void clear(){
+    _number = 0;
+    _stan = 0;
+    _dateTime = '';
+    _type = '';
+    _reverse = 0;
+    _advice = 0;
+    _aquirer = 0;
+    _bin = 0;
+    _maskedPAN = '';
+    _cipheredPAN = '';
+    _panHash = '';
+    _cipheredCardHolderName = '';
+    _cipheredTrack2 = '';
+    _expDate = '';
+    _serviceCode = '';
+    _currency = 0;
+    _entryMode = 0;
+    _baseAmount = 0;
+    _tip = 0;
+    _tax = 0;
+    _cashback = 0;
+    _total = 0;
+    _origialTotal = 0;
+    _responseCode = '';
+    _authNumber = '';
+    _hostRRN = '';
+    _emvTags = '';
+    _appType = 0;
+    _cardType = 0;
+    _panSequenceNumber = 0;
+    _cardholderName = '';
+    _pan = '';
+    _track1 = '';
+    _track2 = '';
+    _appLabel = '';
+    _aidID = 0;
+    _responseEmvTags = '';
+    _cardDecision = 0;
+    _finishTags = '';
+  }
 }

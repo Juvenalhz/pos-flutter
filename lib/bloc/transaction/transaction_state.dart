@@ -117,3 +117,9 @@ class TransactionShowPinAmount extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionError extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+

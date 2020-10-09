@@ -42,6 +42,9 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionCompleted) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Completada");
+        } else if (state is TransactionError) {
+          transactionBloc.add(TransStartTransaction());
+          return TransMessage("Transacción Cancelada");
         } else
           //TODO: change the default screen to something valid
           return TransMessage('procesessing!!');
@@ -64,7 +67,7 @@ class PinEntryMessage extends StatelessWidget {
         body: Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 50),
+            SizedBox(height: 90),
             Center(
               child: Text(
                 'Ingrese PIN:',
@@ -75,7 +78,7 @@ class PinEntryMessage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 130),
+            SizedBox(height: 70),
             Center(
               child: Text(
                 this.trans.type,

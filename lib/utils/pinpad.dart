@@ -27,8 +27,9 @@ class Pinpad {
     return ret;
   }
 
-  void goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
-    await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
+  Future<int> goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
+    int ret = await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
+    return ret;
   }
 
   Future<int> finishChip(String respCode, int entryMode, String respEmvTags) async {
