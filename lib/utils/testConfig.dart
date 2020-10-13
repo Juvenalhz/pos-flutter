@@ -70,7 +70,7 @@ class testConfig {
       'tpdu': '0000900000',
       'nii': '111',
       'timout': 60,
-      'ip': '192.168.11.209',
+      'ip': '192.168.11.104',
       'port': 9000,
       'headerLength': 2,
     };
@@ -89,6 +89,8 @@ class testConfig {
       'addTermCapabilities': 'F0000F0F001',
       'fallback': 1,
       'forceOnline': 1,
+      'CurrencyCode': 0,
+      'CountryCode': 0,
     };
 
     await appdb.deleteAll('emv');

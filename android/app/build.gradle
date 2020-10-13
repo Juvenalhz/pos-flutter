@@ -60,4 +60,8 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation files('libs/bcapos-4.13/bcapos-4.13.aar')
+    api "org.slf4j:slf4j-api:1.7.25"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 }

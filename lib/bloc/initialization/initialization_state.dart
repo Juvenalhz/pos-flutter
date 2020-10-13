@@ -10,7 +10,7 @@ class InitializationInitial extends InitializationState {
 }
 
 class InitializationConnecting extends InitializationState {
-  Comm comm;
+  final Comm comm;
 
   InitializationConnecting(this.comm);
 

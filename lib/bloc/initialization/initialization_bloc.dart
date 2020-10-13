@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/aid.dart';
@@ -23,7 +22,6 @@ import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
-import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/datetime.dart';
 
 part 'initialization_event.dart';
@@ -81,7 +79,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
-              ProcessField61BIN(respMap[61]);
+              processField61BIN(respMap[61]);
             } else if (respMap[3].substring(3, 4) == '2') {
               processField61AID(respMap[61]);
             } else if (respMap[3].substring(3, 4) == '3') {
@@ -127,6 +125,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
   void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    EmvRepository emvRepository = new EmvRepository();
     SetDateTime newDateTime = new SetDateTime();
     int index = 0;
 
@@ -149,6 +149,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = 1;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = 1;
     if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = 1;
+
+    emv.CountryCode = merchant.CountryCode;
+    emv.CurrencyCode = merchant.CurrencyCode;
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]
@@ -179,9 +182,13 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     index += 12;
     merchant.CountryCode = int.parse(data.substring(index, index + 4));
+
+    await merchantRepository.updateMerchant(merchant);
+    await terminalRepository.updateTerminal(terminal);
+    await emvRepository.updateEmv(emv);
   }
 
-  void ProcessField61BIN(String data) async {
+  void processField61BIN(String data) async {
     BinRepository binRepository = new BinRepository();
     var bin = new Bin();
     int index = 0;

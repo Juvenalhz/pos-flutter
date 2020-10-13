@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +13,6 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transaction.dart';
 import 'ConfigurationScreen.dart';
 import 'Initialization.dart';
-import 'TipScreen.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 

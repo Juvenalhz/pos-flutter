@@ -6,6 +6,8 @@ class PubKeyRepository {
 
   Future getPubKey(int id) => appdb.queryById('pubKey', id);
 
+  Future getPubKeys({String query}) => appdb.queryAllRows('pubKey');
+
   Future createPubKey(PubKey pubKey) => appdb.insert('pubKey', pubKey.toMap());
 
   Future updatePubKey(PubKey pubKey) => appdb.update('pubKey', pubKey.id, pubKey.toMap());

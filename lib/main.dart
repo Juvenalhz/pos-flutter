@@ -40,7 +40,7 @@ class InitializationApp extends StatelessWidget {
           create: (context) => CommBloc(commRepository: commRepository),
         ),
         BlocProvider<InitializationBloc>(create: (context) => InitializationBloc()),
-        BlocProvider<TransactionBloc>(create: (context) => TransactionBloc()),
+        BlocProvider<TransactionBloc>(create: (context) => TransactionBloc(context)),
       ], child: MainScreen()),
     ));
   }

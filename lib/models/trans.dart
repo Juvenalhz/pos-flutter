@@ -27,6 +27,18 @@ class Trans {
   String _authNumber = '';
   String _hostRRN = '';
   String _emvTags = '';
+  int _appType = 0;
+  int _cardType = 0;
+  int _panSequenceNumber = 0;
+  String _cardholderName = '';
+  String _pan = '';
+  String _track1 = '';
+  String _track2 = '';
+  String _appLabel = '';
+  int _aidID = 0;
+  String _responseEmvTags = '';
+  int _cardDecision = 0;
+  String _finishTags = '';
 
   Trans();
 
@@ -58,6 +70,18 @@ class Trans {
   String get authNumber => this._authNumber;
   String get hostRRN => this._hostRRN;
   String get emvTags => this._emvTags;
+  int get appType => this._appType;
+  int get cardType => this._cardType;
+  int get panSequenceNumber => this._panSequenceNumber;
+  String get cardholderName => this._cardholderName;
+  String get pan => this._pan;
+  String get track1 => this._track1;
+  String get track2 => this._track2;
+  String get appLabel => this._appLabel;
+  int get aidID => this._aidID;
+  String get responseEmvTags => this._responseEmvTags;
+  int get cardDecision => this._cardDecision;
+  String get finishTags => this._finishTags;
 
   set id(int id) {
     this._id = id;
@@ -171,6 +195,54 @@ class Trans {
     this._emvTags = emvTags;
   }
 
+  set appType(int appType) {
+    this._appType = appType;
+  }
+
+  set cardType(int cardType) {
+    this._cardType = cardType;
+  }
+
+  set panSequenceNumber(int panSequenceNumber) {
+    this._panSequenceNumber = panSequenceNumber;
+  }
+
+  set cardholderName(String cardholderName) {
+    this._cardholderName = cardholderName;
+  }
+
+  set pan(String pan) {
+    this._pan = pan;
+  }
+
+  set track1(String track1) {
+    this._track1 = track1;
+  }
+
+  set track2(String track2) {
+    this._track2 = track2;
+  }
+
+  set appLabel(String appLabel) {
+    this._appLabel = appLabel;
+  }
+
+  set aidID(int aidID) {
+    this._aidID = aidID;
+  }
+
+  set responseEmvTags(String responseEmvTags) {
+    this._responseEmvTags = responseEmvTags;
+  }
+
+  set cardDecision(int cardDecision) {
+    this._cardDecision = cardDecision;
+  }
+
+  set finishTags(String finishTags) {
+    this._finishTags = finishTags;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -202,6 +274,10 @@ class Trans {
     map['authNumber'] = this._authNumber;
     map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
+    map['aidID'] = this._aidID;
+    map['responseEmvTags'] = this._responseEmvTags;
+    map['cardDecision'] = this._cardDecision;
+    map['finishTags'] = this._finishTags;
 
     return map;
   }
@@ -235,5 +311,51 @@ class Trans {
     this._authNumber = trans['authNumber'];
     this._hostRRN = trans['hostRRN'];
     this._emvTags = trans['emvTags'];
+    this._aidID = trans['aidID'];
+    this._responseEmvTags = trans['responseEmvTags'];
+    this._cardDecision = trans['cardDecision'];
+    this._finishTags = trans['finishTags'];
+  }
+
+  void clear(){
+    _number = 0;
+    _stan = 0;
+    _dateTime = '';
+    _type = '';
+    _reverse = 0;
+    _advice = 0;
+    _aquirer = 0;
+    _bin = 0;
+    _maskedPAN = '';
+    _cipheredPAN = '';
+    _panHash = '';
+    _cipheredCardHolderName = '';
+    _cipheredTrack2 = '';
+    _expDate = '';
+    _serviceCode = '';
+    _currency = 0;
+    _entryMode = 0;
+    _baseAmount = 0;
+    _tip = 0;
+    _tax = 0;
+    _cashback = 0;
+    _total = 0;
+    _origialTotal = 0;
+    _responseCode = '';
+    _authNumber = '';
+    _hostRRN = '';
+    _emvTags = '';
+    _appType = 0;
+    _cardType = 0;
+    _panSequenceNumber = 0;
+    _cardholderName = '';
+    _pan = '';
+    _track1 = '';
+    _track2 = '';
+    _appLabel = '';
+    _aidID = 0;
+    _responseEmvTags = '';
+    _cardDecision = 0;
+    _finishTags = '';
   }
 }

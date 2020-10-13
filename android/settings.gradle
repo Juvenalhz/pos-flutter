@@ -1,3 +1,4 @@
+include ':bcapos-4.13'
 include ':app'
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
