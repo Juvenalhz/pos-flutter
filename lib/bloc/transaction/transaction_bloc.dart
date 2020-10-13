@@ -11,6 +11,7 @@ import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
+import 'package:pay/screens/transaction.dart';
 import 'package:pay/utils/pinpad.dart';
 
 part 'transaction_event.dart';
@@ -33,6 +34,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // read base amount
     else if (event is TransStartTransaction) {
+      await new Future.delayed(const Duration(seconds : 3));
       yield TransactionAddAmount(trans);
     }
     // base amount added, transaction initial data
@@ -115,8 +117,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransProcessCard) {
       if (event.trans.cardType == pinpad.MAG_STRIPE)
         this.add(TransOnlineTransaction(event.trans));
-      else
-        this.add(TransGoOnChip(trans));
+      else {
+        if (validateChipData(trans) == true) {
+          this.add(TransGoOnChip(trans));
+        }
+        else{
+          yield TransactionShowMessage(("Error en Tarjeta"));
+          trans.clear();
+          await new Future.delayed(const Duration(seconds : 3));
+          yield TransactionError();
+        }
+      }
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
@@ -127,8 +138,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
         yield TransactionFinshChip();
-      }
-      else {
+      } else {
         trans.clear();
         yield TransactionError();
       }
@@ -171,4 +181,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionError();
     }
   }
+}
+
+bool validateChipData(Trans trans) {
+  if ((trans.track2.contains(trans.pan)) && (trans.track2.substring(trans.track2.indexOf('=')).contains(trans.expDate.substring(0, 4))))
+    return true;
+  else
+    return false;
 }

@@ -292,6 +292,7 @@ public class PinpadManager implements PinpadCallbacks {
                         card.put("expDate", "221231");
                         card.put("track1", "");
                         card.put("readStatus", 0);
+                        card.put("resultCode", 0);
                     }
 
                 } catch (InterruptedException e) {
@@ -365,8 +366,6 @@ public class PinpadManager implements PinpadCallbacks {
                     onChipData.put("PINKSN", out.substring(22, 42));
                     final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
                     onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));
-
-
                 }
 
                 onChipData.put("resultCode", output.getResultCode());
@@ -392,6 +391,7 @@ public class PinpadManager implements PinpadCallbacks {
                 onChipData.put("emvTags", "82021C008E0E000000000000000042035E031F00950580800480009B0268009F100706010A03A0B8009F2608418EEF3143FF86479F2701809F34034203009F3602014B9F3704906DBDE1");
                 onChipData.put("isBlockedPIN", 1);
                 onChipData.put("triesLeft", 0);
+                onChipData.put("resultCode", 0);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -425,6 +425,7 @@ public class PinpadManager implements PinpadCallbacks {
 
             final PinpadOutput output = pinpad.finishChip(finishChipInput, finishChipTags);
 
+            finishChipData.put("resultCode", output.getResultCode());
             if (output.getResultCode() != Pinpad.PP_OK) {
                 // TODO: processing error
                 Log.i(TAG, "finishChip error");
@@ -461,6 +462,7 @@ public class PinpadManager implements PinpadCallbacks {
 
             finishChipData.put("decision", 0);
             finishChipData.put("tags", "9F260820C42A2070F6B4F89F270140");
+            finishChipData.put("resultCode", 0);
 
             new Thread(() -> {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -475,6 +477,7 @@ public class PinpadManager implements PinpadCallbacks {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
                         channel.invokeMethod("cardRemoved", finishChipData);
                     }
                 });
