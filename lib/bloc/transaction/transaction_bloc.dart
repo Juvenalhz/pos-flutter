@@ -8,6 +8,7 @@ import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/aid_repository.dart';
+import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
@@ -34,7 +35,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // read base amount
     else if (event is TransStartTransaction) {
-      await new Future.delayed(const Duration(seconds : 3));
+      await new Future.delayed(const Duration(seconds: 3));
       yield TransactionAddAmount(trans);
     }
     // base amount added, transaction initial data
@@ -115,17 +116,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card analisys (BIN, Debit/Credit)
     else if (event is TransProcessCard) {
-      if (event.trans.cardType == pinpad.MAG_STRIPE)
-        this.add(TransOnlineTransaction(event.trans));
-      else {
-        if (validateChipData(trans) == true) {
-          this.add(TransGoOnChip(trans));
-        }
-        else{
-          yield TransactionShowMessage(("Error en Tarjeta"));
-          trans.clear();
-          await new Future.delayed(const Duration(seconds : 3));
-          yield TransactionError();
+      int binId = await _validateBin(event.trans.pan);
+      if (binId == 0) {
+        yield TransactionShowMessage(("BIN Invalido"));
+        trans.clear();
+        await new Future.delayed(const Duration(seconds: 3));
+        yield TransactionError();
+      } else {
+        trans = event.trans;
+        trans.bin = binId;
+        if (event.trans.cardType == pinpad.MAG_STRIPE)
+          this.add(TransOnlineTransaction(event.trans));
+        else {
+          if (_validateChipData(trans) == true) {
+            this.add(TransGoOnChip(trans));
+          } else {
+            yield TransactionShowMessage(("Error en Tarjeta"));
+            trans.clear();
+            await new Future.delayed(const Duration(seconds: 3));
+            yield TransactionError();
+          }
         }
       }
     }
@@ -181,11 +191,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionError();
     }
   }
-}
 
-bool validateChipData(Trans trans) {
-  if ((trans.track2.contains(trans.pan)) && (trans.track2.substring(trans.track2.indexOf('=')).contains(trans.expDate.substring(0, 4))))
-    return true;
-  else
-    return false;
+  bool _validateChipData(Trans trans) {
+    if ((trans.track2.contains(trans.pan)) && (trans.track2.substring(trans.track2.indexOf('=')).contains(trans.expDate.substring(0, 4))))
+      return true;
+    else
+      return false;
+  }
+
+  Future<int> _validateBin(String pan) async {
+    BinRepository binRepository = new BinRepository();
+    int binId = await binRepository.getBinId(pan.substring(0, 8));
+    return binId;
+  }
 }

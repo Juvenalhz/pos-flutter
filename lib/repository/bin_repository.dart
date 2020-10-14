@@ -22,4 +22,14 @@ class BinRepository {
     else
       return true;
   }
+
+  Future<int> getBinId(String bin) async {
+    String where = 'binLow <= ' + bin + ' and binHigh >= ' + bin;
+    List<Map<String, dynamic>> bins = await appdb.queryAllRows('bin', where: where);
+
+    if (bins.length >= 1) {
+      return bins[0]['id'];
+    } else
+      return 0;
+  }
 }

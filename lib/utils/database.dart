@@ -288,9 +288,9 @@ class DatabaseHelper {
       return null;
   }
 
-  Future<List<Map<String, dynamic>>> queryAllRows(String table) async {
+  Future<List<Map<String, dynamic>>> queryAllRows(String table, {String where}) async {
     Database db = await instance.database;
-    return await db.query(table);
+    return await db.query(table, where:where);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
