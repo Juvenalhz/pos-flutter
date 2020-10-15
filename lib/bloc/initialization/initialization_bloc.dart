@@ -21,6 +21,7 @@ import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/datetime.dart';
 
 part 'initialization_event.dart';
@@ -122,8 +123,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     await merchantRepository.updateMerchant(merchant);
   }
 
-  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv,
-      Map<int, String> acquirerIndicators) async {
+  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     EmvRepository emvRepository = new EmvRepository();
@@ -146,8 +146,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     comm.nii = data.substring(index, index + 4);
     index += 4;
 
-    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0)
-      terminal.amountConfirmation = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
 
@@ -210,13 +209,13 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       index += 2;
       bin.brand = ascii.decode(hex.decode(data.substring(index, index + 24))).trim();
       index += 24;
-      bin.cashback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.cashback = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.pin = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.manualEntry = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.fallback = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
 
       binExist = await binRepository.existBin(bin);
@@ -284,8 +283,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       addPubKey = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
       index += 2;
-      pubkey.keyIndex =
-          int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
+      pubkey.keyIndex = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
       index += 4;
       pubkey.rid = data.substring(index, index + 10);
       index += 10;

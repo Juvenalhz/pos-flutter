@@ -1,3 +1,5 @@
+import 'package:pay/utils/dataUtils.dart';
+
 class Bin {
   int _id;
   String _type;
@@ -5,10 +7,10 @@ class Bin {
   int _binHigh;
   int _cardType;
   String _brand;
-  int _cashback;
-  int _pin;
-  int _manualEntry;
-  int _fallback;
+  bool _cashback;
+  bool _pin;
+  bool _manualEntry;
+  bool _fallback;
 
   Bin() {}
 
@@ -18,10 +20,10 @@ class Bin {
   int get binHigh => this._binHigh;
   int get cardType => this._cardType;
   String get brand => this._brand;
-  int get cashback => this._cashback;
-  int get pin => this._pin;
-  int get manualEntry => this._manualEntry;
-  int get fallback => this._fallback;
+  bool get cashback => this._cashback;
+  bool get pin => this._pin;
+  bool get manualEntry => this._manualEntry;
+  bool get fallback => this._fallback;
 
   set id(int id) {
     this._id = id;
@@ -47,19 +49,19 @@ class Bin {
     this._brand = brand;
   }
 
-  set cashback(int cashback) {
+  set cashback(bool cashback) {
     this._cashback = cashback;
   }
 
-  set pin(int pin) {
+  set pin(bool pin) {
     this._pin = pin;
   }
 
-  set manualEntry(int manualEntry) {
+  set manualEntry(bool manualEntry) {
     this._manualEntry = manualEntry;
   }
 
-  set fallback(int fallback) {
+  set fallback(bool fallback) {
     this._fallback = fallback;
   }
 
@@ -72,10 +74,10 @@ class Bin {
     map['binHigh'] = this._binHigh;
     map['cardType'] = this._cardType;
     map['brand'] = this._brand;
-    map['cashback'] = this._cashback;
-    map['pin'] = this._pin;
-    map['manualEntry'] = this._manualEntry;
-    map['fallback'] = this._fallback;
+    map['cashback'] = boolToInt(this._cashback);
+    map['pin'] = boolToInt(this._pin);
+    map['manualEntry'] = boolToInt(this._manualEntry);
+    map['fallback'] = boolToInt(this._fallback);
 
     return map;
   }
@@ -87,9 +89,9 @@ class Bin {
     this._binHigh = bin['binHigh'];
     this._cardType = bin['cardType'];
     this._brand = bin['brand'];
-    this._cashback = bin['cashback'];
-    this._pin = bin['pin'];
-    this._manualEntry = bin['manualEntry'];
-    this._fallback = bin['fallback'];
+    this._cashback = intToBool(bin['cashback']);
+    this._pin = intToBool(bin['pin']);
+    this._manualEntry = intToBool(bin['manualEntry']);
+    this._fallback = intToBool(bin['fallback']);
   }
 }

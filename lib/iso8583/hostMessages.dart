@@ -51,7 +51,7 @@ class MessageInitialization {
   int msgSeq = 0;
 
   MessageInitialization(this._comm) {
-    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
   Future<Uint8List> buildMessage() async {
@@ -86,7 +86,7 @@ class MessageInitialization {
   }
 
   Map<int, String> parseRenponse(Uint8List response) {
-    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, (_comm.headerLength != 0) ? true : false);
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
     Map respMap = new Map<int, String>();
     int i;
     Uint8List bitmap;

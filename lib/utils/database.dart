@@ -24,8 +24,7 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   void _tableAlter(Database db, String table, String column, String type) async {
@@ -85,7 +84,7 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'maxTipPercentage', 'integer');
     _tableAlter(db, 'terminal', 'keyIndex', 'integer');
     _tableAlter(db, 'terminal', 'industry', 'text');
-    _tableAlter(db, 'terminal', 'print', 'text');
+    _tableAlter(db, 'terminal', 'print', 'integer');
     _tableAlter(db, 'terminal', 'cashback', 'integer');
     _tableAlter(db, 'terminal', 'installments', 'integer');
     _tableAlter(db, 'terminal', 'refund', 'integer');
@@ -291,7 +290,7 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> queryAllRows(String table, {String where}) async {
     Database db = await instance.database;
-    return await db.query(table, where:where);
+    return await db.query(table, where: where);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
