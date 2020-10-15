@@ -8,6 +8,7 @@ import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
+import 'AskIDScreen.dart';
 import 'TipScreen.dart';
 import 'commProgress.dart';
 import 'mainScreen.dart';
@@ -24,6 +25,8 @@ class Transaction extends StatelessWidget {
           return (MainScreen());
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
+        } else if (state is TransactionAskIdNumber) {
+          return AskId(state.trans);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans, pinpad: pinpad);
         } else if (state is TransactionLoadEmvTable) {

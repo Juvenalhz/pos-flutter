@@ -123,3 +123,10 @@ class TransactionError extends TransactionState {
   List<Object> get props => [];
 }
 
+class TransactionAskIdNumber extends TransactionState {
+  final Trans trans;
+  TransactionAskIdNumber(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

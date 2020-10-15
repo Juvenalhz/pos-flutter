@@ -5,24 +5,24 @@ import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 
-class AmountEntry extends StatefulWidget {
+class NumericEntry extends StatefulWidget {
   final String entryText;
   Function(BuildContext, int) onClickEnter;
 
-  AmountEntry(this.entryText, this.onClickEnter);
+  NumericEntry(this.entryText, this.onClickEnter);
 
   @override
-  _AmountEntryState createState() => _AmountEntryState(entryText, onClickEnter);
+  _NumericEntryState createState() => _NumericEntryState(entryText, onClickEnter);
 }
 
-class _AmountEntryState extends State<AmountEntry> {
-  String amount = '0';
-  var textControllerInput = TextEditingController(text: '0,00');
-  var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+class _NumericEntryState extends State<NumericEntry> {
+  String amount = '';
+  var textControllerInput = TextEditingController(text: '');
+  //var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
   Function(BuildContext, int) onClickEnter;
 
-  _AmountEntryState(this.entryText, this.onClickEnter);
+  _NumericEntryState(this.entryText, this.onClickEnter);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _AmountEntryState extends State<AmountEntry> {
             padding: const EdgeInsets.fromLTRB(0, 0, 30.0, 0),
             child: new TextField(
               decoration: new InputDecoration.collapsed(
-                  hintText: "0",
+                  hintText: '',
                   hintStyle: TextStyle(
                     fontSize: 20,
                     fontFamily: 'RobotoMono',
@@ -85,15 +85,9 @@ class _AmountEntryState extends State<AmountEntry> {
           ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              height: 20.0,
-              width: 90.0,
-            ),
-            //btn000(Colors.white),
             btn('0', Colors.grey[200]),
-            btn00(Colors.grey[200]),
           ],
         ),
         Row(
@@ -129,14 +123,15 @@ class _AmountEntryState extends State<AmountEntry> {
             if (amount.length < 15) {
               amount = amount + btntext;
 
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text = formatter.format(double.parse(formattedAmount));
+              // if (amount.length >= 2)
+              //   formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+              // else if (amount.length == 2)
+              //   formattedAmount = '0.' + amount;
+              // else
+              //   formattedAmount = '0.0' + amount;
+              //
+              // textControllerInput.text = formatter.format(double.parse(formattedAmount));
+              textControllerInput.text = amount;
             }
           });
         },
@@ -148,42 +143,42 @@ class _AmountEntryState extends State<AmountEntry> {
     );
   }
 
-  Widget btn00(Color btnColor) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Text(
-          "00",
-          style: TextStyle(fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
-        ),
-        onPressed: () {
-          setState(() {
-            String formattedAmount;
-
-            if (amount.length <= 13) {
-              amount = amount + '00';
-
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text = formatter.format(double.parse(formattedAmount));
-            }
-          });
-        },
-        color: btnColor,
-        padding: EdgeInsets.all(15.0),
-        splashColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: Colors.blueGrey)
-        ),
-      ),
-    );
-  }
+  // Widget btn00(Color btnColor) {
+  //   return Container(
+  //     padding: EdgeInsets.only(bottom: 10.0),
+  //     child: FlatButton(
+  //       child: Text(
+  //         "00",
+  //         style: TextStyle(fontSize: 28.0, color: Colors.black, fontFamily: 'RobotoMono'),
+  //       ),
+  //       onPressed: () {
+  //         setState(() {
+  //           String formattedAmount;
+  //
+  //           if (amount.length <= 13) {
+  //             amount = amount + '00';
+  //
+  //             if (amount.length >= 2)
+  //               formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+  //             else if (amount.length == 2)
+  //               formattedAmount = '0.' + amount;
+  //             else
+  //               formattedAmount = '0.0' + amount;
+  //
+  //             textControllerInput.text = formatter.format(double.parse(formattedAmount));
+  //           }
+  //         });
+  //       },
+  //       color: btnColor,
+  //       padding: EdgeInsets.all(15.0),
+  //       splashColor: Colors.black,
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(10.0),
+  //         //side: BorderSide(color: Colors.blueGrey)
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget btn000(Color btnColor) {
     return Container(
@@ -200,14 +195,15 @@ class _AmountEntryState extends State<AmountEntry> {
             if (amount.length <= 12) {
               amount = amount + '000';
 
-              if (amount.length >= 2)
-                formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-              else if (amount.length == 2)
-                formattedAmount = '0.' + amount;
-              else
-                formattedAmount = '0.0' + amount;
-
-              textControllerInput.text = formatter.format(double.parse(formattedAmount));
+              // if (amount.length >= 2)
+              //   formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+              // else if (amount.length == 2)
+              //   formattedAmount = '0.' + amount;
+              // else
+              //   formattedAmount = '0.0' + amount;
+              //
+              // textControllerInput.text = formatter.format(double.parse(formattedAmount));
+              textControllerInput.text = amount;
             }
           });
         },
@@ -232,14 +228,15 @@ class _AmountEntryState extends State<AmountEntry> {
 
           amount = (amount.length > 0) ? (amount.substring(0, amount.length - 1)) : "";
 
-          if (amount.length >= 2)
-            formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-          else if (amount.length == 2)
-            formattedAmount = '0.' + amount;
-          else
-            formattedAmount = '0.0' + amount;
-
-          textControllerInput.text = formatter.format(double.parse(formattedAmount));
+          // if (amount.length >= 2)
+          //   formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+          // else if (amount.length == 2)
+          //   formattedAmount = '0.' + amount;
+          // else
+          //   formattedAmount = '0.0' + amount;
+          //
+          // textControllerInput.text = formatter.format(double.parse(formattedAmount));
+          textControllerInput.text = amount;
         },
         color: Colors.amberAccent,
         padding: EdgeInsets.all(15.0),

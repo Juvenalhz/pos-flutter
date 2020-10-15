@@ -6,11 +6,12 @@ import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 
 import 'amount.dart';
+import 'numeric.dart';
 
-class TipScreen extends StatelessWidget {
+class AskId extends StatelessWidget {
   Trans trans;
 
-  TipScreen(this.trans);
+  AskId(this.trans);
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +52,9 @@ class TipScreen extends StatelessWidget {
                     child: Padding(
                         padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
                         child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
-                          if (state is TransactionAddTip) {
+                          if (state is TransactionAskIdNumber) {
                             trans = state.trans;
-                            int amount = state.trans.baseAmount;
+                            int amount = state.trans.total;
                             String formattedAmount;
                             var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
 
@@ -77,7 +78,7 @@ class TipScreen extends StatelessWidget {
                             );
                           } else {
                             return Text(
-                              'Propina',
+                              'Cedula',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                             );
@@ -95,7 +96,7 @@ class TipScreen extends StatelessWidget {
               Container(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                child: AmountEntry('Propina:', onClickEnter),
+                child: NumericEntry('Cedula:', onClickEnter),
               ),
             ])),
           ],
