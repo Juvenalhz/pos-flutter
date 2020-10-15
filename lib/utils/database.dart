@@ -24,7 +24,8 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   void _tableAlter(Database db, String table, String column, String type) async {
@@ -109,7 +110,7 @@ class DatabaseHelper {
   void _UpgradeCommTable(Database db) async {
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
-    _tableAlter(db, 'comm', 'timout', 'integer');
+    _tableAlter(db, 'comm', 'timeout', 'integer');
     _tableAlter(db, 'comm', 'ip', 'text');
     _tableAlter(db, 'comm', 'port', 'integer');
     _tableAlter(db, 'comm', 'headerLength', 'integer');

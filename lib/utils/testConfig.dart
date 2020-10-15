@@ -69,8 +69,8 @@ class testConfig {
       'Name': 'Platco',
       'tpdu': '0000900000',
       'nii': '111',
-      'timout': 60,
-      'ip': '192.168.11.104',
+      'timeout': 60,
+      'ip': '192.168.11.209',
       'port': 9000,
       'headerLength': 2,
     };
@@ -98,11 +98,41 @@ class testConfig {
     print('inserted row id: $id');
   }
 
+  void _CreateAcquirer() async {
+    // row to insert
+    Map<String, dynamic> testAcquirer = {
+      'id': 1,
+      'name': 'Platco',
+      'rif': '222222',
+      'industryType': 1,
+      'cashback': 1,
+      'installmets': 1,
+      'refund': 1,
+      'provimillas': 1,
+      'cheque': 1,
+      'checkIncheckOut': 1,
+      'saleOffline': 1,
+      'cvv2': 1,
+      'last4Digits': 1,
+      'passwordVoid': 1,
+      'passwordSettlement': 1,
+      'passwordRefund': 1,
+      'maskPan': 1,
+      'prePrint': 1,
+      'manualEntry': 1,
+    };
+
+    await appdb.deleteAll('acquirer');
+    final id = await appdb.insert('acquirer', testAcquirer);
+    print('inserted row id: $id');
+  }
+
   Future<void> createTestConfiguration() async {
     await _CreateMerchant();
     await _CreateTerminal();
     await _CreateComm();
     await _CreateEmv();
+    await _CreateAcquirer();
 
     await appdb.deleteAll('bin');
   }

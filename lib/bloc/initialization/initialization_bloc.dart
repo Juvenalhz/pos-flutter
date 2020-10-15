@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
@@ -123,7 +122,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     await merchantRepository.updateMerchant(merchant);
   }
 
-  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
+  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv,
+      Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     EmvRepository emvRepository = new EmvRepository();
@@ -146,9 +146,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     comm.nii = data.substring(index, index + 4);
     index += 4;
 
-    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = 1;
-    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = 1;
-    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = 1;
+    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0)
+      terminal.amountConfirmation = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
 
     emv.CountryCode = merchant.CountryCode;
     emv.CurrencyCode = merchant.CurrencyCode;
@@ -283,7 +284,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       addPubKey = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
       index += 2;
-      pubkey.keyIndex = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
+      pubkey.keyIndex =
+          int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
       index += 4;
       pubkey.rid = data.substring(index, index + 10);
       index += 10;
