@@ -130,3 +130,17 @@ class TransactionAskIdNumber extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionAskLast4Digits extends TransactionState {
+  final String last4;
+
+  TransactionAskLast4Digits(this.last4);
+
+  @override
+  List<Object> get props => [this.last4];
+}
+
+class TransactionAskCVV extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

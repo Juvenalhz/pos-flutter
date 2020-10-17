@@ -12,7 +12,7 @@ import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
-import 'package:pay/screens/transaction.dart';
+import 'package:pay/screens/Transaction.dart';
 import 'package:pay/utils/pinpad.dart';
 
 part 'transaction_event.dart';
@@ -125,9 +125,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         trans = event.trans;
         trans.bin = binId;
-        if (event.trans.cardType == pinpad.MAG_STRIPE)
-          this.add(TransOnlineTransaction(event.trans));
-        else {
+        if (event.trans.cardType == pinpad.MAG_STRIPE) {
+          //this.add(TransOnlineTransaction(event.trans));
+          yield TransactionAskLast4Digits(trans.pan.substring(trans.pan.length - 4));
+        } else {
           if (_validateChipData(trans) == true) {
             this.add(TransGoOnChip(trans));
           } else {
@@ -138,6 +139,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           }
         }
       }
+    }
+    // last 4 digis entered need to match
+    else if (event is TransAddLast4) {
+      String test = trans.pan.substring(trans.pan.length - 4);
+      if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
+        yield TransactionAskCVV();
+      } else
+        yield TransactionAskLast4Digits(trans.pan.substring(trans.pan.length - 4));
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {

@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/Confirmation.dart';
+import 'package:pay/screens/AskNumeric.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
-import 'AskIDScreen.dart';
 import 'TipScreen.dart';
 import 'commProgress.dart';
 import 'mainScreen.dart';
@@ -26,7 +26,11 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
         } else if (state is TransactionAskIdNumber) {
-          return AskId(state.trans);
+          return new AskNumeric('Numero', 'De Cedula', '', 6, 9, onClickIDEnter, onClickIDBack);
+        } else if (state is TransactionAskLast4Digits) {
+          return new AskNumeric('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, onClickLast4Enter, onClickLast4Back);
+        } else if (state is TransactionAskCVV) {
+          return new AskNumeric('Ingrese Codigo', 'De Seguridad', '', 3, 4, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans, pinpad: pinpad);
         } else if (state is TransactionLoadEmvTable) {
@@ -53,6 +57,30 @@ class Transaction extends StatelessWidget {
           return TransMessage('procesessing!!');
       }),
     );
+  }
+
+  void onClickLast4Enter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddLast4(value));
+  }
+
+  void onClickLast4Back(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddTip(0));
+  }
+
+  void onClickIDEnter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddIdNumber(value));
+  }
+
+  void onClickIDBack(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddTip(0));
   }
 }
 

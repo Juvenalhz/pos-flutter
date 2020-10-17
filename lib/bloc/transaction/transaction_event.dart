@@ -167,3 +167,21 @@ class TransCardError extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransAddLast4 extends TransactionEvent {
+  int last4;
+
+  TransAddLast4(this.last4);
+
+  @override
+  List<Object> get props => [this.last4];
+}
+
+class TransAddIdNumber extends TransactionEvent {
+  int idNumber;
+
+  TransAddIdNumber(this.idNumber);
+
+  @override
+  List<Object> get props => [this.idNumber];
+}

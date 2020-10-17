@@ -14,7 +14,7 @@ import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
-import 'package:pay/screens/transaction.dart';
+import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
 import 'Initialization.dart';
 import 'amount.dart';
@@ -82,8 +82,7 @@ class MainScreen extends StatelessWidget {
                             child: Text(
                               state.merchant.nameL1,
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                             ),
                           )),
                         ),

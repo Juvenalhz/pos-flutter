@@ -292,9 +292,8 @@ public class PinpadManager implements PinpadCallbacks {
                         card.put("expDate", "221231");
                         card.put("track1", "");
                         card.put("readStatus", 0);
-                        card.put("resultCode", 0);
                     }
-
+                    card.put("resultCode", 0);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
