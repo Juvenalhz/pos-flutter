@@ -39,6 +39,8 @@ class Trans {
   String _responseEmvTags = '';
   int _cardDecision = 0;
   String _finishTags = '';
+  String _cvv = '';
+  String _cardholderID = '';
 
   Trans();
 
@@ -82,6 +84,8 @@ class Trans {
   String get responseEmvTags => this._responseEmvTags;
   int get cardDecision => this._cardDecision;
   String get finishTags => this._finishTags;
+  String get cvv => this._cvv;
+  String get cardholderID => this._cardholderID;
 
   set id(int id) {
     this._id = id;
@@ -243,6 +247,14 @@ class Trans {
     this._finishTags = finishTags;
   }
 
+  set cvv(String cvv) {
+    this._cvv = cvv;
+  }
+
+  set cardholderID(String cardholderID) {
+    this._cardholderID = cardholderID;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -278,6 +290,8 @@ class Trans {
     map['responseEmvTags'] = this._responseEmvTags;
     map['cardDecision'] = this._cardDecision;
     map['finishTags'] = this._finishTags;
+    map['cvv'] = this._cvv;
+    map['cardholderID'] = this._cardholderID;
 
     return map;
   }
@@ -315,9 +329,11 @@ class Trans {
     this._responseEmvTags = trans['responseEmvTags'];
     this._cardDecision = trans['cardDecision'];
     this._finishTags = trans['finishTags'];
+    this._cvv = trans['cvv'];
+    this._cardholderID = trans['cardholderID'];
   }
 
-  void clear(){
+  void clear() {
     _number = 0;
     _stan = 0;
     _dateTime = '';
@@ -357,5 +373,31 @@ class Trans {
     _responseEmvTags = '';
     _cardDecision = 0;
     _finishTags = '';
+    _cvv = '';
+    _cardholderID = '';
+  }
+
+  void clearCardData() {
+    _bin = 0;
+    _maskedPAN = '';
+    _cipheredPAN = '';
+    _panHash = '';
+    _cipheredCardHolderName = '';
+    _cipheredTrack2 = '';
+    _expDate = '';
+    _serviceCode = '';
+    _entryMode = 0;
+    _emvTags = '';
+    _appType = 0;
+    _cardType = 0;
+    _panSequenceNumber = 0;
+    _cardholderName = '';
+    _pan = '';
+    _track1 = '';
+    _track2 = '';
+    _appLabel = '';
+    _aidID = 0;
+    _cardDecision = 0;
+    _cvv = '';
   }
 }

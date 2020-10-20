@@ -11,10 +11,15 @@ class AskNumeric extends StatelessWidget {
   final String name;
   final int min;
   final int max;
-  Function(BuildContext, int) onClickEnter;
-  Function(BuildContext) onClickBack;
+  final Function(BuildContext, int) onClickEnter;
+  final Function(BuildContext) onClickBack;
+  final int separatorType;
 
-  AskNumeric(this.title1, this.title2, this.name, this.min, this.max, this.onClickEnter, this.onClickBack);
+  static const int DECIMALS = 0;
+  static const int NO_DECIMALS = 1;
+  static const int NO_SEPARATORS = 2;
+
+  AskNumeric(this.title1, this.title2, this.name, this.min, this.max, this.separatorType, this.onClickEnter, this.onClickBack);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +83,7 @@ class AskNumeric extends StatelessWidget {
               Container(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                child: NumericEntry(this.name, min, max, onClickEnter),
+                child: new NumericEntry(this.name, this.min, this.max, this.separatorType, this.onClickEnter),
               ),
             ])),
           ],
@@ -92,28 +97,34 @@ class NumericEntry extends StatefulWidget {
   final String entryText;
   final int min;
   final int max;
-  Function(BuildContext, int) onClickEnter;
+  final int separatorType;
+  final Function(BuildContext, int) onClickEnter;
 
-  NumericEntry(this.entryText, this.min, this.max, this.onClickEnter);
+  NumericEntry(this.entryText, this.min, this.max, this.separatorType, this.onClickEnter);
 
   @override
-  _NumericEntryState createState() => _NumericEntryState(entryText, min, max, onClickEnter);
+  _NumericEntryState createState() => _NumericEntryState(this.entryText, this.min, this.max, this.separatorType, this.onClickEnter);
 }
 
 class _NumericEntryState extends State<NumericEntry> {
   String amount = '';
   final int min;
   final int max;
+  final int separatorType;
 
   var textControllerInput = new TextEditingController(text: '');
-  //var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
-  Function(BuildContext, int) onClickEnter;
+  final Function(BuildContext, int) onClickEnter;
+  var _formatter;
 
-  _NumericEntryState(this.entryText, this.min, this.max, this.onClickEnter);
+  _NumericEntryState(this.entryText, this.min, this.max, this.separatorType, this.onClickEnter);
 
   @override
   Widget build(BuildContext context) {
+    if (separatorType == AskNumeric.DECIMALS)
+      _formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+    else if (separatorType == AskNumeric.NO_DECIMALS) _formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 0);
+
     textControllerInput.text = amount;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -199,7 +210,6 @@ class _NumericEntryState extends State<NumericEntry> {
       child: FlatButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: btnColor)
         ),
         child: Text(
           btntext,
@@ -212,22 +222,25 @@ class _NumericEntryState extends State<NumericEntry> {
             if (amount.length < this.max) {
               amount = amount + btntext;
 
-              // if (amount.length >= 2)
-              //   formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-              // else if (amount.length == 2)
-              //   formattedAmount = '0.' + amount;
-              // else
-              //   formattedAmount = '0.0' + amount;
-              //
-              // textControllerInput.text = formatter.format(double.parse(formattedAmount));
-              textControllerInput.text = amount;
+              if (separatorType == AskNumeric.DECIMALS) {
+                if (amount.length >= 2)
+                  formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
+                else if (amount.length == 2)
+                  formattedAmount = '0.' + amount;
+                else
+                  formattedAmount = '0.0' + amount;
+
+                textControllerInput.text = _formatter.format(double.parse(formattedAmount));
+              } else if (separatorType == AskNumeric.NO_DECIMALS)
+                textControllerInput.text = _formatter.format(double.parse(amount + '.00'));
+              else
+                textControllerInput.text = amount;
             }
           });
         },
         color: btnColor,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
-        //shape: CircleBorder(),
       ),
     );
   }
@@ -242,14 +255,6 @@ class _NumericEntryState extends State<NumericEntry> {
 
           amount = (amount.length > 0) ? (amount.substring(0, amount.length - 1)) : "";
 
-          // if (amount.length >= 2)
-          //   formattedAmount = amount.substring(0, amount.length - 2) + '.' + amount.substring(amount.length - 2);
-          // else if (amount.length == 2)
-          //   formattedAmount = '0.' + amount;
-          // else
-          //   formattedAmount = '0.0' + amount;
-          //
-          // textControllerInput.text = formatter.format(double.parse(formattedAmount));
           textControllerInput.text = amount;
         },
         color: Colors.amberAccent,
@@ -257,7 +262,6 @@ class _NumericEntryState extends State<NumericEntry> {
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -271,7 +275,7 @@ class _NumericEntryState extends State<NumericEntry> {
         onPressed: () {
           if ((amount.length > 0) && (amount.length >= this.min)) {
             this.onClickEnter(context, int.parse(amount));
-            amount = '';
+            deactivate();
           }
         },
         color: Colors.green,
@@ -279,9 +283,26 @@ class _NumericEntryState extends State<NumericEntry> {
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
   }
+}
+
+class AskLast4 extends AskNumeric {
+  AskLast4(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskCVV extends AskNumeric {
+  AskCVV(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskID extends AskNumeric {
+  AskID(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
 }

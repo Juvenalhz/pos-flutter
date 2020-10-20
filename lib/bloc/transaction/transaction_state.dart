@@ -124,20 +124,13 @@ class TransactionError extends TransactionState {
 }
 
 class TransactionAskIdNumber extends TransactionState {
-  final Trans trans;
-  TransactionAskIdNumber(this.trans);
-
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [];
 }
 
 class TransactionAskLast4Digits extends TransactionState {
-  final String last4;
-
-  TransactionAskLast4Digits(this.last4);
-
   @override
-  List<Object> get props => [this.last4];
+  List<Object> get props => [];
 }
 
 class TransactionAskCVV extends TransactionState {

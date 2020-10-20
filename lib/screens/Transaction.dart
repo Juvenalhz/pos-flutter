@@ -26,11 +26,11 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
         } else if (state is TransactionAskIdNumber) {
-          return new AskNumeric('Numero', 'De Cedula', '', 6, 9, onClickIDEnter, onClickIDBack);
+          return new AskID('Numero', 'De Cedula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskLast4Digits) {
-          return new AskNumeric('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, onClickLast4Enter, onClickLast4Back);
+          return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
-          return new AskNumeric('Ingrese Codigo', 'De Seguridad', '', 3, 4, onClickIDEnter, onClickIDBack);
+          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 4, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans, pinpad: pinpad);
         } else if (state is TransactionLoadEmvTable) {
@@ -68,7 +68,7 @@ class Transaction extends StatelessWidget {
   void onClickLast4Back(BuildContext context) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransAddTip(0));
+    transactionBloc.add(TransLast4Back());
   }
 
   void onClickIDEnter(BuildContext context, int value) {
@@ -80,7 +80,19 @@ class Transaction extends StatelessWidget {
   void onClickIDBack(BuildContext context) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransAddTip(0));
+    transactionBloc.add(TransIDBack());
+  }
+
+  void onClickCVVEnter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddCVV(value));
+  }
+
+  void onClickCVVBack(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCVVBack());
   }
 }
 

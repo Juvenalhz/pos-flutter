@@ -127,7 +127,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.bin = binId;
         if (event.trans.cardType == pinpad.MAG_STRIPE) {
           //this.add(TransOnlineTransaction(event.trans));
-          yield TransactionAskLast4Digits(trans.pan.substring(trans.pan.length - 4));
+          yield TransactionAskLast4Digits();
         } else {
           if (_validateChipData(trans) == true) {
             this.add(TransGoOnChip(trans));
@@ -140,13 +140,32 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         }
       }
     }
-    // last 4 digis entered need to match
+    // last 4 digits entered need to match
     else if (event is TransAddLast4) {
-      String test = trans.pan.substring(trans.pan.length - 4);
       if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
         yield TransactionAskCVV();
-      } else
-        yield TransactionAskLast4Digits(trans.pan.substring(trans.pan.length - 4));
+      } else {
+        yield TransactionShowMessage('Ultimos 4 Digitos No Coinciden, Intente Nuevamente');
+        await new Future.delayed(const Duration(seconds: 3));
+        yield TransactionAskLast4Digits();
+      }
+    }
+    // back key was clicked at last4 screen, will go back to enter card
+    else if (event is TransLast4Back) {
+      this.add(TransGetCard());
+    }
+    // cvv was entered
+    else if (event is TransAddCVV) {
+      trans.cvv = event.cvvNumber.toString();
+      yield TransactionAskIdNumber();
+    }
+    // back key was clicked at cvv screen, will go back to enter last4
+    else if (event is TransCVVBack) {
+      yield TransactionAskLast4Digits();
+    }
+    // cardhoder id entered
+    else if (event is TransAddIdNumber) {
+      trans.cardholderID = event.idNumber.toString();
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
