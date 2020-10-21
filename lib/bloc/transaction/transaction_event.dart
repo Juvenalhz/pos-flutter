@@ -12,6 +12,15 @@ class TransStartTransaction extends TransactionEvent {
   List<Object> get props => [];
 }
 
+class TransInitPinpad extends TransactionEvent {
+  final Pinpad pinpad;
+
+  TransInitPinpad(this.pinpad);
+
+  @override
+  List<Object> get props => [pinpad];
+}
+
 class TransAddAmount extends TransactionEvent {
   final int amount;
 
@@ -46,12 +55,8 @@ class TransAskConfirmation extends TransactionEvent {
 }
 
 class TransConfirmOK extends TransactionEvent {
-  final Pinpad pinpad;
-
-  TransConfirmOK(this.pinpad);
-
   @override
-  List<Object> get props => [pinpad];
+  List<Object> get props => [];
 }
 
 class TransLoadEmvTables extends TransactionEvent {

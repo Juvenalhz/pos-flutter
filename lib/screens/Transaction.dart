@@ -18,9 +18,15 @@ class Transaction extends StatelessWidget {
   Widget build(BuildContext context) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
     Pinpad pinpad = new Pinpad(context);
+    bool pinpadInit = false;
 
     return Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
+        if (pinpadInit == false) {
+          transactionBloc.add(TransInitPinpad(pinpad));
+          pinpadInit = true;
+        }
+
         if (state is TransactionAddAmount) {
           return (MainScreen());
         } else if (state is TransactionAddTip) {
@@ -32,7 +38,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAskCVV) {
           return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 4, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
-          return Confirmation(trans: state.trans, pinpad: pinpad);
+          return Confirmation(trans: state.trans);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
           print('show splash screen');

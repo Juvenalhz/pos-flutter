@@ -10,8 +10,7 @@ import 'amount.dart';
 
 class Confirmation extends StatelessWidget {
   Trans trans;
-  Pinpad pinpad;
-  Confirmation({this.trans, this.pinpad});
+  Confirmation({this.trans});
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +167,7 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransConfirmOK(pinpad));
+          transactionBloc.add(TransConfirmOK());
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),

@@ -22,6 +22,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Pinpad pinpad;
   var trans = new Trans();
   BuildContext context;
+  bool emvTablesInit = false;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -32,6 +33,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     print(event.toString());
     if (event is TransactionInitial) {
       yield TransactionAddAmount(trans);
+    } else if (event is TransInitPinpad) {
+      pinpad = event.pinpad;
     }
     // read base amount
     else if (event is TransStartTransaction) {
@@ -56,21 +59,33 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddTip) {
       trans.tip = event.tip;
       trans.total += event.tip;
-      this.add(TransAskConfirmation(trans));
+      //this.add(TransAskConfirmation(trans));
+      if (emvTablesInit == false) {
+        this.add(TransLoadEmvTables(this.pinpad));
+        emvTablesInit = true;
+      } else
+        this.add(TransGetCard());
     }
     // going back to the tip amount screen
     else if (event is TransAskTip) {
       trans.tip = event.tip;
       yield TransactionAddTip(trans);
     }
-    // show confirmation screen
-    else if (event is TransAskConfirmation) {
-      yield TransactionAskConfirmation(trans);
-    }
+    // // show confirmation screen
+    // else if (event is TransAskConfirmation) {
+    //   yield TransactionAskConfirmation(trans);
+    // }
     // user selected ok on Confirmation screen
     else if (event is TransConfirmOK) {
-      this.add(TransLoadEmvTables(event.pinpad));
+      //this.add(TransLoadEmvTables(event.pinpad));
+      if (trans.cardType == pinpad.CHIP) {
+        this.add(TransGoOnChip(trans));
+      }
+      //else {
+          // TODO : ask for fine if swipe debit
+     // }
     }
+
     // configure EMV parameters to pinpad module
     else if (event is TransLoadEmvTables) {
       EmvRepository emvRepository = new EmvRepository();
@@ -130,7 +145,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           yield TransactionAskLast4Digits();
         } else {
           if (_validateChipData(trans) == true) {
-            this.add(TransGoOnChip(trans));
+            //this.add(TransGoOnChip(trans));
+            yield TransactionAskIdNumber();
           } else {
             yield TransactionShowMessage(("Error en Tarjeta"));
             trans.clear();
@@ -166,6 +182,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // cardhoder id entered
     else if (event is TransAddIdNumber) {
       trans.cardholderID = event.idNumber.toString();
+      yield TransactionAskConfirmation(trans);
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
