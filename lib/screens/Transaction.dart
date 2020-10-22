@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/TransStatusScreen.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/AskNumeric.dart';
 import 'package:pay/screens/splash.dart';
@@ -53,8 +54,8 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
         } else if (state is TransactionCompleted) {
-          transactionBloc.add(TransStartTransaction());
-          return TransMessage("Transacción Completada");
+          //transactionBloc.add(TransStartTransaction());
+          return TransStatusScreen(state.trans);
         } else if (state is TransactionError) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Cancelada");

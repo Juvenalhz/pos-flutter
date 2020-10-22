@@ -76,15 +76,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     //   yield TransactionAskConfirmation(trans);
     // }
     // user selected ok on Confirmation screen
-    else if (event is TransConfirmOK) {
-      //this.add(TransLoadEmvTables(event.pinpad));
-      if (trans.cardType == pinpad.CHIP) {
-        this.add(TransGoOnChip(trans));
-      }
-      //else {
-          // TODO : ask for fine if swipe debit
-     // }
-    }
 
     // configure EMV parameters to pinpad module
     else if (event is TransLoadEmvTables) {
@@ -119,7 +110,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['entryMode'] != null) trans.entryMode = event.card['entryMode'];
       if (event.card['PANSequenceNumber'] != null) trans.panSequenceNumber = event.card['PANSequenceNumber'];
       if (event.card['cardholderName'] != null) trans.cardholderName = event.card['cardholderName'];
-      if (event.card['pan'] != null) trans.pan = event.card['pan'];
+      if (event.card['pan'] != null) {
+        trans.pan = event.card['pan'];
+        trans.maskedPAN = trans.pan.substring(0,4) + '....' + trans.pan.substring(trans.pan.length - 4);
+      }
       if (event.card['track1'] != null) trans.track1 = event.card['track1'];
       if (event.card['track2'] != null) trans.track2 = event.card['track2'];
       if (event.card['expDate'] != null) trans.expDate = event.card['expDate'];
@@ -201,6 +195,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // show message on screen while pinpad module ask for pin
     else if (event is TransShowPinAmount) {
       yield TransactionShowPinAmount(trans);
+    } else if (event is TransConfirmOK) {
+      //this.add(TransLoadEmvTables(event.pinpad));
+      if (trans.cardType == pinpad.CHIP) {
+        this.add(TransGoOnChip(trans));
+      } else {
+        this.add(TransOnlineTransaction(trans));
+      }
     }
     // analyze chip desition online/offline/decline by chip
     else if (event is TransGoOnChipDecision) {
@@ -212,7 +213,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransProcessResponse) {
-      if (event.trans.cardType == pinpad.CHIP) this.add(TransFinishChip(trans));
+      if (event.trans.cardType == pinpad.CHIP) {
+        this.add(TransFinishChip(trans));
+      } else {
+        yield TransactionCompleted(trans);
+      }
     }
     //
     else if (event is TransFinishChip) {
