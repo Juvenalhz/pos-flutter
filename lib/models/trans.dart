@@ -41,6 +41,7 @@ class Trans {
   String _finishTags = '';
   String _cvv = '';
   String _cardholderID = '';
+  int _accType = 0;
 
   Trans();
 
@@ -86,6 +87,7 @@ class Trans {
   String get finishTags => this._finishTags;
   String get cvv => this._cvv;
   String get cardholderID => this._cardholderID;
+  int get accType => this._accType;
 
   set id(int id) {
     this._id = id;
@@ -255,6 +257,10 @@ class Trans {
     this._cardholderID = cardholderID;
   }
 
+  set accType(int accType) {
+    this._accType = accType;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -292,6 +298,7 @@ class Trans {
     map['finishTags'] = this._finishTags;
     map['cvv'] = this._cvv;
     map['cardholderID'] = this._cardholderID;
+    map['accType'] = this._accType;
 
     return map;
   }
@@ -331,6 +338,7 @@ class Trans {
     this._finishTags = trans['finishTags'];
     this._cvv = trans['cvv'];
     this._cardholderID = trans['cardholderID'];
+    this._accType = trans['accType'];
   }
 
   void clear() {
@@ -375,6 +383,7 @@ class Trans {
     _finishTags = '';
     _cvv = '';
     _cardholderID = '';
+    _accType = 0;
   }
 
   void clearCardData() {
@@ -399,5 +408,6 @@ class Trans {
     _aidID = 0;
     _cardDecision = 0;
     _cvv = '';
+    _accType = 0;
   }
 }

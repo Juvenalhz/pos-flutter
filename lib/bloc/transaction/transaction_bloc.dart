@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/aid.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
@@ -112,7 +113,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['cardholderName'] != null) trans.cardholderName = event.card['cardholderName'];
       if (event.card['pan'] != null) {
         trans.pan = event.card['pan'];
-        trans.maskedPAN = trans.pan.substring(0,4) + '....' + trans.pan.substring(trans.pan.length - 4);
+        trans.maskedPAN = trans.pan.substring(0, 4) + '....' + trans.pan.substring(trans.pan.length - 4);
       }
       if (event.card['track1'] != null) trans.track1 = event.card['track1'];
       if (event.card['track2'] != null) trans.track2 = event.card['track2'];
@@ -175,7 +176,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // cardhoder id entered
     else if (event is TransAddIdNumber) {
+      BinRepository binRepository = new BinRepository();
+      Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
+
       trans.cardholderID = event.idNumber.toString();
+
+      if (bin.pin) {
+        yield TransactionAskAccountType();
+      } else
+        yield TransactionAskConfirmation(trans);
+    }
+    // account type ase selected
+    else if (event is TransAddAccountType) {
+      trans.accType = event.accType;
       yield TransactionAskConfirmation(trans);
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision

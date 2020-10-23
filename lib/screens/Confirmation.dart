@@ -106,7 +106,14 @@ class Confirmation extends StatelessWidget {
                           RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
                           Spacer(flex: 1),
                           RowDetail(label: "Cedula:", strAmount: state.trans.cardholderID),
-                          Spacer(flex: 2),
+                          Spacer(flex: 1),
+                          if (state.trans.accType == 0)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Credito')
+                          else if (state.trans.accType == 1)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
+                          else if (state.trans.accType == 2)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
+                          Spacer(flex: 3),
                           RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
                           Spacer(flex: 1),
                           RowDetailAmount(label: "Propina:", strAmount: formattedTip),
@@ -200,9 +207,9 @@ class RowDetail extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: Row(children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 30)),
+        Text(label, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
         Flexible(fit: FlexFit.tight, child: SizedBox()),
-        Text(strAmount, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 30))
+        Text(strAmount, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22))
       ]),
     );
   }

@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 class SelectionMenu extends StatefulWidget {
   final String title;
   final LinkedHashMap items;
+  final bool needsPop;
+  final Function(BuildContext, int) onSelection;
 
-  SelectionMenu(this.title, this.items);
+  SelectionMenu(this.title, this.items, this.needsPop, {this.onSelection});
 
   @override
-  _SelectionMenuState createState() => _SelectionMenuState(title, items);
+  _SelectionMenuState createState() => _SelectionMenuState(title, items, needsPop, onSelection: onSelection);
 }
 
 class _SelectionMenuState extends State<SelectionMenu> {
   final String title;
   final LinkedHashMap items;
+  final bool needsPop;
+  final Function(BuildContext, int) onSelection;
 
-  _SelectionMenuState(this.title, this.items);
+  _SelectionMenuState(this.title, this.items, this.needsPop, {this.onSelection});
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +70,15 @@ class _SelectionMenuState extends State<SelectionMenu> {
                         _selection = value;
                       });
 
-                      Navigator.pop(context, value);
+                      if (needsPop == true) {
+                        Navigator.pop(context, value);
+                      } else {
+                        if (onSelection != null) {
+                          onSelection(context, value);
+                        }
+                      }
                     });
               })),
-
     );
   }
 }

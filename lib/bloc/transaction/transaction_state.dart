@@ -137,3 +137,8 @@ class TransactionAskCVV extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionAskAccountType extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

@@ -188,7 +188,7 @@ class TransLast4Back extends TransactionEvent {
 }
 
 class TransAddIdNumber extends TransactionEvent {
-  int idNumber;
+  final int idNumber;
 
   TransAddIdNumber(this.idNumber);
 
@@ -202,7 +202,7 @@ class TransIDBack extends TransactionEvent {
 }
 
 class TransAddCVV extends TransactionEvent {
-  int cvvNumber;
+  final int cvvNumber;
 
   TransAddCVV(this.cvvNumber);
 
@@ -213,4 +213,13 @@ class TransAddCVV extends TransactionEvent {
 class TransCVVBack extends TransactionEvent {
   @override
   List<Object> get props => [];
+}
+
+class TransAddAccountType extends TransactionEvent {
+  final int accType;
+
+  TransAddAccountType(this.accType);
+
+  @override
+  List<Object> get props => [this.accType];
 }

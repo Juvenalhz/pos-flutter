@@ -61,7 +61,8 @@ class Pinpad {
         transactionBloc.add(TransCardWasRead(params));
       }
     } else if (call.method == 'showMenu') {
-      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments)));
+      final result =
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments, true)));
       return result;
     } else if (call.method == 'cardRemoved') {
       call.arguments.forEach((key, value) {
@@ -78,8 +79,8 @@ class Pinpad {
       transactionBloc.add(TransGoOnChipDecision(params));
     }
 
-    if  ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
-      if (params['resultCode'] != 0){
+    if ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
+      if (params['resultCode'] != 0) {
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());
       }

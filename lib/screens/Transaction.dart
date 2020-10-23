@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:pay/models/trans.dart';
 import 'package:pay/screens/TransStatusScreen.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/AskNumeric.dart';
+import 'package:pay/screens/selectionMenu.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
@@ -40,6 +43,9 @@ class Transaction extends StatelessWidget {
           return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 4, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
+        } else if (state is TransactionAskAccountType) {
+          LinkedHashMap<int, String> accTypes = LinkedHashMap.from({0: 'Cuenta Corriente', 1: 'Ahorro'});
+          return SelectionMenu("Seleccione Tipo de Cuenta", accTypes, false, onSelection: onAccTypeSelection);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
           print('show splash screen');
@@ -100,6 +106,12 @@ class Transaction extends StatelessWidget {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     transactionBloc.add(TransCVVBack());
+  }
+
+  void onAccTypeSelection(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddAccountType(value + 1)); // 1 is added to have 0 as credit
   }
 }
 
