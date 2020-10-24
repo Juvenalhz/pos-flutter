@@ -72,7 +72,7 @@ class testConfig {
       'timeout': 60,
       'ip': '192.168.11.209',
       'port': 9000,
-      'headerLength': 2,
+      'headerLength': 1,
     };
 
     await appdb.deleteAll('comm');
