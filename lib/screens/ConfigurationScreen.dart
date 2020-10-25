@@ -191,8 +191,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         if (state is MerchantLoaded) {
                           _merchant = state.merchant;
                           retWidget = Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Column(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: ListView(
                               children: <Widget>[
                                 ListTile(
                                   title: Text('Nombre del Comercio'),
@@ -264,24 +264,20 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                         maxLength: 6,
                                         onSaved: (nValue) => _terminal.password = nValue,
                                         onChanged: (nValue) {
-                                          Provider.of<ConfigViewModel>(context, listen: false)
-                                              .updateChanges(true);
+                                          Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                           _terminal.password = nValue;
                                         },
-                                        validator: (nValue) =>
-                                            InputValidation.defaultPasswordValidator(nValue)),
+                                        validator: (nValue) => InputValidation.defaultPasswordValidator(nValue)),
                                     DataTile(
                                         myTitle: 'Mensaje Pin Pad',
                                         value: _terminal.industry,
                                         maxLength: 16,
                                         onSaved: (nValue) => _terminal.industry = nValue,
                                         onChanged: (nValue) {
-                                          Provider.of<ConfigViewModel>(context, listen: false)
-                                              .updateChanges(true);
+                                          Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                           _terminal.industry = nValue;
                                         },
-                                        validator: (nValue) =>
-                                            InputValidation.requiredField(nValue)),
+                                        validator: (nValue) => InputValidation.requiredField(nValue)),
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.zero,
                                       leftLabel: DataTile(
@@ -289,29 +285,23 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           value: _terminal.minPinDigits.toString(),
                                           type: _tNumber,
                                           maxLength: 2,
-                                          onSaved: (nValue) =>
-                                              _terminal.minPinDigits = int.parse(nValue),
+                                          onSaved: (nValue) => _terminal.minPinDigits = int.parse(nValue),
                                           onChanged: (nValue) {
-                                            Provider.of<ConfigViewModel>(context, listen: false)
-                                                .updateChanges(true);
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                             _terminal.minPinDigits = int.parse(nValue);
                                           },
-                                          validator: (nValue) =>
-                                              InputValidation.requiredField(nValue)),
+                                          validator: (nValue) => InputValidation.requiredField(nValue)),
                                       rightLabel: DataTile(
                                           myTitle: 'Máx. PIN',
                                           value: _terminal.maxPinDigits.toString(),
                                           type: _tNumber,
                                           maxLength: 2,
-                                          onSaved: (nValue) =>
-                                              _terminal.maxPinDigits = int.parse(nValue),
+                                          onSaved: (nValue) => _terminal.maxPinDigits = int.parse(nValue),
                                           onChanged: (nValue) {
-                                            Provider.of<ConfigViewModel>(context, listen: false)
-                                                .updateChanges(true);
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                             _terminal.maxPinDigits = int.parse(nValue);
                                           },
-                                          validator: (nValue) =>
-                                              InputValidation.requiredField(nValue)),
+                                          validator: (nValue) => InputValidation.requiredField(nValue)),
                                       leftWidth: size.width / 2.5,
                                       rightWidth: size.width / 2.5,
                                     ),
@@ -322,15 +312,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           value: _terminal.keyIndex.toString(),
                                           type: _tNumber,
                                           maxLength: 1,
-                                          onSaved: (nValue) =>
-                                              _terminal.keyIndex = int.parse(nValue),
+                                          onSaved: (nValue) => _terminal.keyIndex = int.parse(nValue),
                                           onChanged: (nValue) {
-                                            Provider.of<ConfigViewModel>(context, listen: false)
-                                                .updateChanges(true);
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                             _terminal.keyIndex = int.parse(nValue);
                                           },
-                                          validator: (nValue) =>
-                                              InputValidation.requiredField(nValue)),
+                                          validator: (nValue) => InputValidation.requiredField(nValue)),
                                       leftWidth: size.width / 3.0,
                                       rightWidth: size.width / 1.8,
                                     ),
@@ -370,60 +357,33 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   rightWidth: size.width / 2.18,
                                 ),*/
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Impresión',
-                                          value: _terminal.print,
-                                          onChanged: null),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Cash back',
-                                          value: _terminal.cashback,
-                                          onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Cuotas',
-                                          value: _terminal.installments,
-                                          onChanged: null),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Devolución',
-                                          value: _terminal.refund,
-                                          onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Cheque',
-                                          value: _acquirer.cheque,
-                                          onChanged: null),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Check In/\nCheckOut',
-                                          value: _acquirer.checkIncheckOut,
-                                          onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged: null),
+                                      rightLabel:
+                                          CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'CVV2', value: _acquirer.cvv2, onChanged: null),
-                                      rightLabel: CheckboxItem(
-                                          label: '4 últimos\ndígitos',
-                                          value: _terminal.last4Digits,
-                                          onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'CVV2', value: _acquirer.cvv2, onChanged: null),
+                                      rightLabel: CheckboxItem(label: '4 últimos\ndígitos', value: _terminal.last4Digits, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Clave\nAnulación',
-                                          value: _terminal.passwordVoid,
-                                          onChanged: null),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Clave Cierre',
-                                          value: _terminal.passwordBatch,
-                                          onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Clave\nAnulación', value: _terminal.passwordVoid, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Clave Cierre', value: _terminal.passwordBatch, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -496,8 +456,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 formatInput: [FilteringTextInputFormatter.digitsOnly],
                                 onSaved: (nValue) => _comm.tpdu = nValue,
                                 onChanged: (nValue) {
-                                  Provider.of<ConfigViewModel>(context, listen: false)
-                                      .updateChanges(true);
+                                  Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                   _comm.tpdu = nValue;
                                 },
                                 validator: (nValue) => InputValidation.tpduValidator(nValue),
@@ -512,8 +471,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   formatInput: [FilteringTextInputFormatter.digitsOnly],
                                   onSaved: (nValue) => _comm.timeout = int.parse(nValue),
                                   onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                     _comm.timeout = int.parse(nValue);
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
@@ -526,8 +484,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   formatInput: [FilteringTextInputFormatter.digitsOnly],
                                   onSaved: (nValue) => _comm.nii = nValue,
                                   onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                     _comm.nii = nValue;
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
@@ -544,8 +501,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   maxLength: 15,
                                   onSaved: (nValue) => _comm.ip = nValue,
                                   onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                     _comm.ip = nValue;
                                   },
                                   validator: (nValue) => InputValidation.ipv4Validator(nValue),
@@ -558,8 +514,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   formatInput: [FilteringTextInputFormatter.digitsOnly],
                                   onSaved: (nValue) => _comm.port = int.parse(nValue),
                                   onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false)
-                                        .updateChanges(true);
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
                                     _comm.port = int.parse(nValue);
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
