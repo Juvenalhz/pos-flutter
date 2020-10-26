@@ -191,19 +191,22 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                         if (state is MerchantLoaded) {
                           _merchant = state.merchant;
                           retWidget = Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            padding: EdgeInsets.symmetric(horizontal: 5.0),
                             child: ListView(
                               children: <Widget>[
                                 ListTile(
+                                  contentPadding: EdgeInsets.only(left: 10.0),
                                   title: Text('Nombre del Comercio'),
                                   subtitle: Text('${_merchant.nameL1}\n${_merchant.nameL2}'),
                                   isThreeLine: true,
                                 ),
                                 ListTile(
+                                  contentPadding: EdgeInsets.only(left: 10.0),
                                   title: Text('Ciudad del Comercio'),
                                   subtitle: Text(_merchant.City),
                                 ),
                                 ListTile(
+                                  contentPadding: EdgeInsets.only(left: 10.0),
                                   title: Text('Código de Comercio'),
                                   subtitle: Text(_merchant.MID),
                                 ),
@@ -254,7 +257,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                               if (state is AcquirerLoaded) {
                                 _acquirer = state.acquirer;
                                 retWidget = ListView(
-                                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                                  padding: const EdgeInsets.fromLTRB(6, 10, 6, 10),
                                   children: <Widget>[
                                     DataTile(
                                         myTitle: 'Clave Sistema',
@@ -306,7 +309,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       rightWidth: size.width / 2.5,
                                     ),
                                     ItemTileTwoColumn(
-                                      contentPadding: EdgeInsets.only(right: 16.0),
+                                      contentPadding: EdgeInsets.only(right: 10.0),
                                       leftLabel: DataTile(
                                           myTitle: 'Master Key',
                                           value: _terminal.keyIndex.toString(),
@@ -318,12 +321,13 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                             _terminal.keyIndex = int.parse(nValue);
                                           },
                                           validator: (nValue) => InputValidation.requiredField(nValue)),
-                                      leftWidth: size.width / 3.0,
-                                      rightWidth: size.width / 1.8,
+                                      leftWidth: size.width / 2.5,
+                                      rightWidth: size.width / 2.5,
                                     ),
                                     SizedBox(height: 10.0),
                                     Divider(color: Colors.black54, thickness: 0.6),
                                     ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
                                       leftLabel: Text('Número de Lote'),
                                       rightLabel: Text('Terminal ID'),
                                       leftItem: Text(_merchant.BatchNumber.toString()),
@@ -357,6 +361,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   rightWidth: size.width / 2.18,
                                 ),*/
                                     ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
                                       leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged: null),
                                       rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
                                       leftWidth: size.width / 2.18,
@@ -370,8 +375,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                     ),
                                     ItemTileTwoColumn(
                                       leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged: null),
-                                      rightLabel:
-                                          CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -388,6 +392,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
                                       leftLabel: CheckboxItem(
                                         label: 'Clave\nDevolución',
                                         value: _terminal.passwordRefund,
@@ -546,6 +551,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 rightWidth: size.width / 1.9,
                               ),
                               ListTile(
+                                contentPadding: EdgeInsets.only(left: 10.0),
                                 title: Text('Terminal Additional Capabilities'),
                                 subtitle: Text(_emv.addTermCapabilities),
                               ),
@@ -561,8 +567,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   onChanged: null,
                                   // onChanged: (v) {},
                                 ),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
+                                leftWidth: size.width / 2.6,
+                                rightWidth: size.width / 1.9,
                               ),
                               /*ItemTileTwoColumn(
                                 leftLabel: CheckboxItem(
@@ -592,8 +598,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 leftItem: Text(_merchant.AcquirerCode.toString()),
                                 rightLabel: Text('Nombre Adquiriente'),
                                 rightItem: Text(_acquirer.name),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
+                                leftWidth: size.width / 2.5,
+                                rightWidth: size.width / 2.5,
                               ),
                               ItemTileTwoColumn(
                                 leftLabel: Text('RIF Adquiriente'),
@@ -603,8 +609,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   value: true,
                                   onChanged: null,
                                 ),
-                                leftWidth: size.width / 2.18,
-                                rightWidth: size.width / 2.18,
+                                leftWidth: size.width / 2.5,
+                                rightWidth: size.width / 2.5,
                               ),
                             ],
                           );
