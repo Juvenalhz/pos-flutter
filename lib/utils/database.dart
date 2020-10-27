@@ -237,6 +237,61 @@ class DatabaseHelper {
     _tableAlter(db, 'pubkey', 'modulus', 'text');
   }
 
+  void _CreateTransTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE trans (
+          id integer PRIMARY KEY AUTOINCREMENT )
+          ''');
+
+    await _UpgradeTransTable(db);
+  }
+
+  void _UpgradeTransTable(Database db) async {
+    _tableAlter(db, 'trans', 'id', 'integer');
+    _tableAlter(db, 'trans', 'number', 'integer');
+    _tableAlter(db, 'trans', 'stan', 'integer');
+    _tableAlter(db, 'trans', 'dateTime', 'text');
+    _tableAlter(db, 'trans', 'type', 'text');
+    _tableAlter(db, 'trans', 'reverse', 'integer');
+    _tableAlter(db, 'trans', 'advice', 'integer');
+    _tableAlter(db, 'trans', 'aquirer', 'integer');
+    _tableAlter(db, 'trans', 'bin', 'integer');
+    _tableAlter(db, 'trans', 'maskedPAN', 'text');
+    _tableAlter(db, 'trans', 'cipheredPAN', 'text');
+    _tableAlter(db, 'trans', 'panHash', 'text');
+    _tableAlter(db, 'trans', 'cipheredCardHolderName', 'text');
+    _tableAlter(db, 'trans', 'cipheredTrack2', 'text');
+    _tableAlter(db, 'trans', 'expDate', 'text');
+    _tableAlter(db, 'trans', 'serviceCode', 'text');
+    _tableAlter(db, 'trans', 'currency', 'integer');
+    _tableAlter(db, 'trans', 'entryMode', 'integer');
+    _tableAlter(db, 'trans', 'baseAmount', 'integer');
+    _tableAlter(db, 'trans', 'tip', 'integer');
+    _tableAlter(db, 'trans', 'tax', 'integer');
+    _tableAlter(db, 'trans', 'cashback', 'integer');
+    _tableAlter(db, 'trans', 'total', 'integer');
+    _tableAlter(db, 'trans', 'origialTotal', 'integer');
+    _tableAlter(db, 'trans', 'responseCode', 'text');
+    _tableAlter(db, 'trans', 'authNumber', 'text');
+    _tableAlter(db, 'trans', 'hostRRN', 'text');
+    _tableAlter(db, 'trans', 'emvTags', 'text');
+    _tableAlter(db, 'trans', 'appType', 'integer');
+    _tableAlter(db, 'trans', 'cardType', 'integer');
+    _tableAlter(db, 'trans', 'panSequenceNumber', 'integer');
+    _tableAlter(db, 'trans', 'cardholderName', 'text');
+    _tableAlter(db, 'trans', 'appLabel', 'text');
+    _tableAlter(db, 'trans', 'aidID', 'integer');
+    _tableAlter(db, 'trans', 'responseEmvTags', 'text');
+    _tableAlter(db, 'trans', 'cardDecision', 'integer');
+    _tableAlter(db, 'trans', 'finishTags', 'text');
+    _tableAlter(db, 'trans', 'cardholderID', 'text');
+    _tableAlter(db, 'trans', 'accType', 'integer');
+    _tableAlter(db, 'trans', 'signature', 'integer');
+    _tableAlter(db, 'trans', 'offlinePIN', 'integer');
+    _tableAlter(db, 'trans', 'blockedPIN', 'integer');
+    _tableAlter(db, 'trans', 'onlinePIN', 'integer');
+  }
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     _CreateMerchantTable(db);
@@ -248,6 +303,7 @@ class DatabaseHelper {
     _CreateBinTable(db);
     _CreateAidTable(db);
     _CreatePubKeyTable(db);
+    _CreateTransTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -267,6 +323,7 @@ class DatabaseHelper {
     _UpgradeBinTable(db);
     _UpgradeAidTable(db);
     _UpgradePubKeyTable(db);
+    _UpgradeTransTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name

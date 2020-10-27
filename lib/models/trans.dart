@@ -1,3 +1,5 @@
+import 'package:pay/utils/dataUtils.dart';
+
 class Trans {
   int _id;
   int _number = 0;
@@ -42,14 +44,14 @@ class Trans {
   String _cvv = '';
   String _cardholderID = '';
   int _accType = 0;
-  bool _signature = false; 
-  bool _offlinePIN = false; 
-  int _triesLeft = 0; 
+  bool _signature = false;
+  bool _offlinePIN = false;
+  int _triesLeft = 0;
   bool _blockedPIN = false;
   bool _onlinePIN = false;
-  String _pinBlock = ''; 
+  String _pinBlock = '';
   String _pinKSN = '';
-  
+
   Trans();
 
   int get id => this._id;
@@ -95,12 +97,12 @@ class Trans {
   String get cvv => this._cvv;
   String get cardholderID => this._cardholderID;
   int get accType => this._accType;
-  bool get signature => this._signature; 
-  bool get offlinePIN => this._offlinePIN; 
-  int get triesLeft => this._triesLeft; 
+  bool get signature => this._signature;
+  bool get offlinePIN => this._offlinePIN;
+  int get triesLeft => this._triesLeft;
   bool get blockedPIN => this._blockedPIN;
   bool get onlinePIN => this._onlinePIN;
-  String get pinBlock => this._pinBlock; 
+  String get pinBlock => this._pinBlock;
   String get pinKSN => this._pinKSN;
 
   set id(int id) {
@@ -297,12 +299,12 @@ class Trans {
 
   set pinBlock(String pinBlock) {
     this._pinBlock = pinBlock;
-  } 
+  }
 
   set pinKSN(String pinKSN) {
     this._pinKSN = pinKSN;
   }
-  
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -344,14 +346,14 @@ class Trans {
     map['cvv'] = this._cvv;
     map['cardholderID'] = this._cardholderID;
     map['accType'] = this._accType;
-    map['signature'] = this._signature; 
-    map['offlinePIN'] = this._offlinePIN; 
-    map['triesLeft'] = this._triesLeft; 
-    map['blockedPIN'] = this._blockedPIN;
-    map['onlinePIN'] = this._onlinePIN;
-    map['pinBlock'] = this._pinBlock; 
+    map['signature'] = boolToInt(this._signature);
+    map['offlinePIN'] = boolToInt(this._offlinePIN);
+    map['triesLeft'] = this._triesLeft;
+    map['blockedPIN'] = boolToInt(this._blockedPIN);
+    map['onlinePIN'] = boolToInt(this._onlinePIN);
+    map['pinBlock'] = this._pinBlock;
     map['pinKSN'] = this._pinKSN;
-    
+
     return map;
   }
 
@@ -359,7 +361,7 @@ class Trans {
     var map = Map<String, dynamic>();
 
     // some fields from trans should not be stored in the DB for security
-    
+
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
@@ -395,12 +397,11 @@ class Trans {
     map['cvv'] = this._cvv;
     map['cardholderID'] = this._cardholderID;
     map['accType'] = this._accType;
-    map['signature'] = this._signature; 
-    map['offlinePIN'] = this._offlinePIN; 
-    map['triesLeft'] = this._triesLeft; 
-    map['blockedPIN'] = this._blockedPIN;
-    map['onlinePIN'] = this._onlinePIN;
-    
+    map['signature'] = boolToInt(this._signature);
+    map['offlinePIN'] = boolToInt(this._offlinePIN);
+    map['blockedPIN'] = boolToInt(this._blockedPIN);
+    map['onlinePIN'] = boolToInt(this._onlinePIN);
+
     return map;
   }
 
@@ -440,12 +441,12 @@ class Trans {
     this._cvv = trans['cvv'];
     this._cardholderID = trans['cardholderID'];
     this._accType = trans['accType'];
-    this._signature = trans['signature']; 
-    this._offlinePIN = trans['offlinePIN']; 
-    this._triesLeft = trans['triesLeft']; 
-    this._blockedPIN = trans['blockedPIN'];
-    this._onlinePIN = trans['onlinePIN'];
-    this._pinBlock = trans['pinBlock']; 
+    this._signature = intToBool(trans['signature']);
+    this._offlinePIN = intToBool(trans['offlinePIN']);
+    this._triesLeft = trans['triesLeft'];
+    this._blockedPIN = intToBool(trans['blockedPIN']);
+    this._onlinePIN = intToBool(trans['onlinePIN']);
+    this._pinBlock = trans['pinBlock'];
     this._pinKSN = trans['pinKSN'];
   }
 
@@ -492,12 +493,12 @@ class Trans {
     _cvv = '';
     _cardholderID = '';
     _accType = 0;
-    _signature = false; 
-    _offlinePIN = false; 
-    _triesLeft = 0; 
+    _signature = false;
+    _offlinePIN = false;
+    _triesLeft = 0;
     _blockedPIN = false;
     _onlinePIN = false;
-    _pinBlock = ''; 
+    _pinBlock = '';
     _pinKSN = '';
   }
 
@@ -524,12 +525,12 @@ class Trans {
     _cardDecision = 0;
     _cvv = '';
     _accType = 0;
-    _signature = false; 
-    _offlinePIN = false; 
-    _triesLeft = 0; 
+    _signature = false;
+    _offlinePIN = false;
+    _triesLeft = 0;
     _blockedPIN = false;
     _onlinePIN = false;
-    _pinBlock = ''; 
+    _pinBlock = '';
     _pinKSN = '';
   }
 }
