@@ -174,7 +174,7 @@ class TransCardError extends TransactionEvent {
 }
 
 class TransAddLast4 extends TransactionEvent {
-  int last4;
+  final int last4;
 
   TransAddLast4(this.last4);
 

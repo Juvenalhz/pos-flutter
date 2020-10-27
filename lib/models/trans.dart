@@ -42,7 +42,14 @@ class Trans {
   String _cvv = '';
   String _cardholderID = '';
   int _accType = 0;
-
+  bool _signature = false; 
+  bool _offlinePIN = false; 
+  int _triesLeft = 0; 
+  bool _blockedPIN = false;
+  bool _onlinePIN = false;
+  String _pinBlock = ''; 
+  String _pinKSN = '';
+  
   Trans();
 
   int get id => this._id;
@@ -88,6 +95,13 @@ class Trans {
   String get cvv => this._cvv;
   String get cardholderID => this._cardholderID;
   int get accType => this._accType;
+  bool get signature => this._signature; 
+  bool get offlinePIN => this._offlinePIN; 
+  int get triesLeft => this._triesLeft; 
+  bool get blockedPIN => this._blockedPIN;
+  bool get onlinePIN => this._onlinePIN;
+  String get pinBlock => this._pinBlock; 
+  String get pinKSN => this._pinKSN;
 
   set id(int id) {
     this._id = id;
@@ -261,9 +275,91 @@ class Trans {
     this._accType = accType;
   }
 
+  set signature(bool signature) {
+    this._signature = signature;
+  }
+
+  set offlinePIN(bool offlinePIN) {
+    this._offlinePIN = offlinePIN;
+  }
+
+  set triesLeft(int triesLeft) {
+    this._triesLeft = triesLeft;
+  }
+
+  set blockedPIN(bool blockedPIN) {
+    this._blockedPIN = blockedPIN;
+  }
+
+  set onlinePIN(bool onlinePIN) {
+    this._onlinePIN = onlinePIN;
+  }
+
+  set pinBlock(String pinBlock) {
+    this._pinBlock = pinBlock;
+  } 
+
+  set pinKSN(String pinKSN) {
+    this._pinKSN = pinKSN;
+  }
+  
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
+    map['id'] = this._id;
+    map['number'] = this._number;
+    map['stan'] = this._stan;
+    map['dateTime'] = this._dateTime;
+    map['type'] = this._type;
+    map['reverse'] = this._reverse;
+    map['advice'] = this._advice;
+    map['aquirer'] = this._aquirer;
+    map['bin'] = this._bin;
+    map['pan'] = this._pan;
+    map['track1'] = this._track1;
+    map['track2'] = this._track2;
+    map['maskedPAN'] = this._maskedPAN;
+    map['cipheredPAN'] = this._cipheredPAN;
+    map['panHash'] = this._panHash;
+    map['cipheredCardHolderName'] = this._cipheredCardHolderName;
+    map['cipheredTrack2'] = this._cipheredTrack2;
+    map['expDate'] = this._expDate;
+    map['serviceCode'] = this._serviceCode;
+    map['currency'] = this._currency;
+    map['entryMode'] = this._entryMode;
+    map['baseAmount'] = this._baseAmount;
+    map['tip'] = this._tip;
+    map['tax'] = this._tax;
+    map['cashback'] = this._cashback;
+    map['total'] = this._total;
+    map['origialTotal'] = this._origialTotal;
+    map['responseCode'] = this._responseCode;
+    map['authNumber'] = this._authNumber;
+    map['hostRRN'] = this._hostRRN;
+    map['emvTags'] = this._emvTags;
+    map['aidID'] = this._aidID;
+    map['responseEmvTags'] = this._responseEmvTags;
+    map['cardDecision'] = this._cardDecision;
+    map['finishTags'] = this._finishTags;
+    map['cvv'] = this._cvv;
+    map['cardholderID'] = this._cardholderID;
+    map['accType'] = this._accType;
+    map['signature'] = this._signature; 
+    map['offlinePIN'] = this._offlinePIN; 
+    map['triesLeft'] = this._triesLeft; 
+    map['blockedPIN'] = this._blockedPIN;
+    map['onlinePIN'] = this._onlinePIN;
+    map['pinBlock'] = this._pinBlock; 
+    map['pinKSN'] = this._pinKSN;
+    
+    return map;
+  }
+
+  Map<String, dynamic> toDBMap() {
+    var map = Map<String, dynamic>();
+
+    // some fields from trans should not be stored in the DB for security
+    
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
@@ -299,7 +395,12 @@ class Trans {
     map['cvv'] = this._cvv;
     map['cardholderID'] = this._cardholderID;
     map['accType'] = this._accType;
-
+    map['signature'] = this._signature; 
+    map['offlinePIN'] = this._offlinePIN; 
+    map['triesLeft'] = this._triesLeft; 
+    map['blockedPIN'] = this._blockedPIN;
+    map['onlinePIN'] = this._onlinePIN;
+    
     return map;
   }
 
@@ -339,6 +440,13 @@ class Trans {
     this._cvv = trans['cvv'];
     this._cardholderID = trans['cardholderID'];
     this._accType = trans['accType'];
+    this._signature = trans['signature']; 
+    this._offlinePIN = trans['offlinePIN']; 
+    this._triesLeft = trans['triesLeft']; 
+    this._blockedPIN = trans['blockedPIN'];
+    this._onlinePIN = trans['onlinePIN'];
+    this._pinBlock = trans['pinBlock']; 
+    this._pinKSN = trans['pinKSN'];
   }
 
   void clear() {
@@ -384,6 +492,13 @@ class Trans {
     _cvv = '';
     _cardholderID = '';
     _accType = 0;
+    _signature = false; 
+    _offlinePIN = false; 
+    _triesLeft = 0; 
+    _blockedPIN = false;
+    _onlinePIN = false;
+    _pinBlock = ''; 
+    _pinKSN = '';
   }
 
   void clearCardData() {
@@ -409,5 +524,12 @@ class Trans {
     _cardDecision = 0;
     _cvv = '';
     _accType = 0;
+    _signature = false; 
+    _offlinePIN = false; 
+    _triesLeft = 0; 
+    _blockedPIN = false;
+    _onlinePIN = false;
+    _pinBlock = ''; 
+    _pinKSN = '';
   }
 }

@@ -357,11 +357,11 @@ public class PinpadManager implements PinpadCallbacks {
                     final String out = output.getOutput();
                     onChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
                     onChipData.put("signature", Integer.parseInt(out.substring(1, 2)));
-                    onChipData.put("didOfflinePIN", Integer.parseInt(out.substring(2, 3)));
+                    onChipData.put("OfflinePIN", Integer.parseInt(out.substring(2, 3)));
                     onChipData.put("triesLeft", Integer.parseInt(out.substring(3, 4)));
-                    onChipData.put("isBlockedPIN", Integer.parseInt(out.substring(4, 5)));
-                    onChipData.put("didOnlinePIN", Integer.parseInt(out.substring(5, 6)));
-                    onChipData.put("onlinePINBlock", out.substring(6, 22));
+                    onChipData.put("BlockedPIN", Integer.parseInt(out.substring(4, 5)));
+                    onChipData.put("OnlinePIN", Integer.parseInt(out.substring(5, 6)));
+                    onChipData.put("PINBlock", out.substring(6, 22));
                     onChipData.put("PINKSN", out.substring(22, 42));
                     final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
                     onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));

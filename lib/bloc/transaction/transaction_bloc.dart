@@ -15,6 +15,7 @@ import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'package:pay/utils/pinpad.dart';
+import 'package:pay/utils/dataUtils.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
@@ -218,6 +219,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // analyze chip desition online/offline/decline by chip
     else if (event is TransGoOnChipDecision) {
+      if (event.chipDoneData['decision'] != null) trans.cardDecision = event.chipDoneData['decision'];
+      if (event.chipDoneData['signature'] != null) trans.signature = intToBool(event.chipDoneData['signature']);
+      if (event.chipDoneData['OfflinePIN'] != null) trans.offlinePIN = intToBool(event.chipDoneData['OfflinePIN']);
+      if (event.chipDoneData['triesLeft'] != null) trans.triesLeft = event.chipDoneData['triesLeft'];
+      if (event.chipDoneData['BlockedPIN'] != null) trans.blockedPIN = intToBool(event.chipDoneData['BlockedPIN']);
+      if (event.chipDoneData['OnlinePIN'] != null) trans.onlinePIN = intToBool(event.chipDoneData['OnlinePIN']);
+      if (event.chipDoneData['PINBlock'] != null) trans.pinBlock = event.chipDoneData['PINBlock'];
+      if (event.chipDoneData['PINKSN'] != null) trans.pinKSN = event.chipDoneData['PINKSN'];
+      if (event.chipDoneData['emvTags'] != null) trans.emvTags = event.chipDoneData['emvTags'];
+
+      if (trans.cardDecision == 1) {  // denial by the card
+        yield TransactionShowMessage('Transaccion Rechazada Por Tarjeta');
+        await new Future.delayed(const Duration(seconds: 3));
+        trans.clear();
+        yield TransactionError();
+      }
+      else if (trans.cardDecision == 0){
+        // this case is offline approval
+      }
+      else 
       this.add(TransOnlineTransaction(trans));
     }
     // start online process
