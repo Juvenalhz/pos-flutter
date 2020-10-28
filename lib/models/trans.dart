@@ -4,7 +4,7 @@ class Trans {
   int _id;
   int _number = 0;
   int _stan = 0;
-  String _dateTime = '';
+  DateTime _dateTime = DateTime.parse('');
   String _type = '';
   int _reverse = 0;
   int _advice = 0;
@@ -51,13 +51,14 @@ class Trans {
   bool _onlinePIN = false;
   String _pinBlock = '';
   String _pinKSN = '';
+  String _referenceNumber = '';
 
   Trans();
 
   int get id => this._id;
   int get number => this._number;
   int get stan => this._stan;
-  String get dateTime => this._dateTime;
+  DateTime get dateTime => this._dateTime;
   String get type => this._type;
   int get reverse => this._reverse;
   int get advice => this._advice;
@@ -104,6 +105,7 @@ class Trans {
   bool get onlinePIN => this._onlinePIN;
   String get pinBlock => this._pinBlock;
   String get pinKSN => this._pinKSN;
+  String get referenceNumber => this._referenceNumber;
 
   set id(int id) {
     this._id = id;
@@ -117,7 +119,7 @@ class Trans {
     this._stan = stan;
   }
 
-  set dateTime(String dateTime) {
+  set dateTime(DateTime dateTime) {
     this._dateTime = dateTime;
   }
 
@@ -305,6 +307,10 @@ class Trans {
     this._pinKSN = pinKSN;
   }
 
+  set referenceNumber(String referenceNumber) {
+    this._referenceNumber = referenceNumber;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -353,6 +359,7 @@ class Trans {
     map['onlinePIN'] = boolToInt(this._onlinePIN);
     map['pinBlock'] = this._pinBlock;
     map['pinKSN'] = this._pinKSN;
+    map['referenceNumber'] = this._referenceNumber;
 
     return map;
   }
@@ -365,7 +372,7 @@ class Trans {
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
-    map['dateTime'] = this._dateTime;
+    map['dateTime'] = this._dateTime.toString();
     map['type'] = this._type;
     map['reverse'] = this._reverse;
     map['advice'] = this._advice;
@@ -401,6 +408,7 @@ class Trans {
     map['offlinePIN'] = boolToInt(this._offlinePIN);
     map['blockedPIN'] = boolToInt(this._blockedPIN);
     map['onlinePIN'] = boolToInt(this._onlinePIN);
+    map['referenceNumber'] = this._referenceNumber;
 
     return map;
   }
@@ -409,7 +417,7 @@ class Trans {
     this._id = trans['id'];
     this._number = trans['number'];
     this._stan = trans['stan'];
-    this._dateTime = trans['dateTime'];
+    this._dateTime = DateTime.parse(trans['dateTime']);
     this._type = trans['type'];
     this._reverse = trans['reverse'];
     this._advice = trans['advice'];
@@ -448,12 +456,13 @@ class Trans {
     this._onlinePIN = intToBool(trans['onlinePIN']);
     this._pinBlock = trans['pinBlock'];
     this._pinKSN = trans['pinKSN'];
+    this._referenceNumber = trans['referenceNumber'];
   }
 
   void clear() {
     _number = 0;
     _stan = 0;
-    _dateTime = '';
+    _dateTime = DateTime.parse('');
     _type = '';
     _reverse = 0;
     _advice = 0;
@@ -500,6 +509,7 @@ class Trans {
     _onlinePIN = false;
     _pinBlock = '';
     _pinKSN = '';
+    _referenceNumber = '';
   }
 
   void clearCardData() {

@@ -61,7 +61,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddTip) {
       trans.tip = event.tip;
       trans.total += event.tip;
-      //this.add(TransAskConfirmation(trans));
+      trans.dateTime = DateTime.now();
       if (emvTablesInit == false) {
         this.add(TransLoadEmvTables(this.pinpad));
         emvTablesInit = true;
