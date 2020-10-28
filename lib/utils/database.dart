@@ -254,7 +254,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'type', 'text');
     _tableAlter(db, 'trans', 'reverse', 'integer');
     _tableAlter(db, 'trans', 'advice', 'integer');
-    _tableAlter(db, 'trans', 'aquirer', 'integer');
+    _tableAlter(db, 'trans', 'acquirer', 'integer');
     _tableAlter(db, 'trans', 'bin', 'integer');
     _tableAlter(db, 'trans', 'maskedPAN', 'text');
     _tableAlter(db, 'trans', 'cipheredPAN', 'text');
@@ -270,7 +270,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'tax', 'integer');
     _tableAlter(db, 'trans', 'cashback', 'integer');
     _tableAlter(db, 'trans', 'total', 'integer');
-    _tableAlter(db, 'trans', 'origialTotal', 'integer');
+    _tableAlter(db, 'trans', 'originalTotal', 'integer');
     _tableAlter(db, 'trans', 'responseCode', 'text');
     _tableAlter(db, 'trans', 'authNumber', 'text');
     _tableAlter(db, 'trans', 'hostRRN', 'text');
@@ -290,6 +290,10 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'offlinePIN', 'integer');
     _tableAlter(db, 'trans', 'blockedPIN', 'integer');
     _tableAlter(db, 'trans', 'onlinePIN', 'integer');
+    _tableAlter(db, 'trans', 'referenceNumber', 'text');
+    _tableAlter(db, 'trans', 'authCode', 'text');
+    _tableAlter(db, 'trans', 'respCode', 'text');
+    _tableAlter(db, 'trans', 'batchNum', 'integer');
   }
 
   // SQL code to create the database table

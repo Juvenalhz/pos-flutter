@@ -8,7 +8,7 @@ class Trans {
   String _type = '';
   int _reverse = 0;
   int _advice = 0;
-  int _aquirer = 0;
+  int _acquirer = 0;
   int _bin = 0;
   String _maskedPAN = '';
   String _cipheredPAN = '';
@@ -24,7 +24,7 @@ class Trans {
   int _tax = 0;
   int _cashback = 0;
   int _total = 0;
-  int _origialTotal = 0;
+  int _originalTotal = 0;
   String _responseCode = '';
   String _authNumber = '';
   String _hostRRN = '';
@@ -52,6 +52,9 @@ class Trans {
   String _pinBlock = '';
   String _pinKSN = '';
   String _referenceNumber = '';
+  String _authCode = '';
+  String _respCode = '';
+  int _batchNum = 0;
 
   Trans();
 
@@ -62,7 +65,7 @@ class Trans {
   String get type => this._type;
   int get reverse => this._reverse;
   int get advice => this._advice;
-  int get aquirer => this._aquirer;
+  int get acquirer => this._acquirer;
   int get bin => this._bin;
   String get maskedPAN => this._maskedPAN;
   String get cipheredPAN => this._cipheredPAN;
@@ -78,7 +81,7 @@ class Trans {
   int get tax => this._tax;
   int get cashback => this._cashback;
   int get total => this._total;
-  int get origialTotal => this._origialTotal;
+  int get originalTotal => this._originalTotal;
   String get responseCode => this._responseCode;
   String get authNumber => this._authNumber;
   String get hostRRN => this._hostRRN;
@@ -106,6 +109,9 @@ class Trans {
   String get pinBlock => this._pinBlock;
   String get pinKSN => this._pinKSN;
   String get referenceNumber => this._referenceNumber;
+  String get authCode => this._authCode;
+  String get respCode => this._respCode;
+  int get batchNum => this._batchNum;
 
   set id(int id) {
     this._id = id;
@@ -135,8 +141,8 @@ class Trans {
     this._advice = advice;
   }
 
-  set aquirer(int aquirer) {
-    this._aquirer = aquirer;
+  set acquirer(int acquirer) {
+    this._acquirer = acquirer;
   }
 
   set bin(int bin) {
@@ -199,8 +205,8 @@ class Trans {
     this._total = total;
   }
 
-  set origialTotal(int origialTotal) {
-    this._origialTotal = origialTotal;
+  set originalTotal(int originalTotal) {
+    this._originalTotal = originalTotal;
   }
 
   set responseCode(String responseCode) {
@@ -311,6 +317,18 @@ class Trans {
     this._referenceNumber = referenceNumber;
   }
 
+  set authCode(String authCode) {
+    this._authCode = authCode;
+  }
+
+  set respCode(String respCode) {
+    this._respCode = respCode;
+  }
+
+  set batchNum(int batchNum) {
+    this._batchNum = batchNum;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -321,7 +339,7 @@ class Trans {
     map['type'] = this._type;
     map['reverse'] = this._reverse;
     map['advice'] = this._advice;
-    map['aquirer'] = this._aquirer;
+    map['acquirer'] = this._acquirer;
     map['bin'] = this._bin;
     map['pan'] = this._pan;
     map['track1'] = this._track1;
@@ -340,7 +358,7 @@ class Trans {
     map['tax'] = this._tax;
     map['cashback'] = this._cashback;
     map['total'] = this._total;
-    map['origialTotal'] = this._origialTotal;
+    map['originalTotal'] = this._originalTotal;
     map['responseCode'] = this._responseCode;
     map['authNumber'] = this._authNumber;
     map['hostRRN'] = this._hostRRN;
@@ -360,15 +378,18 @@ class Trans {
     map['pinBlock'] = this._pinBlock;
     map['pinKSN'] = this._pinKSN;
     map['referenceNumber'] = this._referenceNumber;
+    map['authCode'] = this._authCode;
+    map['respCode'] = this._respCode;
+    map['batchNum'] = this._batchNum;
 
     return map;
   }
 
   Map<String, dynamic> toDBMap() {
     var map = Map<String, dynamic>();
-
+    // NOTE IMPORTANT!!!!!!
     // some fields from trans should not be stored in the DB for security
-
+    // !!!!!!!!!!!!!!!!!!!!
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
@@ -376,7 +397,7 @@ class Trans {
     map['type'] = this._type;
     map['reverse'] = this._reverse;
     map['advice'] = this._advice;
-    map['aquirer'] = this._aquirer;
+    map['acquirer'] = this._acquirer;
     map['bin'] = this._bin;
     map['maskedPAN'] = this._maskedPAN;
     map['cipheredPAN'] = this._cipheredPAN;
@@ -392,7 +413,7 @@ class Trans {
     map['tax'] = this._tax;
     map['cashback'] = this._cashback;
     map['total'] = this._total;
-    map['origialTotal'] = this._origialTotal;
+    map['originalTotal'] = this._originalTotal;
     map['responseCode'] = this._responseCode;
     map['authNumber'] = this._authNumber;
     map['hostRRN'] = this._hostRRN;
@@ -409,6 +430,9 @@ class Trans {
     map['blockedPIN'] = boolToInt(this._blockedPIN);
     map['onlinePIN'] = boolToInt(this._onlinePIN);
     map['referenceNumber'] = this._referenceNumber;
+    map['authCode'] = this._authCode;
+    map['respCode'] = this._respCode;
+    map['batchNum'] = this._batchNum;
 
     return map;
   }
@@ -421,7 +445,7 @@ class Trans {
     this._type = trans['type'];
     this._reverse = trans['reverse'];
     this._advice = trans['advice'];
-    this._aquirer = trans['aquirer'];
+    this._acquirer = trans['acquirer'];
     this._bin = trans['bin'];
     this._maskedPAN = trans['maskedPAN'];
     this._cipheredPAN = trans['cipheredPAN'];
@@ -437,7 +461,7 @@ class Trans {
     this._tax = trans['tax'];
     this._cashback = trans['cashback'];
     this._total = trans['total'];
-    this._origialTotal = trans['origialTotal'];
+    this._originalTotal = trans['originalTotal'];
     this._responseCode = trans['responseCode'];
     this._authNumber = trans['authNumber'];
     this._hostRRN = trans['hostRRN'];
@@ -457,6 +481,9 @@ class Trans {
     this._pinBlock = trans['pinBlock'];
     this._pinKSN = trans['pinKSN'];
     this._referenceNumber = trans['referenceNumber'];
+    this._authCode = trans['authCode'];
+    this._respCode = trans['respCode'];
+    this._batchNum = trans['batchNum'];
   }
 
   void clear() {
@@ -466,7 +493,7 @@ class Trans {
     _type = '';
     _reverse = 0;
     _advice = 0;
-    _aquirer = 0;
+    _acquirer = 0;
     _bin = 0;
     _maskedPAN = '';
     _cipheredPAN = '';
@@ -482,7 +509,7 @@ class Trans {
     _tax = 0;
     _cashback = 0;
     _total = 0;
-    _origialTotal = 0;
+    _originalTotal = 0;
     _responseCode = '';
     _authNumber = '';
     _hostRRN = '';
@@ -510,6 +537,9 @@ class Trans {
     _pinBlock = '';
     _pinKSN = '';
     _referenceNumber = '';
+    _authCode = '';
+    _respCode = '';
+    _batchNum = 0;
   }
 
   void clearCardData() {
