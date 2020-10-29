@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:pay/bloc/transaction/transaction_bloc.dart';
-import 'package:pay/models/trans.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
-  Function(BuildContext, int) onClickEnter;
+  final Function(BuildContext, int) onClickEnter;
 
   AmountEntry(this.entryText, this.onClickEnter);
 
@@ -253,8 +250,6 @@ class _AmountEntryState extends State<AmountEntry> {
   }
 
   Widget btnEnter() {
-    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
     return Container(
       padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
       child: FlatButton(

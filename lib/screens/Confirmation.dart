@@ -4,9 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
-import 'package:pay/utils/pinpad.dart';
-
-import 'amount.dart';
 
 class Confirmation extends StatelessWidget {
   Trans trans;

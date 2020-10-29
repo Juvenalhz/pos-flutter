@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
-import 'package:pay/screens/transMessage.dart';
 
 class Pinpad {
   final int MAG_STRIPE = 0;

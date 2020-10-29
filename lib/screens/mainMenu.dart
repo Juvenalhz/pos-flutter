@@ -59,28 +59,23 @@ class MainMenu extends StatelessWidget {
           Divider(),
           _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
-          ExpansionTile(
-              title: Text("Menu Tecnico"),
-              leading: Icon(Icons.settings),
-              children: <Widget>[
-                _createDrawerItem(
-                    text: 'Inicializacion',
-                    onTap: () {
-                      Navigator.pushNamed(context, '/initialization');
-                    }),
-                _createDrawerItem(text: 'Borrar Lote'),
-                _createDrawerItem(text: 'Borrar Reverso'),
-                _createDrawerItem(text: 'Reporte de Parametros'),
-                _createDrawerItem(
-                    text: 'Configuracion',
-                    onTap: () => Navigator.pushNamed(context, '/configuration')),
-              ]),
+          ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
+            _createDrawerItem(
+                text: 'Inicializacion',
+                onTap: () {
+                  Navigator.pushNamed(context, '/initialization');
+                }),
+            _createDrawerItem(text: 'Borrar Lote'),
+            _createDrawerItem(text: 'Borrar Reverso'),
+            _createDrawerItem(text: 'Reporte de Parametros'),
+            _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
+          ]),
           if (isDev)
             _createDrawerItem(
               icon: Icons.bug_report,
               text: 'Inicializacion De Pruebas',
               onTap: () async {
-                await testConfig().createTestConfiguration();
+                await TestConfig().createTestConfiguration();
                 merchantBloc.add(GetMerchant(1));
                 terminalBloc.add(GetTerminal(1));
                 commBloc.add(GetComm(1));
@@ -99,8 +94,6 @@ class MainMenu extends StatelessWidget {
   }
 
   Widget _createHeader(BuildContext context) {
-    final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-
     return DrawerHeader(
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
@@ -121,12 +114,12 @@ class MainMenu extends StatelessWidget {
             left: 95.0,
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
-                if ((state.merchant.Logo != null) && (state.merchant.Logo.length > 0)) {
+                if ((state.merchant.logo != null) && (state.merchant.logo.length > 0)) {
                   return GestureDetector(
                       onTap: () {
                         selectFile(context, state.merchant);
                       },
-                      child: CircleImage(state.merchant.Logo, 2));
+                      child: CircleImage(state.merchant.logo, 2));
                 } else {
                   return GestureDetector(
                       onTap: () {
@@ -143,13 +136,9 @@ class MainMenu extends StatelessWidget {
             left: 16.0,
             child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
-                return Text(state.merchant.nameL1,
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
-                return Text(' ',
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                return Text(' ', style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               }
             }),
           )
@@ -177,7 +166,7 @@ class MainMenu extends StatelessWidget {
     FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
 
     if (result != null) {
-      merchant.Logo = File(result.files.single.path).path;
+      merchant.logo = File(result.files.single.path).path;
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
     }
@@ -185,8 +174,8 @@ class MainMenu extends StatelessWidget {
 }
 
 class CircleImage extends StatelessWidget {
-  String image;
-  int imageType;
+  final String image;
+  final int imageType;
 
   CircleImage(this.image, this.imageType);
 

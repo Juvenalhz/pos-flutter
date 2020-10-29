@@ -23,12 +23,12 @@ void main() {
 }
 
 class InitializationApp extends StatelessWidget {
-  bool isDev = (const String.fromEnvironment('dev') != null);
-  MerchantRepository merchantRepository = new MerchantRepository();
-  TerminalRepository terminalRepository = new TerminalRepository();
-  CommRepository commRepository = new CommRepository();
-  EmvRepository emvRepository = new EmvRepository();
-  AcquirerRepository acquirerRepository = new AcquirerRepository();
+  final bool isDev = (const String.fromEnvironment('dev') != null);
+  final MerchantRepository merchantRepository = new MerchantRepository();
+  final TerminalRepository terminalRepository = new TerminalRepository();
+  final CommRepository commRepository = new CommRepository();
+  final EmvRepository emvRepository = new EmvRepository();
+  final AcquirerRepository acquirerRepository = new AcquirerRepository();
   final appdb = DatabaseHelper.instance;
 
   @override

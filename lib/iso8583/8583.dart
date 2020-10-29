@@ -27,17 +27,17 @@ enum ISOSPEC {
 
 class Iso8583 {
   //List<String> validContentTypes = new List.unmodifiable(['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z']);
-  bool _strict;
+  //bool _strict;
   //int _index;
   Uint8List _isoMsg;
   var _isoSpec;
-  Uint8List _Bitmap = new Uint8List(128);
-  int _MID;
+  Uint8List _bitmap = new Uint8List(128);
+  int _mid;
   List<Map<String, dynamic>> _data;
   String _tpdu;
   bool _addLength;
 
-  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec, String this._tpdu, bool this._addLength]) {
+  Iso8583([Uint8List isoMsg, ISOSPEC isoSpec, this._tpdu, this._addLength]) {
     if (isoSpec == null) {
       this._isoSpec = new IsoSpecASCII();
     } else {
@@ -52,7 +52,6 @@ class Iso8583 {
     }
 
     this._data = new List();
-    this._strict = false;
 
     if (isoMsg == null) {
       this._isoMsg = new Uint8List(2000);
@@ -60,10 +59,6 @@ class Iso8583 {
       this._isoMsg = isoMsg;
       parseIso();
     }
-  }
-
-  void setStrict(bool value) {
-    this._strict = value;
   }
 
   void setIsoContent(Uint8List isoMsg) {
@@ -75,10 +70,10 @@ class Iso8583 {
     DT dataType = this._isoSpec.dataType(MID);
 
     if (dataType == DT.BCD) {
-      this._MID = int.parse(bcdToStr(this._isoMsg.sublist(index, index + 2)));
+      this._mid = int.parse(bcdToStr(this._isoMsg.sublist(index, index + 2)));
       index += 2;
     } else if (dataType == DT.ASCII) {
-      this._MID = int.parse(this._isoMsg.sublist(index, index + 4).toString());
+      this._mid = int.parse(this._isoMsg.sublist(index, index + 4).toString());
       index += 4;
     }
 
@@ -100,10 +95,10 @@ class Iso8583 {
 
     intBitmap = bcd2Int(bitmapBuffer, 8);
     for (var i = 0; i < 65; i++) {
-      _Bitmap[i] = intBitmap >> (64 - i) & 1;
+      _bitmap[i] = intBitmap >> (64 - i) & 1;
     }
 
-    if (_Bitmap[1] == 1) {
+    if (_bitmap[1] == 1) {
       //secundary bitmap
       if (dataType == DT.BIN) {
         bitmapBuffer = _isoMsg.sublist(index, index + 8);
@@ -114,7 +109,7 @@ class Iso8583 {
       }
       intBitmap = bcd2Int(bitmapBuffer, 8);
       for (var i = 0; i < 65; i++) {
-        _Bitmap[i + 64] = intBitmap >> (64 - i) & 1;
+        _bitmap[i + 64] = intBitmap >> (64 - i) & 1;
       }
     }
     return index;
@@ -226,7 +221,7 @@ class Iso8583 {
     index = parseBitmap(index);
 
     for (i = 0; i < 128; i++) {
-      if (_Bitmap[i] == 1) {
+      if (_bitmap[i] == 1) {
         index = parseField(i, index);
       }
     }
@@ -234,15 +229,17 @@ class Iso8583 {
 
   int buildMID(int index) {
     if (_isoSpec.dataType(MID) == DT.BCD) {
-      Uint8List temp = strToBcd(_MID.toString().padLeft(4, '0'));
+      Uint8List temp = strToBcd(_mid.toString().padLeft(4, '0'));
 
       temp.forEach((element) {
         this._isoMsg[index++] = element;
       });
       return index;
     } else if (_isoSpec.dataType(MID) == DT.ASCII) {
-      this._isoMsg = this._isoMsg + AsciiEncoder().convert(_MID.toString().padLeft(4, '0'));
+      this._isoMsg = this._isoMsg + AsciiEncoder().convert(_mid.toString().padLeft(4, '0'));
+      index += 4;
     }
+    return index;
   }
 
   int buildBitmap(int index) {
@@ -253,7 +250,7 @@ class Iso8583 {
 
     //primary bitmap
     for (i = 0; i < 65; i++) {
-      if (this._Bitmap[i] == 1) {
+      if (this._bitmap[i] == 1) {
         intBitmap |= (1 << (64 - i)).toUnsigned(64);
       }
     }
@@ -274,7 +271,7 @@ class Iso8583 {
     //secondary bitmap
     intBitmap = 0;
     for (var i = 65; i < 128; i++) {
-      if (_Bitmap[i] == 1) {
+      if (_bitmap[i] == 1) {
         intBitmap |= (1 << 128 - i).toUnsigned(64);
         hassecondary = true;
       }
@@ -399,8 +396,8 @@ class Iso8583 {
     index = buildBitmap(index);
     //memDump("iso msg:", _isoMsg.sublist(0, index));
 
-    for (var i = 0; i < _Bitmap.length; i++) {
-      if (_Bitmap[i] == 1) {
+    for (var i = 0; i < _bitmap.length; i++) {
+      if (_bitmap[i] == 1) {
         index = buildField(i, index);
       }
     }
@@ -419,12 +416,13 @@ class Iso8583 {
 
   int bit(String field, [int value]) {
     if (value == null) {
-      return _Bitmap[int.parse(field)];
+      return _bitmap[int.parse(field)];
     } else {
       if ((value == 1) || (value == 0)) {
-        _Bitmap[int.parse(field)] = value;
-        return _Bitmap[int.parse(field)];
+        _bitmap[int.parse(field)] = value;
+        return _bitmap[int.parse(field)];
       }
+      return 0;
     }
   }
 
@@ -438,7 +436,7 @@ class Iso8583 {
       } else
         return null;
     } else {
-      this._Bitmap[field] = 1;
+      this._bitmap[field] = 1;
       if (currentField == null) {
         Map<String, dynamic> temp = {'field': field, 'data': value};
         this._data.add(temp);
@@ -451,19 +449,19 @@ class Iso8583 {
   }
 
   List<int> bitmap() {
-    return _Bitmap;
+    return _bitmap;
   }
 
   int setMID([int value]) {
     if (value == null) {
-      return _MID;
+      return _mid;
     } else {
       // TODO: validate these cases
 //      if (value.toString().padLeft(0)[1] == '0') throw 'Invalid Message Type';
 //      if (int.parse(value.toString().padLeft(0)[3]) > 5) throw 'Invalid Message Origin';
 
-      _MID = value;
-      return _MID;
+      _mid = value;
+      return _mid;
     }
   }
 
@@ -482,15 +480,15 @@ class Iso8583 {
   void printMessage() {
     String temp = '';
     int i = 0;
-    print('MID: [' + _MID.toString() + ']');
+    print('MID: [' + _mid.toString() + ']');
 
-    for (var i = 0; i < _Bitmap.length; i++) {
-      if (_Bitmap[i] == 1) temp += i.toString() + ' ';
+    for (var i = 0; i < _bitmap.length; i++) {
+      if (_bitmap[i] == 1) temp += i.toString() + ' ';
     }
     print('Bits: [' + temp + ']');
 
-    for (i = 0; i < _Bitmap.length; i++) {
-      if (_Bitmap[i] == 1) {
+    for (i = 0; i < _bitmap.length; i++) {
+      if (_bitmap[i] == 1) {
         int len = 0;
         String data = this._data.firstWhere((element) => element['field'] == i, orElse: () => null)['data'];
 

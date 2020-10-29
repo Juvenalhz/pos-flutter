@@ -28,7 +28,7 @@ void incrementStan() async {
   await appdb.update('counters', 1, newCounter);
 }
 
-String AddFiedl62Table(int table, String data) {
+String addField62Table(int table, String data) {
   String temp;
   String tableMsg = table.toString().padLeft(4, '0');
   switch (table) {
@@ -61,7 +61,7 @@ class MessageInitialization {
     String field62;
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
-    field62 = AddFiedl62Table(41, sn);
+    field62 = addField62Table(41, sn);
 
     message.setMID(800);
     if (msgSeq == 0)
@@ -71,7 +71,7 @@ class MessageInitialization {
 
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
-    message.fieldData(41, merchant.TID);
+    message.fieldData(41, merchant.tid);
     message.contentType(60, 'ans');
     message.fieldData(60, '01.00');
     message.fieldData(62, field62);

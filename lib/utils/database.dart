@@ -36,16 +36,16 @@ class DatabaseHelper {
     } catch (e) {}
   }
 
-  void _CreateMerchantTable(Database db) async {
+  Future<void> _createMerchantTable(Database db) async {
     await db.execute('''
           CREATE TABLE merchant (
           id integer PRIMARY KEY AUTOINCREMENT,
           NameL1 TEXT DEFAULT '')
           ''');
-    await _UpgradeMerchantTable(db);
+    _upgradeMerchantTable(db);
   }
 
-  void _UpgradeMerchantTable(Database db) async {
+  void _upgradeMerchantTable(Database db) async {
     _tableAlter(db, 'merchant', 'NameL2', 'text');
     _tableAlter(db, 'merchant', 'TID', 'text');
     _tableAlter(db, 'merchant', 'MID', 'text');
@@ -64,16 +64,16 @@ class DatabaseHelper {
     _tableAlter(db, 'merchant', 'AcquirerCode', 'integer');
   }
 
-  void _CreateTerminalTable(Database db) async {
+  void _createTerminalTable(Database db) async {
     await db.execute('''
           CREATE TABLE terminal (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeTerminalTable(db);
+    _upgradeTerminalTable(db);
   }
 
-  void _UpgradeTerminalTable(Database db) async {
+  void _upgradeTerminalTable(Database db) async {
     _tableAlter(db, 'terminal', 'password', 'text');
     _tableAlter(db, 'terminal', 'techPassword', 'text');
     _tableAlter(db, 'terminal', 'idTerminal', 'text');
@@ -96,17 +96,17 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
   }
 
-  void _CreateCommTable(Database db) async {
+  void _createCommTable(Database db) async {
     await db.execute('''
           CREATE TABLE comm (
           id integer PRIMARY KEY AUTOINCREMENT,
           Name TEXT DEFAULT '')
           ''');
 
-    await _UpgradeCommTable(db);
+    _upgradeCommTable(db);
   }
 
-  void _UpgradeCommTable(Database db) async {
+  void _upgradeCommTable(Database db) async {
     _tableAlter(db, 'comm', 'tpdu', 'text');
     _tableAlter(db, 'comm', 'nii', 'text');
     _tableAlter(db, 'comm', 'timeout', 'integer');
@@ -115,16 +115,16 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'headerLength', 'integer');
   }
 
-  void _CreateEmvTable(Database db) async {
+  void _createEmvTable(Database db) async {
     await db.execute('''
           CREATE TABLE emv (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeEmvTable(db);
+    _upgradeEmvTable(db);
   }
 
-  void _UpgradeEmvTable(Database db) async {
+  void _upgradeEmvTable(Database db) async {
     _tableAlter(db, 'emv', 'terminalType', 'text');
     _tableAlter(db, 'emv', 'terminalCapabilities', 'text');
     _tableAlter(db, 'emv', 'addTermCapabilities', 'text');
@@ -134,7 +134,7 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'countryCode', 'integer');
   }
 
-  void _CreateCountersTable(Database db) async {
+  void _createCountersTable(Database db) async {
     await db.execute('''
           CREATE TABLE counters (
           id integer PRIMARY KEY,
@@ -142,18 +142,18 @@ class DatabaseHelper {
           ''');
   }
 
-  void _UpgradeCountersTable(Database db) async {}
+  void _upgradeCountersTable(Database db) async {}
 
-  void _CreateAcquirerTable(Database db) async {
+  void _createAcquirerTable(Database db) async {
     await db.execute('''
           CREATE TABLE acquirer (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeAcquirerTable(db);
+    _upgradeAcquirerTable(db);
   }
 
-  void _UpgradeAcquirerTable(Database db) async {
+  void _upgradeAcquirerTable(Database db) async {
     _tableAlter(db, 'acquirer', 'name', 'text');
     _tableAlter(db, 'acquirer', 'rif', 'text');
     _tableAlter(db, 'acquirer', 'industryType', 'integer');
@@ -174,16 +174,16 @@ class DatabaseHelper {
     _tableAlter(db, 'acquirer', 'manualEntry', 'integer');
   }
 
-  void _CreateBinTable(Database db) async {
+  void _createBinTable(Database db) async {
     await db.execute('''
           CREATE TABLE bin (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeBinTable(db);
+    _upgradeBinTable(db);
   }
 
-  void _UpgradeBinTable(Database db) async {
+  void _upgradeBinTable(Database db) async {
     _tableAlter(db, 'bin', 'type', 'text');
     _tableAlter(db, 'bin', 'binLow', 'integer');
     _tableAlter(db, 'bin', 'binHigh', 'integer');
@@ -195,16 +195,16 @@ class DatabaseHelper {
     _tableAlter(db, 'bin', 'fallback', 'integer');
   }
 
-  void _CreateAidTable(Database db) async {
+  void _createAidTable(Database db) async {
     await db.execute('''
           CREATE TABLE aid (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeAidTable(db);
+    _upgradeAidTable(db);
   }
 
-  void _UpgradeAidTable(Database db) async {
+  void _upgradeAidTable(Database db) async {
     _tableAlter(db, 'aid', 'aid', 'text');
     _tableAlter(db, 'aid', 'floorLimit', 'integer');
     _tableAlter(db, 'aid', 'version', 'integer');
@@ -219,16 +219,16 @@ class DatabaseHelper {
     _tableAlter(db, 'aid', 'ddol', 'text');
   }
 
-  void _CreatePubKeyTable(Database db) async {
+  void _createPubKeyTable(Database db) async {
     await db.execute('''
           CREATE TABLE pubkey (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradePubKeyTable(db);
+    _upgradePubKeyTable(db);
   }
 
-  void _UpgradePubKeyTable(Database db) async {
+  void _upgradePubKeyTable(Database db) async {
     _tableAlter(db, 'pubkey', 'keyIndex', 'integer');
     _tableAlter(db, 'pubkey', 'rid', 'text');
     _tableAlter(db, 'pubkey', 'exponent', 'text');
@@ -237,16 +237,16 @@ class DatabaseHelper {
     _tableAlter(db, 'pubkey', 'modulus', 'text');
   }
 
-  void _CreateTransTable(Database db) async {
+  void _createTransTable(Database db) async {
     await db.execute('''
           CREATE TABLE trans (
           id integer PRIMARY KEY AUTOINCREMENT )
           ''');
 
-    await _UpgradeTransTable(db);
+    _upgradeTransTable(db);
   }
 
-  void _UpgradeTransTable(Database db) async {
+  void _upgradeTransTable(Database db) async {
     _tableAlter(db, 'trans', 'id', 'integer');
     _tableAlter(db, 'trans', 'number', 'integer');
     _tableAlter(db, 'trans', 'stan', 'integer');
@@ -298,16 +298,16 @@ class DatabaseHelper {
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
-    _CreateMerchantTable(db);
-    _CreateTerminalTable(db);
-    _CreateCommTable(db);
-    _CreateEmvTable(db);
-    _CreateCountersTable(db);
-    _CreateAcquirerTable(db);
-    _CreateBinTable(db);
-    _CreateAidTable(db);
-    _CreatePubKeyTable(db);
-    _CreateTransTable(db);
+    _createMerchantTable(db);
+    _createTerminalTable(db);
+    _createCommTable(db);
+    _createEmvTable(db);
+    _createCountersTable(db);
+    _createAcquirerTable(db);
+    _createBinTable(db);
+    _createAidTable(db);
+    _createPubKeyTable(db);
+    _createTransTable(db);
 
     Map<String, dynamic> initialCounter = {
       'id': 1,
@@ -318,16 +318,16 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    _UpgradeMerchantTable(db);
-    _UpgradeTerminalTable(db);
-    _UpgradeCommTable(db);
-    _UpgradeEmvTable(db);
-    _UpgradeCountersTable(db);
-    _UpgradeAcquirerTable(db);
-    _UpgradeBinTable(db);
-    _UpgradeAidTable(db);
-    _UpgradePubKeyTable(db);
-    _UpgradeTransTable(db);
+    _upgradeMerchantTable(db);
+    _upgradeTerminalTable(db);
+    _upgradeCommTable(db);
+    _upgradeEmvTable(db);
+    _upgradeCountersTable(db);
+    _upgradeAcquirerTable(db);
+    _upgradeBinTable(db);
+    _upgradeAidTable(db);
+    _upgradePubKeyTable(db);
+    _upgradeTransTable(db);
   }
 
   // Inserts a row in the database where each key in the Map is a column name

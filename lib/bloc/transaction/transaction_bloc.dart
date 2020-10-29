@@ -13,7 +13,6 @@ import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
-import 'package:pay/screens/Transaction.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
 
@@ -229,17 +228,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.chipDoneData['PINKSN'] != null) trans.pinKSN = event.chipDoneData['PINKSN'];
       if (event.chipDoneData['emvTags'] != null) trans.emvTags = event.chipDoneData['emvTags'];
 
-      if (trans.cardDecision == 1) {  // denial by the card
+      if (trans.cardDecision == 1) {
+        // denial by the card
         yield TransactionShowMessage('Transaccion Rechazada Por Tarjeta');
         await new Future.delayed(const Duration(seconds: 3));
         trans.clear();
         yield TransactionError();
-      }
-      else if (trans.cardDecision == 0){
+      } else if (trans.cardDecision == 0) {
         // this case is offline approval
-      }
-      else 
-      this.add(TransOnlineTransaction(trans));
+      } else
+        this.add(TransOnlineTransaction(trans));
     }
     // start online process
     else if (event is TransOnlineTransaction) {
