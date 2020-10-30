@@ -223,3 +223,28 @@ class TransAddAccountType extends TransactionEvent {
   @override
   List<Object> get props => [this.accType];
 }
+
+class TransConnect extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceiveReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendRequest extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceive extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test28.db";
+  static final _databaseName = "test30.db";
   static final _databaseVersion = 1;
 
   // make this a singleton class
@@ -54,8 +54,8 @@ class DatabaseHelper {
     _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
     _tableAlter(db, 'merchant', 'Password', 'text');
     _tableAlter(db, 'merchant', 'Header', 'text');
-    _tableAlter(db, 'merchant', 'Amount_MaxDigtis', 'integer');
-    _tableAlter(db, 'merchant', 'Amount_DecimalPosition', 'integer');
+    _tableAlter(db, 'merchant', 'amountMaxDigits', 'integer');
+    _tableAlter(db, 'merchant', 'amountDecimalPosition', 'integer');
     _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
     _tableAlter(db, 'merchant', 'MaxTip', 'integer');
     _tableAlter(db, 'merchant', 'City', 'text');

@@ -5,14 +5,17 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/bin.dart';
+import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
+import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
 
@@ -24,6 +27,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   var trans = new Trans();
   BuildContext context;
   bool emvTablesInit = false;
+  Communication connection;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -241,6 +245,35 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // start online process
     else if (event is TransOnlineTransaction) {
+      this.add(TransConnect());
+    }
+    // Connect
+    else if (event is TransConnect) {
+      CommRepository commRepository = new CommRepository();
+      Comm comm = Comm.fromMap(await commRepository.getComm(1));
+      connection = new Communication(comm.ip, comm.port, false);
+
+      yield TransactionConnecting();
+      if (await connection.connect() == true) {
+        this.add(TransSendReversal());
+      } else {
+        this.add(TransCardError());
+      }
+    }
+    // reversal request
+    else if (event is TransSendReversal) {
+      this.add(TransReceiveReversal());
+    }
+    // reversal response
+    else if (event is TransReceiveReversal) {
+      this.add(TransSendRequest());
+    }
+    // send request
+    else if (event is TransSendRequest) {
+      yield TransactionSending();
+      this.add(TransReceive());
+    } else if (event is TransReceive) {
+      yield TransactionReceiving();
       this.add(TransProcessResponse(trans));
     }
     //

@@ -4,7 +4,7 @@ class Trans {
   int _id;
   int _number = 0;
   int _stan = 0;
-  DateTime _dateTime = DateTime.parse('');
+  DateTime _dateTime = DateTime.now();
   String _type = '';
   int _reverse = 0;
   int _advice = 0;
@@ -489,7 +489,7 @@ class Trans {
   void clear() {
     _number = 0;
     _stan = 0;
-    _dateTime = DateTime.parse('');
+    _dateTime = DateTime.now();
     _type = '';
     _reverse = 0;
     _advice = 0;

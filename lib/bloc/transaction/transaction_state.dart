@@ -142,3 +142,18 @@ class TransactionAskAccountType extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionConnecting extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionSending extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionReceiving extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

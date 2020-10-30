@@ -21,11 +21,13 @@ class Pinpad {
   }
 
   Future<int> getCard(Map<String, dynamic> trans) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('getCard', {'trans': trans});
     return ret;
   }
 
   Future<int> goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
     return ret;
   }

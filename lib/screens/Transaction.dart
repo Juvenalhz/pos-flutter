@@ -59,6 +59,12 @@ class Transaction extends StatelessWidget {
           return TransMessage(state.trans.appLabel);
         } else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
+        } else if (state is TransactionConnecting) {
+           return CommProgress('Autorización', status: 'Conectando').build(context);
+        } else if (state is TransactionSending) {
+          return CommProgress('Autorización', status: 'Enviando').build(context);
+        } else if (state is TransactionReceiving) {
+          return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
           //transactionBloc.add(TransStartTransaction());
           return TransStatusScreen(state.trans);
