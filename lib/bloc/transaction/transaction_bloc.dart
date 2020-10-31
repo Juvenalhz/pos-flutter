@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
@@ -15,6 +16,7 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
+import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
@@ -28,6 +30,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   BuildContext context;
   bool emvTablesInit = false;
   Communication connection;
+  TransactionMessage message;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -48,6 +51,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // base amount added, transaction initial data
     else if (event is TransAddAmount) {
+      TransRepository transRepository = new TransRepository();
+
+      trans.id = (await transRepository.getCountTrans()) + 1;
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       trans.type = 'Compra';
@@ -139,7 +145,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         trans = event.trans;
         trans.bin = binId;
-        if (event.trans.cardType == pinpad.MAG_STRIPE) {
+        if (event.trans.cardType == Pinpad.MAG_STRIPE) {
           //this.add(TransOnlineTransaction(event.trans));
           yield TransactionAskLast4Digits();
         } else {
@@ -214,7 +220,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionShowPinAmount(trans);
     } else if (event is TransConfirmOK) {
       //this.add(TransLoadEmvTables(event.pinpad));
-      if (trans.cardType == pinpad.CHIP) {
+      if (trans.cardType == Pinpad.CHIP) {
         this.add(TransGoOnChip(trans));
       } else {
         this.add(TransOnlineTransaction(trans));
@@ -270,7 +276,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // send request
     else if (event is TransSendRequest) {
+      CommRepository commRepository = new CommRepository();
+      Comm comm = Comm.fromMap(await commRepository.getComm(1));
       yield TransactionSending();
+      message = new TransactionMessage(trans, comm);
+      connection.sendMessage(await message.buildMessage());
+      incrementStan();
       this.add(TransReceive());
     } else if (event is TransReceive) {
       yield TransactionReceiving();
@@ -278,7 +289,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransProcessResponse) {
-      if (event.trans.cardType == pinpad.CHIP) {
+      if (event.trans.cardType == Pinpad.CHIP) {
         this.add(TransFinishChip(trans));
       } else {
         yield TransactionCompleted(trans);

@@ -7,10 +7,11 @@ import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
 
 class Pinpad {
-  final int MAG_STRIPE = 0;
-  final int CHIP = 3;
-  final int CLESS_MS = 5;
-  final int CLESS_EMV = 6;
+  static const int MAG_STRIPE = 0;
+  static const int CHIP = 3;
+  static const int CLESS_MS = 5;
+  static const int CLESS_EMV = 6;
+  static const int MANUAL = 99;
 
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');

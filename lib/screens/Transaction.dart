@@ -60,7 +60,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
         } else if (state is TransactionConnecting) {
-           return CommProgress('Autorización', status: 'Conectando').build(context);
+          return CommProgress('Autorización', status: 'Conectando').build(context);
         } else if (state is TransactionSending) {
           return CommProgress('Autorización', status: 'Enviando').build(context);
         } else if (state is TransactionReceiving) {
@@ -117,7 +117,9 @@ class Transaction extends StatelessWidget {
   void onAccTypeSelection(BuildContext context, int value) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransAddAccountType(value + 1)); // 1 is added to have 0 as credit
+    if (value == 0)
+      transactionBloc.add(TransAddAccountType(2)); // checking account
+    else if (value == 1) transactionBloc.add(TransAddAccountType(1)); // saving account
   }
 }
 
