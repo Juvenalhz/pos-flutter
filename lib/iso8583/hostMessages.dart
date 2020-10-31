@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pay/iso8583/8583.dart';
+import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
@@ -42,6 +44,13 @@ String addField62Table(int table, String data) {
   switch (table) {
     case 1:
       temp += bcdToStr(AsciiEncoder().convert(data.padLeft(4, '0')));
+      break;
+    case 2:
+    case 3:
+      temp += bcdToStr(AsciiEncoder().convert(data.padLeft(3, '0')));
+      break;
+    case 4:
+      temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
       break;
     case 41:
       String serial;
@@ -137,9 +146,11 @@ class TransactionMessage {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     TransRepository transRepository = new TransRepository();
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
 
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode + 1));
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
@@ -166,7 +177,11 @@ class TransactionMessage {
     message.fieldData(60, '01.00');
 
     field62 += addField62Table(1, trans.id.toString());
-    //field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(2, '1'); // TODO: get the correct batch number
+    if (trans.cvv.length > 0) field62 += addField62Table(3, trans.cvv);
+    if (trans.cardholderID.length > 0) field62 += addField62Table(4, trans.cardholderID);
+    field62 += addField62Table(18, merchant.acquirerCode.toString());
+    field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);
 

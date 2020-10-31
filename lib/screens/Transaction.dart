@@ -40,7 +40,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
-          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 4, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
+          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
         } else if (state is TransactionAskAccountType) {

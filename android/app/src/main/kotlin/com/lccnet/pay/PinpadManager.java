@@ -381,7 +381,7 @@ public class PinpadManager implements PinpadCallbacks {
         }
         else if (isEmulator()){
             new Thread(() -> {
-                onChipData.put("onlinePINBlock", "F52B3F2AAB59202D");
+                onChipData.put("PINBlock", "F52B3F2AAB59202D");
                 onChipData.put("signature", 0);
                 onChipData.put("PINKSN", "FFFF0000000000000036");
                 onChipData.put("didOnlinePIN", 1);
