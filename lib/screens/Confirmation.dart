@@ -4,14 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
-import 'package:pay/utils/pinpad.dart';
-
-import 'amount.dart';
 
 class Confirmation extends StatelessWidget {
   Trans trans;
-  Pinpad pinpad;
-  Confirmation({this.trans, this.pinpad});
+  Confirmation({this.trans});
 
   @override
   Widget build(BuildContext context) {
@@ -103,10 +99,21 @@ class Confirmation extends StatelessWidget {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Spacer(flex: 2),
-                          RowDetail(label: "Monto:", strAmount: formattedAmount),
                           Spacer(flex: 1),
-                          RowDetail(label: "Propina:", strAmount: formattedTip),
+                          RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
+                          Spacer(flex: 1),
+                          RowDetail(label: "Cedula:", strAmount: state.trans.cardholderID),
+                          Spacer(flex: 1),
+                          if (state.trans.accType == 0)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Credito')
+                          else if (state.trans.accType == 1)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
+                          else if (state.trans.accType == 2)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
+                          Spacer(flex: 3),
+                          RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
+                          Spacer(flex: 1),
+                          RowDetailAmount(label: "Propina:", strAmount: formattedTip),
                           Spacer(flex: 1),
                           Divider(
                             thickness: 4,
@@ -114,7 +121,7 @@ class Confirmation extends StatelessWidget {
                             endIndent: 30,
                           ),
                           Spacer(flex: 1),
-                          RowDetail(label: "Total:", strAmount: formattedTotal),
+                          RowDetailAmount(label: "Total:", strAmount: formattedTotal),
                           Spacer(flex: 2),
                           Padding(
                             padding: const EdgeInsets.all(40.0),
@@ -168,7 +175,7 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransConfirmOK(pinpad));
+          transactionBloc.add(TransConfirmOK());
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),
@@ -187,6 +194,29 @@ class RowDetail extends StatelessWidget {
   final String strAmount;
 
   const RowDetail({
+    Key key,
+    @required this.label,
+    @required this.strAmount,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+      child: Row(children: [
+        Text(label, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
+        Flexible(fit: FlexFit.tight, child: SizedBox()),
+        Text(strAmount, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22))
+      ]),
+    );
+  }
+}
+
+class RowDetailAmount extends StatelessWidget {
+  final String label;
+  final String strAmount;
+
+  const RowDetailAmount({
     Key key,
     @required this.label,
     @required this.strAmount,

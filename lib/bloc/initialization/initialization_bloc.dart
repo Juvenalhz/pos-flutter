@@ -21,6 +21,7 @@ import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/datetime.dart';
 
 part 'initialization_event.dart';
@@ -44,6 +45,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       initialization = new MessageInitialization(comm);
 
       yield InitializationConnecting(comm);
+
+      //TODO: change the connection to use secure connection
       connection = new Communication(comm.ip, comm.port, false);
       await connection.connect();
       this.add(InitializationSend());
@@ -111,34 +114,33 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     MerchantRepository merchantRepository = new MerchantRepository();
     int index = 0;
 
-    merchant.NameL1 = data.substring(index, index + 20).trim();
+    merchant.nameL1 = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.NameL2 = data.substring(index, index + 20).trim();
+    merchant.nameL2 = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.City = data.substring(index, index + 20).trim();
+    merchant.city = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.TaxID = data.substring(index, index + 13).trim();
+    merchant.taxID = data.substring(index, index + 13).trim();
 
     await merchantRepository.updateMerchant(merchant);
   }
 
-  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv,
-      Map<int, String> acquirerIndicators) async {
+  void processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     EmvRepository emvRepository = new EmvRepository();
     SetDateTime newDateTime = new SetDateTime();
     int index = 0;
 
-    merchant.MID = ascii.decode(hex.decode(data.substring(index, index + 30)));
+    merchant.mid = ascii.decode(hex.decode(data.substring(index, index + 30)));
     index += 30;
-    merchant.TID = data.substring(index, index + 2);
+    merchant.tid = data.substring(index, index + 2);
     index += 2;
-    merchant.CurrencyCode = int.parse(data.substring(index, index + 4));
+    merchant.currencyCode = int.parse(data.substring(index, index + 4));
     index += 4;
-    merchant.CurrencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    merchant.currencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
-    merchant.AcquirerCode = int.parse(data.substring(index, index + 2));
+    merchant.acquirerCode = int.parse(data.substring(index, index + 2));
     index += 2 + 24; //phone numbers are skipped
 
     comm.tpdu = data.substring(index, index + 10);
@@ -146,13 +148,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     comm.nii = data.substring(index, index + 4);
     index += 4;
 
-    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0)
-      terminal.amountConfirmation = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
 
-    emv.CountryCode = merchant.CountryCode;
-    emv.CurrencyCode = merchant.CurrencyCode;
+    emv.countryCode = merchant.countryCode;
+    emv.currencyCode = merchant.currencyCode;
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]
@@ -182,7 +183,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     newDateTime.dateTime = dateAndTime;
 
     index += 12;
-    merchant.CountryCode = int.parse(data.substring(index, index + 4));
+    merchant.countryCode = int.parse(data.substring(index, index + 4));
 
     await merchantRepository.updateMerchant(merchant);
     await terminalRepository.updateTerminal(terminal);
@@ -210,13 +211,13 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       index += 2;
       bin.brand = ascii.decode(hex.decode(data.substring(index, index + 24))).trim();
       index += 24;
-      bin.cashback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.cashback = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.pin = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.pin = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.manualEntry = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.manualEntry = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
-      bin.fallback = int.parse(ascii.decode(hex.decode(data.substring(index, index + 2))));
+      bin.fallback = intToBool(int.parse(ascii.decode(hex.decode(data.substring(index, index + 2)))));
       index += 2;
 
       binExist = await binRepository.existBin(bin);
@@ -284,8 +285,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       addPubKey = (ascii.decode(hex.decode(data.substring(index, index + 2))) == 'A');
       index += 2;
-      pubkey.keyIndex =
-          int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
+      pubkey.keyIndex = int.parse(ascii.decode(hex.decode(data.substring(index, index + 4))), radix: 16);
       index += 4;
       pubkey.rid = data.substring(index, index + 10);
       index += 10;
@@ -302,7 +302,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       if ((addPubKey) && (!pubKeyExist)) {
         await pubkeyRepository.createPubKey(pubkey);
       } else if ((!addPubKey) && (pubKeyExist)) {
-        await pubkeyRepository.deletePubKey(pubkey);
+        pubkeyRepository.deletePubKey(pubkey);
       }
     }
   }
@@ -329,7 +329,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       switch (table) {
         case 2:
           {
-            merchant.BatchNumber = int.parse(ascii.decode(hex.decode(tableData)));
+            merchant.batchNumber = int.parse(ascii.decode(hex.decode(tableData)));
           }
           break;
         case 7:

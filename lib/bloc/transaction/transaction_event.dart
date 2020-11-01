@@ -12,6 +12,15 @@ class TransStartTransaction extends TransactionEvent {
   List<Object> get props => [];
 }
 
+class TransInitPinpad extends TransactionEvent {
+  final Pinpad pinpad;
+
+  TransInitPinpad(this.pinpad);
+
+  @override
+  List<Object> get props => [pinpad];
+}
+
 class TransAddAmount extends TransactionEvent {
   final int amount;
 
@@ -46,12 +55,8 @@ class TransAskConfirmation extends TransactionEvent {
 }
 
 class TransConfirmOK extends TransactionEvent {
-  final Pinpad pinpad;
-
-  TransConfirmOK(this.pinpad);
-
   @override
-  List<Object> get props => [pinpad];
+  List<Object> get props => [];
 }
 
 class TransLoadEmvTables extends TransactionEvent {
@@ -167,6 +172,83 @@ class TransCardError extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransAddLast4 extends TransactionEvent {
+  final int last4;
+
+  TransAddLast4(this.last4);
+
+  @override
+  List<Object> get props => [this.last4];
+}
+
+class TransLast4Back extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransAddIdNumber extends TransactionEvent {
+  final int idNumber;
+
+  TransAddIdNumber(this.idNumber);
+
+  @override
+  List<Object> get props => [this.idNumber];
+}
+
+class TransIDBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransAddCVV extends TransactionEvent {
+  final int cvvNumber;
+
+  TransAddCVV(this.cvvNumber);
+
+  @override
+  List<Object> get props => [this.cvvNumber];
+}
+
+class TransCVVBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransAddAccountType extends TransactionEvent {
+  final int accType;
+
+  TransAddAccountType(this.accType);
+
+  @override
+  List<Object> get props => [this.accType];
+}
+
+class TransConnect extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceiveReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendRequest extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceive extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
 
 class TransPinEntered extends TransactionEvent {
   final Map<String, dynamic> pinData;

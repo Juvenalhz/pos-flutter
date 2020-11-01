@@ -123,3 +123,37 @@ class TransactionError extends TransactionState {
   List<Object> get props => [];
 }
 
+class TransactionAskIdNumber extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionAskLast4Digits extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionAskCVV extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionAskAccountType extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionConnecting extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionSending extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionReceiving extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

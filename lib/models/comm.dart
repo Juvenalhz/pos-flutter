@@ -1,3 +1,5 @@
+import 'package:pay/utils/dataUtils.dart';
+
 class Comm {
   int _id;
   String _tpdu;
@@ -5,7 +7,7 @@ class Comm {
   int _timeout;
   String _ip;
   int _port;
-  int _headerLength;
+  bool _headerLength;
 
   Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port, this._headerLength);
 
@@ -15,7 +17,7 @@ class Comm {
   int get timeout => this._timeout;
   String get ip => this._ip;
   int get port => this._port;
-  int get headerLength => this._headerLength;
+  bool get headerLength => this._headerLength;
 
   set id(int id) {
     this._id = id;
@@ -41,7 +43,7 @@ class Comm {
     this._port = port;
   }
 
-  set headerLength(int headerLength) {
+  set headerLength(bool headerLength) {
     this._headerLength = headerLength;
   }
 
@@ -54,7 +56,7 @@ class Comm {
     map['timeout'] = this._timeout;
     map['ip'] = this._ip;
     map['port'] = this._port;
-    map['headerLength'] = this._headerLength;
+    map['headerLength'] = boolToInt(this._headerLength);
 
     return map;
   }
@@ -66,6 +68,6 @@ class Comm {
     this._timeout = comm['timeout'];
     this._ip = comm['ip'];
     this._port = comm['port'];
-    this._headerLength = comm['headerLength'];
+    this._headerLength = intToBool(comm['headerLength']);
   }
 }

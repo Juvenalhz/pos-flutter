@@ -1,8 +1,7 @@
 import 'dart:core';
-import 'package:intl/intl.dart';
 import '8583.dart';
 
-const List<String> validContentTypes = ['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'] ;
+const List<String> validContentTypes = ['a', 'n', 's', 'an', 'as', 'ns', 'ans', 'b', 'z'];
 const int MID = 9999;
 
 class IsoField {
@@ -212,9 +211,8 @@ class IsoSpec1987 extends Iso8583Specs {
     dataType(MID, DT.BCD);
     dataType(1, DT.BCD);
 
-    ContentTypes1987.asMap().forEach((key, value) {
-      IsoField temp =
-          new IsoField(value['field'], contentType: value['ContentType'], maxLength: value['MaxLen'], lengthType: value['LenType']);
+    contentTypes1987.asMap().forEach((key, value) {
+      IsoField temp = new IsoField(value['field'], contentType: value['ContentType'], maxLength: value['MaxLen'], lengthType: value['LenType']);
       _addField(temp);
     });
   }
@@ -225,7 +223,7 @@ class IsoSpecASCII extends Iso8583Specs {
     dataType(MID, DT.ASCII);
     dataType(1, DT.ASCII);
 
-    ContentTypes1987.asMap().forEach((key, value) {
+    contentTypes1987.asMap().forEach((key, value) {
       IsoField temp = new IsoField(value['field'],
           contentType: value['ContentType'], maxLength: value['MaxLen'], lengthType: value['LenType'], description: value['description']);
 
@@ -243,7 +241,7 @@ class IsoSpecBCD extends Iso8583Specs {
     dataType(MID, DT.BCD);
     dataType(1, DT.BCD);
 
-    ContentTypes1987.asMap().forEach((key, value) {
+    contentTypes1987.asMap().forEach((key, value) {
       IsoField temp = new IsoField(value['field'],
           contentType: value['ContentType'], maxLength: value['MaxLen'], lengthType: value['LenType'], description: value['description']);
 
@@ -263,7 +261,7 @@ class IsoSpecBCD extends Iso8583Specs {
   }
 }
 
-var ContentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
+var contentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 1, 'ContentType': 'b', 'MaxLen': 8, 'LenType': LT.FIXED, 'description': 'Bitmap'},
   {'field': 2, 'ContentType': 'n', 'MaxLen': 19, 'LenType': LT.LLVAR, 'description': 'Primary account number (PAN)'},
   {'field': 3, 'ContentType': 'n', 'MaxLen': 6, 'LenType': LT.FIXED, 'description': 'Processing code'},

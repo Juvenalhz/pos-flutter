@@ -297,7 +297,7 @@ public class PinpadManager implements PinpadCallbacks {
                         card.put("track1", "");
                         card.put("readStatus", 0);
                     }
-
+                    card.put("resultCode", 0);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -361,16 +361,14 @@ public class PinpadManager implements PinpadCallbacks {
                     final String out = output.getOutput();
                     onChipData.put("decision", Integer.parseInt(out.substring(0, 1)));
                     onChipData.put("signature", Integer.parseInt(out.substring(1, 2)));
-                    onChipData.put("didOfflinePIN", Integer.parseInt(out.substring(2, 3)));
+                    onChipData.put("OfflinePIN", Integer.parseInt(out.substring(2, 3)));
                     onChipData.put("triesLeft", Integer.parseInt(out.substring(3, 4)));
-                    onChipData.put("isBlockedPIN", Integer.parseInt(out.substring(4, 5)));
-                    onChipData.put("didOnlinePIN", Integer.parseInt(out.substring(5, 6)));
-                    onChipData.put("onlinePINBlock", out.substring(6, 22));
+                    onChipData.put("BlockedPIN", Integer.parseInt(out.substring(4, 5)));
+                    onChipData.put("OnlinePIN", Integer.parseInt(out.substring(5, 6)));
+                    onChipData.put("PINBlock", out.substring(6, 22));
                     onChipData.put("PINKSN", out.substring(22, 42));
                     final int emvTagsLength = Integer.parseInt(out.substring(42, 45));
                     onChipData.put("emvTags", out.substring(45, 45 + emvTagsLength * 2));
-
-
                 }
 
                 onChipData.put("resultCode", output.getResultCode());
@@ -387,7 +385,7 @@ public class PinpadManager implements PinpadCallbacks {
         }
         else if (isEmulator()){
             new Thread(() -> {
-                onChipData.put("onlinePINBlock", "F52B3F2AAB59202D");
+                onChipData.put("PINBlock", "F52B3F2AAB59202D");
                 onChipData.put("signature", 0);
                 onChipData.put("PINKSN", "FFFF0000000000000036");
                 onChipData.put("didOnlinePIN", 1);
@@ -430,6 +428,7 @@ public class PinpadManager implements PinpadCallbacks {
 
             final PinpadOutput output = pinpad.finishChip(finishChipInput, finishChipTags);
 
+            finishChipData.put("resultCode", output.getResultCode());
             if (output.getResultCode() != Pinpad.PP_OK) {
                 // TODO: processing error
                 Log.i(TAG, "finishChip error");
@@ -466,6 +465,7 @@ public class PinpadManager implements PinpadCallbacks {
 
             finishChipData.put("decision", 0);
             finishChipData.put("tags", "9F260820C42A2070F6B4F89F270140");
+            finishChipData.put("resultCode", 0);
 
             new Thread(() -> {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -480,6 +480,7 @@ public class PinpadManager implements PinpadCallbacks {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
                         channel.invokeMethod("cardRemoved", finishChipData);
                     }
                 });

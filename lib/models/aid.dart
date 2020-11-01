@@ -45,12 +45,12 @@ class AID {
     this._version = version;
   }
 
-  set tacDenial(String TACDenial) {
-    this._tacDenial = TACDenial;
+  set tacDenial(String tacDenial) {
+    this._tacDenial = tacDenial;
   }
 
-  set tacOnline(String TACOnline) {
-    this._tacOnline = TACOnline;
+  set tacOnline(String tacOnline) {
+    this._tacOnline = tacOnline;
   }
 
   set tacDefault(String _tacDefault) {

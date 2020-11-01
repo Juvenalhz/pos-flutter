@@ -1,12 +1,14 @@
+import 'package:pay/utils/dataUtils.dart';
+
 class Trans {
   int _id;
   int _number = 0;
   int _stan = 0;
-  String _dateTime = '';
+  DateTime _dateTime = DateTime.now();
   String _type = '';
   int _reverse = 0;
   int _advice = 0;
-  int _aquirer = 0;
+  int _acquirer = 0;
   int _bin = 0;
   String _maskedPAN = '';
   String _cipheredPAN = '';
@@ -22,7 +24,7 @@ class Trans {
   int _tax = 0;
   int _cashback = 0;
   int _total = 0;
-  int _origialTotal = 0;
+  int _originalTotal = 0;
   String _responseCode = '';
   String _authNumber = '';
   String _hostRRN = '';
@@ -39,17 +41,31 @@ class Trans {
   String _responseEmvTags = '';
   int _cardDecision = 0;
   String _finishTags = '';
+  String _cvv = '';
+  String _cardholderID = '';
+  int _accType = 0;
+  bool _signature = false;
+  bool _offlinePIN = false;
+  int _triesLeft = 0;
+  bool _blockedPIN = false;
+  bool _onlinePIN = false;
+  String _pinBlock = '';
+  String _pinKSN = '';
+  String _referenceNumber = '';
+  String _authCode = '';
+  String _respCode = '';
+  int _batchNum = 0;
 
   Trans();
 
   int get id => this._id;
   int get number => this._number;
   int get stan => this._stan;
-  String get dateTime => this._dateTime;
+  DateTime get dateTime => this._dateTime;
   String get type => this._type;
   int get reverse => this._reverse;
   int get advice => this._advice;
-  int get aquirer => this._aquirer;
+  int get acquirer => this._acquirer;
   int get bin => this._bin;
   String get maskedPAN => this._maskedPAN;
   String get cipheredPAN => this._cipheredPAN;
@@ -65,7 +81,7 @@ class Trans {
   int get tax => this._tax;
   int get cashback => this._cashback;
   int get total => this._total;
-  int get origialTotal => this._origialTotal;
+  int get originalTotal => this._originalTotal;
   String get responseCode => this._responseCode;
   String get authNumber => this._authNumber;
   String get hostRRN => this._hostRRN;
@@ -82,6 +98,20 @@ class Trans {
   String get responseEmvTags => this._responseEmvTags;
   int get cardDecision => this._cardDecision;
   String get finishTags => this._finishTags;
+  String get cvv => this._cvv;
+  String get cardholderID => this._cardholderID;
+  int get accType => this._accType;
+  bool get signature => this._signature;
+  bool get offlinePIN => this._offlinePIN;
+  int get triesLeft => this._triesLeft;
+  bool get blockedPIN => this._blockedPIN;
+  bool get onlinePIN => this._onlinePIN;
+  String get pinBlock => this._pinBlock;
+  String get pinKSN => this._pinKSN;
+  String get referenceNumber => this._referenceNumber;
+  String get authCode => this._authCode;
+  String get respCode => this._respCode;
+  int get batchNum => this._batchNum;
 
   set id(int id) {
     this._id = id;
@@ -95,7 +125,7 @@ class Trans {
     this._stan = stan;
   }
 
-  set dateTime(String dateTime) {
+  set dateTime(DateTime dateTime) {
     this._dateTime = dateTime;
   }
 
@@ -111,8 +141,8 @@ class Trans {
     this._advice = advice;
   }
 
-  set aquirer(int aquirer) {
-    this._aquirer = aquirer;
+  set acquirer(int acquirer) {
+    this._acquirer = acquirer;
   }
 
   set bin(int bin) {
@@ -175,8 +205,8 @@ class Trans {
     this._total = total;
   }
 
-  set origialTotal(int origialTotal) {
-    this._origialTotal = origialTotal;
+  set originalTotal(int originalTotal) {
+    this._originalTotal = originalTotal;
   }
 
   set responseCode(String responseCode) {
@@ -243,6 +273,62 @@ class Trans {
     this._finishTags = finishTags;
   }
 
+  set cvv(String cvv) {
+    this._cvv = cvv;
+  }
+
+  set cardholderID(String cardholderID) {
+    this._cardholderID = cardholderID;
+  }
+
+  set accType(int accType) {
+    this._accType = accType;
+  }
+
+  set signature(bool signature) {
+    this._signature = signature;
+  }
+
+  set offlinePIN(bool offlinePIN) {
+    this._offlinePIN = offlinePIN;
+  }
+
+  set triesLeft(int triesLeft) {
+    this._triesLeft = triesLeft;
+  }
+
+  set blockedPIN(bool blockedPIN) {
+    this._blockedPIN = blockedPIN;
+  }
+
+  set onlinePIN(bool onlinePIN) {
+    this._onlinePIN = onlinePIN;
+  }
+
+  set pinBlock(String pinBlock) {
+    this._pinBlock = pinBlock;
+  }
+
+  set pinKSN(String pinKSN) {
+    this._pinKSN = pinKSN;
+  }
+
+  set referenceNumber(String referenceNumber) {
+    this._referenceNumber = referenceNumber;
+  }
+
+  set authCode(String authCode) {
+    this._authCode = authCode;
+  }
+
+  set respCode(String respCode) {
+    this._respCode = respCode;
+  }
+
+  set batchNum(int batchNum) {
+    this._batchNum = batchNum;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -253,7 +339,65 @@ class Trans {
     map['type'] = this._type;
     map['reverse'] = this._reverse;
     map['advice'] = this._advice;
-    map['aquirer'] = this._aquirer;
+    map['acquirer'] = this._acquirer;
+    map['bin'] = this._bin;
+    map['pan'] = this._pan;
+    map['track1'] = this._track1;
+    map['track2'] = this._track2;
+    map['maskedPAN'] = this._maskedPAN;
+    map['cipheredPAN'] = this._cipheredPAN;
+    map['panHash'] = this._panHash;
+    map['cipheredCardHolderName'] = this._cipheredCardHolderName;
+    map['cipheredTrack2'] = this._cipheredTrack2;
+    map['expDate'] = this._expDate;
+    map['serviceCode'] = this._serviceCode;
+    map['currency'] = this._currency;
+    map['entryMode'] = this._entryMode;
+    map['baseAmount'] = this._baseAmount;
+    map['tip'] = this._tip;
+    map['tax'] = this._tax;
+    map['cashback'] = this._cashback;
+    map['total'] = this._total;
+    map['originalTotal'] = this._originalTotal;
+    map['responseCode'] = this._responseCode;
+    map['authNumber'] = this._authNumber;
+    map['hostRRN'] = this._hostRRN;
+    map['emvTags'] = this._emvTags;
+    map['aidID'] = this._aidID;
+    map['responseEmvTags'] = this._responseEmvTags;
+    map['cardDecision'] = this._cardDecision;
+    map['finishTags'] = this._finishTags;
+    map['cvv'] = this._cvv;
+    map['cardholderID'] = this._cardholderID;
+    map['accType'] = this._accType;
+    map['signature'] = boolToInt(this._signature);
+    map['offlinePIN'] = boolToInt(this._offlinePIN);
+    map['triesLeft'] = this._triesLeft;
+    map['blockedPIN'] = boolToInt(this._blockedPIN);
+    map['onlinePIN'] = boolToInt(this._onlinePIN);
+    map['pinBlock'] = this._pinBlock;
+    map['pinKSN'] = this._pinKSN;
+    map['referenceNumber'] = this._referenceNumber;
+    map['authCode'] = this._authCode;
+    map['respCode'] = this._respCode;
+    map['batchNum'] = this._batchNum;
+
+    return map;
+  }
+
+  Map<String, dynamic> toDBMap() {
+    var map = Map<String, dynamic>();
+    // NOTE IMPORTANT!!!!!!
+    // some fields from trans should not be stored in the DB for security
+    // !!!!!!!!!!!!!!!!!!!!
+    map['id'] = this._id;
+    map['number'] = this._number;
+    map['stan'] = this._stan;
+    map['dateTime'] = this._dateTime.toString();
+    map['type'] = this._type;
+    map['reverse'] = this._reverse;
+    map['advice'] = this._advice;
+    map['acquirer'] = this._acquirer;
     map['bin'] = this._bin;
     map['maskedPAN'] = this._maskedPAN;
     map['cipheredPAN'] = this._cipheredPAN;
@@ -269,7 +413,7 @@ class Trans {
     map['tax'] = this._tax;
     map['cashback'] = this._cashback;
     map['total'] = this._total;
-    map['origialTotal'] = this._origialTotal;
+    map['originalTotal'] = this._originalTotal;
     map['responseCode'] = this._responseCode;
     map['authNumber'] = this._authNumber;
     map['hostRRN'] = this._hostRRN;
@@ -278,6 +422,17 @@ class Trans {
     map['responseEmvTags'] = this._responseEmvTags;
     map['cardDecision'] = this._cardDecision;
     map['finishTags'] = this._finishTags;
+    map['cvv'] = this._cvv;
+    map['cardholderID'] = this._cardholderID;
+    map['accType'] = this._accType;
+    map['signature'] = boolToInt(this._signature);
+    map['offlinePIN'] = boolToInt(this._offlinePIN);
+    map['blockedPIN'] = boolToInt(this._blockedPIN);
+    map['onlinePIN'] = boolToInt(this._onlinePIN);
+    map['referenceNumber'] = this._referenceNumber;
+    map['authCode'] = this._authCode;
+    map['respCode'] = this._respCode;
+    map['batchNum'] = this._batchNum;
 
     return map;
   }
@@ -286,11 +441,11 @@ class Trans {
     this._id = trans['id'];
     this._number = trans['number'];
     this._stan = trans['stan'];
-    this._dateTime = trans['dateTime'];
+    this._dateTime = DateTime.parse(trans['dateTime']);
     this._type = trans['type'];
     this._reverse = trans['reverse'];
     this._advice = trans['advice'];
-    this._aquirer = trans['aquirer'];
+    this._acquirer = trans['acquirer'];
     this._bin = trans['bin'];
     this._maskedPAN = trans['maskedPAN'];
     this._cipheredPAN = trans['cipheredPAN'];
@@ -306,7 +461,7 @@ class Trans {
     this._tax = trans['tax'];
     this._cashback = trans['cashback'];
     this._total = trans['total'];
-    this._origialTotal = trans['origialTotal'];
+    this._originalTotal = trans['originalTotal'];
     this._responseCode = trans['responseCode'];
     this._authNumber = trans['authNumber'];
     this._hostRRN = trans['hostRRN'];
@@ -315,16 +470,30 @@ class Trans {
     this._responseEmvTags = trans['responseEmvTags'];
     this._cardDecision = trans['cardDecision'];
     this._finishTags = trans['finishTags'];
+    this._cvv = trans['cvv'];
+    this._cardholderID = trans['cardholderID'];
+    this._accType = trans['accType'];
+    this._signature = intToBool(trans['signature']);
+    this._offlinePIN = intToBool(trans['offlinePIN']);
+    this._triesLeft = trans['triesLeft'];
+    this._blockedPIN = intToBool(trans['blockedPIN']);
+    this._onlinePIN = intToBool(trans['onlinePIN']);
+    this._pinBlock = trans['pinBlock'];
+    this._pinKSN = trans['pinKSN'];
+    this._referenceNumber = trans['referenceNumber'];
+    this._authCode = trans['authCode'];
+    this._respCode = trans['respCode'];
+    this._batchNum = trans['batchNum'];
   }
 
-  void clear(){
+  void clear() {
     _number = 0;
     _stan = 0;
-    _dateTime = '';
+    _dateTime = DateTime.now();
     _type = '';
     _reverse = 0;
     _advice = 0;
-    _aquirer = 0;
+    _acquirer = 0;
     _bin = 0;
     _maskedPAN = '';
     _cipheredPAN = '';
@@ -340,7 +509,7 @@ class Trans {
     _tax = 0;
     _cashback = 0;
     _total = 0;
-    _origialTotal = 0;
+    _originalTotal = 0;
     _responseCode = '';
     _authNumber = '';
     _hostRRN = '';
@@ -357,5 +526,51 @@ class Trans {
     _responseEmvTags = '';
     _cardDecision = 0;
     _finishTags = '';
+    _cvv = '';
+    _cardholderID = '';
+    _accType = 0;
+    _signature = false;
+    _offlinePIN = false;
+    _triesLeft = 0;
+    _blockedPIN = false;
+    _onlinePIN = false;
+    _pinBlock = '';
+    _pinKSN = '';
+    _referenceNumber = '';
+    _authCode = '';
+    _respCode = '';
+    _batchNum = 0;
+  }
+
+  void clearCardData() {
+    _bin = 0;
+    _maskedPAN = '';
+    _cipheredPAN = '';
+    _panHash = '';
+    _cipheredCardHolderName = '';
+    _cipheredTrack2 = '';
+    _expDate = '';
+    _serviceCode = '';
+    _entryMode = 0;
+    _emvTags = '';
+    _appType = 0;
+    _cardType = 0;
+    _panSequenceNumber = 0;
+    _cardholderName = '';
+    _pan = '';
+    _track1 = '';
+    _track2 = '';
+    _appLabel = '';
+    _aidID = 0;
+    _cardDecision = 0;
+    _cvv = '';
+    _accType = 0;
+    _signature = false;
+    _offlinePIN = false;
+    _triesLeft = 0;
+    _blockedPIN = false;
+    _onlinePIN = false;
+    _pinBlock = '';
+    _pinKSN = '';
   }
 }

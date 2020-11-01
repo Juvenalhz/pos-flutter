@@ -29,7 +29,7 @@ class ItemTileTwoColumn extends StatelessWidget {
         Container(
           width: leftWidth,
           child: ListTile(
-            contentPadding: contentPadding,
+            contentPadding: EdgeInsets.only(left: 10.0),
             title: leftLabel,
             subtitle: leftItem,
           ),
@@ -37,7 +37,7 @@ class ItemTileTwoColumn extends StatelessWidget {
         Container(
           width: rightWidth,
           child: ListTile(
-            contentPadding: contentPadding,
+            contentPadding: EdgeInsets.only(right: 10.0),
             title: rightLabel,
             subtitle: rightItem,
             trailing: rightTrailing,

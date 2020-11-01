@@ -1,18 +1,17 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
-import 'package:pay/screens/transMessage.dart';
 
 class Pinpad {
-  final int MAG_STRIPE = 0;
-  final int CHIP = 3;
-  final int CLESS_MS = 5;
-  final int CLESS_EMV = 6;
+  static const int MAG_STRIPE = 0;
+  static const int CHIP = 3;
+  static const int CLESS_MS = 5;
+  static const int CLESS_EMV = 6;
+  static const int MANUAL = 99;
 
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');
@@ -23,11 +22,13 @@ class Pinpad {
   }
 
   Future<int> getCard(Map<String, dynamic> trans) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('getCard', {'trans': trans});
     return ret;
   }
 
   Future<int> goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
     return ret;
   }
@@ -66,7 +67,8 @@ class Pinpad {
         transactionBloc.add(TransCardWasRead(params));
       }
     } else if (call.method == 'showMenu') {
-      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments)));
+      final result =
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments, true)));
       return result;
     } else if (call.method == 'cardRemoved') {
       call.arguments.forEach((key, value) {
