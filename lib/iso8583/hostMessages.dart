@@ -177,7 +177,7 @@ class TransactionMessage {
     message.fieldData(60, '01.00');
 
     field62 += addField62Table(1, trans.id.toString());
-    field62 += addField62Table(2, '1'); // TODO: get the correct batch number
+    field62 += addField62Table(2, merchant.batchNumber.toString());
     if (trans.cvv.length > 0) field62 += addField62Table(3, trans.cvv);
     if (trans.cardholderID.length > 0) field62 += addField62Table(4, trans.cardholderID);
     field62 += addField62Table(18, merchant.acquirerCode.toString());
