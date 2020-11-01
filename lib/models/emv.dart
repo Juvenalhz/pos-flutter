@@ -1,12 +1,10 @@
-class Emv {
+class Emv{
   int _id;
   String _terminalType;
   String _terminalCapabilities;
   String _addTermCapabilities;
-  int _fallback;
-  int _forceOnline;
-  int _currencyCode;
-  int _countryCode;
+  bool _fallback;
+  bool _forceOnline;
 
   Emv(this._id, this._terminalType, this._terminalCapabilities, this._addTermCapabilities, this._fallback, this._forceOnline);
 
@@ -16,9 +14,9 @@ class Emv {
   String get addTermCapabilities => this._addTermCapabilities;
   int get fallback => this._fallback;
   int get forceOnline => this._forceOnline;
-  int get CurrencyCode => this._currencyCode;
-  int get CountryCode => this._countryCode;
-
+  int get currencyCode => this._currencyCode;
+  int get countryCode => this._countryCode;
+  
   set id(int id) {
     this._id = id;
   }
@@ -35,11 +33,11 @@ class Emv {
     this._addTermCapabilities = addTermCapabilities;
   }
 
-  set fallback(int fallback) {
+  set fallback(int fallback){
     this._fallback = fallback;
   }
 
-  set forceOnline(int forceOnline) {
+  set forceOnline(int forceOnline){
     this._forceOnline = forceOnline;
   }
 
@@ -60,8 +58,6 @@ class Emv {
     map['addTermCapabilities'] = this._addTermCapabilities;
     map['fallback'] = this._fallback;
     map['forceOnline'] = this._forceOnline;
-    map['currencyCode'] = this._currencyCode;
-    map['countryCode'] = this._countryCode;
 
     return map;
   }
@@ -73,7 +69,5 @@ class Emv {
     this._addTermCapabilities = emv['addTermCapabilities'];
     this._fallback = emv['fallback'];
     this._forceOnline = emv['forceOnline'];
-    this._currencyCode = emv['currencyCode'];
-    this._countryCode = emv['countryCode'];
   }
 }
