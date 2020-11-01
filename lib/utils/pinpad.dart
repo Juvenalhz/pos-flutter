@@ -37,6 +37,11 @@ class Pinpad {
     return ret;
   }
 
+  Future<int> askPin(int keyIndex, String pan, String msg1, String msg2) async {
+    int ret = await _channel.invokeMethod('askPin', {'keyIndex':keyIndex, 'pan':pan, 'msg1': msg1, 'msg2': msg2});
+    return ret;
+  }
+
   Pinpad(this.context) {
     _channel.setMethodCallHandler(this._callHandler);
     transactionBloc = BlocProvider.of<TransactionBloc>(this.context);
@@ -70,20 +75,28 @@ class Pinpad {
 
       transactionBloc.add(TransCardRemoved(params));
     } else if (call.method == 'showPinAmount') {
+      print('showPinAmount');
       transactionBloc.add(TransShowPinAmount());
     } else if (call.method == 'onChipDone') {
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
       transactionBloc.add(TransGoOnChipDecision(params));
+    } else if (call.method == 'pinEntered') {
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+      transactionBloc.add(TransPinEntered(params));
     }
 
-    if  ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
+    // handle error cases  - do not group on else if section
+    else if  ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
       if (params['resultCode'] != 0){
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());
       }
     }
+
     return 0;
   }
 

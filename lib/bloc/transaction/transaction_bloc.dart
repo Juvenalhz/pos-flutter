@@ -113,10 +113,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card analisys (BIN, Debit/Credit)
     else if (event is TransProcessCard) {
-      if (event.trans.cardType == pinpad.MAG_STRIPE)
-        this.add(TransOnlineTransaction(event.trans));
+      if (event.trans.cardType == pinpad.MAG_STRIPE) {
+        TerminalRepository terminalRepository = new TerminalRepository();
+        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+        yield TransactionShowPinAmount(trans);
+        await pinpad.askPin(terminal.keyIndex, trans.pan, 'ingrese', 'la clave');
+      }
       else
         this.add(TransGoOnChip(trans));
+    }
+    // online pin was entered for swiped cases
+    else if (event is TransPinEntered) {
+      //add pin data to trans
+      this.add(TransOnlineTransaction(trans));
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {

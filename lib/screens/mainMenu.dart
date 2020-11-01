@@ -156,9 +156,10 @@ class MainMenu extends StatelessWidget {
 
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+    FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
 
-    File file = await FilePicker.getFile(type: FileType.image);
-    merchant.Logo = file.path;
+    //File file = result.paths.first;
+    merchant.Logo = result.paths.first;
     merchant.id = 1;
     merchantBloc.add(UpdateMerchant(merchant));
   }

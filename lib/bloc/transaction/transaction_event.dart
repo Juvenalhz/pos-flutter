@@ -167,3 +167,12 @@ class TransCardError extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransPinEntered extends TransactionEvent {
+  final Map<String, dynamic> pinData;
+
+  TransPinEntered([this.pinData]);
+
+  @override
+  List<Object> get props => [this.pinData];
+}

@@ -219,6 +219,10 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("cardholderName", out.substring(275, 301).trim());
                     card.put("expDate", out.substring(301, 307));
 
+                    if (cardType == 0){
+                        card.put("pan", tracks.track2.substring(0, tracks.track2.indexOf("=")));
+                    }
+
                     Log.i(TAG, "Pinpad.PP_OK");
                 }
 
@@ -328,8 +332,8 @@ public class PinpadManager implements PinpadCallbacks {
                     0,                                    // Is PAN black-listed? (0/1)
                     1,                                    // Must go online? (0/1)
                     0,                                    // Unused (was used for TIBC Easy-Entry, not supported)
-                    keyIndex,                                    // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
-                    2,                                    // Key index for online PIN
+                    3,                                    // Crypto mode for online PIN (1 for MK 3DES, 3 for DUKPT 3DES)
+                    keyIndex,                             // Key index for online PIN
                     "00000000000000000000000000000000",   // WK for PIN capture (if mode == 1) (hex, 32 digits)
                     1,                                    // Enable EMV risk management? (0/1)
                     aid.get("floorLimit"),                // Terminal Floor Limit (hex, 8 digits)
@@ -339,7 +343,7 @@ public class PinpadManager implements PinpadCallbacks {
             );
 
             // list of tags that GoOnChip should return
-            final String goOnChipTagList = "828E959B9F109F179F269F279F349F369F37";
+            final String goOnChipTagList = "829F269F279F369F10959F349F379A9F029F039F1A5F245F2A9C9F359F339F408E9B9F17";
             final String goOnChipTags = String.format(Locale.US, "%03d%s",
                     goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
                     goOnChipTagList                        // List of tags, hex-coded
@@ -389,9 +393,10 @@ public class PinpadManager implements PinpadCallbacks {
                 onChipData.put("didOnlinePIN", 1);
                 onChipData.put("didOfflinePIN", 0);
                 onChipData.put("decision", 2);
-                onChipData.put("emvTags", "82021C008E0E000000000000000042035E031F00950580800480009B0268009F100706010A03A0B8009F2608418EEF3143FF86479F2701809F34034203009F3602014B9F3704906DBDE1");
+                onChipData.put("emvTags", "82021C009F2608D0C99189499C18749F2701809F360202059F100706010A03A0B800950580800480009F34034203009F37048DC71FAA9A032010029F02060000000011119F03060000000000009F1A0208625F24032212315F2A0209289C01009F3501229F3303E0F8C89F4005F0000F0F008E0E000000000000000042035E031F009B026800");
                 onChipData.put("isBlockedPIN", 1);
                 onChipData.put("triesLeft", 0);
+                onChipData.put("resultCode", 0);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -598,16 +603,72 @@ public class PinpadManager implements PinpadCallbacks {
                     sb.append("$ ").append(amount / 100).append('.').append(String.format(Locale.US, "%02d", amount % 100)).append('\n');
                 for (int i = 0; i < digits; i++) sb.append('\u25CF');
 
+//                new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                    @Override
+//                    public void run() {
+                        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                        channel.invokeMethod("showPinAmount", null);
+//                    }
+//                });
+            }
+        });
+        return Pinpad.PP_OK;
+    }
+
+    public int askPin(int keyIndex, String pan, String msg1, String msg2) {
+        int ret = 0;
+
+        if (Build.MODEL.contains("APOS")) {
+            final StringBuffer psOutputGetPIN = new StringBuffer();
+            final String pinInput = String.format(Locale.US, "%d%02d%s%02d%-19s%d%02d%02d%-16s%-16s",
+                    3,        //  3 = dukpt 3des
+                    keyIndex,       // Transaction cashback amount
+                    "00000000000000000000000000000000", // working key for master session
+                    pan.length(),   // pan length
+                    pan,            // pan
+                    1,              // amount of data to be capture
+                    04,             // min size
+                    12,             // max size
+                    msg1,
+                    msg2
+            );
+
+            ret = pinpad.getPIN(pinInput, new PinpadOutputHandler() {
+                @Override
+                public void onPinpadResult(PinpadOutput output) {
+                    psOutputGetPIN.append(output.getOutput());
+                    int ret = output.getResultCode();
+
+                    MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                    HashMap<String, Object> methodParams = new HashMap<>();
+                    methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
+                    methodParams.put("PINKSN", psOutputGetPIN.substring(16));
+                    methodParams.put("resultCode", ret);
+
+                    channel.invokeMethod("pinEntered", methodParams);
+                }
+            });
+
+            Log.d(TAG, "pin ret =" + ret);
+        } else if (isEmulator()) {
+
+            new Thread(() -> {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                        channel.invokeMethod("showPinAmount", null);
+                        HashMap<String, Object> methodParams = new HashMap<>();
+                        methodParams.put("PINBlock", "DE15C00192CE56D8");
+                        methodParams.put("PINKSN", "FFFF0000000000000043");
+                        methodParams.put("resultCode", 0);
+
+                        channel.invokeMethod("pinEntered", methodParams);
                     }
                 });
-            }
-        });
-        return Pinpad.PP_OK;
+            }).start();
+            ret = 0;
+        }
+        return ret;
     }
 
     public boolean isEmulator(){

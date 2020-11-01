@@ -64,7 +64,17 @@ class Emv : MethodChannel.MethodCallHandler{
             if ((respCode != null) && (entryMode != null) && (respEmvTags != null) ){
                 result.success(finishChip(respCode, entryMode, respEmvTags))
             }
+        } else if (call.method == "askPin") {
+            val keyIndex: Int? = call.argument("keyIndex")
+            val pan: String? = call.argument("pan")
+            val msg1: String? = call.argument("msg1")
+            val msg2: String? = call.argument("msg2")
+
+            if ((keyIndex != null) && (pan != null) && (msg1 != null) && (msg2 != null)) {
+                result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2));
+            }
         }
+        
         
         else {
             result.notImplemented()
@@ -149,7 +159,7 @@ class Emv : MethodChannel.MethodCallHandler{
     }
 
     private fun getCard(amount: Int) : Int{
-        var ret : Int = 0
+        var ret : Int
 
         Thread {
             if (Build.MODEL.contains("APOS")) {

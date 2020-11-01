@@ -33,7 +33,7 @@ class testConfig {
 
   void _CreateTerminal() async {
     // row to insert
-    Map<String, dynamic> testTerinal = {
+    Map<String, dynamic> testTerminal = {
       'id': 1,
       'password': '000000',
       'techPassword': '000000',
@@ -43,7 +43,7 @@ class testConfig {
       'maxPinDigits': 12,
       'timeoutPrompt': 60,
       'maxTipPercentage': 10,
-      'keyIndex': 1,
+      'keyIndex': 2,
       'industry': 'Retail',
       'print': 1,
       'cashback': 0,
@@ -58,7 +58,7 @@ class testConfig {
     };
 
     await appdb.deleteAll('terminal');
-    final id = await appdb.insert('terminal', testTerinal);
+    final id = await appdb.insert('terminal', testTerminal);
     print('inserted row id: $id');
   }
 
