@@ -28,13 +28,13 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         Merchant merchant = new Merchant.fromMap(merchantMap);
 
         if (merchant == null) yield MerchantLoading();
-
         yield MerchantLoaded(merchant: merchant);
       }
     } else if (event is UpdateMerchant) {
       yield MerchantLoading();
       await merchantRepository.updateMerchant(event.merchant);
       yield MerchantGet(id: event.merchant.id);
+      yield MerchantLoaded(merchant:event.merchant);
     }
   }
 }

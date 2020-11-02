@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
 import 'package:pay/bloc/acquirer/acquirer_event.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
@@ -13,6 +14,9 @@ import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class MainMenu extends StatelessWidget {
   @override
@@ -173,14 +177,33 @@ class MainMenu extends StatelessWidget {
 
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-
-    FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final OldPath = merchant.Logo;
+   // FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
+   File result = await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (result != null) {
-      merchant.Logo = File(result.files.single.path).path;
+
+      File croppedFile = await ImageCropper.cropImage(sourcePath: result.path,
+          cropStyle: CropStyle.circle,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+          ],
+          androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Editar foto',
+            cropFrameColor: Colors.blue,
+              activeControlsWidgetColor: Colors.blue));
+
+      DeteleFile(result.path);
+      merchant.Logo = File(croppedFile.path).path;
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
+      DeteleFile(OldPath);
     }
+  }
+
+  void DeteleFile(dirPath) async{
+    final dir = Directory(dirPath);
+    dir.deleteSync(recursive: true);
   }
 }
 
