@@ -88,11 +88,13 @@ class Pinpad {
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
-      transactionBloc.add(TransPinEntered(params));
+      if (params['resultCode'] == 0) {
+        transactionBloc.add(TransPinEntered(params));
+      }
     }
 
     // handle error cases  - do not group on else if section
-    else if  ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
+    else if  ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
       if (params['resultCode'] != 0){
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());

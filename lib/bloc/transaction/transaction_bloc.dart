@@ -146,11 +146,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans = event.trans;
         trans.bin = binId;
         if (event.trans.cardType == Pinpad.MAG_STRIPE) {
-          //this.add(TransOnlineTransaction(event.trans));
           yield TransactionAskLast4Digits();
         } else {
           if (_validateChipData(trans) == true) {
-            //this.add(TransGoOnChip(trans));
             yield TransactionAskIdNumber();
           } else {
             yield TransactionShowMessage(("Error en Tarjeta"));
@@ -160,16 +158,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           }
         }
       }
-       
-      if (event.trans.cardType == pinpad.MAG_STRIPE) {
-        TerminalRepository terminalRepository = new TerminalRepository();
-        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-
-        yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, 'ingrese', 'la clave');
-      }
-      else
-        this.add(TransGoOnChip(trans));
     }
     // last 4 digits entered need to match
     else if (event is TransAddLast4) {
@@ -209,12 +197,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // account type ase selected
     else if (event is TransAddAccountType) {
       trans.accType = event.accType;
-      yield TransactionAskConfirmation(trans);
+
+      if ((trans.cardType == Pinpad.MAG_STRIPE) && (trans.accType > 0)) {
+        TerminalRepository terminalRepository = new TerminalRepository();
+        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+        yield TransactionShowPinAmount(trans);
+        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '');  // parameter 3 and 4 are not shown by the BC library
+      }
+      else
+         yield TransactionAskConfirmation(trans);
     }
     // online pin was entered for swiped cases
     else if (event is TransPinEntered) {
-      //add pin data to trans
-      this.add(TransOnlineTransaction(trans));
+      if (event.pinData['PINBlock'] != null) {
+        trans.pinBlock = event.pinData['PINBlock'];
+        trans.onlinePIN = true;
+      }
+      if (event.pinData['PINKSN'] != null) trans.pinKSN = event.pinData['PINKSN'];
+      yield TransactionAskConfirmation(trans);
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {

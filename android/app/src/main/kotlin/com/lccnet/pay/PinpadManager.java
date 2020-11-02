@@ -617,42 +617,51 @@ public class PinpadManager implements PinpadCallbacks {
     }
 
     public int askPin(int keyIndex, String pan, String msg1, String msg2) {
-        int ret = 0;
-
         if (Build.MODEL.contains("APOS")) {
-            final StringBuffer psOutputGetPIN = new StringBuffer();
-            final String pinInput = String.format(Locale.US, "%d%02d%s%02d%-19s%d%02d%02d%-16s%-16s",
-                    3,        //  3 = dukpt 3des
-                    keyIndex,       // Transaction cashback amount
-                    "00000000000000000000000000000000", // working key for master session
-                    pan.length(),   // pan length
-                    pan,            // pan
-                    1,              // amount of data to be capture
-                    04,             // min size
-                    12,             // max size
-                    msg1,
-                    msg2
-            );
+            new Thread(() -> {
+                int ret = 0;
+                final StringBuffer psOutputGetPIN = new StringBuffer();
+                final String pinInput = String.format(Locale.US, "%d%02d%s%02d%-19s%d%02d%02d%-16s%-16s",
+                        3,        //  3 = dukpt 3des
+                        keyIndex,       // Transaction cashback amount
+                        "00000000000000000000000000000000", // working key for master session
+                        pan.length(),   // pan length
+                        pan,            // pan
+                        1,              // amount of data to be capture
+                        04,             // min size
+                        12,             // max size
+                        msg1,
+                        msg2
+                );
 
-            ret = pinpad.getPIN(pinInput, new PinpadOutputHandler() {
-                @Override
-                public void onPinpadResult(PinpadOutput output) {
-                    psOutputGetPIN.append(output.getOutput());
-                    int ret = output.getResultCode();
+                ret = pinpad.getPIN(pinInput, new PinpadOutputHandler() {
+                    @Override
+                    public void onPinpadResult(PinpadOutput output) {
 
-                    MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                    HashMap<String, Object> methodParams = new HashMap<>();
-                    methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
-                    methodParams.put("PINKSN", psOutputGetPIN.substring(16));
-                    methodParams.put("resultCode", ret);
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
 
-                    channel.invokeMethod("pinEntered", methodParams);
-                }
-            });
 
-            Log.d(TAG, "pin ret =" + ret);
+                                psOutputGetPIN.append(output.getOutput());
+                                int ret = output.getResultCode();
+
+                                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                                HashMap<String, Object> methodParams = new HashMap<>();
+                                methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
+                                methodParams.put("PINKSN", psOutputGetPIN.substring(16));
+                                methodParams.put("resultCode", ret);
+
+                                channel.invokeMethod("pinEntered", methodParams);
+                            };
+                        });
+                    }
+                });
+
+                Log.d(TAG, "pin ret =" + ret);
+            }).start();
         } else if (isEmulator()) {
-
+            int ret = 0;
             new Thread(() -> {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -667,9 +676,9 @@ public class PinpadManager implements PinpadCallbacks {
                     }
                 });
             }).start();
-            ret = 0;
+            return ret;
         }
-        return ret;
+        return 0;
     }
 
     public boolean isEmulator(){
