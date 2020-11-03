@@ -106,9 +106,9 @@ class Confirmation extends StatelessWidget {
                           Spacer(flex: 1),
                           if (state.trans.accType == 0)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Credito')
-                          else if (state.trans.accType == 1)
-                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
                           else if (state.trans.accType == 2)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
+                          else if (state.trans.accType == 1)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
                           Spacer(flex: 3),
                           RowDetailAmount(label: "Monto:", strAmount: formattedAmount),

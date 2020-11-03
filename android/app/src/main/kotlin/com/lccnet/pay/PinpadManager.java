@@ -195,7 +195,7 @@ public class PinpadManager implements PinpadCallbacks {
             );
 
             ret = pinpad.getCard(input, output -> {
-                Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
+                //Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
                 if (output.getResultCode() != Pinpad.PP_OK) {
                     Log.i(TAG, "Pinpad result code error");
                 } else if (output.getResultCode() == Pinpad.PP_OK) {
@@ -512,15 +512,15 @@ public class PinpadManager implements PinpadCallbacks {
     public static TrackData extractTrack(final String output, int offset) {
         final int track1Len = Integer.parseInt(output.substring(offset, offset + 2));
         final String track1 = output.substring(offset + 2, offset + 2 + track1Len);
-        Log.d(TAG, "track1 (" + track1Len + ") [" + track1 + "]");
+        //Log.d(TAG, "track1 (" + track1Len + ") [" + track1 + "]");
 
         final int track2Len = Integer.parseInt(output.substring(offset + 78, offset + 80));
         final String track2 = output.substring(offset + 80, offset + 80 + track2Len);
-        Log.d(TAG, "track2 (" + track2Len + ") [" + track2 + "]");
+        //Log.d(TAG, "track2 (" + track2Len + ") [" + track2 + "]");
 
         final int track3Len = Integer.parseInt(output.substring(offset + 117, offset + 120));
         final String track3 = output.substring(offset + 120, offset + 120 + track3Len);
-        Log.d(TAG, "track3 (" + track3Len + ") [" + track3 + "]");
+        //Log.d(TAG, "track3 (" + track3Len + ") [" + track3 + "]");
 
         return new TrackData(track1, track2, track3);
     }
@@ -662,20 +662,18 @@ public class PinpadManager implements PinpadCallbacks {
             }).start();
         } else if (isEmulator()) {
             int ret = 0;
-            new Thread(() -> {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                        HashMap<String, Object> methodParams = new HashMap<>();
-                        methodParams.put("PINBlock", "DE15C00192CE56D8");
-                        methodParams.put("PINKSN", "FFFF0000000000000043");
-                        methodParams.put("resultCode", 0);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                    HashMap<String, Object> methodParams = new HashMap<>();
+                    methodParams.put("PINBlock", "DE15C00192CE56D8");
+                    methodParams.put("PINKSN", "FFFF0000000000000043");
+                    methodParams.put("resultCode", 0);
 
-                        channel.invokeMethod("pinEntered", methodParams);
-                    }
-                });
-            }).start();
+                    channel.invokeMethod("pinEntered", methodParams);
+                }
+            });
             return ret;
         }
         return 0;

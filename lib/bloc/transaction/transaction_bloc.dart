@@ -189,7 +189,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       trans.cardholderID = event.idNumber.toString();
 
-      if (bin.pin) {
+      if (bin.pin)
+      {
         yield TransactionAskAccountType();
       } else
         yield TransactionAskConfirmation(trans);
@@ -198,7 +199,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddAccountType) {
       trans.accType = event.accType;
 
-      if ((trans.cardType == Pinpad.MAG_STRIPE) && (trans.accType > 0)) {
+      if ((trans.accType > 0) && (trans.pinBlock.length == 0)) {
         TerminalRepository terminalRepository = new TerminalRepository();
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
