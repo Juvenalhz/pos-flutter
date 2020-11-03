@@ -52,6 +52,9 @@ String addField62Table(int table, String data) {
     case 4:
       temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
       break;
+    case 18:
+      temp += bcdToStr(AsciiEncoder().convert(data.padRight(2, ' ')));
+      break;
     case 41:
       String serial;
       if (data.length >= 16)
@@ -150,7 +153,7 @@ class TransactionMessage {
 
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode + 1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');

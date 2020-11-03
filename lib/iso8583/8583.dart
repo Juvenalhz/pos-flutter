@@ -332,8 +332,8 @@ class Iso8583 {
         lenString = len.toString().padLeft(2, '0');
         len = 2;
       } else if (lenType == LT.LLLVAR) {
-        lenString = len.toString().padLeft(3, '0');
-        len = 3;
+        lenString = len.toString().padLeft(4, '0');
+        len = 4;
       }
 
       if (lenDataType == DT.ASCII)
@@ -366,7 +366,7 @@ class Iso8583 {
         this._isoMsg[index++] = element;
       });
     } else if (dataType == DT.BIN) {
-      Uint8List temp = AsciiEncoder().convert(data);
+      Uint8List temp = hex.decode(data);
 
       temp.forEach((element) {
         this._isoMsg[index++] = element;
