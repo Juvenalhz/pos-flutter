@@ -139,10 +139,10 @@ class MessageInitialization {
 class TransactionMessage {
   Iso8583 message;
   Trans trans;
-  Comm comm;
+  Comm _comm;
 
-  TransactionMessage(this.trans, this.comm) {
-    message = new Iso8583(null, ISOSPEC.ISO_BCD, this.comm.tpdu, comm.headerLength);
+  TransactionMessage(this.trans, this._comm) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
   Future<Uint8List> buildMessage() async {
@@ -168,7 +168,7 @@ class TransactionMessage {
     message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
-    message.fieldData(24, comm.nii);
+    message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
@@ -193,5 +193,32 @@ class TransactionMessage {
     }
 
     return message.buildIso();
+  }
+
+  Map<int, String> parseRenponse(Uint8List response) {
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+    Map respMap = new Map<int, String>();
+    int i;
+    Uint8List bitmap;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    isoResponse.dataType(60, DT.BIN);
+    isoResponse.dataType(61, DT.BIN);
+    isoResponse.dataType(62, DT.BIN);
+
+    isoResponse.setIsoContent(response);
+    if (isDev) {
+      isoResponse.printMessage();
+    }
+
+    bitmap = isoResponse.bitmap();
+
+    for (i = 0; i < bitmap.length; i++) {
+      if (bitmap[i] == 1) {
+        respMap[i] = isoResponse.fieldData(i);
+      }
+    }
+
+    return respMap;
   }
 }

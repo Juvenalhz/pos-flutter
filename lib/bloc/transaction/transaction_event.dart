@@ -137,12 +137,12 @@ class TransOnlineTransaction extends TransactionEvent {
 }
 
 class TransProcessResponse extends TransactionEvent {
-  final Trans trans;
+  final Map<int, String> respMap;
 
-  TransProcessResponse(this.trans);
+  TransProcessResponse(this.respMap);
 
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [respMap];
 }
 
 class TransFinishChip extends TransactionEvent {
