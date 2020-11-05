@@ -6,13 +6,15 @@ class PubKeyRepository {
 
   Future getPubKey(int id) => appdb.queryById('pubKey', id);
 
+  Future getPubKeys({String query}) => appdb.queryAllRows('pubKey');
+
   Future createPubKey(PubKey pubKey) => appdb.insert('pubKey', pubKey.toMap());
 
   Future updatePubKey(PubKey pubKey) => appdb.update('pubKey', pubKey.id, pubKey.toMap());
 
-  Future deletePubKey(PubKey pubKey) {
+  void deletePubKey(PubKey pubKey) async {
     String where = "keyIndex = ${pubKey.keyIndex}" + " and rid = '${pubKey.rid}'";
-    appdb.deleteRows('pubKey', where: where);
+    await appdb.deleteRows('pubKey', where: where);
   }
 
   Future getCountPubKeys() => appdb.queryRowCount('pubKey');

@@ -4,11 +4,12 @@ import 'package:intl/intl.dart';
 
 class AmountEntry extends StatefulWidget {
   final String entryText;
+  final Function(BuildContext, int) onClickEnter;
 
-  AmountEntry(this.entryText);
+  AmountEntry(this.entryText, this.onClickEnter);
 
   @override
-  _AmountEntryState createState() => _AmountEntryState(entryText);
+  _AmountEntryState createState() => _AmountEntryState(entryText, onClickEnter);
 }
 
 class _AmountEntryState extends State<AmountEntry> {
@@ -16,8 +17,9 @@ class _AmountEntryState extends State<AmountEntry> {
   var textControllerInput = TextEditingController(text: '0,00');
   var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
   String entryText;
+  Function(BuildContext, int) onClickEnter;
 
-  _AmountEntryState(this.entryText);
+  _AmountEntryState(this.entryText, this.onClickEnter);
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +51,7 @@ class _AmountEntryState extends State<AmountEntry> {
                     fontSize: 20,
                     fontFamily: 'RobotoMono',
                   )),
-              style: TextStyle(
-                fontSize: 33,
-                fontFamily: 'RobotoMono',
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyle(fontSize: 33, fontFamily: 'RobotoMono', fontWeight: FontWeight.bold),
               textAlign: TextAlign.right,
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
@@ -114,8 +112,8 @@ class _AmountEntryState extends State<AmountEntry> {
       padding: EdgeInsets.only(bottom: 15.0),
       child: FlatButton(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: btnColor)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: btnColor)
         ),
         child: Text(
           btntext,
@@ -177,8 +175,8 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -214,8 +212,8 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -244,8 +242,8 @@ class _AmountEntryState extends State<AmountEntry> {
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
@@ -256,13 +254,15 @@ class _AmountEntryState extends State<AmountEntry> {
       padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
-        onPressed: () {},
+        onPressed: () {
+          this.onClickEnter(context, int.parse(amount));
+        },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            //side: BorderSide(color: Colors.blueGrey)
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );

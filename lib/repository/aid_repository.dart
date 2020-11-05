@@ -6,6 +6,8 @@ class AidRepository {
 
   Future getAid(int id) => appdb.queryById('aid', id);
 
+  Future getAids({String query}) => appdb.queryAllRows('aid');
+
   Future createAid(AID aid) => appdb.insert('aid', aid.toMap());
 
   Future updateAid(AID aid) => appdb.update('aid', aid.id, aid.toMap());

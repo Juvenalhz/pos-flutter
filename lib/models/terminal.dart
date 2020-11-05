@@ -190,7 +190,7 @@ class Terminal {
     this._maxTipPercentage = terminal['maxTipPercentage'];
     this._keyIndex = terminal['keyIndex'];
     this._industry = terminal['industry'];
-    this._print = stringToBool(terminal['print']);
+    this._print = intToBool(terminal['print']);
     this._cashback = intToBool(terminal['cashback']);
     this._installments = intToBool(terminal['installments']);
     this._refund = intToBool(terminal['refund']);
