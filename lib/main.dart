@@ -14,8 +14,8 @@ import 'bloc/acquirer/acquirer_bloc.dart';
 import 'bloc/comm/comm_bloc.dart';
 import 'bloc/initialization/initialization_bloc.dart';
 import 'bloc/terminal/terminal_bloc.dart';
-import 'repository/acquirer_repository.dart';
 import 'bloc/transaction/transaction_bloc.dart';
+import 'repository/acquirer_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
