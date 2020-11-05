@@ -17,9 +17,25 @@ class TransStatusScreen extends StatelessWidget {
             Text(
               "Aprobado",
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 35,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+              child: Row(children: [
+                Text('Aprovación:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                Flexible(fit: FlexFit.tight, child: SizedBox()),
+                Text(trans.authCode, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
+              ])
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: Row(children: [
+                  Text('Referencia:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                  Flexible(fit: FlexFit.tight, child: SizedBox()),
+                  Text(trans.stan.toString().padLeft(4, '0'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
+                ])
             ),
             FlatButton(
               child: Text(
