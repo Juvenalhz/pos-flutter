@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
@@ -204,7 +205,7 @@ class TransactionMessage {
 
     isoResponse.dataType(60, DT.BIN);
     isoResponse.dataType(61, DT.BIN);
-    isoResponse.dataType(62, DT.BIN);
+    //isoResponse.dataType(62, DT.BIN);
 
     isoResponse.setIsoContent(response);
     if (isDev) {
@@ -217,6 +218,18 @@ class TransactionMessage {
       if (bitmap[i] == 1) {
         respMap[i] = isoResponse.fieldData(i);
       }
+    }
+
+    //decode field 62
+    i = 0;
+    while (i < respMap[62].length) {
+      int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
+      i += 4;
+      int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
+      i += 4;
+      //add fields like 6201, 6202, ... 6241
+      respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
+      i += len - 4;
     }
 
     return respMap;
