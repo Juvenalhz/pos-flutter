@@ -6,8 +6,8 @@ class Trans {
   int _stan = 0;
   DateTime _dateTime = DateTime.now();
   String _type = '';
-  int _reverse = 0;
-  int _advice = 0;
+  bool _reverse = false;
+  bool _advice = false;
   int _acquirer = 0;
   int _bin = 0;
   String _maskedPAN = '';
@@ -64,8 +64,8 @@ class Trans {
   int get stan => this._stan;
   DateTime get dateTime => this._dateTime;
   String get type => this._type;
-  int get reverse => this._reverse;
-  int get advice => this._advice;
+  bool get reverse => this._reverse;
+  bool get advice => this._advice;
   int get acquirer => this._acquirer;
   int get bin => this._bin;
   String get maskedPAN => this._maskedPAN;
@@ -135,11 +135,11 @@ class Trans {
     this._type = type;
   }
 
-  set reverse(int reverse) {
+  set reverse(bool reverse) {
     this._reverse = reverse;
   }
 
-  set advice(int advice) {
+  set advice(bool advice) {
     this._advice = advice;
   }
 
@@ -343,8 +343,8 @@ class Trans {
     map['stan'] = this._stan;
     map['dateTime'] = this._dateTime;
     map['type'] = this._type;
-    map['reverse'] = this._reverse;
-    map['advice'] = this._advice;
+    map['reverse'] = boolToInt(this._reverse);
+    map['advice'] = boolToInt(this._advice);
     map['acquirer'] = this._acquirer;
     map['bin'] = this._bin;
     map['pan'] = this._pan;
@@ -402,8 +402,8 @@ class Trans {
     map['stan'] = this._stan;
     map['dateTime'] = this._dateTime.toString();
     map['type'] = this._type;
-    map['reverse'] = this._reverse;
-    map['advice'] = this._advice;
+    map['reverse'] = boolToInt(this._reverse);
+    map['advice'] = boolToInt(this._advice);
     map['acquirer'] = this._acquirer;
     map['bin'] = this._bin;
     map['maskedPAN'] = this._maskedPAN;
@@ -429,7 +429,6 @@ class Trans {
     map['responseEmvTags'] = this._responseEmvTags;
     map['cardDecision'] = this._cardDecision;
     map['finishTags'] = this._finishTags;
-    map['cvv'] = this._cvv;
     map['cardholderID'] = this._cardholderID;
     map['accType'] = this._accType;
     map['signature'] = boolToInt(this._signature);
@@ -450,8 +449,8 @@ class Trans {
     this._stan = trans['stan'];
     this._dateTime = DateTime.parse(trans['dateTime']);
     this._type = trans['type'];
-    this._reverse = trans['reverse'];
-    this._advice = trans['advice'];
+    this._reverse = intToBool(trans['reverse']);
+    this._advice = intToBool(trans['advice']);
     this._acquirer = trans['acquirer'];
     this._bin = trans['bin'];
     this._maskedPAN = trans['maskedPAN'];
@@ -499,8 +498,8 @@ class Trans {
     _stan = 0;
     _dateTime = DateTime.now();
     _type = '';
-    _reverse = 0;
-    _advice = 0;
+    _reverse = false;
+    _advice = false;
     _acquirer = 0;
     _bin = 0;
     _maskedPAN = '';

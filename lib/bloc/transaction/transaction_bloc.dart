@@ -297,11 +297,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // send request
     else if (event is TransSendRequest) {
       CommRepository commRepository = new CommRepository();
+      TransRepository transRepository = new TransRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
+
       yield TransactionSending();
       message = new TransactionMessage(trans, comm);
       connection.sendMessage(await message.buildMessage());
       trans.stan = await getStan();
+      // save reversal
+      trans.reverse = true;
+      transRepository.createTrans(trans);
+      trans.reverse = false;
+
       incrementStan();
       this.add(TransReceive());
     }
@@ -343,6 +350,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (trans.cardType == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {
+            TransRepository transRepository = new TransRepository();
+
+            transRepository.updateTrans(trans);
             yield TransactionCompleted(trans);
           }
         }
@@ -365,7 +375,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
-      yield TransactionCompleted(trans);
+      if (trans.cardDecision == 0) {
+        TransRepository transRepository = new TransRepository();
+
+        transRepository.updateTrans(trans);
+        yield TransactionCompleted(trans);
+      }
+      else{
+        trans.respMessage = 'Transacción Denegada Por Tarjeta';
+        yield TransactionRejected(trans);
+      }
+
       //this.add(TransStartTransaction());
     }
     // pinpad error detected
