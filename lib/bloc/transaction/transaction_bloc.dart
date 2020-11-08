@@ -346,6 +346,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             yield TransactionCompleted(trans);
           }
         }
+        else {
+          trans.respMessage = event.respMap[6208];
+          yield TransactionRejected(trans);
+        }
       }
     }
     //

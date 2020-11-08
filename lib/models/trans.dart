@@ -55,6 +55,7 @@ class Trans {
   String _authCode = '';
   String _respCode = '';
   int _batchNum = 0;
+  String _respMessage = '';
 
   Trans();
 
@@ -112,6 +113,7 @@ class Trans {
   String get authCode => this._authCode;
   String get respCode => this._respCode;
   int get batchNum => this._batchNum;
+  String get respMessage => this._respMessage;
 
   set id(int id) {
     this._id = id;
@@ -329,6 +331,10 @@ class Trans {
     this._batchNum = batchNum;
   }
 
+  set respMessage(String respMessage) {
+    this._respMessage = respMessage;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -381,6 +387,7 @@ class Trans {
     map['authCode'] = this._authCode;
     map['respCode'] = this._respCode;
     map['batchNum'] = this._batchNum;
+    map['respMessage'] = this._respMessage;
 
     return map;
   }
@@ -484,6 +491,7 @@ class Trans {
     this._authCode = trans['authCode'];
     this._respCode = trans['respCode'];
     this._batchNum = trans['batchNum'];
+    this._respMessage = trans['respMessage'];
   }
 
   void clear() {
@@ -540,6 +548,7 @@ class Trans {
     _authCode = '';
     _respCode = '';
     _batchNum = 0;
+    _respMessage = '';
   }
 
   void clearCardData() {

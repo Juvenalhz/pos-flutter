@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pay/models/trans.dart';
 
-class TransStatusScreen extends StatelessWidget {
+class TransApprovedScreen extends StatelessWidget {
   final Trans trans;
 
-  TransStatusScreen(this.trans);
+  TransApprovedScreen(this.trans);
 
   @override
   Widget build(BuildContext context) {

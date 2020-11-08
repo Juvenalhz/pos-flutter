@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
-import 'package:pay/screens/TransStatusScreen.dart';
+import 'package:pay/screens/TransApprovedScreen.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/AskNumeric.dart';
 import 'package:pay/screens/selectionMenu.dart';
@@ -14,6 +14,7 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
+import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
 import 'mainScreen.dart';
 
@@ -66,8 +67,9 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionReceiving) {
           return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
-          //transactionBloc.add(TransStartTransaction());
-          return TransStatusScreen(state.trans);
+          return TransApprovedScreen(state.trans);
+        } else if (state is TransactionRejected) {
+          return TransRejectedScreen(state.trans);
         } else if (state is TransactionError) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Cancelada");
