@@ -256,6 +256,7 @@ class _AmountEntryState extends State<AmountEntry> {
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
           this.onClickEnter(context, int.parse(amount));
+          textControllerInput.text = '0,00';
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),
