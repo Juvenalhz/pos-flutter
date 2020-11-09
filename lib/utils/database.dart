@@ -40,28 +40,28 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE merchant (
           id integer PRIMARY KEY AUTOINCREMENT,
-          NameL1 TEXT DEFAULT '')
+          nameL1 TEXT DEFAULT '')
           ''');
     _upgradeMerchantTable(db);
   }
 
   void _upgradeMerchantTable(Database db) async {
-    _tableAlter(db, 'merchant', 'NameL2', 'text');
-    _tableAlter(db, 'merchant', 'TID', 'text');
-    _tableAlter(db, 'merchant', 'MID', 'text');
-    _tableAlter(db, 'merchant', 'CurrencyCode', 'integer');
-    _tableAlter(db, 'merchant', 'CountryCode', 'integer');
-    _tableAlter(db, 'merchant', 'CurrencySymbol', 'text');
-    _tableAlter(db, 'merchant', 'Password', 'text');
-    _tableAlter(db, 'merchant', 'Header', 'text');
+    _tableAlter(db, 'merchant', 'nameL2', 'text');
+    _tableAlter(db, 'merchant', 'tid', 'text');
+    _tableAlter(db, 'merchant', 'mid', 'text');
+    _tableAlter(db, 'merchant', 'currencyCode', 'integer');
+    _tableAlter(db, 'merchant', 'countryCode', 'integer');
+    _tableAlter(db, 'merchant', 'currencySymbol', 'text');
+    _tableAlter(db, 'merchant', 'password', 'text');
+    _tableAlter(db, 'merchant', 'header', 'text');
     _tableAlter(db, 'merchant', 'amountMaxDigits', 'integer');
     _tableAlter(db, 'merchant', 'amountDecimalPosition', 'integer');
-    _tableAlter(db, 'merchant', 'BatchNumber', 'integer');
-    _tableAlter(db, 'merchant', 'MaxTip', 'integer');
-    _tableAlter(db, 'merchant', 'City', 'text');
-    _tableAlter(db, 'merchant', 'TaxID', 'text');
-    _tableAlter(db, 'merchant', 'Logo', 'text');
-    _tableAlter(db, 'merchant', 'AcquirerCode', 'integer');
+    _tableAlter(db, 'merchant', 'batchNumber', 'integer');
+    _tableAlter(db, 'merchant', 'maxTip', 'integer');
+    _tableAlter(db, 'merchant', 'city', 'text');
+    _tableAlter(db, 'merchant', 'taxID', 'text');
+    _tableAlter(db, 'merchant', 'logo', 'text');
+    _tableAlter(db, 'merchant', 'acquirerCode', 'integer');
   }
 
   void _createTerminalTable(Database db) async {

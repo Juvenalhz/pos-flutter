@@ -131,15 +131,15 @@ class Merchant {
     if (id != null) {
       map['id'] = _id;
     }
-    map['NameL1'] = _nameL1;
-    map['NameL2'] = _nameL2;
-    map['TID'] = _tid;
-    map['MID'] = _mid;
-    map['CurrencyCode'] = _currencyCode;
-    map['CurrencySymbol'] = _currencySymbol;
-    map['CountryCode'] = _countryCode;
-    map['Password'] = _password;
-    map['Header'] = _header;
+    map['nameL1'] = _nameL1;
+    map['nameL2'] = _nameL2;
+    map['tid'] = _tid;
+    map['mid'] = _mid;
+    map['currencyCode'] = _currencyCode;
+    map['currencySymbol'] = _currencySymbol;
+    map['countryCode'] = _countryCode;
+    map['password'] = _password;
+    map['header'] = _header;
     map['amountMaxDigits'] = _amountMaxDigits;
     map['amountDecimalPosition'] = _amountDecimalPosition;
     map['batchNumber'] = _batchNumber;
@@ -155,15 +155,15 @@ class Merchant {
   // Extract a Merchant object from a Map object
   Merchant.fromMap(Map<String, dynamic> merchant) {
     this._id = merchant['id'];
-    this._nameL1 = merchant['NameL1'];
-    this._nameL2 = merchant['NameL2'];
-    this._tid = merchant['TID'];
-    this._mid = merchant['MID'];
-    this._currencyCode = merchant['CurrencyCode'];
-    this._currencySymbol = merchant['CurrencySymbol'];
-    this._countryCode = merchant['CountryCode'];
-    this._password = merchant['Password'];
-    this._header = merchant['Header'];
+    this._nameL1 = merchant['nameL1'];
+    this._nameL2 = merchant['nameL2'];
+    this._tid = merchant['tid'];
+    this._mid = merchant['mid'];
+    this._currencyCode = merchant['currencyCode'];
+    this._currencySymbol = merchant['currencySymbol'];
+    this._countryCode = merchant['countryCode'];
+    this._password = merchant['password'];
+    this._header = merchant['header'];
     this._amountMaxDigits = merchant['amountMaxDigits'];
     this._amountDecimalPosition = merchant['amountDecimalPosition'];
     this._batchNumber = merchant['batchNumber'];

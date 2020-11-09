@@ -167,7 +167,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     index += 6;
     acquirerIndicators.putIfAbsent(4, () => data.substring(index, index + 6));
     index += 6;
-    acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
+    acquirerIndicators.putIfAbsent(5, () => data.substring(index, index + 6));
     index += 6;
 
     terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
@@ -335,7 +335,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         case 7:
           {
             AcquirerRepository acquirerRepository = new AcquirerRepository();
-            if (acquirerIndicators[0] != '000000') {
+            //if (acquirerIndicators[0] != '000000')
+            {
               Acquirer acquirer = new Acquirer(0, 'Platco', '');
 
               acquirer.setIndicators(acquirerIndicators[0]);

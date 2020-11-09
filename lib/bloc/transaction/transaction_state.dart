@@ -157,3 +157,11 @@ class TransactionReceiving extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionRejected extends TransactionState {
+  final Trans trans;
+  TransactionRejected(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

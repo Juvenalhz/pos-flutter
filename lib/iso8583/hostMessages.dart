@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
@@ -51,6 +52,9 @@ String addField62Table(int table, String data) {
       break;
     case 4:
       temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
+      break;
+    case 18:
+      temp += bcdToStr(AsciiEncoder().convert(data.padRight(2, ' ')));
       break;
     case 41:
       String serial;
@@ -136,10 +140,10 @@ class MessageInitialization {
 class TransactionMessage {
   Iso8583 message;
   Trans trans;
-  Comm comm;
+  Comm _comm;
 
-  TransactionMessage(this.trans, this.comm) {
-    message = new Iso8583(null, ISOSPEC.ISO_BCD, this.comm.tpdu, comm.headerLength);
+  TransactionMessage(this.trans, this._comm) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
   Future<Uint8List> buildMessage() async {
@@ -150,7 +154,7 @@ class TransactionMessage {
 
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode + 1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
@@ -165,7 +169,7 @@ class TransactionMessage {
     message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
-    message.fieldData(24, comm.nii);
+    message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
@@ -190,5 +194,44 @@ class TransactionMessage {
     }
 
     return message.buildIso();
+  }
+
+  Map<int, String> parseRenponse(Uint8List response) {
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+    Map respMap = new Map<int, String>();
+    int i;
+    Uint8List bitmap;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    isoResponse.dataType(60, DT.BIN);
+    isoResponse.dataType(61, DT.BIN);
+    //isoResponse.dataType(62, DT.BIN);
+
+    isoResponse.setIsoContent(response);
+    if (isDev) {
+      isoResponse.printMessage();
+    }
+
+    bitmap = isoResponse.bitmap();
+
+    for (i = 0; i < bitmap.length; i++) {
+      if (bitmap[i] == 1) {
+        respMap[i] = isoResponse.fieldData(i);
+      }
+    }
+
+    //decode field 62
+    i = 0;
+    while (i < respMap[62].length) {
+      int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
+      i += 4;
+      int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
+      i += 4;
+      //add fields like 6201, 6202, ... 6241
+      respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
+      i += len - 4;
+    }
+
+    return respMap;
   }
 }

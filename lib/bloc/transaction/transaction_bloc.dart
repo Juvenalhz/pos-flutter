@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -10,6 +11,7 @@ import 'package:pay/models/comm.dart';
 import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/models/merchant.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/comm_repository.dart';
@@ -17,6 +19,7 @@ import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
+import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
@@ -294,27 +297,74 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // send request
     else if (event is TransSendRequest) {
       CommRepository commRepository = new CommRepository();
+      TransRepository transRepository = new TransRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
+
       yield TransactionSending();
       message = new TransactionMessage(trans, comm);
       connection.sendMessage(await message.buildMessage());
+      trans.stan = await getStan();
+      // save reversal
+      trans.reverse = true;
+      transRepository.createTrans(trans);
+      trans.reverse = false;
+
       incrementStan();
       this.add(TransReceive());
-    } else if (event is TransReceive) {
-      yield TransactionReceiving();
-      this.add(TransProcessResponse(trans));
     }
-    //
+    // received response message and parse it
+    else if (event is TransReceive) {
+      Uint8List response;
+      yield TransactionReceiving();
+
+      if (connection.rxSize == 0) {
+        response = await connection.receiveMessage();
+      }
+      if (connection.frameSize != 0) {
+        Map<int, String> respMap = message.parseRenponse(response);
+        this.add(TransProcessResponse(respMap));
+      }
+    }
+    // analyze response fields
     else if (event is TransProcessResponse) {
-      if (event.trans.cardType == Pinpad.CHIP) {
-        this.add(TransFinishChip(trans));
-      } else {
-        yield TransactionCompleted(trans);
+      MerchantRepository merchantRepository = new MerchantRepository();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+      if ((trans.total != int.parse(event.respMap[4])) ||
+          (trans.stan != int.parse(event.respMap[11])) ||
+          (merchant.tid.padLeft(8, '0') != event.respMap[41])) {
+        // reversal needed
+      }
+      else {
+        if (event.respMap[39] != null)
+          trans.respCode = event.respMap[39];
+
+        if (trans.respCode == '00') {
+          if (event.respMap[37] != null)
+            trans.referenceNumber = event.respMap[37];
+          if (event.respMap[38] != null)
+            trans.authCode = event.respMap[38];
+          if (event.respMap[55] != null)
+            trans.responseEmvTags = event.respMap[55];
+
+          if (trans.cardType == Pinpad.CHIP) {
+            this.add(TransFinishChip(trans));
+          } else {
+            TransRepository transRepository = new TransRepository();
+
+            transRepository.updateTrans(trans);
+            yield TransactionCompleted(trans);
+          }
+        }
+        else {
+          trans.respMessage = event.respMap[6208];
+          yield TransactionRejected(trans);
+        }
       }
     }
     //
     else if (event is TransFinishChip) {
-      if (await pinpad.finishChip("00", event.trans.entryMode, event.trans.responseEmvTags) != 0) {
+      if (await pinpad.finishChip(event.trans.respCode, event.trans.entryMode, event.trans.responseEmvTags) != 0) {
         //TODO: if approved reversal may be needed at this point
         trans.clear();
         yield TransactionError();
@@ -325,7 +375,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
-      yield TransactionCompleted(trans);
+      if (trans.cardDecision == 0) {
+        TransRepository transRepository = new TransRepository();
+
+        transRepository.updateTrans(trans);
+        yield TransactionCompleted(trans);
+      }
+      else{
+        trans.respMessage = 'Transacción Denegada Por Tarjeta';
+        yield TransactionRejected(trans);
+      }
+
       //this.add(TransStartTransaction());
     }
     // pinpad error detected

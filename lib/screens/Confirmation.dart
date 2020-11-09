@@ -11,7 +11,7 @@ class Confirmation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    trans = ModalRoute.of(context).settings.arguments;
+    final trans = ModalRoute.of(context).settings.arguments;
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return SafeArea(
