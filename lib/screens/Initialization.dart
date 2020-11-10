@@ -16,7 +16,7 @@ class Initialization extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
-    final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
+    //final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     Comm comm;
 
     return WillPopScope(

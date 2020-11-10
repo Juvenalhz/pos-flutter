@@ -114,13 +114,13 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     MerchantRepository merchantRepository = new MerchantRepository();
     int index = 0;
 
-    merchant.NameL1 = data.substring(index, index + 20).trim();
+    merchant.nameL1 = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.NameL2 = data.substring(index, index + 20).trim();
+    merchant.nameL2 = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.City = data.substring(index, index + 20).trim();
+    merchant.city = data.substring(index, index + 20).trim();
     index += 20;
-    merchant.TaxID = data.substring(index, index + 13).trim();
+    merchant.taxID = data.substring(index, index + 13).trim();
 
     await merchantRepository.updateMerchant(merchant);
   }
@@ -132,15 +132,15 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     SetDateTime newDateTime = new SetDateTime();
     int index = 0;
 
-    merchant.MID = ascii.decode(hex.decode(data.substring(index, index + 30)));
+    merchant.mid = ascii.decode(hex.decode(data.substring(index, index + 30)));
     index += 30;
-    merchant.TID = data.substring(index, index + 2);
+    merchant.tid = data.substring(index, index + 2);
     index += 2;
-    merchant.CurrencyCode = int.parse(data.substring(index, index + 4));
+    merchant.currencyCode = int.parse(data.substring(index, index + 4));
     index += 4;
-    merchant.CurrencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    merchant.currencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
-    merchant.AcquirerCode = int.parse(data.substring(index, index + 2));
+    merchant.acquirerCode = int.parse(data.substring(index, index + 2));
     index += 2 + 24; //phone numbers are skipped
 
     comm.tpdu = data.substring(index, index + 10);
@@ -152,8 +152,8 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
 
-    emv.CountryCode = merchant.CountryCode;
-    emv.CurrencyCode = merchant.CurrencyCode;
+    emv.countryCode = merchant.countryCode;
+    emv.currencyCode = merchant.currencyCode;
 
     index += 2;
     //todo: extract aquirer parameters [86 - 122]
@@ -167,7 +167,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     index += 6;
     acquirerIndicators.putIfAbsent(4, () => data.substring(index, index + 6));
     index += 6;
-    acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
+    acquirerIndicators.putIfAbsent(5, () => data.substring(index, index + 6));
     index += 6;
 
     terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
@@ -183,7 +183,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     newDateTime.dateTime = dateAndTime;
 
     index += 12;
-    merchant.CountryCode = int.parse(data.substring(index, index + 4));
+    merchant.countryCode = int.parse(data.substring(index, index + 4));
 
     await merchantRepository.updateMerchant(merchant);
     await terminalRepository.updateTerminal(terminal);
@@ -302,7 +302,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       if ((addPubKey) && (!pubKeyExist)) {
         await pubkeyRepository.createPubKey(pubkey);
       } else if ((!addPubKey) && (pubKeyExist)) {
-        await pubkeyRepository.deletePubKey(pubkey);
+        pubkeyRepository.deletePubKey(pubkey);
       }
     }
   }
@@ -329,13 +329,14 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       switch (table) {
         case 2:
           {
-            merchant.BatchNumber = int.parse(ascii.decode(hex.decode(tableData)));
+            merchant.batchNumber = int.parse(ascii.decode(hex.decode(tableData)));
           }
           break;
         case 7:
           {
             AcquirerRepository acquirerRepository = new AcquirerRepository();
-            if (acquirerIndicators[0] != '000000') {
+            //if (acquirerIndicators[0] != '000000')
+            {
               Acquirer acquirer = new Acquirer(0, 'Platco', '');
 
               acquirer.setIndicators(acquirerIndicators[0]);

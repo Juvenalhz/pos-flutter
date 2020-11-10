@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
-import 'package:pay/screens/TransStatusScreen.dart';
+import 'package:pay/screens/TransApprovedScreen.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/AskNumeric.dart';
 import 'package:pay/screens/selectionMenu.dart';
@@ -14,6 +14,7 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
+import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
 import 'mainScreen.dart';
 
@@ -40,7 +41,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
-          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 4, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
+          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
         } else if (state is TransactionAskAccountType) {
@@ -59,9 +60,16 @@ class Transaction extends StatelessWidget {
           return TransMessage(state.trans.appLabel);
         } else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
+        } else if (state is TransactionConnecting) {
+          return CommProgress('Autorización', status: 'Conectando').build(context);
+        } else if (state is TransactionSending) {
+          return CommProgress('Autorización', status: 'Enviando').build(context);
+        } else if (state is TransactionReceiving) {
+          return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
-          //transactionBloc.add(TransStartTransaction());
-          return TransStatusScreen(state.trans);
+          return TransApprovedScreen(state.trans);
+        } else if (state is TransactionRejected) {
+          return TransRejectedScreen(state.trans);
         } else if (state is TransactionError) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Cancelada");
@@ -111,7 +119,9 @@ class Transaction extends StatelessWidget {
   void onAccTypeSelection(BuildContext context, int value) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransAddAccountType(value + 1)); // 1 is added to have 0 as credit
+    if (value == 0)
+      transactionBloc.add(TransAddAccountType(2)); // checking account
+    else if (value == 1) transactionBloc.add(TransAddAccountType(1)); // saving account
   }
 }
 

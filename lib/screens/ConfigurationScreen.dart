@@ -21,7 +21,6 @@ import 'package:pay/models/emv.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/screens/components/data_tile.dart';
-import 'package:pay/utils/dropdown_items.dart';
 import 'package:pay/utils/input_validation.dart';
 import 'package:pay/utils/serialNumber.dart';
 import 'package:pay/viewModel/config_viewmodel.dart';
@@ -203,34 +202,34 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ListTile(
                                   contentPadding: EdgeInsets.only(left: 10.0),
                                   title: Text('Ciudad del Comercio'),
-                                  subtitle: Text(_merchant.City),
+                                  subtitle: Text(_merchant.city),
                                 ),
                                 ListTile(
                                   contentPadding: EdgeInsets.only(left: 10.0),
                                   title: Text('Código de Comercio'),
-                                  subtitle: Text(_merchant.MID),
+                                  subtitle: Text(_merchant.mid),
                                 ),
                                 ItemTileTwoColumn(
                                   leftLabel: Text('RIF del Comercio'),
                                   rightLabel: Text('Número de Terminal'),
-                                  leftItem: Text(_merchant.TaxID),
-                                  rightItem: Text(_merchant.TID),
+                                  leftItem: Text(_merchant.taxID),
+                                  rightItem: Text(_merchant.tid),
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),
                                 ItemTileTwoColumn(
                                   leftLabel: Text('Código Moneda'),
                                   rightLabel: Text('Símbolo de Moneda'),
-                                  leftItem: Text(_merchant.CurrencyCode.toString()),
-                                  rightItem: Text(_merchant.CurrencySymbol),
+                                  leftItem: Text(_merchant.currencyCode.toString()),
+                                  rightItem: Text(_merchant.currencySymbol),
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),
                                 ItemTileTwoColumn(
                                   leftLabel: Text('Código Adquiriente'),
                                   rightLabel: Text('Código de País'),
-                                  leftItem: Text(_merchant.AcquirerCode.toString()),
-                                  rightItem: Text(_merchant.CountryCode.toString()),
+                                  leftItem: Text(_merchant.acquirerCode.toString()),
+                                  rightItem: Text(_merchant.countryCode.toString()),
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),
@@ -330,7 +329,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       contentPadding: EdgeInsets.all(5.0),
                                       leftLabel: Text('Número de Lote'),
                                       rightLabel: Text('Terminal ID'),
-                                      leftItem: Text(_merchant.BatchNumber.toString()),
+                                      leftItem: Text(_merchant.batchNumber.toString()),
                                       //TODO: asignar campo valido
                                       rightItem: Text(_terminal.idTerminal),
                                       leftWidth: size.width / 2.18,
@@ -595,7 +594,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                             children: <Widget>[
                               ItemTileTwoColumn(
                                 leftLabel: Text('Código Adquiriente'),
-                                leftItem: Text(_merchant.AcquirerCode.toString()),
+                                leftItem: Text(_merchant.acquirerCode.toString()),
                                 rightLabel: Text('Nombre Adquiriente'),
                                 rightItem: Text(_acquirer.name),
                                 leftWidth: size.width / 2.5,

@@ -4,9 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
-import 'package:pay/utils/pinpad.dart';
-
-import 'amount.dart';
 
 class Confirmation extends StatelessWidget {
   Trans trans;
@@ -14,7 +11,7 @@ class Confirmation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    trans = ModalRoute.of(context).settings.arguments;
+    final trans = ModalRoute.of(context).settings.arguments;
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return SafeArea(
@@ -109,9 +106,9 @@ class Confirmation extends StatelessWidget {
                           Spacer(flex: 1),
                           if (state.trans.accType == 0)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Credito')
-                          else if (state.trans.accType == 1)
-                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
                           else if (state.trans.accType == 2)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
+                          else if (state.trans.accType == 1)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
                           Spacer(flex: 3),
                           RowDetailAmount(label: "Monto:", strAmount: formattedAmount),

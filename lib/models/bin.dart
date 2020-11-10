@@ -12,7 +12,7 @@ class Bin {
   bool _manualEntry;
   bool _fallback;
 
-  Bin() {}
+  Bin();
 
   int get id => this._id;
   String get type => this._type;
