@@ -27,7 +27,7 @@ class Printer : MethodChannel.MethodCallHandler{
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        val printer = DeviceHelper.me().printer
+
 
         if (call.method == "addText") {
             var align : Int? = call.argument("alignMode")
@@ -40,55 +40,63 @@ class Printer : MethodChannel.MethodCallHandler{
                 align = AlignMode.RIGHT
 
             if (Build.MODEL.contains("APOS")) {
+                val printer = DeviceHelper.me().printer
                 printer.addText(align, data)
             }
             else {
-                print(data)
+                printLog(align, data)
             }
         }
         else if (call.method == "setFontSize") {
             var fontSize : Int? = call.argument("fontSize")
             if (fontSize != null) {
-                if (Build.MODEL.contains("APOS"))
+                if (Build.MODEL.contains("APOS")) {
+                    val printer = DeviceHelper.me().printer
                     setFontSpec(printer, fontSize)
+                }
             }
         }
         else if (call.method == "feedLine") {
             var lines : Int? = call.argument("lines")
             if (lines != null) {
-                if (Build.MODEL.contains("APOS"))
+                if (Build.MODEL.contains("APOS")) {
+                    val printer = DeviceHelper.me().printer
                     printer.feedLine(lines)
+                }
             }
         }
         else if (call.method == "print") {
-            printer.startPrint(object : OnPrintListener.Stub() {
-                override fun onFinish() {
-                    Thread {
-                        val channel = params["MethodChannel"] as MethodChannel?
-                        Handler(Looper.getMainLooper()).post {
-                            if (channel != null) {
-                                channel.invokeMethod("printDone", null)
+            if (Build.MODEL.contains("APOS")) {
+                val printer = DeviceHelper.me().printer
+                printer.startPrint(object : OnPrintListener.Stub() {
+                    override fun onFinish() {
+                        Thread {
+                            val channel = params["MethodChannel"] as MethodChannel?
+                            Handler(Looper.getMainLooper()).post {
+                                if (channel != null) {
+                                    channel.invokeMethod("printDone", null)
+                                }
                             }
-                        }
-                    }.start()
-                }
+                        }.start()
+                    }
 
-                override fun onError(i: Int) {
-                    Log.e("Printer", "startPrint.onError $i")
-                    Thread {
-                        val channel = params["MethodChannel"] as MethodChannel?
-                        val error = HashMap<String, Any>()
+                    override fun onError(i: Int) {
+                        Log.e("Printer", "startPrint.onError $i")
+                        Thread {
+                            val channel = params["MethodChannel"] as MethodChannel?
+                            val error = HashMap<String, Any>()
 
-                        error["error"] = i
+                            error["error"] = i
 
-                        Handler(Looper.getMainLooper()).post {
-                            if (channel != null) {
-                                channel.invokeMethod("printError", { error })
+                            Handler(Looper.getMainLooper()).post {
+                                if (channel != null) {
+                                    channel.invokeMethod("printError", { error })
+                                }
                             }
-                        }
-                    }.start()
-                }
-            })
+                        }.start()
+                    }
+                })
+            }
         }
     }
 
@@ -113,5 +121,31 @@ class Printer : MethodChannel.MethodCallHandler{
                 printer.setAscScale(ASCScale.SC1x2)
             }
         }
+    }
+
+    private fun printLog(align : Int, data : String) {
+        var line : String = ""
+        var temp : String
+
+        if (data.length > 32)
+            temp = data.substring(0, 32)
+        else
+            temp = data
+
+        line += "|"
+        when (align) {
+            AlignMode.RIGHT -> {
+                line += temp.padEnd(32, ' ')
+            }
+            AlignMode.LEFT -> {
+                line += temp.padStart(32, ' ')
+            }
+            AlignMode.CENTER -> {
+                temp = temp.padStart( 31 - (32 - temp.length) / 2, ' ')
+                line += temp.padEnd(32, ' ')
+            }
+        }
+        line += "|"
+        Log.i("printer", line)
     }
 }
