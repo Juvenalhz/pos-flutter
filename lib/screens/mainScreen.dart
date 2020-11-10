@@ -108,7 +108,7 @@ class MainScreen extends StatelessWidget {
                     ],
                   ),
                 );
-              } else if (state is MerchantMissing)
+              } else if (state is MerchantMissing) {
                 return AlertDialog(
                   title: Text(
                     'Inicializacion',
@@ -134,6 +134,7 @@ class MainScreen extends StatelessWidget {
                     ),
                   ],
                 );
+              }
               else {
                 return SplashScreen();
               }

@@ -1,6 +1,6 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
 import 'package:pay/bloc/acquirer/acquirer_event.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
@@ -13,6 +13,8 @@ import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MainMenu extends StatelessWidget {
   @override
@@ -29,26 +31,29 @@ class MainMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           _createHeader(context),
-          ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
-            _createDrawerItem(
-              icon: Icons.calendar_view_day,
-              text: 'Reporte Resumen',
+          ExpansionTile(
+              title: Text("Reportes"),
+              leading: Icon(Icons.receipt),
+              children: <Widget>[
+                _createDrawerItem(
+                  icon: Icons.calendar_view_day,
+                  text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-              icon: Icons.receipt,
-              text: 'Reporte Detallado',
+                ),
+                _createDrawerItem(
+                  icon: Icons.receipt,
+                  text: 'Reporte Detallado',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-              icon: Icons.room_service,
-              text: 'Reporte Meseros',
+                ),
+                _createDrawerItem(
+                  icon: Icons.room_service,
+                  text: 'Reporte Meseros',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-          ]),
+                ),
+              ]),
           Divider(),
           _createDrawerItem(
             icon: Icons.repeat,
@@ -57,7 +62,8 @@ class MainMenu extends StatelessWidget {
 //                  Navigator.pushReplacementNamed(context, Routes.notes)
           ),
           Divider(),
-          _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
+          _createDrawerItem(
+              icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
             _createDrawerItem(
@@ -112,12 +118,13 @@ class MainMenu extends StatelessWidget {
           Positioned(
             top: 10.0,
             left: 95.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state) {
               if (state is MerchantLoaded) {
                 if ((state.merchant.logo != null) && (state.merchant.logo.length > 0)) {
                   return GestureDetector(
                       onTap: () {
-                        selectFile(context, state.merchant);
+                        showPicker(context, state.merchant);
                       },
                       child: CircleImage(state.merchant.logo, 2));
                 } else {
@@ -134,7 +141,8 @@ class MainMenu extends StatelessWidget {
           Positioned(
             bottom: 12.0,
             left: 16.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state) {
               if (state is MerchantLoaded) {
                 return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
@@ -145,7 +153,8 @@ class MainMenu extends StatelessWidget {
         ]));
   }
 
-  Widget _createDrawerItem({IconData icon, String text, GestureTapCallback onTap}) {
+  Widget _createDrawerItem(
+      {IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[
@@ -162,12 +171,72 @@ class MainMenu extends StatelessWidget {
 
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final OldPath = merchant.Logo;
+    File result = await ImagePicker.pickImage(source: ImageSource.gallery);
 
-    //File file = result.paths.first;
-    merchant.logo = result.paths.first;
-    merchant.id = 1;
-    merchantBloc.add(UpdateMerchant(merchant));
+    if (result != null) {
+      File croppedFile = await ImageCropper.cropImage(
+          sourcePath: result.path,
+          cropStyle: CropStyle.circle,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+          ],
+          androidUiSettings: AndroidUiSettings(
+              toolbarTitle: 'Editar foto',
+              cropFrameColor: Colors.blue,
+              activeControlsWidgetColor: Colors.blue));
+      String nameImage = (croppedFile.path.split("/")[5]);
+      final folderImageLogo = new Directory('/data/data/com.lccnet.pay/Logo');
+      await folderImageLogo.exists().then((isThere) {
+        if (isThere) {
+          croppedFile
+              .copy(folderImageLogo.path + '/'+nameImage);
+        } else {
+          folderImageLogo.create(recursive: true).then((value) {
+            croppedFile.copy(folderImageLogo.path + '/'+nameImage);
+          });
+        }
+      });
+      merchant.Logo = File(folderImageLogo.path + '/'+nameImage).path;
+      merchant.id = 1;
+      merchantBloc.add(UpdateMerchant(merchant));
+      merchantBloc.add(GetMerchant(1));
+      //OldPath != null ? DeteleFile(OldPath) : '' ;
+      if (OldPath != null) DeteleFile(OldPath);
+
+    }
+  }
+
+  void DeteleFile(dirPath) async {
+    final dir = Directory(dirPath);
+    dir.deleteSync(recursive: true);
+  }
+
+  Widget showPicker(context, val) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Container(
+              child: Wrap(
+                children: <Widget>[
+                   ListTile(
+                      leading: Icon(Icons.photo_library),
+                      title: Text('Galeria'),
+                      onTap: () {
+                        selectFile(context, val);
+                        Navigator.pop(context);
+                      }),
+                   ListTile(
+                    leading: Icon(Icons.photo_camera),
+                    title: Text('Cámara'),
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 
@@ -188,7 +257,8 @@ class CircleImage extends StatelessWidget {
         height: 70,
         width: 70,
       );
-    else if (this.imageType == 2) img = new Image.file(File(this.image), height: 200, width: 200);
+    else if (this.imageType == 2)
+      img = new Image.file(File(this.image), height: 200, width: 200);
 
     return Container(
         width: _size,
