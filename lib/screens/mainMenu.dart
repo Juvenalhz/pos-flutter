@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -17,7 +16,6 @@ import 'package:pay/utils/testConfig.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -33,26 +31,29 @@ class MainMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           _createHeader(context),
-          ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
-            _createDrawerItem(
-              icon: Icons.calendar_view_day,
-              text: 'Reporte Resumen',
+          ExpansionTile(
+              title: Text("Reportes"),
+              leading: Icon(Icons.receipt),
+              children: <Widget>[
+                _createDrawerItem(
+                  icon: Icons.calendar_view_day,
+                  text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-              icon: Icons.receipt,
-              text: 'Reporte Detallado',
+                ),
+                _createDrawerItem(
+                  icon: Icons.receipt,
+                  text: 'Reporte Detallado',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-              icon: Icons.room_service,
-              text: 'Reporte Meseros',
+                ),
+                _createDrawerItem(
+                  icon: Icons.room_service,
+                  text: 'Reporte Meseros',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-          ]),
+                ),
+              ]),
           Divider(),
           _createDrawerItem(
             icon: Icons.repeat,
@@ -61,7 +62,8 @@ class MainMenu extends StatelessWidget {
 //                  Navigator.pushReplacementNamed(context, Routes.notes)
           ),
           Divider(),
-          _createDrawerItem(icon: Icons.account_balance, text: 'Cierre De Lote'),
+          _createDrawerItem(
+              icon: Icons.account_balance, text: 'Cierre De Lote'),
           Divider(),
           ExpansionTile(
               title: Text("Menu Tecnico"),
@@ -77,7 +79,8 @@ class MainMenu extends StatelessWidget {
                 _createDrawerItem(text: 'Reporte de Parametros'),
                 _createDrawerItem(
                     text: 'Configuracion',
-                    onTap: () => Navigator.pushNamed(context, '/configuration')),
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/configuration')),
               ]),
           if (isDev)
             _createDrawerItem(
@@ -123,12 +126,14 @@ class MainMenu extends StatelessWidget {
           Positioned(
             top: 10.0,
             left: 95.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state) {
               if (state is MerchantLoaded) {
-                if ((state.merchant.Logo != null) && (state.merchant.Logo.length > 0)) {
+                if ((state.merchant.Logo != null) &&
+                    (state.merchant.Logo.length > 0)) {
                   return GestureDetector(
                       onTap: () {
-                        selectFile(context, state.merchant);
+                        showPicker(context, state.merchant);
                       },
                       child: CircleImage(state.merchant.Logo, 2));
                 } else {
@@ -145,22 +150,28 @@ class MainMenu extends StatelessWidget {
           Positioned(
             bottom: 12.0,
             left: 16.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(
+                builder: (context, state) {
               if (state is MerchantLoaded) {
                 return Text(state.merchant.nameL1,
                     style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w500));
               } else {
                 return Text(' ',
                     style: TextStyle(
-                        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w500));
               }
             }),
           )
         ]));
   }
 
-  Widget _createDrawerItem({IconData icon, String text, GestureTapCallback onTap}) {
+  Widget _createDrawerItem(
+      {IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[
@@ -178,32 +189,71 @@ class MainMenu extends StatelessWidget {
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
     final OldPath = merchant.Logo;
-   // FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.image);
-   File result = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File result = await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (result != null) {
-
-      File croppedFile = await ImageCropper.cropImage(sourcePath: result.path,
+      File croppedFile = await ImageCropper.cropImage(
+          sourcePath: result.path,
           cropStyle: CropStyle.circle,
           aspectRatioPresets: [
             CropAspectRatioPreset.square,
           ],
           androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Editar foto',
-            cropFrameColor: Colors.blue,
+              toolbarTitle: 'Editar foto',
+              cropFrameColor: Colors.blue,
               activeControlsWidgetColor: Colors.blue));
-
-      DeteleFile(result.path);
-      merchant.Logo = File(croppedFile.path).path;
+      String nameImage = (croppedFile.path.split("/")[5]);
+      final folderImageLogo = new Directory('/data/data/com.lccnet.pay/Logo');
+      await folderImageLogo.exists().then((isThere) {
+        if (isThere) {
+          croppedFile
+              .copy(folderImageLogo.path + '/'+nameImage);
+        } else {
+          folderImageLogo.create(recursive: true).then((value) {
+            croppedFile.copy(folderImageLogo.path + '/'+nameImage);
+          });
+        }
+      });
+      merchant.Logo = File(folderImageLogo.path + '/'+nameImage).path;
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
-      DeteleFile(OldPath);
+      merchantBloc.add(GetMerchant(1));
+      //OldPath != null ? DeteleFile(OldPath) : '' ;
+      if (OldPath != null) DeteleFile(OldPath);
+
     }
   }
 
-  void DeteleFile(dirPath) async{
+  void DeteleFile(dirPath) async {
     final dir = Directory(dirPath);
     dir.deleteSync(recursive: true);
+  }
+
+  Widget showPicker(context, val) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Container(
+              child: Wrap(
+                children: <Widget>[
+                   ListTile(
+                      leading: Icon(Icons.photo_library),
+                      title: Text('Galeria'),
+                      onTap: () {
+                        selectFile(context, val);
+                        Navigator.pop(context);
+                      }),
+                   ListTile(
+                    leading: Icon(Icons.photo_camera),
+                    title: Text('Cámara'),
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 
@@ -224,7 +274,8 @@ class CircleImage extends StatelessWidget {
         height: 70,
         width: 70,
       );
-    else if (this.imageType == 2) img = new Image.file(File(this.image), height: 200, width: 200);
+    else if (this.imageType == 2)
+      img = new Image.file(File(this.image), height: 200, width: 200);
 
     return Container(
         width: _size,

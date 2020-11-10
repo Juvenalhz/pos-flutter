@@ -33,8 +33,6 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
     } else if (event is UpdateMerchant) {
       yield MerchantLoading();
       await merchantRepository.updateMerchant(event.merchant);
-      yield MerchantGet(id: event.merchant.id);
-      yield MerchantLoaded(merchant:event.merchant);
     }
   }
 }
