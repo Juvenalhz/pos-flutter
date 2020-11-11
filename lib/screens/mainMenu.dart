@@ -188,7 +188,7 @@ class MainMenu extends StatelessWidget {
 
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    final OldPath = merchant.Logo;
+    final OldPath = merchant.Logo.isEmpty ? null : merchant.Logo;
     File result = await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (result != null) {
@@ -218,9 +218,10 @@ class MainMenu extends StatelessWidget {
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
       merchantBloc.add(GetMerchant(1));
-      //OldPath != null ? DeteleFile(OldPath) : '' ;
-      if (OldPath != null) DeteleFile(OldPath);
-
+     // OldPath != null ? DeteleFile(OldPath)  ;
+      if (OldPath != null ) {
+        DeteleFile(OldPath);
+        }
     }
   }
 
