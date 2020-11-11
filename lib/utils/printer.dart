@@ -10,16 +10,36 @@ class Printer {
   static const int FONT_SIZE_LARGE = 2;
 
   static const MethodChannel _channel = const MethodChannel('printer');
+  Function() onPrintFinish;
+  Function(int) onPrintError;
+  int currentSize;
 
   Printer(){
     _channel.setMethodCallHandler(this._callHandler);
+    currentSize = FONT_SIZE_NORMAL;
   }
 
   void addText(int alignMode, String text) async {
     int ret = await _channel.invokeMethod('addText', {'alignMode': alignMode, 'data':text});
   }
 
+  void addTextSideBySide(String left, String right) async {
+    String text;
+    int lineSize;
+    
+    if (currentSize == FONT_SIZE_SMALL)
+      lineSize = 48;
+    else
+      lineSize = 32;
+    
+    text = left.padRight(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
+    text += left.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
+
+    int ret = await _channel.invokeMethod('addText', {'alignMode': RIGHT, 'data':text});
+  }
+
   void setFontSize(int fontSize) async {
+    currentSize = fontSize;
     int ret = await _channel.invokeMethod('setFontSize', {'fontSize': fontSize});
   }
 
@@ -27,19 +47,22 @@ class Printer {
     int ret = await _channel.invokeMethod('feedLine', {'lines': lines});
   }
 
-  void print() async {
+  void print(Function onPrintFinish, Function onPrintError ) async {
+    this.onPrintFinish = onPrintFinish;
+    this.onPrintError = onPrintError;
+
     int ret = await _channel.invokeMethod('print');
+
   }
 
   Future<dynamic> _callHandler(MethodCall call) async {
     var params = new Map<String, dynamic>();
 
     if (call.method == 'printDone') {
-      // emv tables loaded finished, go to next state
-      //transactionBloc.add(TransGetCard());
+      this.onPrintFinish();
     } else if (call.method == 'printError') {
       final params = call.arguments;
-      //transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
+      this.onPrintError(params['error']);
     }
   }
 
