@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/trans.dart';
 
 class TransApprovedScreen extends StatelessWidget {
@@ -43,7 +45,10 @@ class TransApprovedScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 32, color: Colors.white),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+                transactionBloc.add(TransMercahntReceipt());
+                //Navigator.of(context).pop();
               },
               color: Colors.green,
               padding: EdgeInsets.all(15.0),

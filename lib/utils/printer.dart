@@ -28,7 +28,7 @@ class Printer {
     int lineSize;
     
     if (currentSize == FONT_SIZE_SMALL)
-      lineSize = 48;
+      lineSize = 50;
     else
       lineSize = 32;
     

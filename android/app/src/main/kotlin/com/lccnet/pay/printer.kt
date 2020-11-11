@@ -18,12 +18,14 @@ class Printer : MethodChannel.MethodCallHandler{
     private val FONT_SIZE_SMALL = 0
     private val FONT_SIZE_NORMAL = 1
     private val FONT_SIZE_LARGE = 2
+    private var currentSize : Int = FONT_SIZE_NORMAL;
 
     fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "printer")
         channel.setMethodCallHandler(Printer())
 
         params.put("MethodChannel", channel)
+        currentSize = FONT_SIZE_NORMAL;
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -54,6 +56,7 @@ class Printer : MethodChannel.MethodCallHandler{
                     val printer = DeviceHelper.me().printer
                     setFontSpec(printer, fontSize)
                 }
+                currentSize = fontSize;
             }
         }
         else if (call.method == "feedLine") {
@@ -62,6 +65,14 @@ class Printer : MethodChannel.MethodCallHandler{
                 if (Build.MODEL.contains("APOS")) {
                     val printer = DeviceHelper.me().printer
                     printer.feedLine(lines)
+                }
+                else{
+                    var lineSize : Int
+                    if (currentSize == FONT_SIZE_SMALL)
+                        lineSize = 50
+                    else
+                        lineSize = 32
+                    Log.i("printer", "|" + "".padEnd(lineSize, ' ') + "|")
                 }
             }
         }
@@ -126,23 +137,30 @@ class Printer : MethodChannel.MethodCallHandler{
     private fun printLog(align : Int, data : String) {
         var line : String = ""
         var temp : String
+        var lineSize : Int
 
-        if (data.length > 32)
-            temp = data.substring(0, 32)
+        if (currentSize == FONT_SIZE_SMALL)
+            lineSize = 50
+        else
+            lineSize = 32
+
+
+        if (data.length > lineSize)
+            temp = data.substring(0, lineSize)
         else
             temp = data
 
         line += "|"
         when (align) {
             AlignMode.RIGHT -> {
-                line += temp.padEnd(32, ' ')
+                line += temp.padEnd(lineSize, ' ')
             }
             AlignMode.LEFT -> {
-                line += temp.padStart(32, ' ')
+                line += temp.padStart(lineSize, ' ')
             }
             AlignMode.CENTER -> {
-                temp = temp.padStart( 31 - (32 - temp.length) / 2, ' ')
-                line += temp.padEnd(32, ' ')
+                temp = temp.padStart( (lineSize - 1)  - (lineSize - temp.length) / 2, ' ')
+                line += temp.padEnd(lineSize, ' ')
             }
         }
         line += "|"

@@ -23,6 +23,7 @@ import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
+import 'package:pay/utils/receipt.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
@@ -385,8 +386,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
+    }
+    else if (event is TransMercahntReceipt) {
+      Receipt receipt = new Receipt(context);
 
-      //this.add(TransStartTransaction());
+      yield TransactionPrintMerchantReceipt(trans);
+      receipt.printTransactionReceipt(true, trans);
+      this.add(TransCustomerReceipt());
+    }
+    else if (event is TransCustomerReceipt) {
+      Receipt receipt = new Receipt(context);
+
+      yield TransactionPrintCustomerReceipt(trans);
+      receipt.printTransactionReceipt(false, trans);
+      await new Future.delayed(const Duration(seconds: 3));
+      yield TransactionFinish();
     }
     // pinpad error detected
     else if (event is TransCardError) {
@@ -407,4 +421,5 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int binId = await binRepository.getBinId(pan.substring(0, 8));
     return binId;
   }
+
 }
