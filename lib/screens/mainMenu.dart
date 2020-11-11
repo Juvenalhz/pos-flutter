@@ -130,7 +130,7 @@ class MainMenu extends StatelessWidget {
                 } else {
                   return GestureDetector(
                       onTap: () {
-                        selectFile(context, state.merchant);
+                        showPicker(context, state.merchant);
                       },
                       child: CircleImage('assets/images/logo.jpg', 1));
                 }
@@ -171,7 +171,7 @@ class MainMenu extends StatelessWidget {
 
   Future<void> selectFile(BuildContext context, Merchant merchant) async {
     final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-    final OldPath = merchant.logo;
+    final OldPath = merchant.logo.isEmpty ? null : merchant.logo;
     File result = await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (result != null) {
@@ -201,9 +201,10 @@ class MainMenu extends StatelessWidget {
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
       merchantBloc.add(GetMerchant(1));
-      //OldPath != null ? DeteleFile(OldPath) : '' ;
-      if (OldPath != null) DeteleFile(OldPath);
-
+     // OldPath != null ? DeteleFile(OldPath)  ;
+      if (OldPath != null ) {
+        DeteleFile(OldPath);
+        }
     }
   }
 
