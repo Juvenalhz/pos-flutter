@@ -1,18 +1,17 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
-import 'package:pay/screens/transMessage.dart';
 
 class Pinpad {
-  final int MAG_STRIPE = 0;
-  final int CHIP = 3;
-  final int CLESS_MS = 5;
-  final int CLESS_EMV = 6;
+  static const int MAG_STRIPE = 0;
+  static const int CHIP = 3;
+  static const int CLESS_MS = 5;
+  static const int CLESS_EMV = 6;
+  static const int MANUAL = 99;
 
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');
@@ -23,17 +22,24 @@ class Pinpad {
   }
 
   Future<int> getCard(Map<String, dynamic> trans) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('getCard', {'trans': trans});
     return ret;
   }
 
   Future<int> goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
+    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
     int ret = await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
     return ret;
   }
 
   Future<int> finishChip(String respCode, int entryMode, String respEmvTags) async {
     int ret = await _channel.invokeMethod('finishChip', {'respCode': respCode, 'entryMode': entryMode, 'respEmvTags': respEmvTags});
+    return ret;
+  }
+
+  Future<int> askPin(int keyIndex, String pan, String msg1, String msg2) async {
+    int ret = await _channel.invokeMethod('askPin', {'keyIndex':keyIndex, 'pan':pan, 'msg1': msg1, 'msg2': msg2});
     return ret;
   }
 
@@ -71,20 +77,30 @@ class Pinpad {
 
       transactionBloc.add(TransCardRemoved(params));
     } else if (call.method == 'showPinAmount') {
+      print('showPinAmount');
       transactionBloc.add(TransShowPinAmount());
     } else if (call.method == 'onChipDone') {
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
       transactionBloc.add(TransGoOnChipDecision(params));
+    } else if (call.method == 'pinEntered') {
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+      if (params['resultCode'] == 0) {
+        transactionBloc.add(TransPinEntered(params));
+      }
     }
 
-    if ((call.method == 'cardRead') || (call.method == 'cardRemoved')) {
-      if (params['resultCode'] != 0) {
+    // handle error cases  - do not group on else if section
+    else if  ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
+      if (params['resultCode'] != 0){
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());
       }
     }
+
     return 0;
   }
 

@@ -137,12 +137,12 @@ class TransOnlineTransaction extends TransactionEvent {
 }
 
 class TransProcessResponse extends TransactionEvent {
-  final Trans trans;
+  final Map<int, String> respMap;
 
-  TransProcessResponse(this.trans);
+  TransProcessResponse(this.respMap);
 
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [respMap];
 }
 
 class TransFinishChip extends TransactionEvent {
@@ -174,7 +174,7 @@ class TransCardError extends TransactionEvent {
 }
 
 class TransAddLast4 extends TransactionEvent {
-  int last4;
+  final int last4;
 
   TransAddLast4(this.last4);
 
@@ -222,4 +222,39 @@ class TransAddAccountType extends TransactionEvent {
 
   @override
   List<Object> get props => [this.accType];
+}
+
+class TransConnect extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceiveReversal extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransSendRequest extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransReceive extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+
+class TransPinEntered extends TransactionEvent {
+  final Map<String, dynamic> pinData;
+
+  TransPinEntered([this.pinData]);
+
+  @override
+  List<Object> get props => [this.pinData];
 }

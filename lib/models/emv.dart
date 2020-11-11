@@ -18,8 +18,8 @@ class Emv {
   String get addTermCapabilities => this._addTermCapabilities;
   bool get fallback => this._fallback;
   bool get forceOnline => this._forceOnline;
-  int get CurrencyCode => this._currencyCode;
-  int get CountryCode => this._countryCode;
+  int get currencyCode => this._currencyCode;
+  int get countryCode => this._countryCode;
 
   set id(int id) {
     this._id = id;
@@ -45,11 +45,11 @@ class Emv {
     this._forceOnline = forceOnline;
   }
 
-  set CurrencyCode(int currencyCode) {
+  set currencyCode(int currencyCode) {
     this._currencyCode = currencyCode;
   }
 
-  set CountryCode(int countryCode) {
+  set countryCode(int countryCode) {
     this._countryCode = countryCode;
   }
 

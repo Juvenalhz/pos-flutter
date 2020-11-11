@@ -1,9 +1,9 @@
 import 'database.dart';
 
-class testConfig {
+class TestConfig {
   final appdb = DatabaseHelper.instance;
 
-  Future<void> _CreateMerchant() async {
+  Future<void> _createMerchant() async {
     // row to insert
     Map<String, dynamic> testMerchant = {
       'id': 1,
@@ -17,8 +17,8 @@ class testConfig {
       'CountryCode': 862,
       'Password': '000000',
       'Header': 'Este es el encabezado del recibo para usar en la impresion',
-      'Amount_MaxDigtis': 12,
-      'Amount_DecimalPosition': 2,
+      'AmountMaxDigits': 12,
+      'AmountDecimalPosition': 2,
       'BatchNumber': 1,
       'MaxTip': 10,
       'TaxID': '999888777',
@@ -31,9 +31,9 @@ class testConfig {
     print('inserted row id: $id');
   }
 
-  void _CreateTerminal() async {
+  Future<void> _createTerminal() async {
     // row to insert
-    Map<String, dynamic> testTerinal = {
+    Map<String, dynamic> testTerminal = {
       'id': 1,
       'password': '000000',
       'techPassword': '000000',
@@ -43,7 +43,7 @@ class testConfig {
       'maxPinDigits': 12,
       'timeoutPrompt': 60,
       'maxTipPercentage': 10,
-      'keyIndex': 1,
+      'keyIndex': 2,
       'industry': 'Retail',
       'print': 1,
       'cashback': 0,
@@ -58,11 +58,11 @@ class testConfig {
     };
 
     await appdb.deleteAll('terminal');
-    final id = await appdb.insert('terminal', testTerinal);
+    final id = await appdb.insert('terminal', testTerminal);
     print('inserted row id: $id');
   }
 
-  void _CreateComm() async {
+  Future<void> _createComm() async {
     // row to insert
     Map<String, dynamic> testComm = {
       'id': 1,
@@ -80,7 +80,7 @@ class testConfig {
     print('inserted row id: $id');
   }
 
-  void _CreateEmv() async {
+  Future<void> _createEmv() async {
     // row to insert
     Map<String, dynamic> testEmv = {
       'id': 1,
@@ -98,7 +98,7 @@ class testConfig {
     print('inserted row id: $id');
   }
 
-  void _CreateAcquirer() async {
+  Future<void> _createAcquirer() async {
     // row to insert
     Map<String, dynamic> testAcquirer = {
       'id': 1,
@@ -128,11 +128,11 @@ class testConfig {
   }
 
   Future<void> createTestConfiguration() async {
-    await _CreateMerchant();
-    await _CreateTerminal();
-    await _CreateComm();
-    await _CreateEmv();
-    await _CreateAcquirer();
+    await _createMerchant();
+    await _createTerminal();
+    await _createComm();
+    await _createEmv();
+    await _createAcquirer();
 
     await appdb.deleteAll('bin');
   }

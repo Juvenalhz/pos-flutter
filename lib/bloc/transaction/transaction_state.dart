@@ -1,6 +1,6 @@
 part of 'transaction_bloc.dart';
 
-abstract class TransactionState extends Equatable {
+abstract class TransactionState {
   const TransactionState();
 }
 
@@ -141,4 +141,27 @@ class TransactionAskCVV extends TransactionState {
 class TransactionAskAccountType extends TransactionState {
   @override
   List<Object> get props => [];
+}
+
+class TransactionConnecting extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionSending extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionReceiving extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionRejected extends TransactionState {
+  final Trans trans;
+  TransactionRejected(this.trans);
+
+  @override
+  List<Object> get props => [trans];
 }

@@ -2,127 +2,127 @@ class Merchant {
   int _id;
   String _nameL1;
   String _nameL2;
-  String _TID;
-  String _MID;
-  int _CurrencyCode;
-  String _CurrencySymbol;
-  int _CountryCode;
-  String _Password;
-  String _Header;
-  int _Amount_MaxDigtis;
-  int _Amount_DecimalPosition;
-  int _BatchNumber;
-  int _MaxTip;
-  String _City;
-  String _TaxID;
-  String _Logo;
-  int _AcquirerCode;
+  String _tid;
+  String _mid;
+  int _currencyCode;
+  String _currencySymbol;
+  int _countryCode;
+  String _password;
+  String _header;
+  int _amountMaxDigits;
+  int _amountDecimalPosition;
+  int _batchNumber;
+  int _maxTip;
+  String _city;
+  String _taxID;
+  String _logo;
+  int _acquirerCode;
 
-  Merchant(this._nameL1, this._TID, this._MID,
+  Merchant(this._nameL1, this._tid, this._mid,
       [this._nameL2,
-      this._CurrencyCode,
-      this._CurrencySymbol,
-      this._CountryCode,
-      this._Password,
-      this._Header,
-      this._Amount_MaxDigtis,
-      this._Amount_DecimalPosition,
-      this._BatchNumber,
-      this._MaxTip,
-      this._City,
-      this._TaxID,
-      this._Logo,
-      this._AcquirerCode]);
+      this._currencyCode,
+      this._currencySymbol,
+      this._countryCode,
+      this._password,
+      this._header,
+      this._amountMaxDigits,
+      this._amountDecimalPosition,
+      this._batchNumber,
+      this._maxTip,
+      this._city,
+      this._taxID,
+      this._logo,
+      this._acquirerCode]);
 
   int get id => _id;
   String get nameL1 => _nameL1;
   String get nameL2 => _nameL2;
-  String get TID => _TID;
-  String get MID => _MID;
-  int get CurrencyCode => _CurrencyCode;
-  String get CurrencySymbol => _CurrencySymbol;
-  int get CountryCode => _CountryCode;
-  String get Password => _Password;
-  String get Header => _Header;
-  int get Amount_MaxDigtis => _Amount_MaxDigtis;
-  int get Amount_DecimalPosition => _Amount_DecimalPosition;
-  int get BatchNumber => _BatchNumber;
-  int get MaxTip => _MaxTip;
-  String get City => _City;
-  String get TaxID => _TaxID;
-  String get Logo => _Logo;
-  int get AcquirerCode => _AcquirerCode;
+  String get tid => _tid;
+  String get mid => _mid;
+  int get currencyCode => _currencyCode;
+  String get currencySymbol => _currencySymbol;
+  int get countryCode => _countryCode;
+  String get password => _password;
+  String get header => _header;
+  int get amountMaxDigits => _amountMaxDigits;
+  int get amountDecimalPosition => _amountDecimalPosition;
+  int get batchNumber => _batchNumber;
+  int get maxTip => _maxTip;
+  String get city => _city;
+  String get taxID => _taxID;
+  String get logo => _logo;
+  int get acquirerCode => _acquirerCode;
 
   set id(int id) {
     this._id = id;
   }
 
-  set NameL1(String nameL1) {
+  set nameL1(String nameL1) {
     this._nameL1 = nameL1;
   }
 
-  set NameL2(String nameL2) {
+  set nameL2(String nameL2) {
     this._nameL2 = nameL2;
   }
 
-  set TID(String TID) {
-    this._TID = TID;
+  set tid(String tid) {
+    this._tid = tid;
   }
 
-  set MID(String MID) {
-    this._MID = MID;
+  set mid(String mid) {
+    this._mid = mid;
   }
 
-  set CurrencyCode(int CurrencyCode) {
-    this._CurrencyCode = CurrencyCode;
+  set currencyCode(int currencyCode) {
+    this._currencyCode = currencyCode;
   }
 
-  set CurrencySymbol(String CurrencySymbol) {
-    this._CurrencySymbol = CurrencySymbol;
+  set currencySymbol(String currencySymbol) {
+    this._currencySymbol = currencySymbol;
   }
 
-  set CountryCode(int CountryCode) {
-    this._CountryCode = CountryCode;
+  set countryCode(int countryCode) {
+    this._countryCode = countryCode;
   }
 
-  set Password(String Password) {
-    this._Password = Password;
+  set password(String password) {
+    this._password = password;
   }
 
-  set Header(String Header) {
-    this._Header = Header;
+  set header(String header) {
+    this._header = header;
   }
 
-  set Amount_MaxDigtis(int Amount_MaxDigtis) {
-    this._Amount_MaxDigtis = Amount_MaxDigtis;
+  set amountMaxDigits(int amountMaxDigits) {
+    this._amountMaxDigits = amountMaxDigits;
   }
 
-  set Amount_DecimalPosition(int Amount_DecimalPosition) {
-    this._Amount_DecimalPosition = Amount_DecimalPosition;
+  set amountDecimalPosition(int amountDecimalPosition) {
+    this._amountDecimalPosition = amountDecimalPosition;
   }
 
-  set BatchNumber(int BatchNumber) {
-    this._BatchNumber = BatchNumber;
+  set batchNumber(int batchNumber) {
+    this._batchNumber = batchNumber;
   }
 
-  set MaxTip(int MaxTip) {
-    this._MaxTip = MaxTip;
+  set maxTip(int maxTip) {
+    this._maxTip = maxTip;
   }
 
-  set City(String City) {
-    this._City = City;
+  set city(String city) {
+    this._city = city;
   }
 
-  set TaxID(String TaxID) {
-    this._TaxID = TaxID;
+  set taxID(String taxID) {
+    this._taxID = taxID;
   }
 
-  set Logo(String Logo) {
-    this._Logo = Logo;
+  set logo(String logo) {
+    this._logo = logo;
   }
 
-  set AcquirerCode(int AcquirerCode) {
-    this._AcquirerCode = AcquirerCode;
+  set acquirerCode(int acquirerCode) {
+    this._acquirerCode = acquirerCode;
   }
 
   // Convert a Merchant object into a Map object
@@ -131,23 +131,23 @@ class Merchant {
     if (id != null) {
       map['id'] = _id;
     }
-    map['NameL1'] = _nameL1;
-    map['NameL2'] = _nameL2;
-    map['TID'] = _TID;
-    map['MID'] = _MID;
-    map['CurrencyCode'] = _CurrencyCode;
-    map['CurrencySymbol'] = _CurrencySymbol;
-    map['CountryCode'] = _CountryCode;
-    map['Password'] = _Password;
-    map['Header'] = _Header;
-    map['Amount_MaxDigtis'] = _Amount_MaxDigtis;
-    map['Amount_DecimalPosition'] = _Amount_DecimalPosition;
-    map['BatchNumber'] = _BatchNumber;
-    map['MaxTip'] = _MaxTip;
-    map['City'] = _City;
-    map['TaxID'] = _TaxID;
-    map['Logo'] = _Logo;
-    map['AcquirerCode'] = _AcquirerCode;
+    map['nameL1'] = _nameL1;
+    map['nameL2'] = _nameL2;
+    map['tid'] = _tid;
+    map['mid'] = _mid;
+    map['currencyCode'] = _currencyCode;
+    map['currencySymbol'] = _currencySymbol;
+    map['countryCode'] = _countryCode;
+    map['password'] = _password;
+    map['header'] = _header;
+    map['amountMaxDigits'] = _amountMaxDigits;
+    map['amountDecimalPosition'] = _amountDecimalPosition;
+    map['batchNumber'] = _batchNumber;
+    map['maxTip'] = _maxTip;
+    map['city'] = _city;
+    map['taxID'] = _taxID;
+    map['logo'] = _logo;
+    map['acquirerCode'] = _acquirerCode;
 
     return map;
   }
@@ -155,22 +155,22 @@ class Merchant {
   // Extract a Merchant object from a Map object
   Merchant.fromMap(Map<String, dynamic> merchant) {
     this._id = merchant['id'];
-    this._nameL1 = merchant['NameL1'];
-    this._nameL2 = merchant['NameL2'];
-    this._TID = merchant['TID'];
-    this._MID = merchant['MID'];
-    this._CurrencyCode = merchant['CurrencyCode'];
-    this._CurrencySymbol = merchant['CurrencySymbol'];
-    this._CountryCode = merchant['CountryCode'];
-    this._Password = merchant['Password'];
-    this._Header = merchant['Header'];
-    this._Amount_MaxDigtis = merchant['Amount_MaxDigtis'];
-    this._Amount_DecimalPosition = merchant['Amount_DecimalPosition'];
-    this._BatchNumber = merchant['BatchNumber'];
-    this._MaxTip = merchant['MaxTip'];
-    this._City = merchant['City'];
-    this._TaxID = merchant['TaxID'];
-    this._Logo = merchant['Logo'];
-    this._AcquirerCode = merchant['AcquirerCode'];
+    this._nameL1 = merchant['nameL1'];
+    this._nameL2 = merchant['nameL2'];
+    this._tid = merchant['tid'];
+    this._mid = merchant['mid'];
+    this._currencyCode = merchant['currencyCode'];
+    this._currencySymbol = merchant['currencySymbol'];
+    this._countryCode = merchant['countryCode'];
+    this._password = merchant['password'];
+    this._header = merchant['header'];
+    this._amountMaxDigits = merchant['amountMaxDigits'];
+    this._amountDecimalPosition = merchant['amountDecimalPosition'];
+    this._batchNumber = merchant['batchNumber'];
+    this._maxTip = merchant['maxTip'];
+    this._city = merchant['city'];
+    this._taxID = merchant['taxID'];
+    this._logo = merchant['logo'];
+    this._acquirerCode = merchant['acquirerCode'];
   }
 }

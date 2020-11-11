@@ -11,8 +11,6 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
-import 'package:pay/models/trans.dart';
-import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
