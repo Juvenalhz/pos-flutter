@@ -70,7 +70,16 @@ class Transaction extends StatelessWidget {
           return TransApprovedScreen(state.trans);
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans);
-        } else if (state is TransactionError) {
+        } else if (state is TransactionPrintMerchantReceipt) {
+          return TransMessage("Print Merchant Receipt");
+        } else if (state is TransactionPrintCustomerReceipt) {
+          return TransMessage("Print Customer Receipt");
+        } else if (state is TransactionFinish){
+          Navigator.of(context).pop();
+          return TransMessage("");;
+        }
+
+        else if (state is TransactionError) {
           transactionBloc.add(TransStartTransaction());
           return TransMessage("Transacción Cancelada");
         } else

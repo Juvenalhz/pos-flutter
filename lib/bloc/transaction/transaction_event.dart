@@ -258,3 +258,13 @@ class TransPinEntered extends TransactionEvent {
   @override
   List<Object> get props => [this.pinData];
 }
+
+class TransMercahntReceipt extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransCustomerReceipt extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

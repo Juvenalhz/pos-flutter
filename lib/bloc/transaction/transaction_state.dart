@@ -165,3 +165,24 @@ class TransactionRejected extends TransactionState {
   @override
   List<Object> get props => [trans];
 }
+
+class TransactionPrintMerchantReceipt extends TransactionState {
+  final Trans trans;
+  TransactionPrintMerchantReceipt(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TransactionPrintCustomerReceipt extends TransactionState {
+  final Trans trans;
+  TransactionPrintCustomerReceipt(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TransactionFinish extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
