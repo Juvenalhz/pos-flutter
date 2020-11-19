@@ -164,7 +164,7 @@ class TransactionMessage {
     message.setMID(200);
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
-    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(11, trans.stan.toString());
     message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
@@ -232,6 +232,104 @@ class TransactionMessage {
       i += len - 4;
     }
 
+    return respMap;
+  }
+}
+
+class ReversalMessage {
+  Iso8583 message;
+  Trans trans;
+  Comm _comm;
+
+  ReversalMessage(this.trans, this._comm) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    TransRepository transRepository = new TransRepository();
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+    String clearPan = '';
+    trans.pan = await trans.getClearPan();
+
+    message.setMID(400);
+    message.fieldData(2, trans.pan);
+    message.fieldData(3, '00' + trans.accType.toString() + '000');
+    message.fieldData(4, trans.total.toString());
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    message.fieldData(14, trans.expDate.substring(0, 4));
+    message.fieldData(22, trans.entryMode.toString());
+    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(25, '00');
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    message.fieldData(49, merchant.currencyCode.toString());
+    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
+    message.fieldData(60, '01.00');
+
+    field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+
+  Map<int, String> parseRenponse(Uint8List response) {
+    Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+    Map respMap = new Map<int, String>();
+    int i;
+    Uint8List bitmap;
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    isoResponse.dataType(60, DT.BIN);
+    isoResponse.dataType(61, DT.BIN);
+    //isoResponse.dataType(62, DT.BIN);
+
+    isoResponse.setIsoContent(response);
+    if (isDev) {
+      isoResponse.printMessage();
+    }
+
+    bitmap = isoResponse.bitmap();
+
+    for (i = 0; i < bitmap.length; i++) {
+      if (bitmap[i] == 1) {
+        respMap[i] = isoResponse.fieldData(i);
+      }
+    }
+
+    //decode field 62
+    i = 0;
+    if (respMap[62] != null) {
+      while (i < respMap[62].length) {
+        int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
+        i += 4;
+        int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
+        i += 4;
+        //add fields like 6201, 6202, ... 6241
+        respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
+        i += len - 4;
+      }
+    }
     return respMap;
   }
 }

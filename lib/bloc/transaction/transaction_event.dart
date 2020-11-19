@@ -235,8 +235,12 @@ class TransSendReversal extends TransactionEvent {
 }
 
 class TransReceiveReversal extends TransactionEvent {
+  Trans transReversal;
+
+  TransReceiveReversal(this.transReversal);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [transReversal];
 }
 
 class TransSendRequest extends TransactionEvent {

@@ -70,9 +70,6 @@ class Communication {
   }
 
   Future<Uint8List> receiveMessage() async {
-    _isDone = false;
-    _message.fillRange(0, _message.length, 0);
-
     if (_secure) {
       if (_secureSocket != null) {
         _secureSocket.listen((data) {
@@ -141,5 +138,8 @@ class Communication {
     }
     _size = 0;
     _frameSize = 0;
+
+    _isDone = false;
+    _message.fillRange(0, _message.length, 0);
   }
 }

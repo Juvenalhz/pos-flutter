@@ -25,7 +25,14 @@ class Transaction extends StatelessWidget {
     Pinpad pinpad = new Pinpad(context);
     bool pinpadInit = false;
 
-    return Container(
+    return BlocListener<TransactionBloc, TransactionState>(
+            listener: (context, state) {
+              if (state is TransactionFinish) {
+                Navigator.of(context).pop();
+              }
+          },
+    child:
+      Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
         if (pinpadInit == false) {
           transactionBloc.add(TransInitPinpad(pinpad));
@@ -71,21 +78,21 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans);
         } else if (state is TransactionPrintMerchantReceipt) {
-          return TransMessage("Print Merchant Receipt");
+          return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
-          return TransMessage("Print Customer Receipt");
-        } else if (state is TransactionFinish){
-          Navigator.of(context).pop();
-          return TransMessage("");;
-        }
-
-        else if (state is TransactionError) {
+          return TransMessage('Print Customer Receipt');
+        } else if (state is TransactionError) {
           transactionBloc.add(TransStartTransaction());
-          return TransMessage("Transacción Cancelada");
-        } else
+          return TransMessage('Transacción Cancelada');
+        } else if (state is TransactionFinshChip) {
+          return TransMessage('');
+        }
+        else
           //TODO: change the default screen to something valid
-          return TransMessage('procesessing!!');
+          print('state:' + state.toString());
+          return TransMessage('');
       }),
+    )
     );
   }
 

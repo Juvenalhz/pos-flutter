@@ -29,8 +29,6 @@ class Printer : MethodChannel.MethodCallHandler{
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-
-
         if (call.method == "addText") {
             var align : Int? = call.argument("alignMode")
             var data : String? = call.argument("data")
