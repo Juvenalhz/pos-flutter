@@ -19,36 +19,38 @@ class Cipher : MethodChannel.MethodCallHandler{
     var params = HashMap<String, Any>()
     private val PAN_KEY_ID = 20
 
-    fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
+    fun registerWith(@NonNull flutterEngine: FlutterEngine){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "cipher")
         channel.setMethodCallHandler(Cipher())
 
         params.put("MethodChannel", channel)
 
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                try {
-                    DeviceHelper.me().bindService()
+        if (Build.MODEL.contains("APOS")) {
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
                     try {
-                        val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
-                        pinpad.open()
+                        DeviceHelper.me().bindService()
                         try {
-                            if (!pinpad.isKeyExist(PAN_KEY_ID)) {
-                                if (pinpad.loadPlainTextKey(KeyType.DEK_KEY, PAN_KEY_ID, pinpad.getRandom(24))) {
-                                    Log.e("Cipher", "ramdom key created")
+                            val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
+                            pinpad.open()
+                            try {
+                                if (!pinpad.isKeyExist(PAN_KEY_ID)) {
+                                    if (pinpad.loadPlainTextKey(KeyType.DEK_KEY, PAN_KEY_ID, pinpad.getRandom(24))) {
+                                        Log.e("Cipher", "ramdom key created")
+                                    }
                                 }
+                            } finally {
+                                pinpad.close()
                             }
                         } finally {
-                            pinpad.close()
+                            DeviceHelper.me().unbindService()
                         }
-                    } finally {
-                        DeviceHelper.me().unbindService()
+                    } catch (e: RemoteException) {
+                        Log.e("Cipher", "pinpad", e)
                     }
-                } catch (e: RemoteException) {
-                    Log.e("Cipher", "pinpad", e)
                 }
-            }
-        }, 1000)
+            }, 1000)
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -74,7 +76,10 @@ class Cipher : MethodChannel.MethodCallHandler{
                 } catch (e: RemoteException) {
                     Log.e("Cipher", "Pinpad", e)
                 }
+            } else if (PinpadManager.isEmulator()){
+                result.success(Base64.encodeToString(data?.toByteArray(Charsets.US_ASCII), Base64.URL_SAFE));
             }
+
         } else if (call.method == "decipherCriticalData") {
             var dataString : String? = call.argument("data")
             var data : ByteArray? = Base64.decode(dataString, Base64.URL_SAFE)
@@ -95,6 +100,9 @@ class Cipher : MethodChannel.MethodCallHandler{
                 } catch (e: RemoteException) {
                     Log.e("Cipher", "Pinpad", e)
                 }
+            }
+            else if (PinpadManager.isEmulator()){
+                result.success(data?.let { String(it) });
             }
         }
 

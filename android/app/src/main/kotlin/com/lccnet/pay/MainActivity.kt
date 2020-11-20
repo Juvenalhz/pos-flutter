@@ -16,8 +16,8 @@ class MainActivity: FlutterActivity() {
         sn.registerWith(flutterEngine)
         dt.registerWith(flutterEngine)
         emv.registerWith(flutterEngine, this.context)
-        printer.registerWith(flutterEngine, this.context)
-        cipher.registerWith(flutterEngine, this.context)
+        printer.registerWith(flutterEngine)
+        cipher.registerWith(flutterEngine)
 
     }
 }

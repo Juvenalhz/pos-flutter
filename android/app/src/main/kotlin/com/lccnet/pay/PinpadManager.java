@@ -680,7 +680,7 @@ public class PinpadManager implements PinpadCallbacks {
         return 0;
     }
 
-    public boolean isEmulator(){
+    public static boolean isEmulator(){
         StringBuilder deviceInfo = new StringBuilder();
         deviceInfo.append("Build.PRODUCT " +Build.PRODUCT +"\n");
         deviceInfo.append("Build.FINGERPRINT " +Build.FINGERPRINT+"\n");

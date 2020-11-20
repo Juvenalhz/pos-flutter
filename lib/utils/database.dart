@@ -406,6 +406,11 @@ class DatabaseHelper {
   Future<int> queryMaxId(String table) async {
     Database db = await instance.database;
 
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(id) FROM $table'));
+    int id = Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(id) FROM $table'));
+
+    if (id == null)
+      return 0;
+    else
+      return id;
   }
 }
