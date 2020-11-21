@@ -24,7 +24,7 @@ class TransRejectedScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: Row(children: [
-                Flexible(child: Text(trans.respMessage, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
+                Flexible(child: Center(child: Text(trans.respMessage, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)))),
               ])
             ),
 
