@@ -5,6 +5,7 @@ import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
 import 'package:pay/bloc/acquirer/acquirer_event.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
+import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/merchantBloc.dart';
@@ -12,9 +13,11 @@ import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/testConfig.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'components/MessageAlert.dart';
 
 class MainMenu extends StatelessWidget {
   @override
@@ -72,7 +75,12 @@ class MainMenu extends StatelessWidget {
                   Navigator.pushNamed(context, '/initialization');
                 }),
             _createDrawerItem(text: 'Borrar Lote'),
-            _createDrawerItem(text: 'Borrar Reverso'),
+            _createDrawerItem(text: 'Borrar Reverso', onTap: () async{
+              final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
+
+              deleteReversalBloc.add(DeleteReversalPending());
+              Navigator.pushNamed(context, '/deleteReversal');
+            }),
             _createDrawerItem(text: 'Reporte de Parametros'),
             _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
           ]),
