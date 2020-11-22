@@ -47,7 +47,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       yield InitializationConnecting(comm);
 
       //TODO: change the connection to use secure connection
-      connection = new Communication(comm.ip, comm.port, false);
+      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
       await connection.connect();
       this.add(InitializationSend());
       yield InitializationSending();
@@ -60,6 +60,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       Uint8List response;
       if (connection.rxSize == 0) {
         response = await connection.receiveMessage();
+        if (response == null) {
+          connection.disconnect();
+          yield InitializationFailed();
+        }
       }
       if (connection.frameSize != 0) {
         MerchantRepository merchantRepository = new MerchantRepository();

@@ -27,7 +27,7 @@ class Transaction extends StatelessWidget {
 
     return BlocListener<TransactionBloc, TransactionState>(
             listener: (context, state) {
-              if (state is TransactionFinish) {
+              if ((state is TransactionFinish) || (state is TransactionError)){
                 Navigator.of(context).pop();
               }
           },
@@ -81,10 +81,12 @@ class Transaction extends StatelessWidget {
           return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
           return TransMessage('Print Customer Receipt');
-        } else if (state is TransactionError) {
-          transactionBloc.add(TransStartTransaction());
-          return TransMessage('Transacción Cancelada');
-        } else if (state is TransactionFinshChip) {
+        }
+        // else if (state is TransactionError) {
+        //   transactionBloc.add(TransStartTransaction());
+        //   return TransMessage('Transacción Cancelada');
+        // } 
+        else if (state is TransactionFinshChip) {
           return TransMessage('');
         }
         else

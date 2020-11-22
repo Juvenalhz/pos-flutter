@@ -278,7 +278,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransConnect) {
       CommRepository commRepository = new CommRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
-      connection = new Communication(comm.ip, comm.port, false);
+      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
 
       yield TransactionConnecting();
 
@@ -312,8 +312,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Uint8List response;
 
       response = await connection.receiveMessage();
-
-      if (connection.frameSize != 0) {
+      if (response  == null){
+        trans.clear();
+        yield TransactionShowMessage('Error - Timeout de comunicación');
+        await new Future.delayed(const Duration(seconds: 3));
+        yield TransactionError();
+      }
+      else if (connection.frameSize != 0) {
         Map<int, String> respMap = reversalMessage.parseRenponse(response);
         if (respMap[39] == '00') {
           TransRepository transRepository = new TransRepository();
@@ -350,9 +355,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Uint8List response;
       yield TransactionReceiving();
 
-      if (isCommOffline == false)
+      if (isCommOffline == false) {
         response = await connection.receiveMessage();
-
+        if (response  == null){
+          trans.clear();
+          yield TransactionShowMessage('Error - Timeout de comunicación');
+          await new Future.delayed(const Duration(seconds: 3));
+          yield TransactionError();
+        }
+      }
       if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await message.parseRenponse(response);
         this.add(TransProcessResponse(respMap));
