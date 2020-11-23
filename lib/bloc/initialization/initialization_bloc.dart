@@ -72,7 +72,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
         Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
-        Map<int, String> respMap = initialization.parseRenponse(response);
+        Map<int, String> respMap = await initialization.parseRenponse(response);
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
           newComm = comm;

@@ -300,7 +300,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
         reversalMessage = new ReversalMessage(transReversal, comm);
-        connection.sendMessage(await reversalMessage.buildMessage());
+
+        if ((isDev == true) && (isCommOffline == true))
+          await reversalMessage.buildMessage();
+        else
+          connection.sendMessage(await reversalMessage.buildMessage());
 
         this.add(TransReceiveReversal(transReversal));
       }
@@ -318,8 +322,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         await new Future.delayed(const Duration(seconds: 3));
         yield TransactionError();
       }
-      else if (connection.frameSize != 0) {
-        Map<int, String> respMap = reversalMessage.parseRenponse(response);
+      else if ((connection.frameSize != 0) || (isCommOffline == true)) {
+        Map<int, String> respMap = await reversalMessage.parseRenponse(response, trans: trans);
         if (respMap[39] == '00') {
           TransRepository transRepository = new TransRepository();
           await transRepository.deleteTrans(event.transReversal.id);
@@ -365,7 +369,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         }
       }
       if ((connection.frameSize != 0) || (isCommOffline == true)) {
-        Map<int, String> respMap = await message.parseRenponse(response);
+        Map<int, String> respMap = await message.parseRenponse(response, trans: trans);
         this.add(TransProcessResponse(respMap));
       }
       connection.disconnect();
