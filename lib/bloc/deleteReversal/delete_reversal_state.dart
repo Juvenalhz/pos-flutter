@@ -19,3 +19,12 @@ class DeleteReversalNotExist extends DeleteReversalState {
   List<Object> get props => [];
 }
 
+class DeleteReversalAskDelete extends DeleteReversalState {
+  @override
+  List<Object> get props => [];
+}
+
+class DeleteReversalExit extends DeleteReversalState {
+  @override
+  List<Object> get props => [];
+}

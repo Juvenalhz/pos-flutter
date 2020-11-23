@@ -19,13 +19,21 @@ class DeleteReversalBloc extends Bloc<DeleteReversalEvent, DeleteReversalState> 
       TransRepository transRepository = new TransRepository();
 
       if (await transRepository.getCountReversal() != 0) {
-        Trans transReversal = Trans.fromMap(await transRepository.getTransReversal());
-        transRepository.deleteTrans(transReversal.id);
-        yield DeleteReversalDone();
+        yield DeleteReversalAskDelete();
       }
       else {
         yield DeleteReversalNotExist();
       }
+    }
+    else if (event is DeleteReversalOK) {
+      TransRepository transRepository = new TransRepository();
+
+      Trans transReversal = Trans.fromMap(await transRepository.getTransReversal());
+      await transRepository.deleteTrans(transReversal.id);
+      yield DeleteReversalDone();
+    }
+    else if (event is DeleteReversalCancel){
+      yield DeleteReversalExit();
     }
   }
 }

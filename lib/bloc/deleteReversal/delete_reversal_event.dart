@@ -8,3 +8,13 @@ class DeleteReversalPending extends DeleteReversalEvent {
   @override
   List<Object> get props => [];
 }
+
+class DeleteReversalOK extends DeleteReversalEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class DeleteReversalCancel extends DeleteReversalEvent {
+  @override
+  List<Object> get props => [];
+}

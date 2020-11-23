@@ -322,7 +322,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Map<int, String> respMap = reversalMessage.parseRenponse(response);
         if (respMap[39] == '00') {
           TransRepository transRepository = new TransRepository();
-          transRepository.deleteTrans(event.transReversal.id);
+          await transRepository.deleteTrans(event.transReversal.id);
           this.add(TransSendRequest());
         }
         else  // error in reversal
