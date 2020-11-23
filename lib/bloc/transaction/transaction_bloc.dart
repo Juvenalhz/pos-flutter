@@ -42,6 +42,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
+    var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
     print(event.toString());
     if (event is TransactionInitial) {
       yield TransactionAddAmount(trans);
@@ -281,7 +284,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       connection = new Communication(comm.ip, comm.port, false);
 
       yield TransactionConnecting();
-      if (await connection.connect() == true) {
+
+      if ((isDev == true) && (isCommOffline == true))
+        this.add(TransSendReversal());
+      else if (await connection.connect() == true) {
         this.add(TransSendReversal());
       } else {
         this.add(TransCardError());
@@ -303,7 +309,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       yield TransactionSending();
       message = new TransactionMessage(trans, comm);
-      connection.sendMessage(await message.buildMessage());
+      if ((isDev == true) && (isCommOffline == true))
+        await message.buildMessage();
+      else
+        connection.sendMessage(await message.buildMessage());
       trans.stan = await getStan();
       // save reversal
       trans.reverse = true;
@@ -319,10 +328,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionReceiving();
 
       if (connection.rxSize == 0) {
-        response = await connection.receiveMessage();
+        if (isCommOffline == false)
+          response = await connection.receiveMessage();
       }
-      if (connection.frameSize != 0) {
-        Map<int, String> respMap = message.parseRenponse(response);
+      if ((connection.frameSize != 0) || (isCommOffline == true)) {
+        Map<int, String> respMap = await message.parseRenponse(response);
         this.add(TransProcessResponse(respMap));
       }
     }

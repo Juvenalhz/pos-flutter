@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
@@ -196,42 +197,57 @@ class TransactionMessage {
     return message.buildIso();
   }
 
-  Map<int, String> parseRenponse(Uint8List response) {
+  Future<Map<int, String>> parseRenponse(Uint8List response) async {
     Iso8583 isoResponse = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
     Map respMap = new Map<int, String>();
     int i;
     Uint8List bitmap;
-    var isDev = (const String.fromEnvironment('dev') == 'true');
+    final bool isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
+    final bool isDev = (const String.fromEnvironment('dev') == 'true');
 
-    isoResponse.dataType(60, DT.BIN);
-    isoResponse.dataType(61, DT.BIN);
-    //isoResponse.dataType(62, DT.BIN);
+    if ((isDev == true) && (isCommOffline == true)) {
+      MerchantRepository merchantRepository = new MerchantRepository();
 
-    isoResponse.setIsoContent(response);
-    if (isDev) {
-      isoResponse.printMessage();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+      respMap[4] = trans.total.toString();
+      respMap[11] = trans.stan.toString();
+      respMap[37] = Random().nextInt(99999999).toString().padLeft(12, '0');
+      respMap[38] = Random().nextInt(999999).toString().padLeft(6, '0');
+      respMap[39] = '00';
+      respMap[41] = merchant.tid.padLeft(8, '0');
+
     }
+    else {
+      isoResponse.dataType(60, DT.BIN);
+      isoResponse.dataType(61, DT.BIN);
+      //isoResponse.dataType(62, DT.BIN);
 
-    bitmap = isoResponse.bitmap();
+      isoResponse.setIsoContent(response);
+      if (isDev) {
+        isoResponse.printMessage();
+      }
 
-    for (i = 0; i < bitmap.length; i++) {
-      if (bitmap[i] == 1) {
-        respMap[i] = isoResponse.fieldData(i);
+      bitmap = isoResponse.bitmap();
+
+      for (i = 0; i < bitmap.length; i++) {
+        if (bitmap[i] == 1) {
+          respMap[i] = isoResponse.fieldData(i);
+        }
+      }
+
+      //decode field 62
+      i = 0;
+      while (i < respMap[62].length) {
+        int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
+        i += 4;
+        int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
+        i += 4;
+        //add fields like 6201, 6202, ... 6241
+        respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
+        i += len - 4;
       }
     }
-
-    //decode field 62
-    i = 0;
-    while (i < respMap[62].length) {
-      int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
-      i += 4;
-      int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
-      i += 4;
-      //add fields like 6201, 6202, ... 6241
-      respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
-      i += len - 4;
-    }
-
     return respMap;
   }
 }
