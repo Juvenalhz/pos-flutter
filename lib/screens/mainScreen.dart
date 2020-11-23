@@ -11,6 +11,7 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/screens/DeleteReversal.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
@@ -44,6 +45,7 @@ class MainScreen extends StatelessWidget {
         '/configuration': (context) => ConfigurationScreen(),
         '/initialization': (context) => Initialization(),
         '/transaction': (contex) => Transaction(),
+        '/deleteReversal': (context) => DeleteReversal(),
       },
       home: Scaffold(
           key: scaffoldKey,

@@ -1,7 +1,6 @@
 package com.lccnet.pay;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,7 +10,8 @@ import android.util.Log;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.Thread.sleep;
 import io.flutter.plugin.common.MethodChannel;
@@ -21,8 +21,9 @@ import com.ingenico.lar.bc.Pinpad;
 import com.ingenico.lar.bc.PinpadCallbacks;
 import com.ingenico.lar.bc.PinpadOutput;
 import com.ingenico.lar.bc.PinpadOutputHandler;
-import com.ingenico.lar.bc.apos.PinpadProviderAPOS;
-
+import com.usdk.apiservice.aidl.pinpad.KeySystem;
+import com.usdk.apiservice.aidl.pinpad.KeyType;
+import com.usdk.apiservice.aidl.pinpad.UPinpad;
 
 
 /**
@@ -679,7 +680,7 @@ public class PinpadManager implements PinpadCallbacks {
         return 0;
     }
 
-    public boolean isEmulator(){
+    public static boolean isEmulator(){
         StringBuilder deviceInfo = new StringBuilder();
         deviceInfo.append("Build.PRODUCT " +Build.PRODUCT +"\n");
         deviceInfo.append("Build.FINGERPRINT " +Build.FINGERPRINT+"\n");

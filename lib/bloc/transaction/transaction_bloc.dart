@@ -20,9 +20,11 @@ import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
+import 'package:pay/utils/receipt.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
@@ -32,8 +34,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   var trans = new Trans();
   BuildContext context;
   bool emvTablesInit = false;
-  Communication connection;
+  static Communication connection;
   TransactionMessage message;
+  ReversalMessage reversalMessage;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -59,10 +62,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddAmount) {
       TransRepository transRepository = new TransRepository();
 
-      trans.id = (await transRepository.getCountTrans()) + 1;
+      trans.id = (await transRepository.getMaxId()) + 1;
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       trans.type = 'Compra';
+      trans.stan = await getStan();
       //TODO: check configuration if tip is on or off
       yield TransactionAddTip(trans);
     }
@@ -88,12 +92,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.tip = event.tip;
       yield TransactionAddTip(trans);
     }
-    // // show confirmation screen
-    // else if (event is TransAskConfirmation) {
-    //   yield TransactionAskConfirmation(trans);
-    // }
-    // user selected ok on Confirmation screen
-
     // configure EMV parameters to pinpad module
     else if (event is TransLoadEmvTables) {
       EmvRepository emvRepository = new EmvRepository();
@@ -280,7 +278,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransConnect) {
       CommRepository commRepository = new CommRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
-      connection = new Communication(comm.ip, comm.port, false);
+      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
 
       yield TransactionConnecting();
 
@@ -294,11 +292,46 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // reversal request
     else if (event is TransSendReversal) {
-      this.add(TransReceiveReversal());
+      TransRepository transRepository = new TransRepository();
+
+      if (await transRepository.getCountReversal() != 0) {
+        Trans transReversal = Trans.fromMap(await transRepository.getTransReversal());
+        CommRepository commRepository = new CommRepository();
+        Comm comm = Comm.fromMap(await commRepository.getComm(1));
+
+        reversalMessage = new ReversalMessage(transReversal, comm);
+
+        if ((isDev == true) && (isCommOffline == true))
+          await reversalMessage.buildMessage();
+        else
+          connection.sendMessage(await reversalMessage.buildMessage());
+
+        this.add(TransReceiveReversal(transReversal));
+      }
+      else
+        this.add(TransSendRequest());
     }
     // reversal response
     else if (event is TransReceiveReversal) {
-      this.add(TransSendRequest());
+      Uint8List response;
+
+      response = await connection.receiveMessage();
+      if (response  == null){
+        trans.clear();
+        yield TransactionShowMessage('Error - Timeout de comunicación');
+        await new Future.delayed(const Duration(seconds: 3));
+        yield TransactionError();
+      }
+      else if ((connection.frameSize != 0) || (isCommOffline == true)) {
+        Map<int, String> respMap = await reversalMessage.parseRenponse(response, trans: trans);
+        if (respMap[39] == '00') {
+          TransRepository transRepository = new TransRepository();
+          await transRepository.deleteTrans(event.transReversal.id);
+          this.add(TransSendRequest());
+        }
+        else  // error in reversal
+          yield TransactionError();
+      }
     }
     // send request
     else if (event is TransSendRequest) {
@@ -315,7 +348,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.stan = await getStan();
       // save reversal
       trans.reverse = true;
-      transRepository.createTrans(trans);
+      await transRepository.createTrans(trans);
       trans.reverse = false;
 
       incrementStan();
@@ -326,24 +359,35 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Uint8List response;
       yield TransactionReceiving();
 
-      if (connection.rxSize == 0) {
-        if (isCommOffline == false)
-          response = await connection.receiveMessage();
+      if (isCommOffline == false) {
+        response = await connection.receiveMessage();
+        if (response  == null){
+          trans.clear();
+          yield TransactionShowMessage('Error - Timeout de comunicación');
+          await new Future.delayed(const Duration(seconds: 3));
+          yield TransactionError();
+        }
       }
       if ((connection.frameSize != 0) || (isCommOffline == true)) {
-        Map<int, String> respMap = await message.parseRenponse(response);
+        Map<int, String> respMap = await message.parseRenponse(response, trans: trans);
         this.add(TransProcessResponse(respMap));
       }
+      connection.disconnect();
     }
     // analyze response fields
     else if (event is TransProcessResponse) {
       MerchantRepository merchantRepository = new MerchantRepository();
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
-      if ((trans.total != int.parse(event.respMap[4])) ||
+      if ((event.respMap[4] == null) ||
+          (trans.total != int.parse(event.respMap[4])) ||
+          (event.respMap[11] == null) ||
           (trans.stan != int.parse(event.respMap[11])) ||
+          (event.respMap[41] == null) ||
           (merchant.tid.padLeft(8, '0') != event.respMap[41])) {
-        // reversal needed
+        // reversal is stored in the DB
+        trans.respMessage = 'Error En Respuesta';
+        yield TransactionRejected(trans);
       }
       else {
         if (event.respMap[39] != null)
@@ -395,8 +439,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
+    }
+    else if (event is TransMercahntReceipt) {
+      Receipt receipt = new Receipt(context);
 
-      //this.add(TransStartTransaction());
+      yield TransactionPrintMerchantReceipt(trans);
+      receipt.printTransactionReceipt(true, trans);
+      this.add(TransCustomerReceipt());
+    }
+    else if (event is TransCustomerReceipt) {
+      Receipt receipt = new Receipt(context);
+
+      yield TransactionPrintCustomerReceipt(trans);
+      receipt.printTransactionReceipt(false, trans);
+      await new Future.delayed(const Duration(seconds: 3));
+      yield TransactionFinish();
     }
     // pinpad error detected
     else if (event is TransCardError) {
@@ -417,4 +474,5 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int binId = await binRepository.getBinId(pan.substring(0, 8));
     return binId;
   }
+
 }

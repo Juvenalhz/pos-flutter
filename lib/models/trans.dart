@@ -1,3 +1,4 @@
+import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/dataUtils.dart';
 
 class Trans {
@@ -392,11 +393,14 @@ class Trans {
     return map;
   }
 
-  Map<String, dynamic> toDBMap() {
+  Future<Map<String, dynamic>> toDBMap() async {
     var map = Map<String, dynamic>();
     // NOTE IMPORTANT!!!!!!
     // some fields from trans should not be stored in the DB for security
     // !!!!!!!!!!!!!!!!!!!!
+    var cipher = Cipher();
+    this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
+
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
@@ -443,7 +447,7 @@ class Trans {
     return map;
   }
 
-  Trans.fromMap(Map<String, dynamic> trans) {
+  Trans.fromMap(Map<String, dynamic> trans)  {
     this._id = trans['id'];
     this._number = trans['number'];
     this._stan = trans['stan'];
@@ -580,5 +584,11 @@ class Trans {
     _onlinePIN = false;
     _pinBlock = '';
     _pinKSN = '';
+  }
+
+  Future<String> getClearPan() async {
+    final cipher = Cipher();
+
+    return await cipher.decryptCriticalData(cipheredPAN);
   }
 }

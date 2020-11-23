@@ -216,7 +216,10 @@ class _NumericEntryState extends State<NumericEntry> {
           setState(() {
             String formattedAmount;
 
-            if (amount.length < this.max) {
+            if ((separatorType == AskNumeric.NO_DECIMALS) && (amount.length == 0) && btntext == '0') {
+              // in this case do nothing, leading zeros should be ignored
+            }
+            else if (amount.length < this.max) {
               amount = amount + btntext;
 
               if (separatorType == AskNumeric.DECIMALS) {
@@ -229,6 +232,7 @@ class _NumericEntryState extends State<NumericEntry> {
 
                 textControllerInput.text = _formatter.format(double.parse(formattedAmount));
               } else if (separatorType == AskNumeric.NO_DECIMALS)
+
                 textControllerInput.text = _formatter.format(double.parse(amount + '.00'));
               else
                 textControllerInput.text = amount;

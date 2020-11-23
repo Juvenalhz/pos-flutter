@@ -356,9 +356,13 @@ class DatabaseHelper {
 
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
-  Future<int> queryRowCount(String table) async {
+  Future<int> queryRowCount(String table, {String where}) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+
+    if(where == null)
+      return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+    else
+      return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table where $where'));
   }
 
   // We are assuming here that the id column in the map is set. The other
@@ -388,5 +392,25 @@ class DatabaseHelper {
   Future<int> queryRowCountArguments(String table, {String where}) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table WHERE $where'));
+  }
+
+  Future<Map<String, dynamic>> queryByField(String table, String field, String value) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> rowList = await db.query(table, where: '$field=$value', limit: 1);
+    if (rowList.length != 0) {
+      return rowList[0];
+    } else
+      return null;
+  }
+
+  Future<int> queryMaxId(String table) async {
+    Database db = await instance.database;
+
+    int id = Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(id) FROM $table'));
+
+    if (id == null)
+      return 0;
+    else
+      return id;
   }
 }

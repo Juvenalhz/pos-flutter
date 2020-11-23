@@ -257,6 +257,7 @@ class _AmountEntryState extends State<AmountEntry> {
         onPressed: () {
           this.onClickEnter(context, int.parse(amount));
           textControllerInput.text = '0,00';
+          amount = '0';
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),
