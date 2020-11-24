@@ -16,6 +16,7 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
 import 'Initialization.dart';
+import 'SelectAcquirer.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
@@ -46,6 +47,7 @@ class MainScreen extends StatelessWidget {
         '/initialization': (context) => Initialization(),
         '/transaction': (contex) => Transaction(),
         '/deleteReversal': (context) => DeleteReversal(),
+        '/SelectAcquirer': (context) => SelectAcquirer(),
       },
       home: Scaffold(
           key: scaffoldKey,

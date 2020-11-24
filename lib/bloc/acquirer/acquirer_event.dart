@@ -41,3 +41,13 @@ class UpdateAcquirer extends AcquirerEvent {
 
   const UpdateAcquirer(this.acquirer);
 }
+
+class GetAllAcquirer extends AcquirerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class AcquirerSelectionFinish extends AcquirerEvent {
+  @override
+  List<Object> get props => [];
+}
