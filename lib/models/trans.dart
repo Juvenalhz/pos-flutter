@@ -26,9 +26,6 @@ class Trans {
   int _cashback = 0;
   int _total = 0;
   int _originalTotal = 0;
-  String _responseCode = '';
-  String _authNumber = '';
-  String _hostRRN = '';
   String _emvTags = '';
   int _appType = 0;
   int _cardType = 0;
@@ -84,9 +81,6 @@ class Trans {
   int get cashback => this._cashback;
   int get total => this._total;
   int get originalTotal => this._originalTotal;
-  String get responseCode => this._responseCode;
-  String get authNumber => this._authNumber;
-  String get hostRRN => this._hostRRN;
   String get emvTags => this._emvTags;
   int get appType => this._appType;
   int get cardType => this._cardType;
@@ -210,18 +204,6 @@ class Trans {
 
   set originalTotal(int originalTotal) {
     this._originalTotal = originalTotal;
-  }
-
-  set responseCode(String responseCode) {
-    this._responseCode = responseCode;
-  }
-
-  set authNumber(String authNumber) {
-    this._authNumber = authNumber;
-  }
-
-  set hostRRN(String hostRRN) {
-    this._hostRRN = hostRRN;
   }
 
   set emvTags(String emvTags) {
@@ -356,6 +338,7 @@ class Trans {
     map['panHash'] = this._panHash;
     map['cipheredCardHolderName'] = this._cipheredCardHolderName;
     map['cipheredTrack2'] = this._cipheredTrack2;
+    map['appLabel'] = this._appLabel;
     map['expDate'] = this._expDate;
     map['serviceCode'] = this._serviceCode;
     map['currency'] = this._currency;
@@ -366,9 +349,6 @@ class Trans {
     map['cashback'] = this._cashback;
     map['total'] = this._total;
     map['originalTotal'] = this._originalTotal;
-    map['responseCode'] = this._responseCode;
-    map['authNumber'] = this._authNumber;
-    map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
     map['responseEmvTags'] = this._responseEmvTags;
@@ -400,6 +380,7 @@ class Trans {
     // !!!!!!!!!!!!!!!!!!!!
     var cipher = Cipher();
     this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
+    this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
 
     map['id'] = this._id;
     map['number'] = this._number;
@@ -415,6 +396,7 @@ class Trans {
     map['panHash'] = this._panHash;
     map['cipheredCardHolderName'] = this._cipheredCardHolderName;
     map['cipheredTrack2'] = this._cipheredTrack2;
+    map['appLabel'] = this._appLabel;
     map['expDate'] = this._expDate;
     map['serviceCode'] = this._serviceCode;
     map['currency'] = this._currency;
@@ -425,9 +407,6 @@ class Trans {
     map['cashback'] = this._cashback;
     map['total'] = this._total;
     map['originalTotal'] = this._originalTotal;
-    map['responseCode'] = this._responseCode;
-    map['authNumber'] = this._authNumber;
-    map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
     map['responseEmvTags'] = this._responseEmvTags;
@@ -462,6 +441,7 @@ class Trans {
     this._panHash = trans['panHash'];
     this._cipheredCardHolderName = trans['cipheredCardHolderName'];
     this._cipheredTrack2 = trans['cipheredTrack2'];
+    this._appLabel = trans['appLabel'];
     this._expDate = trans['expDate'];
     this._serviceCode = trans['serviceCode'];
     this._currency = trans['currency'];
@@ -472,9 +452,6 @@ class Trans {
     this._cashback = trans['cashback'];
     this._total = trans['total'];
     this._originalTotal = trans['originalTotal'];
-    this._responseCode = trans['responseCode'];
-    this._authNumber = trans['authNumber'];
-    this._hostRRN = trans['hostRRN'];
     this._emvTags = trans['emvTags'];
     this._aidID = trans['aidID'];
     this._responseEmvTags = trans['responseEmvTags'];
@@ -521,9 +498,6 @@ class Trans {
     _cashback = 0;
     _total = 0;
     _originalTotal = 0;
-    _responseCode = '';
-    _authNumber = '';
-    _hostRRN = '';
     _emvTags = '';
     _appType = 0;
     _cardType = 0;

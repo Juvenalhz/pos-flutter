@@ -36,5 +36,14 @@ class AcquirerBloc extends Bloc<AcquirerEvent, AcquirerState> {
       await acquirerRepository.updateacquirer(event.acquirer);
       yield AcquirerGet(id: event.acquirer.id);
     }
+    else if (event is GetAllAcquirer) {
+      yield AcquirerLoading();
+      List<Map<String, dynamic>> aquirerList = await acquirerRepository.getAllacquirers();
+
+      yield AcquirerGetAll(aquirerList);
+    }
+    else if (event is AcquirerSelectionFinish){
+      yield AcquirerSelectionExit();
+    }
   }
 }

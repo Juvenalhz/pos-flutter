@@ -48,3 +48,18 @@ class AcquirerLoaded extends AcquirerState {
   @override
   List<Object> get props => [acquirer];
 }
+
+class AcquirerGetAll extends AcquirerState {
+  final List<Map<String, dynamic>> acquirerList;
+
+  const AcquirerGetAll(this.acquirerList) ;
+
+  @override
+  List<Object> get props => [acquirerList];
+}
+
+class AcquirerSelectionExit extends AcquirerState {
+
+  @override
+  List<Object> get props => [];
+}

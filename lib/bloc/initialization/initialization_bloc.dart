@@ -160,7 +160,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     emv.currencyCode = merchant.currencyCode;
 
     index += 2;
-    //todo: extract aquirer parameters [86 - 122]
+
     acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
     index += 6;
     acquirerIndicators.putIfAbsent(1, () => data.substring(index, index + 6));

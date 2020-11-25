@@ -40,8 +40,7 @@ class Confirmation extends StatelessWidget {
                       color: Colors.white,
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
-                        //TODO: select the correct event, if the tip is off should be main screen
-                        transactionBloc.add(TransAskTip(0));
+                        transactionBloc.add(TransAskIdNumber());
                       },
                     ),
                   ),

@@ -66,7 +66,11 @@ class MainMenu extends StatelessWidget {
           ),
           Divider(),
           _createDrawerItem(
-              icon: Icons.account_balance, text: 'Cierre De Lote'),
+              icon: Icons.insert_drive_file, text: 'Cierre De Lote'),
+          Divider(),
+          _createDrawerItem(
+              icon: Icons.account_balance, text: 'Cambio De Adquiriente', onTap: () =>
+                  Navigator.pushNamed(context, '/SelectAcquirer')),
           Divider(),
           ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
             _createDrawerItem(
