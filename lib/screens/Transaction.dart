@@ -44,7 +44,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
         } else if (state is TransactionAskIdNumber) {
-          return new AskID('Numero', 'De Cedula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
+          return new AskID('Numero', 'De Cédula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {

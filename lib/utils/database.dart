@@ -271,9 +271,6 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'cashback', 'integer');
     _tableAlter(db, 'trans', 'total', 'integer');
     _tableAlter(db, 'trans', 'originalTotal', 'integer');
-    _tableAlter(db, 'trans', 'responseCode', 'text');
-    _tableAlter(db, 'trans', 'authNumber', 'text');
-    _tableAlter(db, 'trans', 'hostRRN', 'text');
     _tableAlter(db, 'trans', 'emvTags', 'text');
     _tableAlter(db, 'trans', 'appType', 'integer');
     _tableAlter(db, 'trans', 'cardType', 'integer');

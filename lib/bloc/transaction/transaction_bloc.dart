@@ -79,7 +79,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.total = event.amount;
       trans.type = 'Compra';
       trans.stan = await getStan();
-      //TODO: check configuration if tip is on or off
+      trans.acquirer = merchant.acquirerCode;
+
       if (acquirer.industryType)  // true = restaurant
         yield TransactionAddTip(trans);
       else
@@ -277,7 +278,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowPinAmount) {
       yield TransactionShowPinAmount(trans);
     } else if (event is TransConfirmOK) {
-      //this.add(TransLoadEmvTables(event.pinpad));
+      trans.originalTotal = trans.total;
       if (trans.cardType == Pinpad.CHIP) {
         this.add(TransGoOnChip(trans));
       } else {
