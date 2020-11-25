@@ -207,7 +207,23 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // back key was clicked at cvv screen, will go back to enter last4
     else if (event is TransCVVBack) {
-      yield TransactionAskLast4Digits();
+      if (acquirer.last4Digits)
+        yield TransactionAskLast4Digits();
+      else
+        this.add(TransGetCard());
+    }
+    //
+    else if (event is TransAskIdNumber) {
+      yield TransactionAskIdNumber();
+    }
+    // back key was cliecked at the entry id screen
+    else if (event is TransIDBack) {
+      if (acquirer.cvv2)
+        yield TransactionAskCVV();
+      else if (acquirer.last4Digits)
+        yield TransactionAskLast4Digits();
+      else
+        this.add(TransGetCard());
     }
     // cardhoder id entered
     else if (event is TransAddIdNumber) {

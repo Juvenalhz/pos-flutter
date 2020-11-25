@@ -187,6 +187,12 @@ class TransLast4Back extends TransactionEvent {
   List<Object> get props => [];
 }
 
+class TransAskIdNumber extends TransactionEvent {
+
+  @override
+  List<Object> get props => [];
+}
+
 class TransAddIdNumber extends TransactionEvent {
   final int idNumber;
 
