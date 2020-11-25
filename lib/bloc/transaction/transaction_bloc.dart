@@ -12,6 +12,8 @@ import 'package:pay/models/emv.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/models/acquirer.dart';
+import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/comm_repository.dart';
@@ -20,7 +22,6 @@ import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
-import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
@@ -37,21 +38,31 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   static Communication connection;
   TransactionMessage message;
   ReversalMessage reversalMessage;
+  TransRepository transRepository = new TransRepository();
+  TerminalRepository terminalRepository = new TerminalRepository();
+  CommRepository commRepository = new CommRepository();
+  MerchantRepository merchantRepository = new MerchantRepository();
+  AcquirerRepository acquirerRepository = new AcquirerRepository();
+  Merchant merchant;
+  Acquirer acquirer;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
   @override
-  Stream<TransactionState> mapEventToState(
-    TransactionEvent event,
-  ) async* {
+  Stream<TransactionState> mapEventToState(TransactionEvent event,) async* {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
+
     print(event.toString());
     if (event is TransactionInitial) {
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
+
     }
     // read base amount
     else if (event is TransStartTransaction) {
@@ -60,7 +71,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // base amount added, transaction initial data
     else if (event is TransAddAmount) {
-      TransRepository transRepository = new TransRepository();
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
       trans.id = (await transRepository.getMaxId()) + 1;
       trans.baseAmount = event.amount;
@@ -68,7 +80,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.type = 'Compra';
       trans.stan = await getStan();
       //TODO: check configuration if tip is on or off
-      yield TransactionAddTip(trans);
+      if (acquirer.industryType)  // true = restaurant
+        yield TransactionAddTip(trans);
+      else
+        this.add(TransAddTip(0)); // skip tip prompt
     }
     // going back to the base amount entry
     else if (event is TransAskAmount) {
@@ -150,7 +165,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans = event.trans;
         trans.bin = binId;
         if (event.trans.cardType == Pinpad.MAG_STRIPE) {
-          yield TransactionAskLast4Digits();
+          if (acquirer.last4Digits)
+            yield TransactionAskLast4Digits();
+          else if (acquirer.cvv2)
+            yield TransactionAskCVV();
+          else
+            yield TransactionAskIdNumber();
         } else {
           if (_validateChipData(trans) == true) {
             yield TransactionAskIdNumber();
@@ -166,7 +186,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // last 4 digits entered need to match
     else if (event is TransAddLast4) {
       if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
-        yield TransactionAskCVV();
+        if (acquirer.cvv2)
+          yield TransactionAskCVV();
+        else
+          yield TransactionAskIdNumber();
       } else {
         yield TransactionShowMessage('Ultimos 4 Digitos No Coinciden, Intente Nuevamente');
         await new Future.delayed(const Duration(seconds: 3));
@@ -204,7 +227,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.accType = event.accType;
 
       if ((trans.accType > 0) && (trans.pinBlock.length == 0)) {
-        TerminalRepository terminalRepository = new TerminalRepository();
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         yield TransactionShowPinAmount(trans);
@@ -225,7 +247,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
       AidRepository aidRepository = new AidRepository();
-      TerminalRepository terminalRepository = new TerminalRepository();
       AID aid = AID.fromMap(await aidRepository.getAid(trans.aidID));
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
@@ -276,7 +297,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // Connect
     else if (event is TransConnect) {
-      CommRepository commRepository = new CommRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
       connection = new Communication(comm.ip, comm.port, false, comm.timeout);
 
@@ -292,11 +312,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // reversal request
     else if (event is TransSendReversal) {
-      TransRepository transRepository = new TransRepository();
 
       if (await transRepository.getCountReversal() != 0) {
         Trans transReversal = Trans.fromMap(await transRepository.getTransReversal());
-        CommRepository commRepository = new CommRepository();
         Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
         reversalMessage = new ReversalMessage(transReversal, comm);
@@ -325,7 +343,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       else if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await reversalMessage.parseRenponse(response, trans: trans);
         if (respMap[39] == '00') {
-          TransRepository transRepository = new TransRepository();
           await transRepository.deleteTrans(event.transReversal.id);
           this.add(TransSendRequest());
         }
@@ -335,8 +352,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // send request
     else if (event is TransSendRequest) {
-      CommRepository commRepository = new CommRepository();
-      TransRepository transRepository = new TransRepository();
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
       yield TransactionSending();
@@ -376,7 +391,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // analyze response fields
     else if (event is TransProcessResponse) {
-      MerchantRepository merchantRepository = new MerchantRepository();
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
       if ((event.respMap[4] == null) ||
@@ -404,8 +418,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (trans.cardType == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {
-            TransRepository transRepository = new TransRepository();
-
             transRepository.updateTrans(trans);
             yield TransactionCompleted(trans);
           }
@@ -430,8 +442,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
       if (trans.cardDecision == 0) {
-        TransRepository transRepository = new TransRepository();
-
         transRepository.updateTrans(trans);
         yield TransactionCompleted(trans);
       }
