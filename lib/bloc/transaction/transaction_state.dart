@@ -186,3 +186,8 @@ class TransactionFinish extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionCommError extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

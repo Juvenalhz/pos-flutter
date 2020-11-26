@@ -17,6 +17,11 @@ abstract class InitializationEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class InitializationInitialEvent extends InitializationEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class InitializationConnect extends InitializationEvent {
   final Comm comm;
 
