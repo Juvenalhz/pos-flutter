@@ -40,7 +40,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   Stream<InitializationState> mapEventToState(
     InitializationEvent event,
   ) async* {
-    if (event is InitializationConnect) {
+    if (event is InitializationInitialEvent)
+      yield InitializationInitial();
+    else if (event is InitializationConnect) {
       comm = event.comm;
       initialization = new MessageInitialization(comm);
 
@@ -48,9 +50,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       //TODO: change the connection to use secure connection
       connection = new Communication(comm.ip, comm.port, false, comm.timeout);
-      await connection.connect();
-      this.add(InitializationSend());
-      yield InitializationSending();
+      if (await connection.connect()) {
+        this.add(InitializationSend());
+        yield InitializationSending();
+      }
+      else
+        yield InitializationCommError();
     } else if (event is InitializationSend) {
       connection.sendMessage(await initialization.buildMessage());
       incrementStan();

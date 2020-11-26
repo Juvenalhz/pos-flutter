@@ -324,7 +324,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       else if (await connection.connect() == true) {
         this.add(TransSendReversal());
       } else {
-        this.add(TransCardError());
+        yield TransactionCommError();
       }
     }
     // reversal request

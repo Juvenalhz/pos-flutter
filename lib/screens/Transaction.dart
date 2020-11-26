@@ -16,6 +16,7 @@ import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
 import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
+import 'components/CommError.dart';
 import 'mainScreen.dart';
 
 class Transaction extends StatelessWidget {
@@ -48,7 +49,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
-          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
+          return new AskCVV('Ingrese Código', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
         } else if (state is TransactionAskAccountType) {
@@ -81,11 +82,8 @@ class Transaction extends StatelessWidget {
           return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
           return TransMessage('Print Customer Receipt');
-        }
-        // else if (state is TransactionError) {
-        //   transactionBloc.add(TransStartTransaction());
-        //   return TransMessage('Transacción Cancelada');
-        // } 
+        } else if (state is TransactionCommError)
+          return CommError('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
         else if (state is TransactionFinshChip) {
           return TransMessage('');
         }
@@ -140,6 +138,18 @@ class Transaction extends StatelessWidget {
     if (value == 0)
       transactionBloc.add(TransAddAccountType(2)); // checking account
     else if (value == 1) transactionBloc.add(TransAddAccountType(1)); // saving account
+  }
+
+  void onClickCancel(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCardError());
+  }
+
+  void onClickRetry(BuildContext context) {
+    final TransactionBloc initializationBloc = BlocProvider.of<TransactionBloc>(context);
+
+    initializationBloc.add(TransConnect());
   }
 }
 

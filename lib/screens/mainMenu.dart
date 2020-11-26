@@ -8,6 +8,7 @@ import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/bloc/emv/emv_event.dart';
+import 'package:pay/bloc/initialization/initialization_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
@@ -60,7 +61,7 @@ class MainMenu extends StatelessWidget {
           Divider(),
           _createDrawerItem(
             icon: Icons.repeat,
-            text: 'Reimpresion',
+            text: 'Reimpresión',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.notes)
           ),
@@ -72,10 +73,13 @@ class MainMenu extends StatelessWidget {
               icon: Icons.account_balance, text: 'Cambio De Adquiriente', onTap: () =>
                   Navigator.pushNamed(context, '/SelectAcquirer')),
           Divider(),
-          ExpansionTile(title: Text("Menu Tecnico"), leading: Icon(Icons.settings), children: <Widget>[
+          ExpansionTile(title: Text("Menu Técnico"), leading: Icon(Icons.settings), children: <Widget>[
             _createDrawerItem(
-                text: 'Inicializacion',
+                text: 'Inicialización',
                 onTap: () {
+                  final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
+
+                  initializationBloc.add(InitializationInitialEvent());
                   Navigator.pushNamed(context, '/initialization');
                 }),
             _createDrawerItem(text: 'Borrar Lote'),
