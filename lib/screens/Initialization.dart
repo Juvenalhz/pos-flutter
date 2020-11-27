@@ -1,14 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_event.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
+import 'package:pay/bloc/emv/emv_bloc.dart';
+import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/merchant/merchant_bloc.dart';
 import 'package:pay/bloc/merchant/merchant_event.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/models/comm.dart';
+import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 import 'components/CommError.dart';
@@ -17,7 +22,6 @@ class Initialization extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
-    //final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
     Comm comm;
 
     return WillPopScope(
@@ -37,10 +41,23 @@ class Initialization extends StatelessWidget {
                 return CommProgress('Inicialización', status: 'Recibiendo').build(context);
               else if (state is InitializationInitial)
                 return CommProgress('Inicialización').build(context);
-              else if (state is InitializationCompleted)
+              else if (state is InitializationCompleted) {
                 return InitializationAlert('Inicialización', 'Proceso de inicialización completado');
-              else if (state is InitializationFailed)
+              }
+              else if (state is InitializationFailed) {
+                final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
+                final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
+                final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
+                final EmvBloc emvBloc = BlocProvider.of<EmvBloc>(context);
+                final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
+
+                merchantBloc.add(GetMerchant(1));
+                terminalBloc.add(GetTerminal(1));
+                commBloc.add(GetComm(1));
+                emvBloc.add(GetEmv(1));
+                acquirerBloc.add(GetAcquirer(1));
                 return InitializationAlert('Inicialización', 'Proceso de inicialización falló, intente de nuevamente...');
+              }
               else if (state is InitializationCommError)
                 return CommError('Inicialización', 'Error de conexión....', onClickCancel, onClickRetry);
               else {
@@ -103,10 +120,15 @@ class InitializationAlert extends StatelessWidget {
             final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
             final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
             final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
+            final EmvBloc emvBloc = BlocProvider.of<EmvBloc>(context);
+            final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
 
             merchantBloc.add(GetMerchant(1));
             terminalBloc.add(GetTerminal(1));
             commBloc.add(GetComm(1));
+            emvBloc.add(GetEmv(1));
+            acquirerBloc.add(GetAcquirer(1));
+
             Navigator.of(context).pop();
           },
         ),

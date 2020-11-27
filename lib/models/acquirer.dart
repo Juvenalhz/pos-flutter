@@ -146,7 +146,7 @@ class Acquirer {
     map['cashback'] = boolToInt(this._cashback);
     map['installmets'] = boolToInt(this._installmets);
     map['refund'] = boolToInt(this._refund);
-    map['rif'] = boolToInt(this._provimillas);
+    map['provimillas'] = boolToInt(this._provimillas);
     map['cheque'] = boolToInt(this._cheque);
     map['checkIncheckOut'] = boolToInt(this._checkIncheckOut);
     map['saleOffline'] = boolToInt(this._saleOffline);

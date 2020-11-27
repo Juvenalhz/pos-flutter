@@ -1,22 +1,22 @@
 class Merchant {
   int _id;
-  String _nameL1;
-  String _nameL2;
-  String _tid;
-  String _mid;
-  int _currencyCode;
-  String _currencySymbol;
-  int _countryCode;
-  String _password;
-  String _header;
-  int _amountMaxDigits;
-  int _amountDecimalPosition;
-  int _batchNumber;
-  int _maxTip;
-  String _city;
-  String _taxID;
-  String _logo;
-  int _acquirerCode;
+  String _nameL1 = '';
+  String _nameL2 = '';
+  String _tid = '';
+  String _mid = '';
+  int _currencyCode = 0;
+  String _currencySymbol = '';
+  int _countryCode = 0;
+  String _password = '';
+  String _header = '';
+  int _amountMaxDigits = 0;
+  int _amountDecimalPosition = 0;
+  int _batchNumber = 0;
+  int _maxTip = 0;
+  String _city = '';
+  String _taxID = '';
+  String _logo = '';
+  int _acquirerCode = 0;
 
   Merchant(this._nameL1, this._tid, this._mid,
       [this._nameL2,

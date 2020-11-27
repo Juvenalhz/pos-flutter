@@ -115,6 +115,24 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'headerLength', 'integer');
   }
 
+  Future<void> _fillDefaultComm() async {
+    // row to insert
+    Map<String, dynamic> testComm = {
+      'id': 1,
+      'Name': 'Platco',
+      'tpdu': '6000030000',
+      'nii': '003',
+      'timeout': 60,
+      'ip': '192.168.11.209',
+      'port': 15000,
+      'headerLength': 1,
+    };
+
+    await deleteAll('comm');
+    final id = await insert('comm', testComm);
+    print('inserted row id: $id');
+  }
+
   void _createEmvTable(Database db) async {
     await db.execute('''
           CREATE TABLE emv (
@@ -134,12 +152,34 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'countryCode', 'integer');
   }
 
+
+
+  Future<void> _fillDefaultEmv() async {
+    // row to insert
+    Map<String, dynamic> testEmv = {
+      'id': 1,
+      'terminalType': '22',
+      'terminalCapabilities': 'E0F8C8',
+      'addTermCapabilities': 'F0000F0F001',
+      'fallback': 1,
+      'forceOnline': 1,
+      'CurrencyCode': 0,
+      'CountryCode': 0,
+    };
+
+    await deleteAll('emv');
+    final id = await insert('emv', testEmv);
+    print('inserted row id: $id');
+  }
+
   void _createCountersTable(Database db) async {
     await db.execute('''
           CREATE TABLE counters (
-          id integer PRIMARY KEY,
+          id integer PRIMARY KEY AUTOINCREMENT,
           stan integer )
           ''');
+
+    _upgradeCountersTable(db);
   }
 
   void _upgradeCountersTable(Database db) async {}
@@ -307,11 +347,15 @@ class DatabaseHelper {
     _createTransTable(db);
 
     Map<String, dynamic> initialCounter = {
-      'id': 1,
+      //'id': 1,
       'stan': 1,
     };
 
     await db.insert('counters', initialCounter);
+
+    _fillDefaultComm();
+    _fillDefaultEmv();
+
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

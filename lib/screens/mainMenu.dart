@@ -90,7 +90,10 @@ class MainMenu extends StatelessWidget {
               Navigator.pushNamed(context, '/deleteReversal');
             }),
             _createDrawerItem(text: 'Reporte de Parametros'),
-            _createDrawerItem(text: 'Configuracion', onTap: () => Navigator.pushNamed(context, '/configuration')),
+            _createDrawerItem(text: 'Configuracion', onTap: () {
+              acquirerBloc.add(GetAllAcquirer());
+              Navigator.pushNamed(context, '/configuration');
+            })
           ]),
           if (isDev)
             _createDrawerItem(

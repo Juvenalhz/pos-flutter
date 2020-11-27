@@ -2,26 +2,26 @@ import 'package:pay/utils/dataUtils.dart';
 
 class Terminal {
   int _id;
-  String _password;
-  String _techPassword;
-  String _idTerminal;
-  int _kin;
-  int _minPinDigits;
-  int _maxPinDigits;
-  int _timeoutPrompt;
-  int _maxTipPercentage;
-  int _keyIndex;
-  String _industry;
-  bool _print;
-  bool _cashback;
-  bool _installments;
-  bool _refund;
-  bool _last4Digits;
-  bool _passwordVoid;
-  bool _passwordBatch;
-  bool _passwordRefund;
-  bool _maskPan;
-  bool _amountConfirmation;
+  String _password = '';
+  String _techPassword = '';
+  String _idTerminal = '';
+  int _kin = 0;
+  int _minPinDigits = 0;
+  int _maxPinDigits = 0;
+  int _timeoutPrompt = 0;
+  int _maxTipPercentage = 0;
+  int _keyIndex = 0;
+  String _industry = '';
+  bool _print = false;
+  bool _cashback = false;
+  bool _installments = false;
+  bool _refund = false;
+  bool _last4Digits = false;
+  bool _passwordVoid = false;
+  bool _passwordBatch = false;
+  bool _passwordRefund = false;
+  bool _maskPan = false;
+  bool _amountConfirmation = false;
 
   Terminal(this._id, this._idTerminal,
       [this._password,
