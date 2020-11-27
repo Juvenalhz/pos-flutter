@@ -253,8 +253,9 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                           retWidget = BlocBuilder<AcquirerBloc, AcquirerState>(
                             builder: (context, state) {
                               Widget retWidget = SizedBox();
-                              if (state is AcquirerLoaded) {
-                                _acquirer = state.acquirer;
+                              if (state is AcquirerGetAll) {
+                                List<Map<String, dynamic>> acquirers = state.acquirerList;
+                                _acquirer = Acquirer.fromMap(acquirers[_merchant.acquirerCode]);
                                 retWidget = ListView(
                                   padding: const EdgeInsets.fromLTRB(6, 10, 6, 10),
                                   children: <Widget>[
