@@ -503,10 +503,10 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   value: _comm.ip,
                                   type: _tNumber,
                                   maxLength: 15,
-                                  onSaved: (nValue) => _comm.ip = nValue,
+                                  onSaved: (nValue) => _comm.ip = nValue.toString().trim(),
                                   onChanged: (nValue) {
                                     Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                    _comm.ip = nValue;
+                                    _comm.ip = nValue.toString().trim();
                                   },
                                   validator: (nValue) => InputValidation.ipv4Validator(nValue),
                                 ),
@@ -587,32 +587,42 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                     BlocBuilder<AcquirerBloc, AcquirerState>(
                       builder: (context, state) {
                         Widget retWidget = SizedBox();
-                        if (state is AcquirerLoaded) {
-                          _acquirer = state.acquirer;
-                          retWidget = ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                            children: <Widget>[
-                              ItemTileTwoColumn(
-                                leftLabel: Text('Código Adquiriente'),
-                                leftItem: Text(_merchant.acquirerCode.toString()),
-                                rightLabel: Text('Nombre Adquiriente'),
-                                rightItem: Text(_acquirer.name),
-                                leftWidth: size.width / 2.5,
-                                rightWidth: size.width / 2.5,
-                              ),
-                              ItemTileTwoColumn(
-                                leftLabel: Text('RIF Adquiriente'),
-                                leftItem: Text(_acquirer.rif),
-                                rightLabel: CheckboxItem(
-                                  label: 'Activo',
-                                  value: true,
-                                  onChanged: null,
-                                ),
-                                leftWidth: size.width / 2.5,
-                                rightWidth: size.width / 2.5,
-                              ),
-                            ],
+                        if (state is AcquirerGetAll) {
+                          List<Map<String, dynamic>> acquirers = state.acquirerList;
+                          retWidget = ListView.builder(
+                            itemCount: acquirers.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                //padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                                title: Column(
+                                  children: <Widget>[
+                                  ItemTileTwoColumn(
+                                    leftLabel: Text('Código Adquiriente'),
+                                    leftItem: Text(acquirers[index]['id'].toString()),
+                                    rightLabel: Text('Nombre Adquiriente'),
+                                    rightItem: Text(acquirers[index]['name'].toString()),
+                                    leftWidth: size.width / 2.5,
+                                    rightWidth: size.width / 2.5,
+                                  ),
+                                  ItemTileTwoColumn(
+                                    leftLabel: Text('RIF Adquiriente'),
+                                    leftItem: Text(acquirers[index]['rif'].toString()),
+                                    rightLabel: CheckboxItem(
+                                      label: 'Activo',
+                                      value: (_merchant.acquirerCode == acquirers[index]['id']) ? true : false,
+                                      onChanged: null,
+                                    ),
+                                    leftWidth: size.width / 2.5,
+                                    rightWidth: size.width / 2.5,
+                                  ),
+                                    Divider(thickness: 3),
+                                ]),
+                              );
+
+                            },
                           );
+
+
                         }
                         return retWidget;
                       },

@@ -174,7 +174,7 @@ class MessageInitialization extends HostMessage {
 
   Future<Uint8List> buildMessage() async {
     MerchantRepository merchantRepository = new MerchantRepository();
-    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    Merchant merchant;
     String sn = await SerialNumber.serialNumber;
     String field62;
     var isDev = (const String.fromEnvironment('dev') == 'true');
@@ -184,12 +184,16 @@ class MessageInitialization extends HostMessage {
     message.setMID(800);
     if (msgSeq == 0)
       message.fieldData(3, '9000' + msgSeq.toString().padLeft(2, '0'));
-    else
+    else {
       message.fieldData(3, '9001' + msgSeq.toString().padLeft(2, '0'));
-
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    }
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
-    message.fieldData(41, merchant.tid);
+    if (msgSeq == 0)
+      message.fieldData(41, '00000000');
+    else
+      message.fieldData(41, merchant.tid);
     message.contentType(60, 'ans');
     //TODO: get the application version from the project
     message.fieldData(60, '01.00');
