@@ -119,7 +119,7 @@ class QuestionYesNo extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
-        child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
+        child: Icon(Icons.done_outline_outlined, size: 35, color: Colors.white),
         onPressed: () {
           this.onClickEnter(context);
         },

@@ -40,40 +40,54 @@ class MainMenu extends StatelessWidget {
               leading: Icon(Icons.receipt),
               children: <Widget>[
                 _createDrawerItem(
-                  icon: Icons.calendar_view_day,
+                  //icon: Icons.calendar_view_day,
                   text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
                 ),
                 _createDrawerItem(
-                  icon: Icons.receipt,
+                  //icon: Icons.receipt,
                   text: 'Reporte Detallado',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
                 ),
                 _createDrawerItem(
-                  icon: Icons.room_service,
+                  //icon: Icons.room_service,
                   text: 'Reporte Meseros',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
                 ),
+                _createDrawerItem(
+                  //icon: Icons.repeat,
+                  text: 'Reimpresión',
+//              onTap: () =>
+//                  Navigator.pushReplacementNamed(context, Routes.notes)
+                ),
               ]),
           Divider(),
           _createDrawerItem(
-            icon: Icons.repeat,
-            text: 'Reimpresión',
-//              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.notes)
-          ),
+              icon: Icons.sync, text: 'Prueba De Comunicación'),
           Divider(),
-          _createDrawerItem(
-              icon: Icons.insert_drive_file, text: 'Cierre De Lote'),
-          Divider(),
-          _createDrawerItem(
-              icon: Icons.account_balance, text: 'Cambio De Adquiriente', onTap: () =>
-                  Navigator.pushNamed(context, '/SelectAcquirer')),
+          ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
+            _createDrawerItem(
+                text: 'Consulta Ultima Venta'),
+            _createDrawerItem(
+                text: 'Cierre De Lote'),
+            _createDrawerItem(text: 'Borrar Lote'),
+            _createDrawerItem(
+                text: 'Cambio De Adquiriente', onTap: () =>
+                Navigator.pushNamed(context, '/SelectAcquirer')),
+
+          ]),
+
+
           Divider(),
           ExpansionTile(title: Text("Menu Técnico"), leading: Icon(Icons.settings), children: <Widget>[
+            _createDrawerItem(text: 'Configuracion', onTap: () {
+              acquirerBloc.add(GetAllAcquirer());
+              Navigator.pushNamed(context, '/configuration');
+            }),
+            _createDrawerItem(text: 'Reporte de Parametros'),
             _createDrawerItem(
                 text: 'Inicialización',
                 onTap: () {
@@ -82,18 +96,14 @@ class MainMenu extends StatelessWidget {
                   initializationBloc.add(InitializationInitialEvent());
                   Navigator.pushNamed(context, '/initialization');
                 }),
-            _createDrawerItem(text: 'Borrar Lote'),
             _createDrawerItem(text: 'Borrar Reverso', onTap: () async{
               final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
 
               deleteReversalBloc.add(DeleteReversalPending());
               Navigator.pushNamed(context, '/deleteReversal');
             }),
-            _createDrawerItem(text: 'Reporte de Parametros'),
-            _createDrawerItem(text: 'Configuracion', onTap: () {
-              acquirerBloc.add(GetAllAcquirer());
-              Navigator.pushNamed(context, '/configuration');
-            })
+            _createDrawerItem(
+                text: 'Conformidad De Visita'),
           ]),
           if (isDev)
             _createDrawerItem(
