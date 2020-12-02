@@ -1,6 +1,5 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:pay/models/acquirer.dart';
+
+part of 'acquirer_bloc.dart';
 
 @immutable
 abstract class AcquirerState extends Equatable {

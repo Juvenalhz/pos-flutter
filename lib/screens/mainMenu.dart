@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_event.dart';
+import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
@@ -14,11 +13,10 @@ import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
-import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/testConfig.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pay/bloc/echotestBloc.dart';
 
-import 'components/MessageAlert.dart';
 
 class MainMenu extends StatelessWidget {
   @override
@@ -66,7 +64,12 @@ class MainMenu extends StatelessWidget {
               ]),
           Divider(),
           _createDrawerItem(
-              icon: Icons.sync, text: 'Prueba De Comunicación'),
+              icon: Icons.sync, text: 'Prueba De Comunicación', onTap: () {
+              final EchoTestBloc echoTestBloc = BlocProvider.of<EchoTestBloc>(context);
+
+              echoTestBloc.add(EchoTestInitialEvent());
+              Navigator.pushNamed(context, '/EchoTest');
+          }),
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(

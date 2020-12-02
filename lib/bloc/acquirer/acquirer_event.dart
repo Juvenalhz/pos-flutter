@@ -1,5 +1,5 @@
-import 'package:equatable/equatable.dart';
-import 'package:pay/models/acquirer.dart';
+
+part of 'acquirer_bloc.dart';
 
 abstract class AcquirerEvent extends Equatable {
   const AcquirerEvent();
