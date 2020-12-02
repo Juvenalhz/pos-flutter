@@ -406,7 +406,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     else if (event is TransCustomerReceipt) {
       Receipt receipt = new Receipt(context);
-
       yield TransactionPrintCustomerReceipt(trans);
       receipt.printTransactionReceipt(false, trans);
       await new Future.delayed(const Duration(seconds: 3));

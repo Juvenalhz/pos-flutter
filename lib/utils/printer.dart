@@ -33,9 +33,25 @@ class Printer {
       lineSize = 32;
     
     text = left.padRight(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
-    text += left.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
+    text += right.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
 
     int ret = await _channel.invokeMethod('addText', {'alignMode': RIGHT, 'data':text});
+  }
+
+  void addTextSideBySideWithCenter(String left, String center, String right) async {
+    String text;
+    int lineSize;
+
+    if (currentSize == FONT_SIZE_SMALL)
+      lineSize = 50;
+    else
+      lineSize = 32;
+
+    text = left.padRight(lineSize~/4 , ' ').substring(0, lineSize ~/4);
+    text += center.padRight(lineSize~/4, ' ').substring(0, lineSize~/4);
+    text += right.padLeft(lineSize~/4, ' ').substring(0, lineSize~/4);
+
+    int ret = await _channel.invokeMethod('addText', {'alignMode': CENTER, 'data':text});
   }
 
   void setFontSize(int fontSize) async {

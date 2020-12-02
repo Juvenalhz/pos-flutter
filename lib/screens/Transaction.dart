@@ -76,7 +76,7 @@ class Transaction extends StatelessWidget {
           return TransMessage("Print Customer Receipt");
         } else if (state is TransactionFinish){
           Navigator.of(context).pop();
-          return TransMessage("");;
+          return TransMessage("");
         }
 
         else if (state is TransactionError) {
