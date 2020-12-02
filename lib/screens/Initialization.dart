@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_event.dart';
+import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
@@ -13,7 +12,6 @@ import 'package:pay/bloc/merchant/merchant_event.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/models/comm.dart';
-import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 import 'components/CommError.dart';

@@ -88,7 +88,6 @@ class Transaction extends StatelessWidget {
           return TransMessage('');
         }
         else
-          //TODO: change the default screen to something valid
           print('state:' + state.toString());
           return TransMessage('');
       }),

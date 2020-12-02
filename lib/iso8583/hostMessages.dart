@@ -119,8 +119,10 @@ class HostMessage {
 
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
-      respMap[4] = trans.total.toString();
-      respMap[11] = trans.stan.toString();
+      if (trans != null) {
+        respMap[4] = trans.total.toString();
+        respMap[11] = trans.stan.toString();
+      }
       respMap[37] = Random().nextInt(99999999).toString().padLeft(12, '0');
       respMap[38] = Random().nextInt(999999).toString().padLeft(6, '0');
       respMap[39] = '00';
@@ -317,6 +319,47 @@ class ReversalMessage extends HostMessage {
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+}
+
+class EchoTestMessage extends HostMessage {
+  Iso8583 message;
+  Comm _comm;
+
+  EchoTestMessage(this._comm) : super(_comm, 400){
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    DateTime dateTime = DateTime.now();
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+
+    message.setMID(800);
+    message.fieldData(3, '990000');
+    message.fieldData(7, dateTime.month.toString() + dateTime.day.toString() +
+                         dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+    message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(41, merchant.tid);
+    message.fieldData(60, '01.00');
+
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);

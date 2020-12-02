@@ -3,8 +3,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/repository/acquirer_repository.dart';
-import 'acquirer_event.dart';
-import 'acquirer_state.dart';
+import 'package:equatable/equatable.dart';
+
+part 'acquirer_event.dart';
+part 'acquirer_state.dart';
 
 class AcquirerBloc extends Bloc<AcquirerEvent, AcquirerState> {
   final AcquirerRepository acquirerRepository;

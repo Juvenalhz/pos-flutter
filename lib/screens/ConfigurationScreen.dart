@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
-import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_state.dart';
+import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/comm/comm_state.dart';
@@ -641,6 +640,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
 
 Widget onOffTile(String myTitle, int value) {
   return SwitchListTile(
+    onChanged: (bool b) {} ,
     title: Text(myTitle),
     value: (value == 1) ? true : false,
   );

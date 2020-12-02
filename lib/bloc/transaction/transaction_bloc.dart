@@ -53,7 +53,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
-
     print(event.toString());
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
