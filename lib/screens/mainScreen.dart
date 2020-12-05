@@ -16,6 +16,7 @@ import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
 import 'EchoTest.dart';
 import 'Initialization.dart';
+import 'LastSale.dart';
 import 'SelectAcquirer.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
@@ -49,6 +50,7 @@ class MainScreen extends StatelessWidget {
         '/deleteReversal': (context) => DeleteReversal(),
         '/SelectAcquirer': (context) => SelectAcquirer(),
         '/EchoTest': (context) => EchoTest(),
+        '/LastSale': (context) => LastSale(),
       },
       home: Scaffold(
           key: scaffoldKey,

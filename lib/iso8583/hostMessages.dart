@@ -371,3 +371,42 @@ class EchoTestMessage extends HostMessage {
     return message.buildIso();
   }
 }
+
+class LastSaleMessage extends HostMessage {
+  Iso8583 message;
+  Comm _comm;
+
+  LastSaleMessage(this._comm) : super(_comm, 400){
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    DateTime dateTime = DateTime.now();
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+
+    message.setMID(100);
+    message.fieldData(3, '340000');
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(25, '00');
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    message.fieldData(49, merchant.currencyCode.toString());
+    message.fieldData(60, '01.00');
+
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+}

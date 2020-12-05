@@ -31,8 +31,7 @@ class EchoTestBloc extends Bloc<EchoTestEvent, EchoTestState> {
 
       yield EchoTestConnecting(comm);
 
-      //TODO: change the connection to use secure connection
-      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
+      connection = new Communication(comm.ip, comm.port, true, comm.timeout);
 
       if ((isDev == true) && (isCommOffline == true)) {
         this.add(EchoTestSend());

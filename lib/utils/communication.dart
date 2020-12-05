@@ -24,6 +24,8 @@ class Communication {
   }
 
   Future<bool> connect() async {
+    //TODO: change the connection to use secure connection
+    _secure = false;
     try {
       if (_secure == true) {
         SecurityContext securityContext = SecurityContext();

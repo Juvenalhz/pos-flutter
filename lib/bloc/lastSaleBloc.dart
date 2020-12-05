@@ -1,0 +1,1 @@
+export 'lastSale/last_sale_bloc.dart';

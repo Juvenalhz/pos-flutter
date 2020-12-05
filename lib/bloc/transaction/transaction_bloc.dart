@@ -314,7 +314,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // Connect
     else if (event is TransConnect) {
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
-      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
+      connection = new Communication(comm.ip, comm.port, true, comm.timeout);
 
       yield TransactionConnecting();
 

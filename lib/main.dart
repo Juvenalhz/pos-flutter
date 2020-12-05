@@ -15,6 +15,7 @@ import 'bloc/acquirer/acquirer_bloc.dart';
 import 'bloc/comm/comm_bloc.dart';
 import 'bloc/deleteReversal/delete_reversal_bloc.dart';
 import 'bloc/initialization/initialization_bloc.dart';
+import 'bloc/lastSaleBloc.dart';
 import 'bloc/terminal/terminal_bloc.dart';
 import 'bloc/transaction/transaction_bloc.dart';
 import 'repository/acquirer_repository.dart';
@@ -56,6 +57,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<TransactionBloc>(create: (context) => TransactionBloc(context)),
         BlocProvider<DeleteReversalBloc>(create: (context) => DeleteReversalBloc()),
         BlocProvider<EchoTestBloc>(create: (context) => EchoTestBloc()),
+        BlocProvider<LastSaleBloc>(create: (context) => LastSaleBloc()),
 
       ], child: MainScreen()),
     ));
