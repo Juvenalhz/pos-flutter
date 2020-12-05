@@ -73,7 +73,8 @@ class MainMenu extends StatelessWidget {
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
-                text: 'Consulta Ultima Venta'),
+                text: 'Consulta Ultima Venta', onTap: () =>
+                Navigator.pushNamed(context, '/LastSale')),
             _createDrawerItem(
                 text: 'Cierre De Lote'),
             _createDrawerItem(text: 'Borrar Lote'),

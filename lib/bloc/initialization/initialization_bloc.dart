@@ -48,8 +48,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
       yield InitializationConnecting(comm);
 
-      //TODO: change the connection to use secure connection
-      connection = new Communication(comm.ip, comm.port, false, comm.timeout);
+      connection = new Communication(comm.ip, comm.port, true, comm.timeout);
       if (await connection.connect()) {
         this.add(InitializationSend());
         yield InitializationSending();
