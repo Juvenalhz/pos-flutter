@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/utils/receipt.dart';
 
 class LastSaleDetail extends StatelessWidget {
   final Trans trans;
@@ -24,6 +25,8 @@ class LastSaleDetail extends StatelessWidget {
         body: Column(
           children: <Widget>[
             Stack(children: <Widget>[
+
+
               Container(
                 height: 80,
                 decoration: BoxDecoration(
@@ -39,12 +42,27 @@ class LastSaleDetail extends StatelessWidget {
                 ),
                 child:
                   Center(
-                    child: Text(
-                              'Consulta Última Venta',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                            )
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            'Consulta Última Venta',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                          ),
                         ),
+                        IconButton(
+                          color: Colors.white,
+                          icon: Icon(Icons.print_outlined),
+                          onPressed: () {
+                            Receipt receipt = new Receipt(context);
+
+                            receipt.printTransactionReceipt(true, trans);
+                          },
+                        ),
+                      ])
+                  ),
               ),
             ]),
             Expanded(
