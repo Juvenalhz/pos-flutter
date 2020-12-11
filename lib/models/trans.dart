@@ -54,6 +54,8 @@ class Trans {
   String _respCode = '';
   int _batchNum = 0;
   String _respMessage = '';
+  int _binType = 0;
+  int _foodBalance = 0;
 
   Trans();
 
@@ -109,6 +111,8 @@ class Trans {
   String get respCode => this._respCode;
   int get batchNum => this._batchNum;
   String get respMessage => this._respMessage;
+  int get binType => this._binType;
+  int get foodBalance => this._foodBalance;
 
   set id(int id) {
     this._id = id;
@@ -318,6 +322,14 @@ class Trans {
     this._respMessage = respMessage;
   }
 
+  set binType(int binType) {
+    this._binType = binType;
+  }
+
+  set foodBalance(int foodBalance) {
+    this._foodBalance = foodBalance;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -369,6 +381,8 @@ class Trans {
     map['respCode'] = this._respCode;
     map['batchNum'] = this._batchNum;
     map['respMessage'] = this._respMessage;
+    map['binType'] = this._binType;
+    map['foodBalance'] = this._foodBalance;
 
     return map;
   }
@@ -422,6 +436,8 @@ class Trans {
     map['authCode'] = this._authCode;
     map['respCode'] = this._respCode;
     map['batchNum'] = this._batchNum;
+    map['binType'] = this._binType;
+    map['foodBalance'] = this._foodBalance;
 
     return map;
   }
@@ -472,6 +488,8 @@ class Trans {
     this._respCode = trans['respCode'];
     this._batchNum = trans['batchNum'];
     this._respMessage = trans['respMessage'];
+    this._binType = trans['binType'];
+    this._foodBalance = trans['foodBalance'];
   }
 
   void clear() {
@@ -526,6 +544,8 @@ class Trans {
     _respCode = '';
     _batchNum = 0;
     _respMessage = '';
+    _binType = 0;
+    _foodBalance = 0;
   }
 
   void clearCardData() {
@@ -558,6 +578,8 @@ class Trans {
     _onlinePIN = false;
     _pinBlock = '';
     _pinKSN = '';
+    _binType = 0;
+    _foodBalance = 0;
   }
 
   Future<String> getClearPan() async {

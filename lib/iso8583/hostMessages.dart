@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
@@ -238,11 +239,14 @@ class TransactionMessage extends HostMessage{
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
-    message.fieldData(3, '00' + trans.accType.toString() + '000');
+    if (trans.binType == Bin.TYPE_FOOD)
+      message.fieldData(3, '070000');
+    else
+      message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, trans.stan.toString());
-    message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);

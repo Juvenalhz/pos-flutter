@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pay/iso8583/hostMessages.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/utils/communication.dart';
 
 part 'last_sale_event.dart';
@@ -68,21 +70,36 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
         Map<int, String> respMap = await lastSale.parseRenponse(response);
         if (respMap[39] == '00') {
           var trans = new Trans();
+          BinRepository binRepository = new BinRepository();
+          int binId = await binRepository.getBinId(respMap[2].substring(0, 8));
+          Bin bin = Bin.fromMap(await binRepository.getBin(binId));
           int lastTransState = int.parse(respMap[6220].substring(0, 1));
           int lastTransType = int.parse(respMap[6220].substring(1, 2));
           int lastTransDay = int.parse(respMap[6220].substring(3, 5));
           int lastTransMonth = int.parse(respMap[6220].substring(5, 7));
           int lastTransYear = 2000 + int.parse(respMap[6220].substring(7, 9));
 
-          if (lastTransType == 5)
-            trans.type = 'Venta Tarjeta Alimenticia';
-          else
-            trans.type = 'Compra';
+          trans.type = 'Compra';
+
+          if (lastTransState == 0)
+            trans.respCode = '00';
+          else if (lastTransState == 2)
+            trans.respCode = '01';
+          else if (lastTransState == 1) {
+            trans.type = 'Anulación';
+            trans.respCode = '00';
+          }
+
+          trans.bin = binId;
+          trans.binType = bin.cardType;
 
           trans.total = int.parse(respMap[4]);
           trans.maskedPAN = respMap[2].substring(0, 4) + '....' + respMap[2].substring(respMap[2].length - 4);
 
           trans.stan = int.parse(respMap[6201]);
+
+          if (respMap[62.02] != null)
+            trans.batchNum = int.parse(respMap[62.02]);
 
           trans.dateTime = DateTime(lastTransYear, lastTransMonth, lastTransDay,  int.parse(respMap[12].substring(0, 2)),
               int.parse(respMap[12].substring(2, 4)), int.parse(respMap[12].substring(4, 6)));
@@ -91,11 +108,10 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
           trans.authCode = respMap[38];
           trans.respMessage = respMap[6208];
 
-          //TODO: handle the food card balance
-          // if (respMap[6216] != null)
-          //   trans.foodCardBalance = respMap[6216]
+          if (respMap[6216] != null)
+             trans.foodBalance = int.parse(respMap[6216]);
 
-          yield LastSaleCompleted(trans);
+          yield LastSaleCompleted(trans, bin.brand);
 
         }
         else  // error in echo test response

@@ -231,8 +231,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
       trans.cardholderID = event.idNumber.toString();
+      trans.binType = bin.cardType;
 
-      if (bin.pin)
+      if (trans.binType == Bin.TYPE_DEBIT)
       {
         yield TransactionAskAccountType();
       } else

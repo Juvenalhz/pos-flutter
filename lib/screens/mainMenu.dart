@@ -8,6 +8,7 @@ import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/initialization/initialization_bloc.dart';
+import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
@@ -73,8 +74,12 @@ class MainMenu extends StatelessWidget {
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
-                text: 'Consulta Ultima Venta', onTap: () =>
-                Navigator.pushNamed(context, '/LastSale')),
+                text: 'Consulta Ultima Venta', onTap: () {
+                final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
+
+                lastSaleBloc.add(LastSaleInitialEvent());
+                Navigator.pushNamed(context, '/LastSale');
+            }),
             _createDrawerItem(
                 text: 'Cierre De Lote'),
             _createDrawerItem(text: 'Borrar Lote'),
