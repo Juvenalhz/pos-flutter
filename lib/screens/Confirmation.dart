@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 
 class Confirmation extends StatelessWidget {
@@ -103,7 +104,9 @@ class Confirmation extends StatelessWidget {
                           Spacer(flex: 1),
                           RowDetail(label: "Cedula:", strAmount: state.trans.cardholderID),
                           Spacer(flex: 1),
-                          if (state.trans.accType == 0)
+                          if (state.trans.binType == Bin.TYPE_FOOD)
+                            RowDetail(label: "T. Cuenta:", strAmount: 'Alimenticia')
+                          else if (state.trans.accType == 0)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Credito')
                           else if (state.trans.accType == 2)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')

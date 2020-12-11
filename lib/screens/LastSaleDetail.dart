@@ -6,9 +6,10 @@ import 'package:pay/utils/receipt.dart';
 
 class LastSaleDetail extends StatelessWidget {
   final Trans trans;
+  final String cardBrand;
   final Function(BuildContext) onClick;
 
-  LastSaleDetail(this.trans, this.onClick);
+  LastSaleDetail(this.trans, this.cardBrand, this.onClick);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +79,7 @@ class LastSaleDetail extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Spacer(flex: 1),
-                              Text(trans.type, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                              Text(trans.type + ' - ' + cardBrand, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
                               Spacer(flex: 1),
                               RowDetail(label: DateFormat('dd/MM/yyyy').format(trans.dateTime), strAmount: DateFormat('hh:mm:ss').format(trans.dateTime)),
                               Spacer(flex: 1),
@@ -94,10 +95,11 @@ class LastSaleDetail extends StatelessWidget {
                               Spacer(flex: 2),
                               Text(trans.respMessage, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
                               Spacer(flex: 1),
-                              Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [btnEnter(context)]),
-                              ),
+                              if (trans.respCode == '00')
+                                btnEnter(context, true)
+                              else
+                                btnEnter(context, false),
+                              Spacer(flex: 1),
                             ],
                       ),
 
@@ -109,15 +111,19 @@ class LastSaleDetail extends StatelessWidget {
     );
   }
 
-  Widget btnEnter(BuildContext context) {
+  Widget btnEnter(BuildContext context, bool approved) {
+    Color btnColor = (approved) ? Colors.green : Colors.red;
+    IconData btnIcon = (approved) ? Icons.done_outline : Icons.error_outline;
+
     return Container(
       padding: EdgeInsets.only(bottom: 10.0),
       child: FlatButton(
-        child: Icon(Icons.done_outline, size: 35, color: Colors.white),
+        child: Icon(btnIcon, size: 35, color: Colors.white),
         onPressed: () {
           onClick(context);
         },
-        color: Colors.green,
+
+        color: btnColor,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
         shape: RoundedRectangleBorder(

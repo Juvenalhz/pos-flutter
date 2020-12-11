@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static final _databaseName = "test30.db";
-  static final _databaseVersion = 1;
+  static final _databaseVersion = 2;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -331,6 +331,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'authCode', 'text');
     _tableAlter(db, 'trans', 'respCode', 'text');
     _tableAlter(db, 'trans', 'batchNum', 'integer');
+    _tableAlter(db, 'trans', 'binType', 'integer');
   }
 
   // SQL code to create the database table

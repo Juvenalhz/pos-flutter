@@ -36,7 +36,7 @@ class LastSale extends StatelessWidget {
               else if (state is LastSaleShowMessage)
                 return TransMessage(state.message);
               else if (state is LastSaleCompleted) {
-                return LastSaleDetail(state.trans, onClickDone);
+                return LastSaleDetail(state.trans, state.cardBrand, onClickDone);
               }
               else if (state is LastSaleFailed) {
                 return LastSaleFinalScreen(state.message, false, onClickDone);

@@ -31,11 +31,12 @@ class LastSaleReceiving extends LastSaleState {
 
 class LastSaleCompleted extends LastSaleState {
   final Trans trans;
+  final String cardBrand;
 
-  LastSaleCompleted(this.trans);
+  LastSaleCompleted(this.trans, this.cardBrand);
 
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [trans, cardBrand];
 }
 
 class LastSaleFailed extends LastSaleState {

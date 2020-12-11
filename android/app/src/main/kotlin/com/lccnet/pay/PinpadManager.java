@@ -249,7 +249,7 @@ public class PinpadManager implements PinpadCallbacks {
             new Thread(() -> {
                 try {
                     // flag to simulate mag stripe, should be true if the amount ends with 83 cents
-                    Boolean simulateMagStripe = ((amount % 100) == 83);
+                    Boolean simulateMagStripe = ((amount % 100) == 83) || ((amount % 100) == 84);
                     // simulate loading of the emv data
                     this.onShowMessage(PinpadCallbacks.PROCESSING, "");
                     sleep(200);
@@ -276,10 +276,19 @@ public class PinpadManager implements PinpadCallbacks {
                     if (simulateMagStripe) {
                         card.put("cardType", 0);
                         card.put("entryMode", 21);
-                        card.put("track2", "4034467912409037=230112100000105000");
-                        card.put("track1", "B4034467912409037^07675009725$10000$^2301121000000000000000105000000");
+                        if ((amount % 100) == 84) {
+                            //food card
+                            card.put("track2", "6036810012409037=230112100000105000");
+                            card.put("pan", "6036810012409037");
+                        }
+                        else {
+                            //visa card
+                            card.put("track2", "4034467912409037=230112100000105000");
+                            card.put("track1", "B4034467912409037^07675009725$10000$^2301121000000000000000105000000");
+                            card.put("pan", "4034467912409037");
+                        }
                         card.put("expDate", "2301");
-                        card.put("pan", "4034467912409037");
+
                     }
                     else {
                         // test data for chip card
