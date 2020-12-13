@@ -52,8 +52,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       if (await connection.connect()) {
         this.add(InitializationSend());
         yield InitializationSending();
-      }
-      else
+      } else
         yield InitializationCommError();
     } else if (event is InitializationSend) {
       connection.sendMessage(await initialization.buildMessage());
@@ -78,9 +77,11 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
         Map<int, String> respMap = await initialization.parseRenponse(response);
 
-        if (await merchantRepository.getMerchant(1) == null)
+        if (await merchantRepository.getMerchant(1) == null) {
           merchant = new Merchant('', '', '');
-        else
+          merchant.id = 1;
+          await merchantRepository.createMerchant(merchant);
+        } else
           merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
         if (await terminalRepository.getTerminal(1) == null) {
@@ -94,8 +95,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           terminal.timeoutPrompt = 60;
 
           await terminalRepository.createTerminal(terminal);
-        }
-        else
+        } else
           terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
@@ -103,23 +103,23 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           Map acquirerIndicators = new Map<int, String>();
 
           if ((respMap[41] != null) && (merchant.tid.length == 0)) {
-              merchant.tid = respMap[41];
-              merchant.id = 1;
-              // these are default values, some will not change
-              merchant.password = '';
-              merchant.amountMaxDigits = 12;
-              merchant.amountDecimalPosition = 2;
-              merchant.batchNumber = 0;
-              merchant.maxTip = 0;
-              merchant.logo = '';
+            merchant.tid = respMap[41];
+            merchant.id = 1;
+            // these are default values, some will not change
+            merchant.password = '';
+            merchant.amountMaxDigits = 12;
+            merchant.amountDecimalPosition = 2;
+            merchant.batchNumber = 0;
+            merchant.maxTip = 0;
+            merchant.logo = '';
 
-              await merchantRepository.createMerchant(merchant);
-           }
+            await merchantRepository.createMerchant(merchant);
+          }
           if (respMap[43] != null) {
             processField43(respMap[43], merchant);
           }
           if (respMap[60] != null) {
-            processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
+            await processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
