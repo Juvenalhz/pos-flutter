@@ -152,8 +152,6 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'countryCode', 'integer');
   }
 
-
-
   Future<void> _fillDefaultEmv() async {
     // row to insert
     Map<String, dynamic> testEmv = {
@@ -332,6 +330,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'respCode', 'text');
     _tableAlter(db, 'trans', 'batchNum', 'integer');
     _tableAlter(db, 'trans', 'binType', 'integer');
+    _tableAlter(db, 'trans', 'foodBalance', 'integer');
   }
 
   // SQL code to create the database table
@@ -356,7 +355,6 @@ class DatabaseHelper {
 
     _fillDefaultComm();
     _fillDefaultEmv();
-
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -401,7 +399,7 @@ class DatabaseHelper {
   Future<int> queryRowCount(String table, {String where}) async {
     Database db = await instance.database;
 
-    if(where == null)
+    if (where == null)
       return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
     else
       return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table where $where'));
