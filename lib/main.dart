@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/detailReport/detail_report_bloc.dart';
 import 'package:pay/bloc/echo_test/echo_test_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/repository/comm_repository.dart';
@@ -58,7 +59,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<DeleteReversalBloc>(create: (context) => DeleteReversalBloc()),
         BlocProvider<EchoTestBloc>(create: (context) => EchoTestBloc()),
         BlocProvider<LastSaleBloc>(create: (context) => LastSaleBloc()),
-
+        BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
       ], child: MainScreen()),
     ));
   }

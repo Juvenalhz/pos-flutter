@@ -14,6 +14,7 @@ import 'package:pay/screens/DeleteReversal.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
+import 'DetailReport.dart';
 import 'EchoTest.dart';
 import 'Initialization.dart';
 import 'LastSale.dart';
@@ -51,6 +52,7 @@ class MainScreen extends StatelessWidget {
         '/SelectAcquirer': (context) => SelectAcquirer(),
         '/EchoTest': (context) => EchoTest(),
         '/LastSale': (context) => LastSale(),
+        '/DetailReport': (context) => DetailReport(),
       },
       home: Scaffold(
           key: scaffoldKey,
@@ -141,8 +143,7 @@ class MainScreen extends StatelessWidget {
                     ),
                   ],
                 );
-              }
-              else {
+              } else {
                 return SplashScreen();
               }
             }),

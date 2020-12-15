@@ -5,6 +5,7 @@ import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
+import 'package:pay/bloc/detailReport/detail_report_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
 import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/initialization/initialization_bloc.dart';
@@ -17,7 +18,6 @@ import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pay/bloc/echotestBloc.dart';
-
 
 class MainMenu extends StatelessWidget {
   @override
@@ -34,68 +34,66 @@ class MainMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           _createHeader(context),
-          ExpansionTile(
-              title: Text("Reportes"),
-              leading: Icon(Icons.receipt),
-              children: <Widget>[
-                _createDrawerItem(
-                  //icon: Icons.calendar_view_day,
-                  text: 'Reporte Resumen',
+          ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
+            _createDrawerItem(
+              //icon: Icons.calendar_view_day,
+              text: 'Reporte Resumen',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-                ),
-                _createDrawerItem(
-                  //icon: Icons.receipt,
-                  text: 'Reporte Detallado',
+            ),
+            _createDrawerItem(
+                text: 'Reporte Detallado',
+                onTap: () {
+                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                  detailReportBloc.add(DetailReportInitialEvent());
+                  Navigator.pushNamed(context, '/DetailReport');
+                }),
+            _createDrawerItem(
+              //icon: Icons.room_service,
+              text: 'Reporte Meseros',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
-                ),
-                _createDrawerItem(
-                  //icon: Icons.room_service,
-                  text: 'Reporte Meseros',
-//              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.contacts)
-                ),
-                _createDrawerItem(
-                  //icon: Icons.repeat,
-                  text: 'Reimpresión',
+            ),
+            _createDrawerItem(
+              //icon: Icons.repeat,
+              text: 'Reimpresión',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.notes)
-                ),
-              ]),
+            ),
+          ]),
           Divider(),
           _createDrawerItem(
-              icon: Icons.sync, text: 'Prueba De Comunicación', onTap: () {
-              final EchoTestBloc echoTestBloc = BlocProvider.of<EchoTestBloc>(context);
+              icon: Icons.sync,
+              text: 'Prueba De Comunicación',
+              onTap: () {
+                final EchoTestBloc echoTestBloc = BlocProvider.of<EchoTestBloc>(context);
 
-              echoTestBloc.add(EchoTestInitialEvent());
-              Navigator.pushNamed(context, '/EchoTest');
-          }),
+                echoTestBloc.add(EchoTestInitialEvent());
+                Navigator.pushNamed(context, '/EchoTest');
+              }),
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
-                text: 'Consulta Ultima Venta', onTap: () {
-                final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
+                text: 'Consulta Ultima Venta',
+                onTap: () {
+                  final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
 
-                lastSaleBloc.add(LastSaleInitialEvent());
-                Navigator.pushNamed(context, '/LastSale');
-            }),
-            _createDrawerItem(
-                text: 'Cierre De Lote'),
+                  lastSaleBloc.add(LastSaleInitialEvent());
+                  Navigator.pushNamed(context, '/LastSale');
+                }),
+            _createDrawerItem(text: 'Cierre De Lote'),
             _createDrawerItem(text: 'Borrar Lote'),
-            _createDrawerItem(
-                text: 'Cambio De Adquiriente', onTap: () =>
-                Navigator.pushNamed(context, '/SelectAcquirer')),
-
+            _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer')),
           ]),
-
-
           Divider(),
           ExpansionTile(title: Text("Menu Técnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(text: 'Configuracion', onTap: () {
-              acquirerBloc.add(GetAllAcquirer());
-              Navigator.pushNamed(context, '/configuration');
-            }),
+            _createDrawerItem(
+                text: 'Configuracion',
+                onTap: () {
+                  acquirerBloc.add(GetAllAcquirer());
+                  Navigator.pushNamed(context, '/configuration');
+                }),
             _createDrawerItem(text: 'Reporte de Parametros'),
             _createDrawerItem(
                 text: 'Inicialización',
@@ -105,14 +103,15 @@ class MainMenu extends StatelessWidget {
                   initializationBloc.add(InitializationInitialEvent());
                   Navigator.pushNamed(context, '/initialization');
                 }),
-            _createDrawerItem(text: 'Borrar Reverso', onTap: () async{
-              final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
-
-              deleteReversalBloc.add(DeleteReversalPending());
-              Navigator.pushNamed(context, '/deleteReversal');
-            }),
             _createDrawerItem(
-                text: 'Conformidad De Visita'),
+                text: 'Borrar Reverso',
+                onTap: () async {
+                  final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
+
+                  deleteReversalBloc.add(DeleteReversalPending());
+                  Navigator.pushNamed(context, '/deleteReversal');
+                }),
+            _createDrawerItem(text: 'Conformidad De Visita'),
           ]),
           if (isDev)
             _createDrawerItem(
@@ -156,8 +155,7 @@ class MainMenu extends StatelessWidget {
           Positioned(
             top: 10.0,
             left: 95.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(
-                builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
                 if ((state.merchant.logo != null) && (state.merchant.logo.length > 0)) {
                   return GestureDetector(
@@ -179,8 +177,7 @@ class MainMenu extends StatelessWidget {
           Positioned(
             bottom: 12.0,
             left: 16.0,
-            child: BlocBuilder<MerchantBloc, MerchantState>(
-                builder: (context, state) {
+            child: BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
                 return Text(state.merchant.nameL1, style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w500));
               } else {
@@ -191,8 +188,7 @@ class MainMenu extends StatelessWidget {
         ]));
   }
 
-  Widget _createDrawerItem(
-      {IconData icon, String text, GestureTapCallback onTap}) {
+  Widget _createDrawerItem({IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[
@@ -219,30 +215,26 @@ class MainMenu extends StatelessWidget {
           aspectRatioPresets: [
             CropAspectRatioPreset.square,
           ],
-          androidUiSettings: AndroidUiSettings(
-              toolbarTitle: 'Editar foto',
-              cropFrameColor: Colors.blue,
-              activeControlsWidgetColor: Colors.blue));
+          androidUiSettings: AndroidUiSettings(toolbarTitle: 'Editar foto', cropFrameColor: Colors.blue, activeControlsWidgetColor: Colors.blue));
       String nameImage = (croppedFile.path.split("/")[5]);
       final folderImageLogo = new Directory('/data/data/com.lccnet.pay/Logo');
       await folderImageLogo.exists().then((isThere) {
         if (isThere) {
-          croppedFile
-              .copy(folderImageLogo.path + '/'+nameImage);
+          croppedFile.copy(folderImageLogo.path + '/' + nameImage);
         } else {
           folderImageLogo.create(recursive: true).then((value) {
-            croppedFile.copy(folderImageLogo.path + '/'+nameImage);
+            croppedFile.copy(folderImageLogo.path + '/' + nameImage);
           });
         }
       });
-      merchant.logo = File(folderImageLogo.path + '/'+nameImage).path;
+      merchant.logo = File(folderImageLogo.path + '/' + nameImage).path;
       merchant.id = 1;
       merchantBloc.add(UpdateMerchant(merchant));
       merchantBloc.add(GetMerchant(1));
-     // OldPath != null ? DeteleFile(OldPath)  ;
-      if (OldPath != null ) {
+      // OldPath != null ? DeteleFile(OldPath)  ;
+      if (OldPath != null) {
         DeteleFile(OldPath);
-        }
+      }
     }
   }
 
@@ -259,14 +251,14 @@ class MainMenu extends StatelessWidget {
             child: Container(
               child: Wrap(
                 children: <Widget>[
-                   ListTile(
+                  ListTile(
                       leading: Icon(Icons.photo_library),
                       title: Text('Galeria'),
                       onTap: () {
                         selectFile(context, val);
                         Navigator.pop(context);
                       }),
-                   ListTile(
+                  ListTile(
                     leading: Icon(Icons.photo_camera),
                     title: Text('Cámara'),
                     onTap: () {},
@@ -296,8 +288,7 @@ class CircleImage extends StatelessWidget {
         height: 70,
         width: 70,
       );
-    else if (this.imageType == 2)
-      img = new Image.file(File(this.image), height: 200, width: 200);
+    else if (this.imageType == 2) img = new Image.file(File(this.image), height: 200, width: 200);
 
     return Container(
         width: _size,
