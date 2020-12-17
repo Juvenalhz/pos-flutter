@@ -75,27 +75,32 @@ class DetailReport extends StatelessWidget {
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(2, 12, 1, 5),
+                              padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
-                                      Spacer(flex: 1),
-                                      Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                        child: Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      ),
                                       Spacer(flex: 2),
                                       Text('No. Tarjeta', style: TextStyle(fontWeight: FontWeight.bold)),
                                       Spacer(flex: 3),
-                                      Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 1),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                        child: Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      ),
+
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      Spacer(flex: 1),
+                                      Spacer(flex: 3),
                                       Text('Tipo', style: TextStyle(fontWeight: FontWeight.bold)),
                                       Spacer(flex: 3),
                                       Text('Fecha', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 3),
+                                      Spacer(flex: 4),
                                       Text('Hora', style: TextStyle(fontWeight: FontWeight.bold)),
                                       Spacer(flex: 5),
 
@@ -115,26 +120,33 @@ class DetailReport extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.fromLTRB(15, 4, 6, 2),
+                                        padding: const EdgeInsets.fromLTRB(15, 4, 10, 2),
                                         child: Row(
                                           //mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 3),
-                                            Text(trans.maskedPAN, textAlign: TextAlign.left, style: TextStyle(
-                                              fontWeight: FontWeight.normal,
-                                              fontFeatures: [
-                                                FontFeature.tabularFigures()
-                                              ],
-                                            )),
-                                            Spacer(flex: 5),
-                                            Text(formatter.format(trans.total / 100),
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFeatures: [
-                                                    FontFeature.tabularFigures()
-                                                  ],
-                                                )
+                                            Spacer(flex: 4),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(trans.maskedPAN, textAlign: TextAlign.left, style: TextStyle(
+                                                fontWeight: FontWeight.normal,
+                                                fontFeatures: [
+                                                  FontFeature.tabularFigures()
+                                                ],
+                                              )),
+                                            ),
+                                            Spacer(flex: 1),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(formatter.format(trans.total / 100),
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.normal,
+                                                    fontFeatures: [
+                                                      FontFeature.tabularFigures()
+                                                    ],
+                                                  )
+                                              ),
                                             ),
 
 
@@ -148,11 +160,11 @@ class DetailReport extends StatelessWidget {
                                           children: [
                                             Spacer(flex: 2),
                                             Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 3),
+                                            Spacer(flex: 2),
                                             Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 3),
+                                            Spacer(flex: 2),
                                             Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 1),
+                                            Spacer(flex: 4),
                                           ],
                                         ),
                                       ),
@@ -196,48 +208,4 @@ class DetailReport extends StatelessWidget {
   }
 }
 
-class RowDetail extends StatelessWidget {
-  final String label;
-  final String strAmount;
 
-  const RowDetail({
-    Key key,
-    @required this.label,
-    @required this.strAmount,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-      child: Row(children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
-        Flexible(fit: FlexFit.tight, child: SizedBox()),
-        Text(strAmount, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22))
-      ]),
-    );
-  }
-}
-
-class RowDetailAmount extends StatelessWidget {
-  final String label;
-  final String strAmount;
-
-  const RowDetailAmount({
-    Key key,
-    @required this.label,
-    @required this.strAmount,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-      child: Row(children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-        Flexible(fit: FlexFit.tight, child: SizedBox()),
-        Text(strAmount, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30))
-      ]),
-    );
-  }
-}
