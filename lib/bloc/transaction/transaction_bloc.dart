@@ -76,7 +76,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.id = (await transRepository.getMaxId()) + 1;
       trans.baseAmount = event.amount;
       trans.total = event.amount;
-      trans.type = 'Compra';
+      trans.type = 'Venta';
       trans.stan = await getStan();
       trans.acquirer = merchant.acquirerCode;
 

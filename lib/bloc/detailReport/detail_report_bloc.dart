@@ -17,7 +17,7 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
   ) async* {
     if (event is DetailReportInitialEvent) {
       TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans();
+      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
       yield DetailReportDataReady(transList);
     }
   }

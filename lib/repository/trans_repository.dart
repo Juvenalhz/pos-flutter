@@ -4,7 +4,7 @@ import 'package:pay/utils/database.dart';
 class TransRepository {
   final appdb = DatabaseHelper.instance;
 
-  Future getAllTrans({String query}) => appdb.queryAllRows('trans');
+  Future getAllTrans({String where}) => appdb.queryAllRows('trans', where: where);
 
   Future getTrans(int id) => appdb.queryById('trans', id);
 
