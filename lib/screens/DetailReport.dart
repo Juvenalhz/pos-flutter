@@ -71,8 +71,7 @@ class DetailReport extends StatelessWidget {
                       borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
                   child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
                     if (state is DetailReportDataReady) {
-                      return SingleChildScrollView(
-                        child: Column(
+                      return Column(
                           children: [
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
@@ -81,7 +80,7 @@ class DetailReport extends StatelessWidget {
                                   Row(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                        padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
                                         child: Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
                                       ),
                                       Spacer(flex: 2),
@@ -109,73 +108,85 @@ class DetailReport extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            ListView.builder(
-                              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: state.transList.length,
-                              itemBuilder: (context, index) {
-                                Trans trans = Trans.fromMap(state.transList[index]);
-                                return Card(
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(15, 4, 10, 2),
-                                        child: Row(
-                                          //mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 4),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(trans.maskedPAN, textAlign: TextAlign.left, style: TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                                fontFeatures: [
-                                                  FontFeature.tabularFigures()
-                                                ],
-                                              )),
-                                            ),
-                                            Spacer(flex: 1),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(formatter.format(trans.total / 100),
-                                                  textAlign: TextAlign.right,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.normal,
-                                                    fontFeatures: [
-                                                      FontFeature.tabularFigures()
-                                                    ],
-                                                  )
+                            Expanded(
+                              child: ListView.builder(
+                                physics: new ClampingScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: state.transList.length,
+                                controller: ScrollController(),
+                                itemBuilder: (context, index) {
+                                  Trans trans = Trans.fromMap(state.transList[index]);
+                                  return Card(
+                                    elevation: 3,
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
+                                          child: Row(
+                                            //mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              InkWell(
+                                                splashColor: Colors.blueAccent.withAlpha(180),
+                                                child: Icon(Icons.list),
+                                                onTap: () {
+                                                  print('tap $index');
+                                                },
                                               ),
-                                            ),
+                                              Spacer(flex: 1),
+                                              Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
+                                              Spacer(flex: 6),
+                                              SizedBox(
+                                                width: 100,
+                                                child: Text(trans.maskedPAN, textAlign: TextAlign.left, style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFeatures: [
+                                                    FontFeature.tabularFigures()
+                                                  ],
+                                                )),
+                                              ),
+                                              Spacer(flex: 2),
+                                              SizedBox(
+                                                width: 100,
+                                                child: Text(formatter.format(trans.total / 100),
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.normal,
+                                                      fontFeatures: [
+                                                        FontFeature.tabularFigures()
+                                                      ],
+                                                    )
+                                                ),
+                                              ),
 
 
 
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
-                                        child: Row(
-                                          children: [
-                                            Spacer(flex: 2),
-                                            Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 4),
-                                          ],
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
+                                          child: Row(
+                                            children: [
+                                              Spacer(flex: 2),
+                                              Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
+                                              Spacer(flex: 2),
+                                              Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                              Spacer(flex: 2),
+                                              Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                              Spacer(flex: 4),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
 
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
                           ],
-                        ),
+
                       );
                     } else
                       return SplashScreen();
