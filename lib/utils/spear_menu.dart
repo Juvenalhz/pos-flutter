@@ -57,7 +57,7 @@ class MenuItem extends MenuItemProvider {
   TextStyle get menuTextStyle => textStyle ?? TextStyle(color: Colors.black87, fontSize: 14.0);
 }
 
-typedef MenuClickCallback = Function(MenuItemProvider item, int id);
+typedef MenuClickCallback = Function(MenuItemProvider item, int id, BuildContext context);
 typedef SpearMenuStateChanged = Function(bool isShow);
 
 class SpearMenu {
@@ -139,7 +139,10 @@ class SpearMenu {
     _calculatePosition(SpearMenu.context);
 
     _entry = OverlayEntry(builder: (context) {
-      return buildSpearMenuLayout(_offset, _id);
+      return buildSpearMenuLayout(
+        _offset,
+        _id,
+      );
     });
 
     Overlay.of(SpearMenu.context).insert(_entry);
@@ -207,7 +210,8 @@ class SpearMenu {
           dismiss();
         },
         child: Container(
-          decoration: new BoxDecoration(border: new Border.all(width: 2.0, color: Colors.transparent), color: Colors.black.withOpacity(0.5)),
+          decoration:
+              new BoxDecoration(border: new Border.all(width: 2.0, color: Colors.transparent), color: Colors.black.withOpacity(0.5)),
           child: Stack(
             children: <Widget>[
               // triangle arrow
@@ -280,12 +284,13 @@ class SpearMenu {
   }
 
   Widget _createMenuItem(MenuItemProvider item, int id) {
-    return _MenuItemWidget(item: item, clickCallback: itemClicked, backgroundColor: _backgroundColor, highlightColor: _highlightColor, id: id);
+    return _MenuItemWidget(
+        item: item, clickCallback: itemClicked, backgroundColor: _backgroundColor, highlightColor: _highlightColor, id: id);
   }
 
-  void itemClicked(MenuItemProvider item, int id) {
+  void itemClicked(MenuItemProvider item, int id, BuildContext context) {
     if (onClickMenu != null) {
-      onClickMenu(item, id);
+      onClickMenu(item, id, context);
     }
 
     dismiss();
@@ -317,7 +322,7 @@ class _MenuItemWidget extends StatefulWidget {
   final Color backgroundColor;
   final Color highlightColor;
 
-  final Function(MenuItemProvider item, int id) clickCallback;
+  final Function(MenuItemProvider item, int id, BuildContext context) clickCallback;
 
   _MenuItemWidget({this.item, this.clickCallback, this.backgroundColor, this.highlightColor, this.id});
 
@@ -356,7 +361,7 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
       },
       onTap: () {
         if (widget.clickCallback != null) {
-          widget.clickCallback(widget.item, id);
+          widget.clickCallback(widget.item, id, context);
         }
       },
       child: Container(

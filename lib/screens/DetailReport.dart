@@ -11,7 +11,8 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 class DetailReport extends StatelessWidget {
-  final List<String> menuList = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
+  final List<String> menuListWithVoid = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
+  final List<String> menuList = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente']);
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +132,10 @@ class DetailReport extends StatelessWidget {
                                               splashColor: Colors.blueAccent.withAlpha(180),
                                               child: Icon(Icons.more_vert_outlined),
                                               onTap: () {
-                                                menuData(state.transList[index]['id'], btnKey, context);
+                                                if ((trans.type == 'Anulación') || (trans.voided))
+                                                  menuData(trans.id, btnKey, context, false);
+                                                else
+                                                  menuData(trans.id, btnKey, context, true);
                                               },
                                             ),
                                             Spacer(flex: 1),
@@ -193,10 +197,10 @@ class DetailReport extends StatelessWidget {
     );
   }
 
-  void menuData(int id, GlobalKey btnKey, BuildContext context) {
+  void menuData(int id, GlobalKey btnKey, BuildContext context, bool withVoid) {
     List<MenuItemProvider> setData = new List<MenuItemProvider>();
     setData.clear();
-    for (var io in menuList) {
+    for (var io in (withVoid) ? menuListWithVoid : menuList) {
       setData.add(MenuItem(title: io));
     }
 
@@ -209,11 +213,19 @@ class DetailReport extends StatelessWidget {
         onDismiss: onDismiss,
         context: context,
         id: id);
+
     menu.show(widgetKey: btnKey);
   }
 
-  void onClickMenu(MenuItemProvider item, int id) {
+  void onClickMenu(MenuItemProvider item, int id, BuildContext context) {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
     print('Click menu -> ${item.menuTitle} - id:$id');
+    if (item.menuTitle == 'Copia del Comercio') {
+      detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
+    } else if (item.menuTitle == 'Copia del Cliente') {
+      detailReportBloc.add(DetailReportPrintReceiptCopy(false, id, context));
+    }
   }
 
   void stateChanged(bool isShow) {
