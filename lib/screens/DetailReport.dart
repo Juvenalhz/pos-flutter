@@ -11,7 +11,7 @@ import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 class DetailReport extends StatelessWidget {
-  final List<String> menuList = new List<String>.of(['Copia del Comercio', 'Copia del Cliente', 'Anulación']);
+  final List<String> menuList = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +166,11 @@ class DetailReport extends StatelessWidget {
                                             Spacer(flex: 2),
                                             Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 4),
                                           ],
                                         ),
