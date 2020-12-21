@@ -10,27 +10,8 @@ import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/spear_menu.dart';
 
-class CustomData {
-  var _name;
-  var _isShow;
-
-  String get name => _name;
-
-  bool get isShow => _isShow;
-
-  set isShow(bool value) {
-    _isShow = value;
-  }
-
-  set name(String value) {
-    _name = value;
-  }
-
-  CustomData(this._name, this._isShow);
-}
-
 class DetailReport extends StatelessWidget {
-  List<CustomData> menuList = new List<CustomData>();
+  final List<String> menuList = new List<String>.of(['Copia del Comercio', 'Copia del Cliente', 'Anulación']);
 
   @override
   Widget build(BuildContext context) {
@@ -211,18 +192,10 @@ class DetailReport extends StatelessWidget {
   }
 
   void menuData(int id, GlobalKey btnKey, BuildContext context) {
-    if (menuList.isEmpty) {
-      menuList.clear();
-      menuList.add(CustomData('Copia del Comercio', false));
-      menuList.add(CustomData('Copia del Cliente', false));
-      menuList.add(CustomData('Anulación', false));
-    }
-
     List<MenuItemProvider> setData = new List<MenuItemProvider>();
     setData.clear();
     for (var io in menuList) {
-      //print("Result : " + io.name);
-      setData.add(MenuItem(title: io.name, isActive: io.isShow));
+      setData.add(MenuItem(title: io));
     }
 
     SpearMenu menu = SpearMenu(

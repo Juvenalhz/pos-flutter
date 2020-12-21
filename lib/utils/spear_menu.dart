@@ -40,34 +40,21 @@ class TrianglePainter extends CustomPainter {
 abstract class MenuItemProvider {
   String get menuTitle;
 
-  bool get activeStatus;
-  actStatus(bool value);
-
   TextStyle get menuTextStyle;
 }
 
 class MenuItem extends MenuItemProvider {
   String title; // Menu title
   TextStyle textStyle;
-  bool isActive;
 
-  MenuItem({this.title, this.textStyle, this.isActive});
+  MenuItem({this.title, this.textStyle});
 
   @override
   String get menuTitle => title;
 
   @override
-  bool get activeStatus => isActive ?? false;
-
-  @override
 //  TextStyle get menuTextStyle => textStyle ?? TextStyle(color: Color(0xffc5c5c5), fontSize: 14.0);
   TextStyle get menuTextStyle => textStyle ?? TextStyle(color: Colors.black87, fontSize: 14.0);
-
-  @override
-  actStatus(bool value) {
-    // TODO: implement actStatus
-    isActive = value;
-  }
 }
 
 typedef MenuClickCallback = Function(MenuItemProvider item, int id);
@@ -383,7 +370,6 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
   }
 
   Widget _createContent() {
-    bool activeMode = widget.item.activeStatus;
     return Container(
       padding: EdgeInsets.all(5.0),
       alignment: Alignment.centerLeft,
@@ -397,13 +383,6 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
               child: Text(widget.item.menuTitle, style: widget.item.menuTextStyle.copyWith(fontWeight: FontWeight.normal)),
             ),
           ),
-          // Visibility(
-          //   visible: activeMode,
-          //   child: Icon(
-          //     Icons.check,
-          //     color: Colors.lightGreen,
-          //   ),
-          // )
         ],
       ),
     );
