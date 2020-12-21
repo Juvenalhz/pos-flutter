@@ -148,10 +148,9 @@ class DetailReport extends StatelessWidget {
                                             InkWell(
                                               key: btnKey,
                                               splashColor: Colors.blueAccent.withAlpha(180),
-                                              child: Icon(Icons.list),
+                                              child: Icon(Icons.more_vert_outlined),
                                               onTap: () {
-                                                menuData(btnKey, context);
-                                                print('tap $index');
+                                                menuData(state.transList[index]['id'], btnKey, context);
                                               },
                                             ),
                                             Spacer(flex: 1),
@@ -186,11 +185,9 @@ class DetailReport extends StatelessWidget {
                                             Spacer(flex: 2),
                                             Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 4),
                                           ],
                                         ),
@@ -213,19 +210,18 @@ class DetailReport extends StatelessWidget {
     );
   }
 
-  void menuData(GlobalKey btnKey, BuildContext context) {
+  void menuData(int id, GlobalKey btnKey, BuildContext context) {
     if (menuList.isEmpty) {
       menuList.clear();
       menuList.add(CustomData('Copia del Comercio', false));
       menuList.add(CustomData('Copia del Cliente', false));
       menuList.add(CustomData('Anulación', false));
-      menuList.add(CustomData('SpearMenu', false));
     }
 
     List<MenuItemProvider> setData = new List<MenuItemProvider>();
     setData.clear();
     for (var io in menuList) {
-      print("Result : " + io.name);
+      //print("Result : " + io.name);
       setData.add(MenuItem(title: io.name, isActive: io.isShow));
     }
 
@@ -236,28 +232,21 @@ class DetailReport extends StatelessWidget {
         onClickMenu: onClickMenu,
         stateChanged: stateChanged,
         onDismiss: onDismiss,
-        context: context);
+        context: context,
+        id: id);
     menu.show(widgetKey: btnKey);
   }
 
-  void onClickMenu(MenuItemProvider item) {
-    menuList.map((element) {
-      if (item.menuTitle == element.name) {
-        element.isShow = true;
-      } else {
-        element.isShow = false;
-      }
-    }).toList();
-
-    print('Click menu -> ${item.menuTitle}');
+  void onClickMenu(MenuItemProvider item, int id) {
+    print('Click menu -> ${item.menuTitle} - id:$id');
   }
 
   void stateChanged(bool isShow) {
-    print('menu is ${isShow ? 'showing' : 'closed'}');
+    //print('menu is ${isShow ? 'showing' : 'closed'}');
   }
 
   void onDismiss() {
-    print('Menu is dismiss');
+    //print('Menu is dismiss');
   }
 
   Widget btnEnter(BuildContext context, bool approved) {

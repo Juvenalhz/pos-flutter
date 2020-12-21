@@ -70,7 +70,7 @@ class MenuItem extends MenuItemProvider {
   }
 }
 
-typedef MenuClickCallback = Function(MenuItemProvider item);
+typedef MenuClickCallback = Function(MenuItemProvider item, int id);
 typedef SpearMenuStateChanged = Function(bool isShow);
 
 class SpearMenu {
@@ -111,6 +111,8 @@ class SpearMenu {
   /// It's showing or not.
   bool _isShow = false;
 
+  int _id;
+
   bool get isShow => _isShow;
 
   SpearMenu(
@@ -121,7 +123,8 @@ class SpearMenu {
       Color highlightColor,
       Color lineColor,
       SpearMenuStateChanged stateChanged,
-      List<MenuItemProvider> items}) {
+      List<MenuItemProvider> items,
+      int id}) {
     this.onClickMenu = onClickMenu;
     this.dismissCallback = onDismiss;
     this.stateChanged = stateChanged;
@@ -129,6 +132,7 @@ class SpearMenu {
     this._backgroundColor = backgroundColor ?? Colors.white;
     this._lineColor = lineColor ?? Colors.grey;
     this._highlightColor = highlightColor ?? Colors.grey;
+    this._id = id;
     if (context != null) {
       SpearMenu.context = context;
     }
@@ -148,7 +152,7 @@ class SpearMenu {
     _calculatePosition(SpearMenu.context);
 
     _entry = OverlayEntry(builder: (context) {
-      return buildSpearMenuLayout(_offset);
+      return buildSpearMenuLayout(_offset, _id);
     });
 
     Overlay.of(SpearMenu.context).insert(_entry);
@@ -202,7 +206,7 @@ class SpearMenu {
     return itemHeight * _row;
   }
 
-  LayoutBuilder buildSpearMenuLayout(Offset offset) {
+  LayoutBuilder buildSpearMenuLayout(Offset offset, int id) {
     return LayoutBuilder(builder: (context, constraints) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -216,8 +220,7 @@ class SpearMenu {
           dismiss();
         },
         child: Container(
-          decoration:
-              new BoxDecoration(border: new Border.all(width: 2.0, color: Colors.transparent), color: Colors.black.withOpacity(0.5)),
+          decoration: new BoxDecoration(border: new Border.all(width: 2.0, color: Colors.transparent), color: Colors.black.withOpacity(0.5)),
           child: Stack(
             children: <Widget>[
               // triangle arrow
@@ -245,7 +248,7 @@ class SpearMenu {
                             height: menuHeight(),
                             decoration: BoxDecoration(color: _backgroundColor, borderRadius: BorderRadius.circular(10.0)),
                             child: Column(
-                              children: _createRows(),
+                              children: _createRows(id),
                             ),
                           )),
                     ],
@@ -260,7 +263,7 @@ class SpearMenu {
   }
 
   // Create line
-  List<Widget> _createRows() {
+  List<Widget> _createRows(int id) {
     List<Widget> rows = [];
     for (int i = 0; i < _row; i++) {
       Color color = (i < _row - 1 && _row != 1) ? _lineColor : Colors.transparent;
@@ -268,7 +271,7 @@ class SpearMenu {
         decoration: BoxDecoration(border: Border(bottom: BorderSide(color: color, width: 0.5))),
         height: itemHeight,
         child: Row(
-          children: _createRowItems(i),
+          children: _createRowItems(i, id),
         ),
       );
 
@@ -279,28 +282,23 @@ class SpearMenu {
   }
 
   //Create a line of item,  row Count from 0
-  List<Widget> _createRowItems(int row) {
+  List<Widget> _createRowItems(int row, int id) {
     List<MenuItemProvider> subItems = items.sublist(row, min(row + 1, items.length));
     List<Widget> itemWidgets = [];
     for (var item in subItems) {
-      itemWidgets.add(_createMenuItem(item));
+      itemWidgets.add(_createMenuItem(item, id));
     }
 
     return itemWidgets;
   }
 
-  Widget _createMenuItem(MenuItemProvider item) {
-    return _MenuItemWidget(
-      item: item,
-      clickCallback: itemClicked,
-      backgroundColor: _backgroundColor,
-      highlightColor: _highlightColor,
-    );
+  Widget _createMenuItem(MenuItemProvider item, int id) {
+    return _MenuItemWidget(item: item, clickCallback: itemClicked, backgroundColor: _backgroundColor, highlightColor: _highlightColor, id: id);
   }
 
-  void itemClicked(MenuItemProvider item) {
+  void itemClicked(MenuItemProvider item, int id) {
     if (onClickMenu != null) {
-      onClickMenu(item);
+      onClickMenu(item, id);
     }
 
     dismiss();
@@ -326,22 +324,26 @@ class SpearMenu {
 
 class _MenuItemWidget extends StatefulWidget {
   final MenuItemProvider item;
+  final int id;
 
 //  final Color lineColor;
   final Color backgroundColor;
   final Color highlightColor;
 
-  final Function(MenuItemProvider item) clickCallback;
+  final Function(MenuItemProvider item, int id) clickCallback;
 
-  _MenuItemWidget({this.item, this.clickCallback, this.backgroundColor, this.highlightColor});
+  _MenuItemWidget({this.item, this.clickCallback, this.backgroundColor, this.highlightColor, this.id});
 
   @override
-  _MenuItemWidgetState createState() => _MenuItemWidgetState();
+  _MenuItemWidgetState createState() => _MenuItemWidgetState(id);
 }
 
 class _MenuItemWidgetState extends State<_MenuItemWidget> {
   var highlightColor = Color(0x55000000);
   var color = Color(0xff232323);
+  int id;
+
+  _MenuItemWidgetState(this.id);
 
   @override
   void initState() {
@@ -367,7 +369,7 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
       },
       onTap: () {
         if (widget.clickCallback != null) {
-          widget.clickCallback(widget.item);
+          widget.clickCallback(widget.item, id);
         }
       },
       child: Container(
