@@ -8,8 +8,10 @@ import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/utils/spear_menu.dart';
 
 class DetailReport extends StatelessWidget {
+  final List<String> menuList = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +61,11 @@ class DetailReport extends StatelessWidget {
               ),
             ]),
             Expanded(
-              child: Stack(children: <Widget>[
-                Container(
-                  color: Color(0xFF0D47A1),
-                ),
-
-                Container(
+                child: Stack(children: <Widget>[
+              Container(
+                color: Color(0xFF0D47A1),
+              ),
+              Container(
                   width: double.infinity,
                   height: double.infinity,
                   decoration: BoxDecoration(
@@ -72,121 +73,115 @@ class DetailReport extends StatelessWidget {
                   child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
                     if (state is DetailReportDataReady) {
                       return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                                        child: Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ),
-                                      Spacer(flex: 2),
-                                      Text('No. Tarjeta', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 3),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                        child: Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ),
-
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Spacer(flex: 3),
-                                      Text('Tipo', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 3),
-                                      Text('Fecha', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 4),
-                                      Text('Hora', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Spacer(flex: 5),
-
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                physics: new ClampingScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: state.transList.length,
-                                controller: ScrollController(),
-                                itemBuilder: (context, index) {
-                                  Trans trans = Trans.fromMap(state.transList[index]);
-                                  return Card(
-                                    elevation: 3,
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
-                                          child: Row(
-                                            //mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              InkWell(
-                                                splashColor: Colors.blueAccent.withAlpha(180),
-                                                child: Icon(Icons.list),
-                                                onTap: () {
-                                                  print('tap $index');
-                                                },
-                                              ),
-                                              Spacer(flex: 1),
-                                              Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
-                                              Spacer(flex: 6),
-                                              SizedBox(
-                                                width: 100,
-                                                child: Text(trans.maskedPAN, textAlign: TextAlign.left, style: TextStyle(
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFeatures: [
-                                                    FontFeature.tabularFigures()
-                                                  ],
-                                                )),
-                                              ),
-                                              Spacer(flex: 2),
-                                              SizedBox(
-                                                width: 100,
-                                                child: Text(formatter.format(trans.total / 100),
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.normal,
-                                                      fontFeatures: [
-                                                        FontFeature.tabularFigures()
-                                                      ],
-                                                    )
-                                                ),
-                                              ),
-
-
-
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
-                                          child: Row(
-                                            children: [
-                                              Spacer(flex: 2),
-                                              Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                              Spacer(flex: 2),
-                                              Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                              Spacer(flex: 2),
-                                              Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                              Spacer(flex: 4),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                                      child: Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
                                     ),
-
-                                  );
-                                },
-                              ),
+                                    Spacer(flex: 2),
+                                    Text('No. Tarjeta', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Spacer(flex: 3),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      child: Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Spacer(flex: 3),
+                                    Text('Tipo', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Spacer(flex: 3),
+                                    Text('Fecha', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Spacer(flex: 4),
+                                    Text('Hora', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Spacer(flex: 5),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              physics: new ClampingScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: state.transList.length,
+                              controller: ScrollController(),
+                              itemBuilder: (context, index) {
+                                GlobalKey btnKey = GlobalKey();
+                                Trans trans = Trans.fromMap(state.transList[index]);
+                                return Card(
+                                  elevation: 3,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
+                                        child: Row(
+                                          //mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                              key: btnKey,
+                                              splashColor: Colors.blueAccent.withAlpha(180),
+                                              child: Icon(Icons.more_vert_outlined),
+                                              onTap: () {
+                                                menuData(state.transList[index]['id'], btnKey, context);
+                                              },
+                                            ),
+                                            Spacer(flex: 1),
+                                            Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Spacer(flex: 6),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(trans.maskedPAN,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.normal,
+                                                    fontFeatures: [FontFeature.tabularFigures()],
+                                                  )),
+                                            ),
+                                            Spacer(flex: 2),
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(formatter.format(trans.total / 100),
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.normal,
+                                                    fontFeatures: [FontFeature.tabularFigures()],
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
+                                        child: Row(
+                                          children: [
+                                            Spacer(flex: 2),
+                                            Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Spacer(flex: 2),
+                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Spacer(flex: 2),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Spacer(flex: 4),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       );
                     } else
                       return SplashScreen();
@@ -196,6 +191,37 @@ class DetailReport extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void menuData(int id, GlobalKey btnKey, BuildContext context) {
+    List<MenuItemProvider> setData = new List<MenuItemProvider>();
+    setData.clear();
+    for (var io in menuList) {
+      setData.add(MenuItem(title: io));
+    }
+
+    SpearMenu menu = SpearMenu(
+        //backgroundColor: Colors.teal,
+        // lineColor: Colors.tealAccent,
+        items: setData,
+        onClickMenu: onClickMenu,
+        stateChanged: stateChanged,
+        onDismiss: onDismiss,
+        context: context,
+        id: id);
+    menu.show(widgetKey: btnKey);
+  }
+
+  void onClickMenu(MenuItemProvider item, int id) {
+    print('Click menu -> ${item.menuTitle} - id:$id');
+  }
+
+  void stateChanged(bool isShow) {
+    //print('menu is ${isShow ? 'showing' : 'closed'}');
+  }
+
+  void onDismiss() {
+    //print('Menu is dismiss');
   }
 
   Widget btnEnter(BuildContext context, bool approved) {
@@ -218,5 +244,3 @@ class DetailReport extends StatelessWidget {
     );
   }
 }
-
-
