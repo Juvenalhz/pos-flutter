@@ -53,11 +53,23 @@ class DetailReport extends StatelessWidget {
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                     ),
                   ),
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.print_outlined),
-                    onPressed: () {},
-                  ),
+                  BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                    if (state is DetailReportDataReady) {
+                      if (state.transList.length > 0)
+                        return IconButton(
+                          color: Colors.white,
+                          icon: Icon(Icons.print_outlined),
+                          onPressed: () {
+                            final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                            detailReportBloc.add(DetailReportPrintReport(context));
+                          },
+                        );
+                      else
+                        return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                    } else
+                      return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                  }),
                 ])),
               ),
             ]),
@@ -117,7 +129,7 @@ class DetailReport extends StatelessWidget {
                               controller: ScrollController(),
                               itemBuilder: (context, index) {
                                 GlobalKey btnKey = GlobalKey();
-                                Trans trans = Trans.fromMap(state.transList[index]);
+                                Trans trans = state.transList[index];
                                 return Card(
                                   elevation: 3,
                                   child: Column(
@@ -170,11 +182,9 @@ class DetailReport extends StatelessWidget {
                                             Spacer(flex: 2),
                                             Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 4),
                                           ],
                                         ),
@@ -234,25 +244,5 @@ class DetailReport extends StatelessWidget {
 
   void onDismiss() {
     //print('Menu is dismiss');
-  }
-
-  Widget btnEnter(BuildContext context, bool approved) {
-    Color btnColor = (approved) ? Colors.green : Colors.red;
-    IconData btnIcon = (approved) ? Icons.done_outline : Icons.error_outline;
-
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Icon(btnIcon, size: 35, color: Colors.white),
-        onPressed: () {},
-        color: btnColor,
-        padding: EdgeInsets.all(15.0),
-        splashColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: Colors.blueGrey)
-        ),
-      ),
-    );
   }
 }

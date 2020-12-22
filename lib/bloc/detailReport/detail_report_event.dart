@@ -19,3 +19,12 @@ class DetailReportPrintReceiptCopy extends DetailReportEvent {
   @override
   List<Object> get props => [type, id];
 }
+
+class DetailReportPrintReport extends DetailReportEvent {
+  final BuildContext context;
+
+  DetailReportPrintReport(this.context);
+
+  @override
+  List<Object> get props => [context];
+}

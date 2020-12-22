@@ -10,7 +10,7 @@ class DetailReportInitial extends DetailReportState {
 }
 
 class DetailReportDataReady extends DetailReportState {
-  final List<Map<String, dynamic>> transList;
+  final List<Trans> transList;
 
   DetailReportDataReady(this.transList);
   @override
