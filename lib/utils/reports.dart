@@ -28,9 +28,11 @@ class Reports {
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
     DateTime now = DateTime.now();
 
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
     printer.addTextSideBySide('Fecha:' + DateFormat('dd/MM/yyyy').format(now), 'Hora:' + DateFormat('hh:mm:ss a').format(now));
     printer.addTextSideBySideWithCenter('Terminal', 'Lote', 'S/N POS');
     printer.addTextSideBySideWithCenter(merchant.tid.padLeft(5, ' '), merchant.batchNumber.toString(), await SerialNumber.serialNumber);
+    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
   }
 
   printDetailReport(List<Trans> transList) async {
