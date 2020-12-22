@@ -14,28 +14,44 @@ class Printer {
   Function(int) onPrintError;
   int currentSize;
 
-  Printer(){
+  Printer() {
     _channel.setMethodCallHandler(this._callHandler);
     currentSize = FONT_SIZE_NORMAL;
   }
 
   void addText(int alignMode, String text) async {
-    int ret = await _channel.invokeMethod('addText', {'alignMode': alignMode, 'data':text});
+    int ret = await _channel.invokeMethod('addText', {'alignMode': alignMode, 'data': text});
   }
 
   void addTextSideBySide(String left, String right) async {
     String text;
     int lineSize;
-    
+
     if (currentSize == FONT_SIZE_SMALL)
       lineSize = 50;
     else
       lineSize = 32;
-    
-    text = left.padRight(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
-    text += left.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
 
-    int ret = await _channel.invokeMethod('addText', {'alignMode': RIGHT, 'data':text});
+    text = left.padRight(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
+    text += right.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
+
+    int ret = await _channel.invokeMethod('addText', {'alignMode': RIGHT, 'data': text});
+  }
+
+  void addTextSideBySideWithCenter(String left, String center, String right) async {
+    String text;
+    int lineSize;
+
+    if (currentSize == FONT_SIZE_SMALL)
+      lineSize = 50;
+    else
+      lineSize = 32;
+
+    text = left.padRight(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
+    text += center.padRight(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
+    text += right.padLeft(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
+
+    int ret = await _channel.invokeMethod('addText', {'alignMode': CENTER, 'data': text});
   }
 
   void setFontSize(int fontSize) async {
@@ -47,12 +63,11 @@ class Printer {
     int ret = await _channel.invokeMethod('feedLine', {'lines': lines});
   }
 
-  void print(Function onPrintFinish, Function onPrintError ) async {
+  void print(Function onPrintFinish, Function onPrintError) async {
     this.onPrintFinish = onPrintFinish;
     this.onPrintError = onPrintError;
 
     int ret = await _channel.invokeMethod('print');
-
   }
 
   Future<dynamic> _callHandler(MethodCall call) async {
@@ -66,4 +81,7 @@ class Printer {
     }
   }
 
+  addTextFillLine(String c) {
+    addText(LEFT, ''.padRight((currentSize == FONT_SIZE_SMALL) ? 50 : 32, c[0].toString()));
+  }
 }
