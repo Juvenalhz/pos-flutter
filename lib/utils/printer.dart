@@ -41,15 +41,20 @@ class Printer {
   void addTextSideBySideWithCenter(String left, String center, String right) async {
     String text;
     int lineSize;
+    int padCenter;
+    int part;
 
     if (currentSize == FONT_SIZE_SMALL)
-      lineSize = 50;
+      lineSize = 48;
     else
       lineSize = 32;
 
-    text = left.padRight(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
-    text += center.padRight(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
-    text += right.padLeft(lineSize ~/ 4, ' ').substring(0, lineSize ~/ 4);
+    part = lineSize ~/ 3;
+    padCenter = center.length + ((part - center.length) ~/ 2) + 1;
+
+    text = left.padRight((lineSize ~/ 3) + 1, ' ').substring(0, (lineSize ~/ 3) + 1);
+    text += center.padLeft(padCenter, ' ').padRight((lineSize ~/ 3), ' ').substring(0, lineSize ~/ 3);
+    text += right.padLeft((lineSize ~/ 3) + 1, ' ').substring(0, (lineSize ~/ 3) + 1);
 
     int ret = await _channel.invokeMethod('addText', {'alignMode': CENTER, 'data': text});
   }
