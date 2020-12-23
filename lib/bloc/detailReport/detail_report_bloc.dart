@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/receipt.dart';
 import 'package:pay/utils/reports.dart';
@@ -45,6 +47,14 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
       });
 
       report.printDetailReport(listTrans);
+    } else if (event is DetailReportViewTransDetail) {
+      TransRepository transRepository = new TransRepository();
+      Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
+      BinRepository binRepository = new BinRepository();
+      Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
+
+      if (trans.respMessage == null) trans.respMessage = '';
+      yield DetailReportShowTransDetail(trans, bin.brand);
     }
   }
 }

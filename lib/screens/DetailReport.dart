@@ -10,6 +10,8 @@ import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/spear_menu.dart';
 
+import 'LastSaleDetail.dart';
+
 class DetailReport extends StatelessWidget {
   final List<String> menuListWithVoid = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
   final List<String> menuList = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente']);
@@ -36,41 +38,55 @@ class DetailReport extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Center(
-                    child: Row(children: [
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Text(
-                      'Reporte Detallado',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                    ),
-                  ),
-                  BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                    if (state is DetailReportDataReady) {
-                      if (state.transList.length > 0)
-                        return IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.print_outlined),
-                          onPressed: () {
-                            final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+                child: Center(child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                  if (state is DetailReportDataReady) {
+                    return Row(children: [
+                      IconButton(
+                        color: Colors.white,
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'Reporte Detallado',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                        ),
+                      ),
+                      BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                        if (state is DetailReportDataReady) {
+                          if (state.transList.length > 0)
+                            return IconButton(
+                              color: Colors.white,
+                              icon: Icon(Icons.print_outlined),
+                              onPressed: () {
+                                final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                            detailReportBloc.add(DetailReportPrintReport(context));
-                          },
-                        );
-                      else
-                        return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                    } else
-                      return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                  }),
-                ])),
+                                detailReportBloc.add(DetailReportPrintReport(context));
+                              },
+                            );
+                          else
+                            return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                        } else
+                          return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                      }),
+                    ]);
+                  } else if (state is DetailReportShowTransDetail) {
+                    return Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        'Detalle De Transacción',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                      ),
+                    );
+                  } else {
+                    return Text('');
+                  }
+                })),
               ),
             ]),
             Expanded(
@@ -182,9 +198,11 @@ class DetailReport extends StatelessWidget {
                                             Spacer(flex: 2),
                                             Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
+                                                style: TextStyle(fontWeight: FontWeight.normal)),
                                             Spacer(flex: 4),
                                           ],
                                         ),
@@ -195,6 +213,31 @@ class DetailReport extends StatelessWidget {
                               },
                             ),
                           ),
+                        ],
+                      );
+                    } else if (state is DetailReportShowTransDetail) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Spacer(flex: 1),
+                          Text(state.trans.type + ' - ' + state.cardBrand, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                          Spacer(flex: 1),
+                          RowDetail(
+                              label: DateFormat('dd/MM/yyyy').format(state.trans.dateTime),
+                              strAmount: DateFormat('hh:mm:ss').format(state.trans.dateTime)),
+                          Spacer(flex: 1),
+                          RowDetail(label: "Ticket:", strAmount: state.trans.stan.toString()),
+                          Spacer(flex: 2),
+                          RowDetailAmount(label: "Total:", strAmount: formatter.format(state.trans.total / 100)),
+                          Spacer(flex: 2),
+                          RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
+                          Spacer(flex: 1),
+                          RowDetail(label: "Autorizacion:", strAmount: state.trans.authCode),
+                          Spacer(flex: 1),
+                          RowDetail(label: "Referencia:", strAmount: state.trans.referenceNumber),
+                          Spacer(flex: 2),
+                          if (state.trans.respCode == '00') btnEnter(context, true) else btnEnter(context, false),
+                          Spacer(flex: 1),
                         ],
                       );
                     } else
@@ -235,6 +278,8 @@ class DetailReport extends StatelessWidget {
       detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
     } else if (item.menuTitle == 'Copia del Cliente') {
       detailReportBloc.add(DetailReportPrintReceiptCopy(false, id, context));
+    } else if (item.menuTitle == 'Ver Detalles') {
+      detailReportBloc.add(DetailReportViewTransDetail(id));
     }
   }
 
@@ -244,5 +289,29 @@ class DetailReport extends StatelessWidget {
 
   void onDismiss() {
     //print('Menu is dismiss');
+  }
+
+  Widget btnEnter(BuildContext context, bool approved) {
+    Color btnColor = (approved) ? Colors.green : Colors.red;
+    IconData btnIcon = (approved) ? Icons.done_outline : Icons.error_outline;
+
+    return Container(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: FlatButton(
+        child: Icon(btnIcon, size: 35, color: Colors.white),
+        onPressed: () {
+          final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+          detailReportBloc.add(DetailReportInitialEvent());
+        },
+        color: btnColor,
+        padding: EdgeInsets.all(15.0),
+        splashColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: Colors.blueGrey)
+        ),
+      ),
+    );
   }
 }

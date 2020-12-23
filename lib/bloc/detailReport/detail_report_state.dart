@@ -16,3 +16,13 @@ class DetailReportDataReady extends DetailReportState {
   @override
   List<Object> get props => [transList];
 }
+
+class DetailReportShowTransDetail extends DetailReportState {
+  final Trans trans;
+  final String cardBrand;
+
+  DetailReportShowTransDetail(this.trans, this.cardBrand);
+
+  @override
+  List<Object> get props => [trans, cardBrand];
+}

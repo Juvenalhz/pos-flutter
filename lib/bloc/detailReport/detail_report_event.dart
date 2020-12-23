@@ -28,3 +28,12 @@ class DetailReportPrintReport extends DetailReportEvent {
   @override
   List<Object> get props => [context];
 }
+
+class DetailReportViewTransDetail extends DetailReportEvent {
+  final int id;
+
+  DetailReportViewTransDetail(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
