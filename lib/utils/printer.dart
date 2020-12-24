@@ -17,6 +17,7 @@ class Printer {
   Printer() {
     _channel.setMethodCallHandler(this._callHandler);
     currentSize = FONT_SIZE_NORMAL;
+    setFontSize(FONT_SIZE_NORMAL);
   }
 
   void addText(int alignMode, String text) async {
@@ -28,14 +29,14 @@ class Printer {
     int lineSize;
 
     if (currentSize == FONT_SIZE_SMALL)
-      lineSize = 50;
+      lineSize = 48;
     else
       lineSize = 32;
 
     text = left.padRight(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
     text += right.padLeft(lineSize ~/ 2, ' ').substring(0, lineSize ~/ 2);
 
-    int ret = await _channel.invokeMethod('addText', {'alignMode': RIGHT, 'data': text});
+    int ret = await _channel.invokeMethod('addText', {'alignMode': LEFT, 'data': text});
   }
 
   void addTextSideBySideWithCenter(String left, String center, String right) async {
@@ -50,11 +51,11 @@ class Printer {
       lineSize = 32;
 
     part = lineSize ~/ 3;
-    padCenter = center.length + ((part - center.length) ~/ 2) + 1;
+    padCenter = center.length + ((part - center.length) ~/ 2);
 
-    text = left.padRight((lineSize ~/ 3) + 1, ' ').substring(0, (lineSize ~/ 3) + 1);
+    text = left.padRight((lineSize ~/ 3), ' ').substring(0, (lineSize ~/ 3));
     text += center.padLeft(padCenter, ' ').padRight((lineSize ~/ 3), ' ').substring(0, lineSize ~/ 3);
-    text += right.padLeft((lineSize ~/ 3) + 1, ' ').substring(0, (lineSize ~/ 3) + 1);
+    text += right.padLeft((lineSize ~/ 3), ' ').substring(0, (lineSize ~/ 3));
 
     int ret = await _channel.invokeMethod('addText', {'alignMode': CENTER, 'data': text});
   }
@@ -87,6 +88,6 @@ class Printer {
   }
 
   addTextFillLine(String c) {
-    addText(LEFT, ''.padRight((currentSize == FONT_SIZE_SMALL) ? 50 : 32, c[0].toString()));
+    addText(LEFT, ''.padRight((currentSize == FONT_SIZE_SMALL) ? 48 : 32, c[0].toString()));
   }
 }
