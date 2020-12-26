@@ -56,6 +56,7 @@ class Trans {
   String _respMessage = '';
   int _binType = 0;
   int _foodBalance = 0;
+  bool _voided = false;
 
   Trans();
 
@@ -113,6 +114,7 @@ class Trans {
   String get respMessage => this._respMessage;
   int get binType => this._binType;
   int get foodBalance => this._foodBalance;
+  bool get voided => _voided;
 
   set id(int id) {
     this._id = id;
@@ -330,6 +332,10 @@ class Trans {
     this._foodBalance = foodBalance;
   }
 
+  set voided(bool voided) {
+    this._voided = voided;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -383,6 +389,7 @@ class Trans {
     map['respMessage'] = this._respMessage;
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
+    map['voided'] = this._voided;
 
     return map;
   }
@@ -438,11 +445,12 @@ class Trans {
     map['batchNum'] = this._batchNum;
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
+    map['voided'] = boolToInt(this._voided);
 
     return map;
   }
 
-  Trans.fromMap(Map<String, dynamic> trans)  {
+  Trans.fromMap(Map<String, dynamic> trans) {
     this._id = trans['id'];
     this._number = trans['number'];
     this._stan = trans['stan'];
@@ -490,6 +498,7 @@ class Trans {
     this._respMessage = trans['respMessage'];
     this._binType = trans['binType'];
     this._foodBalance = trans['foodBalance'];
+    this._voided = intToBool(trans['voided']);
   }
 
   void clear() {
@@ -546,6 +555,7 @@ class Trans {
     _respMessage = '';
     _binType = 0;
     _foodBalance = 0;
+    _voided = false;
   }
 
   void clearCardData() {

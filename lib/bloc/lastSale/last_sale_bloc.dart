@@ -79,7 +79,7 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
           int lastTransMonth = int.parse(respMap[6220].substring(5, 7));
           int lastTransYear = 2000 + int.parse(respMap[6220].substring(7, 9));
 
-          trans.type = 'Compra';
+          trans.type = 'Venta';
 
           if (lastTransState == 0)
             trans.respCode = '00';

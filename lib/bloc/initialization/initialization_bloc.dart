@@ -113,7 +113,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             merchant.maxTip = 0;
             merchant.logo = '';
 
-            await merchantRepository.createMerchant(merchant);
+            await merchantRepository.updateMerchant(merchant);
           }
           if (respMap[43] != null) {
             processField43(respMap[43], merchant);
