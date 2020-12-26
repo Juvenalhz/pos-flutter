@@ -21,10 +21,10 @@ class Receipt {
 
     printer.feedLine(2);
 
-    printer.print(onPrintReceiptOK, onPrintError);
+    printer.print(onPrintTransReceiptOK, onPrintError);
   }
 
-  void onPrintReceiptOK() {
+  void onPrintTransReceiptOK() {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     if (this.type)
@@ -47,5 +47,11 @@ class Receipt {
       printer.addText(Printer.CENTER, 'Customer Receipt');
 
     printer.feedLine(2);
+
+    printer.print(onPrintCopyReceiptOK, onPrintError);
+  }
+
+  void onPrintCopyReceiptOK() {
+
   }
 }
