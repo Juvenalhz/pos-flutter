@@ -13,6 +13,7 @@ import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/totalsReportBloc.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/testConfig.dart';
@@ -37,18 +38,21 @@ class MainMenu extends StatelessWidget {
           ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
             _createDrawerItem(
               //icon: Icons.calendar_view_day,
-              text: 'Reporte Resumen',
-//              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-                text: 'Reporte Detallado',
-                onTap: () {
-                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+              text: 'Reporte Totales',
+              onTap: () {
+                final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                  detailReportBloc.add(DetailReportInitialEvent());
-                  Navigator.pushNamed(context, '/DetailReport');
-                }),
+                totalsReportBloc.add(TotalsReportInitialEvent());
+                Navigator.pushNamed(context, '/TotalsReport');
+              }),
+            _createDrawerItem(
+              text: 'Reporte Detallado',
+              onTap: () {
+                final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                detailReportBloc.add(DetailReportInitialEvent());
+                Navigator.pushNamed(context, '/DetailReport');
+              }),
             _createDrawerItem(
               //icon: Icons.room_service,
               text: 'Reporte Meseros',

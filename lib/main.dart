@@ -1,9 +1,17 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/detailReport/detail_report_bloc.dart';
-import 'package:pay/bloc/echo_test/echo_test_bloc.dart';
+import 'package:pay/bloc/detailReportBloc.dart';
+import 'package:pay/bloc/echotestBloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
+import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
+import 'package:pay/bloc/comm/comm_bloc.dart';
+import 'package:pay/bloc/deleteReversalBloc.dart';
+import 'package:pay/bloc/initializationBloc.dart';
+import 'package:pay/bloc/lastSaleBloc.dart';
+import 'package:pay/bloc/terminalBloc.dart';
+import 'package:pay/bloc/transactionBloc.dart';
+import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
@@ -12,13 +20,6 @@ import 'package:pay/screens/mainScreen.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 
-import 'bloc/acquirer/acquirer_bloc.dart';
-import 'bloc/comm/comm_bloc.dart';
-import 'bloc/deleteReversal/delete_reversal_bloc.dart';
-import 'bloc/initialization/initialization_bloc.dart';
-import 'bloc/lastSaleBloc.dart';
-import 'bloc/terminal/terminal_bloc.dart';
-import 'bloc/transaction/transaction_bloc.dart';
 import 'repository/acquirer_repository.dart';
 
 void main() {
@@ -60,6 +61,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<EchoTestBloc>(create: (context) => EchoTestBloc()),
         BlocProvider<LastSaleBloc>(create: (context) => LastSaleBloc()),
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
+        BlocProvider<TotalsReportBloc>(create: (context) => TotalsReportBloc()),
       ], child: MainScreen()),
     ));
   }
