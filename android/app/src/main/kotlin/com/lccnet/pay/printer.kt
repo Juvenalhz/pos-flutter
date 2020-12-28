@@ -67,7 +67,7 @@ class Printer : MethodChannel.MethodCallHandler{
                 else{
                     var lineSize : Int
                     if (currentSize == FONT_SIZE_SMALL)
-                        lineSize = 50
+                        lineSize = 48
                     else
                         lineSize = 32
                     Log.i("printer", "|" + "".padEnd(lineSize, ' ') + "|")
@@ -138,7 +138,7 @@ class Printer : MethodChannel.MethodCallHandler{
         var lineSize : Int
 
         if (currentSize == FONT_SIZE_SMALL)
-            lineSize = 50
+            lineSize = 48
         else
             lineSize = 32
 
@@ -151,10 +151,10 @@ class Printer : MethodChannel.MethodCallHandler{
         line += "|"
         when (align) {
             AlignMode.RIGHT -> {
-                line += temp.padEnd(lineSize, ' ')
+                line += temp.padStart(lineSize, ' ')
             }
             AlignMode.LEFT -> {
-                line += temp.padStart(lineSize, ' ')
+                line += temp.padEnd(lineSize, ' ')
             }
             AlignMode.CENTER -> {
                 temp = temp.padStart( (lineSize - 1)  - (lineSize - temp.length) / 2, ' ')
