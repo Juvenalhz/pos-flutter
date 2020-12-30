@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/bin.dart';
+import 'package:pay/models/merchant.dart';
 import 'package:pay/models/trans.dart';
 
 class Confirmation extends StatelessWidget {
@@ -100,6 +102,8 @@ class Confirmation extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Spacer(flex: 1),
+                          Text(state.trans.type, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                          Spacer(flex: 1),
                           RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
                           Spacer(flex: 1),
                           RowDetail(label: "Cedula:", strAmount: state.trans.cardholderID),
@@ -113,16 +117,12 @@ class Confirmation extends StatelessWidget {
                           else if (state.trans.accType == 1)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
                           Spacer(flex: 3),
-                          RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
-                          Spacer(flex: 1),
-                          RowDetailAmount(label: "Propina:", strAmount: formattedTip),
-                          Spacer(flex: 1),
-                          Divider(
-                            thickness: 4,
-                            indent: 30,
-                            endIndent: 30,
-                          ),
-                          Spacer(flex: 1),
+                          if (state.acquierer.industryType) RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
+                          if (state.acquierer.industryType) Spacer(flex: 1),
+                          if (state.acquierer.industryType) RowDetailAmount(label: "Propina:", strAmount: formattedTip),
+                          if (state.acquierer.industryType) Spacer(flex: 1),
+                          if (state.acquierer.industryType) Divider(thickness: 4, indent: 30, endIndent: 30),
+                          if (state.acquierer.industryType) Spacer(flex: 1),
                           RowDetailAmount(label: "Total:", strAmount: formattedTotal),
                           Spacer(flex: 2),
                           Padding(
@@ -156,7 +156,7 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.cancel, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransAskAmount());
+          transactionBloc.add(TransCardError());
         },
         color: Colors.red,
         padding: EdgeInsets.all(15.0),

@@ -92,6 +92,9 @@ class HostMessage {
       case 4:
         temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
         break;
+      case 13:
+        temp += bcdToStr(AsciiEncoder().convert(data));
+        break;
       case 18:
         temp += bcdToStr(AsciiEncoder().convert(data.padRight(2, ' ')));
         break;
@@ -128,13 +131,10 @@ class HostMessage {
       respMap[38] = Random().nextInt(999999).toString().padLeft(6, '0');
       respMap[39] = '00';
       respMap[41] = merchant.tid.padLeft(8, '0');
-
-    }
-    else {
+    } else {
       isoResponse.dataType(60, DT.BIN);
       isoResponse.dataType(61, DT.BIN);
-      if (_msgId == 800)
-        isoResponse.dataType(62, DT.BIN);
+      if (_msgId == 800) isoResponse.dataType(62, DT.BIN);
 
       isoResponse.setIsoContent(response);
       if (isDev) {
@@ -163,9 +163,8 @@ class HostMessage {
     }
     return respMap;
   }
-
-
 }
+
 class MessageInitialization extends HostMessage {
   Comm _comm;
   Iso8583 message;
@@ -210,11 +209,9 @@ class MessageInitialization extends HostMessage {
 
     return message.buildIso();
   }
-
-
 }
 
-class TransactionMessage extends HostMessage{
+class TransactionMessage extends HostMessage {
   Iso8583 message;
   Trans trans;
   Comm _comm;
@@ -282,7 +279,7 @@ class ReversalMessage extends HostMessage {
   Trans trans;
   Comm _comm;
 
-  ReversalMessage(this.trans, this._comm) : super(_comm, 400){
+  ReversalMessage(this.trans, this._comm) : super(_comm, 400) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
@@ -339,7 +336,7 @@ class EchoTestMessage extends HostMessage {
   Iso8583 message;
   Comm _comm;
 
-  EchoTestMessage(this._comm) : super(_comm, 400){
+  EchoTestMessage(this._comm) : super(_comm, 400) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
@@ -355,8 +352,8 @@ class EchoTestMessage extends HostMessage {
 
     message.setMID(800);
     message.fieldData(3, '990000');
-    message.fieldData(7, dateTime.month.toString() + dateTime.day.toString() +
-                         dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+    message.fieldData(
+        7, dateTime.month.toString() + dateTime.day.toString() + dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
     message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
@@ -380,7 +377,7 @@ class LastSaleMessage extends HostMessage {
   Iso8583 message;
   Comm _comm;
 
-  LastSaleMessage(this._comm) : super(_comm, 400){
+  LastSaleMessage(this._comm) : super(_comm, 400) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
@@ -403,6 +400,68 @@ class LastSaleMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     message.fieldData(60, '01.00');
 
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+}
+
+class VoidMessage extends HostMessage {
+  Iso8583 message;
+  Trans trans;
+  Comm _comm;
+
+  VoidMessage(this.trans, this._comm) : super(_comm, 200) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    TransRepository transRepository = new TransRepository();
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    String originalData;
+
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+
+    message.setMID(200);
+    message.fieldData(3, '020000');
+    message.fieldData(4, trans.total.toString());
+    message.fieldData(11, (await getStan()).toString());
+    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    message.fieldData(22, trans.entryMode.toString());
+    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(25, '00');
+    message.fieldData(35, trans.track2);
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    message.fieldData(49, merchant.currencyCode.toString());
+    message.fieldData(60, '01.00');
+
+    originalData = trans.referenceNumber;
+    originalData += trans.stan.toString().padLeft(6, '0');
+    originalData += trans.authCode;
+    originalData += trans.id.toString().padLeft(4, '0');
+
+    field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(13, originalData);
+    field62 += addField62Table(18, merchant.acquirerCode.toString());
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/TransApprovedScreen.dart';
@@ -29,6 +30,11 @@ class Transaction extends StatelessWidget {
     return BlocListener<TransactionBloc, TransactionState>(
             listener: (context, state) {
               if ((state is TransactionFinish) || (state is TransactionError)){
+                if ((state is TransactionFinish) && (state.trans.type == 'Anulación')){
+                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                  detailReportBloc.add(DetailReportInitialEvent());
+                }
                 Navigator.of(context).pop();
               }
           },

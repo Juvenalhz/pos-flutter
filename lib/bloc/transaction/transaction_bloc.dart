@@ -38,6 +38,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   static Communication connection;
   TransactionMessage message;
   ReversalMessage reversalMessage;
+  VoidMessage voidMessage;
   TransRepository transRepository = new TransRepository();
   TerminalRepository terminalRepository = new TerminalRepository();
   CommRepository commRepository = new CommRepository();
@@ -49,7 +50,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionBloc(this.context) : super(TransactionInitial());
 
   @override
-  Stream<TransactionState> mapEventToState(TransactionEvent event,) async* {
+  Stream<TransactionState> mapEventToState(
+    TransactionEvent event,
+  ) async* {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -61,7 +64,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
-
     }
     // read base amount
     else if (event is TransStartTransaction) {
@@ -80,7 +82,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.stan = await getStan();
       trans.acquirer = merchant.acquirerCode;
 
-      if (acquirer.industryType)  // true = restaurant
+      if (acquirer.industryType) // true = restaurant
         yield TransactionAddTip(trans);
       else
         this.add(TransAddTip(0)); // skip tip prompt
@@ -106,6 +108,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAskTip) {
       trans.tip = event.tip;
       yield TransactionAddTip(trans);
+    }
+    // start void transaction for the id
+    else if (event is TransVoidTransaction) {
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+      trans = Trans.fromMap(await transRepository.getTrans(event.id));
+
+      if (trans.type == 'Venta') trans.type = 'Anulación';
+
+      if (emvTablesInit == false) {
+        this.add(TransLoadEmvTables(this.pinpad));
+        emvTablesInit = true;
+      } else
+        this.add(TransGetCard());
     }
     // configure EMV parameters to pinpad module
     else if (event is TransLoadEmvTables) {
@@ -167,13 +183,23 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (event.trans.cardType == Pinpad.MAG_STRIPE) {
           if (acquirer.last4Digits)
             yield TransactionAskLast4Digits();
-          else if (acquirer.cvv2)
-            yield TransactionAskCVV();
-          else
-            yield TransactionAskIdNumber();
+          else if (acquirer.cvv2) {
+            if (trans.type == 'Venta')
+              yield TransactionAskCVV();
+            else
+              yield TransactionAskConfirmation(trans, acquirer);
+          } else {
+            if (trans.type == 'Venta')
+              yield TransactionAskIdNumber();
+            else
+              yield TransactionAskConfirmation(trans, acquirer);
+          }
         } else {
           if (_validateChipData(trans) == true) {
-            yield TransactionAskIdNumber();
+            if (trans.type == 'Venta')
+              yield TransactionAskIdNumber();
+            else
+              yield TransactionAskConfirmation(trans, acquirer);
           } else {
             yield TransactionShowMessage(("Error en Tarjeta"));
             trans.clear();
@@ -186,9 +212,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // last 4 digits entered need to match
     else if (event is TransAddLast4) {
       if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
-        if (acquirer.cvv2)
-          yield TransactionAskCVV();
-        else
+        if (acquirer.cvv2) {
+          if (trans.type == 'Venta')
+            yield TransactionAskCVV();
+          else
+            yield TransactionAskConfirmation(trans, acquirer);
+        } else
           yield TransactionAskIdNumber();
       } else {
         yield TransactionShowMessage('Ultimos 4 Digitos No Coinciden, Intente Nuevamente');
@@ -233,11 +262,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.cardholderID = event.idNumber.toString();
       trans.binType = bin.cardType;
 
-      if (trans.binType == Bin.TYPE_DEBIT)
-      {
+      if (trans.binType == Bin.TYPE_DEBIT) {
         yield TransactionAskAccountType();
       } else
-        yield TransactionAskConfirmation(trans);
+        yield TransactionAskConfirmation(trans, acquirer);
     }
     // account type ase selected
     else if (event is TransAddAccountType) {
@@ -247,10 +275,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '');  // parameter 3 and 4 are not shown by the BC library
-      }
-      else
-         yield TransactionAskConfirmation(trans);
+        await pinpad.askPin(terminal.keyIndex, trans.pan, '', ''); // parameter 3 and 4 are not shown by the BC library
+      } else
+        yield TransactionAskConfirmation(trans, acquirer);
     }
     // online pin was entered for swiped cases
     else if (event is TransPinEntered) {
@@ -259,7 +286,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.onlinePIN = true;
       }
       if (event.pinData['PINKSN'] != null) trans.pinKSN = event.pinData['PINKSN'];
-      yield TransactionAskConfirmation(trans);
+      yield TransactionAskConfirmation(trans, acquirer);
     }
     // continue chip card emv flow, will perform risk analisys, pin entry, online/offline decision
     else if (event is TransGoOnChip) {
@@ -329,7 +356,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // reversal request
     else if (event is TransSendReversal) {
-
       if (await transRepository.getCountReversal() != 0) {
         Trans transReversal = Trans.fromMap(await transRepository.getTransReversal());
         Comm comm = Comm.fromMap(await commRepository.getComm(1));
@@ -342,8 +368,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           connection.sendMessage(await reversalMessage.buildMessage());
 
         this.add(TransReceiveReversal(transReversal));
-      }
-      else
+      } else
         this.add(TransSendRequest());
     }
     // reversal response
@@ -351,19 +376,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Uint8List response;
 
       response = await connection.receiveMessage();
-      if (response  == null){
+      if (response == null) {
         trans.clear();
         yield TransactionShowMessage('Error - Timeout de comunicación');
         await new Future.delayed(const Duration(seconds: 3));
         yield TransactionError();
-      }
-      else if ((connection.frameSize != 0) || (isCommOffline == true)) {
+      } else if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await reversalMessage.parseRenponse(response, trans: trans);
         if (respMap[39] == '00') {
           await transRepository.deleteTrans(event.transReversal.id);
           this.add(TransSendRequest());
-        }
-        else  // error in reversal
+        } else // error in reversal
           yield TransactionError();
       }
     }
@@ -372,17 +395,27 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
       yield TransactionSending();
-      message = new TransactionMessage(trans, comm);
-      if ((isDev == true) && (isCommOffline == true))
-        await message.buildMessage();
-      else
-        connection.sendMessage(await message.buildMessage());
+      if (trans.type == 'Venta') {
+        message = new TransactionMessage(trans, comm);
+        if ((isDev == true) && (isCommOffline == true))
+          await message.buildMessage();
+        else
+          connection.sendMessage(await message.buildMessage());
+      } else {
+        voidMessage = new VoidMessage(trans, comm);
+        if ((isDev == true) && (isCommOffline == true))
+          await voidMessage.buildMessage();
+        else
+          connection.sendMessage(await voidMessage.buildMessage());
+      }
+
       trans.stan = await getStan();
       // save reversal
-      trans.reverse = true;
-      await transRepository.createTrans(trans);
-      trans.reverse = false;
-
+      if (trans.type == 'Venta') {
+        trans.reverse = true;
+        await transRepository.createTrans(trans);
+        trans.reverse = false;
+      }
       incrementStan();
       this.add(TransReceive());
     }
@@ -393,7 +426,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       if (isCommOffline == false) {
         response = await connection.receiveMessage();
-        if (response  == null){
+        if (response == null) {
           trans.clear();
           yield TransactionShowMessage('Error - Timeout de comunicación');
           await new Future.delayed(const Duration(seconds: 3));
@@ -401,7 +434,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         }
       }
       if ((connection.frameSize != 0) || (isCommOffline == true)) {
-        Map<int, String> respMap = await message.parseRenponse(response, trans: trans);
+        Map<int, String> respMap;
+
+        if (trans.type == 'Venta')
+          respMap = await message.parseRenponse(response, trans: trans);
+        else
+          respMap = await voidMessage.parseRenponse(response, trans: trans);
+
         this.add(TransProcessResponse(respMap));
       }
       connection.disconnect();
@@ -419,27 +458,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         // reversal is stored in the DB
         trans.respMessage = 'Error En Respuesta';
         yield TransactionRejected(trans);
-      }
-      else {
-        if (event.respMap[39] != null)
-          trans.respCode = event.respMap[39];
+      } else {
+        if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
-          if (event.respMap[37] != null)
-            trans.referenceNumber = event.respMap[37];
-          if (event.respMap[38] != null)
-            trans.authCode = event.respMap[38];
-          if (event.respMap[55] != null)
-            trans.responseEmvTags = event.respMap[55];
+          if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
+          if (event.respMap[38] != null) trans.authCode = event.respMap[38];
+          if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
 
           if (trans.cardType == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {
-            transRepository.updateTrans(trans);
+            if (trans.type == 'Venta')
+              transRepository.updateTrans(trans);
+            else {
+              trans.id = (await transRepository.getMaxId()) + 1;
+              transRepository.createTrans(trans);
+            }
             yield TransactionCompleted(trans);
           }
-        }
-        else {
+        } else {
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
         }
@@ -461,26 +499,23 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (trans.cardDecision == 0) {
         transRepository.updateTrans(trans);
         yield TransactionCompleted(trans);
-      }
-      else{
+      } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
-    }
-    else if (event is TransMercahntReceipt) {
+    } else if (event is TransMercahntReceipt) {
       Receipt receipt = new Receipt(context);
 
       yield TransactionPrintMerchantReceipt(trans);
       receipt.printTransactionReceipt(true, trans);
       this.add(TransCustomerReceipt());
-    }
-    else if (event is TransCustomerReceipt) {
+    } else if (event is TransCustomerReceipt) {
       Receipt receipt = new Receipt(context);
 
       yield TransactionPrintCustomerReceipt(trans);
       receipt.printTransactionReceipt(false, trans);
       await new Future.delayed(const Duration(seconds: 3));
-      yield TransactionFinish();
+      yield TransactionFinish(trans);
     }
     // pinpad error detected
     else if (event is TransCardError) {
@@ -501,5 +536,4 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int binId = await binRepository.getBinId(pan.substring(0, 8));
     return binId;
   }
-
 }
