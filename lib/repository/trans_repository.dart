@@ -24,5 +24,5 @@ class TransRepository {
 
   Future getMaxId() => appdb.queryMaxId('trans');
 
-  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
+  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0 and type <> \'Anulación\' ');
 }
