@@ -5,9 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
+import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 import 'LastSaleDetail.dart';
@@ -195,15 +197,16 @@ class DetailReport extends StatelessWidget {
                                         padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
                                         child: Row(
                                           children: [
-                                            Spacer(flex: 2),
-                                            Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 4),
+                                            Spacer(flex: 1),
+                                            SizedBox(width: 70, child: Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal))),
+                                            Spacer(flex: 1),
+                                            SizedBox(
+                                                width: 90,
+                                                child: Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
+                                                    textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.normal))),
+                                            Spacer(flex: 1),
+                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
+                                            Spacer(flex: 3),
                                           ],
                                         ),
                                       ),
@@ -280,6 +283,13 @@ class DetailReport extends StatelessWidget {
       detailReportBloc.add(DetailReportPrintReceiptCopy(false, id, context));
     } else if (item.menuTitle == 'Ver Detalles') {
       detailReportBloc.add(DetailReportViewTransDetail(id));
+    } else if (item.menuTitle == 'Anulación') {
+      final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+      Pinpad pinpad = new Pinpad(context);
+      //TODO: this pinpad instance for now is a work around, need a way to remove it as it will not be used
+      transactionBloc.add(TransInitPinpad(pinpad));
+      transactionBloc.add(TransVoidTransaction(id));
+      Navigator.pushNamed(context, '/transaction');
     }
   }
 

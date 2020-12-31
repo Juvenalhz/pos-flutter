@@ -22,13 +22,13 @@ class Pinpad {
   }
 
   Future<int> getCard(Map<String, dynamic> trans) async {
-    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
+    trans['dateTime'] = trans['dateTime'];
     int ret = await _channel.invokeMethod('getCard', {'trans': trans});
     return ret;
   }
 
   Future<int> goOnChip(Map<String, dynamic> trans, Map<String, dynamic> terminal, Map<String, dynamic> aid) async {
-    trans['dateTime'] = (trans['dateTime'] as DateTime).toString();
+    trans['dateTime'] = trans['dateTime'];
     int ret = await _channel.invokeMethod('goOnChip', {'trans': trans, 'keyIndex': terminal['keyIndex'], 'aid': aid});
     return ret;
   }
@@ -39,7 +39,7 @@ class Pinpad {
   }
 
   Future<int> askPin(int keyIndex, String pan, String msg1, String msg2) async {
-    int ret = await _channel.invokeMethod('askPin', {'keyIndex':keyIndex, 'pan':pan, 'msg1': msg1, 'msg2': msg2});
+    int ret = await _channel.invokeMethod('askPin', {'keyIndex': keyIndex, 'pan': pan, 'msg1': msg1, 'msg2': msg2});
     return ret;
   }
 
@@ -94,8 +94,8 @@ class Pinpad {
     }
 
     // handle error cases  - do not group on else if section
-    else if  ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
-      if (params['resultCode'] != 0){
+    else if ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
+      if (params['resultCode'] != 0) {
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());
       }

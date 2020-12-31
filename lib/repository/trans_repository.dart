@@ -14,6 +14,8 @@ class TransRepository {
 
   Future deleteTrans(int id) => appdb.delete('trans', id);
 
+  Future deleteAllTrans() => appdb.deleteAll('trans');
+
   Future getCountTrans() => appdb.queryRowCount('trans', where: 'reverse=0');
 
   Future getCountReversal() => appdb.queryRowCount('trans', where: 'reverse=1');
@@ -22,5 +24,5 @@ class TransRepository {
 
   Future getMaxId() => appdb.queryMaxId('trans');
 
-  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
+  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0 and type <> \'Anulación\' ');
 }

@@ -342,7 +342,7 @@ class Trans {
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
-    map['dateTime'] = this._dateTime;
+    map['dateTime'] = this._dateTime.toString();
     map['type'] = this._type;
     map['reverse'] = boolToInt(this._reverse);
     map['advice'] = boolToInt(this._advice);
@@ -389,7 +389,7 @@ class Trans {
     map['respMessage'] = this._respMessage;
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
-    map['voided'] = this._voided;
+    map['voided'] = boolToInt(this._voided);
 
     return map;
   }
