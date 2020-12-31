@@ -33,6 +33,7 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Pinpad pinpad;
   var trans = new Trans();
+  var originalTrans = new Trans();
   BuildContext context;
   bool emvTablesInit = false;
   static Communication connection;
@@ -113,9 +114,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransVoidTransaction) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-      trans = Trans.fromMap(await transRepository.getTrans(event.id));
+      originalTrans = Trans.fromMap(await transRepository.getTrans(event.id));
+      trans = Trans.fromMap(originalTrans.toMap());
 
       if (trans.type == 'Venta') trans.type = 'Anulación';
+      trans.dateTime = DateTime.now();
 
       if (emvTablesInit == false) {
         this.add(TransLoadEmvTables(this.pinpad));
@@ -472,6 +475,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             if (trans.type == 'Venta')
               transRepository.updateTrans(trans);
             else {
+              //update original transaaction
+              originalTrans.voided = true;
+              transRepository.updateTrans(originalTrans);
+              //add void to database
               trans.id = (await transRepository.getMaxId()) + 1;
               transRepository.createTrans(trans);
             }
@@ -497,7 +504,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
       if (trans.cardDecision == 0) {
-        transRepository.updateTrans(trans);
+        if (trans.type == 'Venta')
+          transRepository.updateTrans(trans);
+        else {
+          //update original transaaction
+          originalTrans.voided = true;
+          transRepository.updateTrans(originalTrans);
+          //add void to database
+          trans.id = (await transRepository.getMaxId()) + 1;
+          transRepository.createTrans(trans);
+        }
         yield TransactionCompleted(trans);
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';

@@ -197,13 +197,16 @@ class DetailReport extends StatelessWidget {
                                         padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
                                         child: Row(
                                           children: [
-                                            Spacer(flex: 2),
-                                            Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
+                                            Spacer(flex: 1),
+                                            SizedBox(width: 70, child: Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal))),
+                                            Spacer(flex: 1),
+                                            SizedBox(
+                                                width: 90,
+                                                child: Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
+                                                    textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.normal))),
+                                            Spacer(flex: 1),
                                             Text(DateFormat('hh:mm:ss').format(trans.dateTime), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 4),
+                                            Spacer(flex: 3),
                                           ],
                                         ),
                                       ),
