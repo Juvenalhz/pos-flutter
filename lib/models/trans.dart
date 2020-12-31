@@ -57,6 +57,7 @@ class Trans {
   int _binType = 0;
   int _foodBalance = 0;
   bool _voided = false;
+  String _issuer = '';
 
   Trans();
 
@@ -115,6 +116,7 @@ class Trans {
   int get binType => this._binType;
   int get foodBalance => this._foodBalance;
   bool get voided => _voided;
+  String get issuer => _issuer;
 
   set id(int id) {
     this._id = id;
@@ -336,6 +338,10 @@ class Trans {
     this._voided = voided;
   }
 
+  set issuer(String issuer) {
+    this._issuer = issuer;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -390,6 +396,7 @@ class Trans {
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
     map['voided'] = this._voided;
+    map['issuer'] = this._issuer;
 
     return map;
   }
@@ -446,6 +453,7 @@ class Trans {
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
+    map['issuer'] = this._issuer;
 
     return map;
   }
@@ -499,6 +507,7 @@ class Trans {
     this._binType = trans['binType'];
     this._foodBalance = trans['foodBalance'];
     this._voided = intToBool(trans['voided']);
+    this._issuer = trans['issuer'];
   }
 
   void clear() {
@@ -556,6 +565,7 @@ class Trans {
     _binType = 0;
     _foodBalance = 0;
     _voided = false;
+    _issuer = '';
   }
 
   void clearCardData() {
@@ -590,6 +600,7 @@ class Trans {
     _pinKSN = '';
     _binType = 0;
     _foodBalance = 0;
+    _issuer = '';
   }
 
   Future<String> getClearPan() async {
