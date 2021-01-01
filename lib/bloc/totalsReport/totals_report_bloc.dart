@@ -22,10 +22,10 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
   ) async* {
     if (event is TotalsReportInitialEvent) {
       TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
+      List<Map<String, dynamic>> totals = await transRepository.getTotalsData();
       List<Trans> listTrans = new List<Trans>();
 
-      transList.forEach((element) {
+      totals.forEach((element) {
         listTrans.add(Trans.fromMap(element));
       });
 
