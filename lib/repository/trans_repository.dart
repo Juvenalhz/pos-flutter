@@ -25,7 +25,6 @@ class TransRepository {
   Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
 
   Future getTotalsData() => appdb.queryRow(
-    'select count(a.id) as count, sum(a.total) as total, a.issuer as issuer, a.bin as bin, b.brand as brand from trans as a, bin as b ' +
-    'where a.bin = b.id and a.voided = 0 and a.type<>\'Anulación\' and a.reverse = 0 group by b.brand , a.issuer order by a.issuer'
-  );
+      'select count(a.id) as count, sum(a.total) as total, a.issuer as issuer, a.bin as bin, b.brand as brand, a.acquirer as acquirer from trans as a, bin as b ' +
+          'where a.bin = b.id and a.voided = 0 and a.type<>\'Anulación\' and a.reverse = 0 group by b.brand , a.issuer order by a.issuer');
 }
