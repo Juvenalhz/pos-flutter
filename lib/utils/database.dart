@@ -460,4 +460,10 @@ class DatabaseHelper {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
   }
+
+  Future<List<Map<String, dynamic>>> queryRow(String query) async {
+    Database db = await instance.database;
+
+    return db.rawQuery(query);
+  }
 }
