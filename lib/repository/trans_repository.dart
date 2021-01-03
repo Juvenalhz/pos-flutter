@@ -14,6 +14,8 @@ class TransRepository {
 
   Future deleteTrans(int id) => appdb.delete('trans', id);
 
+  Future deleteAllTrans() => appdb.deleteAll('trans');
+
   Future getCountTrans() => appdb.queryRowCount('trans', where: 'reverse=0');
 
   Future getCountReversal() => appdb.queryRowCount('trans', where: 'reverse=1');
@@ -25,6 +27,9 @@ class TransRepository {
   Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
 
   Future getTotalsData() => appdb.queryRow(
-      'select count(a.id) as count, sum(a.total) as total, a.issuer as issuer, a.bin as bin, b.brand as brand, a.acquirer as acquirer from trans as a, bin as b ' +
-          'where a.bin = b.id and a.voided = 0 and a.type<>\'Anulación\' and a.reverse = 0 group by b.brand , a.issuer order by a.issuer');
+      'select c.name as acquirer, a.issuer as issuer, b.brand as brand,  b.cardType as cardType, count(a.id) as count, sum(a.total) as total ' +
+          'from trans as a, bin as b, acquirer as c ' +
+          'where a.bin = b.id and a.voided = 0 and a.type<>\'Anulación\' and a.reverse = 0 ' +
+          'group by b.brand , a.issuer, b.cardType ' +
+          'order by a.acquirer, a.issuer, b.cardType');
 }
