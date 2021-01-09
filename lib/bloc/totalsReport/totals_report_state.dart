@@ -10,11 +10,11 @@ class TotalsReportInitial extends TotalsReportState {
 }
 
 class TotalsReportDataReady extends TotalsReportState {
-  final List<Trans> transList;
+  final List<Map<String, dynamic>> totalsData;
 
-  TotalsReportDataReady(this.transList);
+  TotalsReportDataReady(this.totalsData);
   @override
-  List<Object> get props => [transList];
+  List<Object> get props => [totalsData];
 }
 
 

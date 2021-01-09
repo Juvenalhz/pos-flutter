@@ -22,10 +22,11 @@ class TotalsReportPrintReceiptCopy extends TotalsReportEvent {
 
 class TotalsReportPrintReport extends TotalsReportEvent {
   final BuildContext context;
+  final List<Map<String, dynamic>> totalsData;
 
-  TotalsReportPrintReport(this.context);
+  TotalsReportPrintReport(this.context, this.totalsData);
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [context, totalsData];
 }
 

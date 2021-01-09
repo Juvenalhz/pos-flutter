@@ -58,14 +58,14 @@ class TotalsReport extends StatelessWidget {
                       ),
                       BlocBuilder<TotalsReportBloc, TotalsReportState>(builder: (context, state) {
                         if (state is TotalsReportDataReady) {
-                          if (state.transList.length > 0)
+                          if (state.totalsData.length > 0)
                             return IconButton(
                               color: Colors.white,
                               icon: Icon(Icons.print_outlined),
                               onPressed: () {
                                 final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                                totalsReportBloc.add(TotalsReportPrintReport(context));
+                                totalsReportBloc.add(TotalsReportPrintReport(context, state.totalsData));
                               },
                             );
                           else
@@ -94,107 +94,92 @@ class TotalsReport extends StatelessWidget {
                     if (state is TotalsReportDataReady) {
                       return Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                                      child: Text('Ticket', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    ),
-                                    Spacer(flex: 2),
-                                    Text('No. Tarjeta', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    Spacer(flex: 3),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                      child: Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Spacer(flex: 3),
-                                    Text('Tipo', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    Spacer(flex: 3),
-                                    Text('Fecha', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    Spacer(flex: 4),
-                                    Text('Hora', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    Spacer(flex: 5),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                          SizedBox(height: 25),
                           Expanded(
                             child: ListView.builder(
                               physics: new ClampingScrollPhysics(),
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
-                              itemCount: state.transList.length,
+                              itemCount: state.totalsData.length,
                               controller: ScrollController(),
                               itemBuilder: (context, index) {
                                 GlobalKey btnKey = GlobalKey();
-                                Trans trans = state.transList[index];
+                                Trans trans = new Trans();
+                                String acquirer;
+                                String acquirerShort;
+                                Map<String, dynamic> totals = state.totalsData[index]['totals'];
+                                int countTDCOwn = totals['visaCount'] + totals['mastercardCount'] + totals['dinersCount'] + totals['privateCount'];
+                                int totalTDCOwn = totals['visaAmount'] + totals['mastercardAmount'] + totals['dinersAmount'] + totals['privateAmount'];
+                                int countTDCOther = totals['visaOtherCount'] + totals['mastercardOtherCount'] + totals['dinersOtherCount'] + totals['privateOtherCount'];
+                                int totalTDCOther = totals['visaOtherAmount']+totals['mastercardOtherAmount']+ totals['dinersOtherAmount']+totals['privateOtherAmount'];
+
+                                int countTDD = totals['debitCount'] + totals['debitOtherCount'];
+                                int totalTDD = totals['debitAmount'] + totals['debitOtherAmount'];
+                                int countTDDElectron = totals['electronCount'] + totals['electronOtherCount'];
+                                int totalTDDElectron = totals['electronAmount']+totals['electronOtherAmount'];
+
+                                int totalTCD_TDD = totalTDCOwn + totalTDCOther + totalTDD + totalTDDElectron;
+
+
+                                if (state.totalsData[index]['acquirer'].toLowerCase().contains('platco')) {
+                                  acquirer = 'Platco';
+                                  acquirerShort = 'PL';
+                                }
+                                else if (state.totalsData[index]['acquirer'].toLowerCase().contains('mercantil')) {
+                                  acquirer = 'Mercantil';
+                                  acquirerShort = 'BM';
+                                }
+                                else if (state.totalsData[index]['acquirer'].toLowerCase().contains('provincial')) {
+                                  acquirer = 'Provincial';
+                                  acquirerShort = 'BP';
+                                }
+
                                 return Card(
                                   elevation: 3,
                                   child: Column(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
-                                        child: Row(
-                                          //mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            InkWell(
-                                              key: btnKey,
-                                              splashColor: Colors.blueAccent.withAlpha(180),
-                                              child: Icon(Icons.more_vert_outlined),
-                                              onTap: () {
 
-                                              },
-                                            ),
-                                            Spacer(flex: 1),
-                                            Text(trans.id.toString(), style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 6),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(trans.maskedPAN,
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.normal,
-                                                    fontFeatures: [FontFeature.tabularFigures()],
-                                                  )),
-                                            ),
-                                            Spacer(flex: 2),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(formatter.format(trans.total / 100),
-                                                  textAlign: TextAlign.right,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.normal,
-                                                    fontFeatures: [FontFeature.tabularFigures()],
-                                                  )),
-                                            ),
-                                          ],
-                                        ),
+                                      Text('ADQUIRIENCIA: ' + state.totalsData[index]['acquirer'],
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(fontWeight: FontWeight.bold)
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
-                                        child: Row(
-                                          children: [
-                                            Spacer(flex: 2),
-                                            Text(trans.type, style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('dd/MM/yyyy').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 2),
-                                            Text(DateFormat('hh:mm:ss').format(trans.dateTime),
-                                                style: TextStyle(fontWeight: FontWeight.normal)),
-                                            Spacer(flex: 4),
-                                          ],
-                                        ),
-                                      ),
+                                      SizedBox(height: 9),
+                                      Text('TDC ' + acquirer, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 9),
+                                      TotalsDetailLine(totals['visaCount'], 'VISA ' + acquirerShort, totals['visaAmount']),
+                                      TotalsDetailLine(totals['mastercardCount'], 'MASTER ' + acquirerShort, totals['mastercardAmount']),
+                                      TotalsDetailLine(totals['dinersCount'], 'DINERS ' + acquirerShort, totals['dinersAmount']),
+                                      TotalsDetailLine(totals['privateCount'], 'Tarj. PRIV ' + acquirerShort, totals['privateAmount']),
+                                      TotalsDetailLine(countTDCOwn, 'Total TDC ' + acquirerShort, totalTDCOwn),
+                                      SizedBox(height: 9),
+                                      Text('TDC OTROS BANCOS', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 9),
+                                      TotalsDetailLine(totals['visaOtherCount'], 'VISA o/Ban' , totals['visaOtherAmount']),
+                                      TotalsDetailLine(totals['mastercardOtherCount'], 'MASTER  o/Ban', totals['mastercardOtherAmount']),
+                                      if (totals['dinersOtherCount'] != 0)
+                                        TotalsDetailLine(totals['dinersOtherCount'], 'DINERS  o/Ban', totals['dinersOtherAmount']),
+                                      if (totals['privateOtherCount'] != 0)
+                                        TotalsDetailLine(totals['privateOtherCount'], 'Tarj. PRIV  o/Ban' , totals['privateOtherAmount']),
+                                      TotalsDetailLine(countTDCOther, 'Total TDC o/Ban', totalTDCOther),
+                                      TotalsLine('Total TDC', totalTDCOwn + totalTDCOther),
+                                      SizedBox(height: 9),
+                                      Text('TDD', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 9),
+                                      TotalsDetailLine(totals['debitCount'], 'Total TDD ' + acquirerShort , totals['debitAmount']),
+                                      TotalsDetailLine(totals['debitOtherCount'], 'Total TDD o/Ban', totals['debitOtherAmount']),
+                                      SizedBox(height: 9),
+                                      Text('TDD VISA ELECTRON', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 9),
+                                      TotalsDetailLine(totals['electronCount'], 'Total TVE ' + acquirerShort , totals['electronAmount']),
+                                      TotalsDetailLine(totals['electronOtherCount'], 'Total TVE o/Ban', totals['electronOtherAmount']),
+                                      TotalsLine('Total TDD', totalTDD + totalTDDElectron),
+                                      SizedBox(height: 9),
+                                      Text('ALIMENTACIÓN', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 9),
+                                      TotalsDetailLine(totals['foodCount'], 'Total TAE ' , totals['foodAmount']),
+                                      SizedBox(height: 12),
+                                      TotalsLine('Total TDC+TDD', totalTCD_TDD),
+                                      TotalsLine('Total Cestaticket', totals['foodAmount']),
                                     ],
                                   ),
                                 );
@@ -213,6 +198,70 @@ class TotalsReport extends StatelessWidget {
     );
   }
 
+  Widget TotalsDetailLine(int count, String label, int amount) {
+    var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
+      child: Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Spacer(flex: 1),
+          SizedBox(
+            width: 40,
+            child: Text(count.toString().padLeft(4, '0'),
+                textAlign: TextAlign.right,
+                style: TextStyle(fontWeight: FontWeight.normal)),
+          ),
+          Spacer(flex: 2),
+          SizedBox(
+            width: 130,
+            child: Text(label, style: TextStyle(fontWeight: FontWeight.normal)),
+          ),
+          Spacer(flex: 6),
+          SizedBox(
+            width: 100,
+            child: Text(formatter.format(amount / 100),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                )),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  Widget TotalsLine(String label, int amount) {
+    var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
+      child: Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Spacer(flex: 1),
+          SizedBox(
+            width: 120,
+            child: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Spacer(flex: 6),
+          SizedBox(
+            width: 100,
+            child: Text(formatter.format(amount / 100),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                )),
+          ),
+
+        ],
+      ),
+    );
+  }
 
   Widget btnEnter(BuildContext context, bool approved) {
     Color btnColor = (approved) ? Colors.green : Colors.red;

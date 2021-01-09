@@ -15,4 +15,5 @@ class AcquirerRepository {
   Future getCountacquirers() => appdb.queryRowCount('acquirer');
 
   Future<List<Map<String, dynamic>>> getAllacquirers() async => await appdb.queryAllRows('acquirer');
+
 }
