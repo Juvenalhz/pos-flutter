@@ -1,15 +1,14 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MessageAlert extends StatelessWidget {
   final String _title;
   final String _msg;
+  final double fontSize;
 
-  MessageAlert(
-      this._title,
-      this._msg, {
-        Key key,
-      }) : super(key: key);
+  MessageAlert(this._title, this._msg, {Key key, this.fontSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,10 @@ class MessageAlert extends StatelessWidget {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text(this._msg),
+            Text(
+              this._msg,
+              style: TextStyle(fontSize: (fontSize == null) ? 14 : fontSize),
+            ),
           ],
         ),
       ),
