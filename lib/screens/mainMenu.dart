@@ -4,6 +4,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
+import 'package:pay/bloc/deleteBatchBloc.dart';
 import 'package:pay/bloc/deleteReversal/delete_reversal_bloc.dart';
 import 'package:pay/bloc/detailReport/detail_report_bloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
@@ -83,7 +84,14 @@ class MainMenu extends StatelessWidget {
                   Navigator.pushNamed(context, '/LastSale');
                 }),
             _createDrawerItem(text: 'Cierre De Lote'),
-            _createDrawerItem(text: 'Borrar Lote'),
+            _createDrawerItem(
+                text: 'Borrar Lote',
+                onTap: () {
+                  final DeleteBatchBloc deleteBatchBloc = BlocProvider.of<DeleteBatchBloc>(context);
+
+                  deleteBatchBloc.add(DeleteBatchPending());
+                  Navigator.pushNamed(context, '/DeleteBatch');
+                }),
             _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer')),
           ]),
           Divider(),
