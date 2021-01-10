@@ -5,6 +5,7 @@ import 'package:pay/bloc/deleteBatchBloc.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/echotestBloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
+import 'package:pay/bloc/TechVisitBloc.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
@@ -62,6 +63,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<LastSaleBloc>(create: (context) => LastSaleBloc()),
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
+        BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc()),
       ], child: MainScreen()),
     ));
   }

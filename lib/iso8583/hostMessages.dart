@@ -473,3 +473,47 @@ class VoidMessage extends HostMessage {
     return message.buildIso();
   }
 }
+
+class TechVisitMessage extends HostMessage {
+  Iso8583 message;
+  Comm _comm;
+
+  TechVisitMessage(this._comm) : super(_comm, 800) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage(String track2, int visitType, String pinBlock, String pinKSN) async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    DateTime dateTime = DateTime.now();
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+
+    message.setMID(800);
+    message.fieldData(3, '970000');
+    message.fieldData(
+        7, dateTime.month.toString() + dateTime.day.toString() + dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(35, track2);
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    if (pinBlock.length > 0) message.fieldData(52, pinBlock);
+    if (pinKSN.length > 0) message.fieldData(53, pinKSN);
+    message.fieldData(60, '01.00');
+
+    field62 += addField62Table(5, visitType.toString());
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+}
