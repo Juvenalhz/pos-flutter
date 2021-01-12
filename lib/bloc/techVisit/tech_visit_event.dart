@@ -9,6 +9,15 @@ class TechVisitInitialEvent extends TechVisitEvent {
   List<Object> get props => [];
 }
 
+class TechVisitInitPinpad extends TechVisitEvent {
+  final Pinpad pinpad;
+
+  TechVisitInitPinpad(this.pinpad);
+
+  @override
+  List<Object> get props => [pinpad];
+}
+
 class TechVisitAddVisitType extends TechVisitEvent {
   final int visitType;
 
@@ -32,9 +41,18 @@ class TechVisitAddRequirementBack extends TechVisitEvent {
   List<Object> get props => [];
 }
 
-class TechVisitPasswordOk extends TechVisitEvent {
+class TechVisitCardRead extends TechVisitEvent {
   @override
   List<Object> get props => [];
+}
+
+class TechVisitPinEntered extends TechVisitEvent {
+  final Map<String, dynamic> pinData;
+
+  TechVisitPinEntered([this.pinData]);
+
+  @override
+  List<Object> get props => [this.pinData];
 }
 
 class TechVisitConnect extends TechVisitEvent {

@@ -92,6 +92,7 @@ class HostMessage {
       case 4:
         temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
         break;
+      case 5:
       case 13:
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
@@ -482,11 +483,11 @@ class TechVisitMessage extends HostMessage {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
-  Future<Uint8List> buildMessage(String track2, int visitType, String pinBlock, String pinKSN) async {
+  Future<Uint8List> buildMessage(String track2, int visitType, int requirementType, String pinBlock, String pinKSN) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     DateTime dateTime = DateTime.now();
-
+    String temp;
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -505,7 +506,8 @@ class TechVisitMessage extends HostMessage {
     if (pinKSN.length > 0) message.fieldData(53, pinKSN);
     message.fieldData(60, '01.00');
 
-    field62 += addField62Table(5, visitType.toString());
+    temp = visitType.toString().padRight(2, ' ') + requirementType.toString().padRight(12, ' ');
+    field62 += addField62Table(5, temp);
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);

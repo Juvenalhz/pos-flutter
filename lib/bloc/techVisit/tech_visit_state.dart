@@ -9,7 +9,12 @@ class TechVisitInitial extends TechVisitState {
   List<Object> get props => [];
 }
 
-class TechVisitAskPassword extends TechVisitState {
+class TechVisitGetCard extends TechVisitState {
+  @override
+  List<Object> get props => [];
+}
+
+class TechVisitShowPinMessage extends TechVisitState {
   @override
   List<Object> get props => [];
 }

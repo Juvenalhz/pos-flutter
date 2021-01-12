@@ -6,6 +6,7 @@ import 'package:pay/bloc/comm/comm_state.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/screens/AskNumeric.dart';
 import 'package:pay/screens/transMessage.dart';
+import 'package:pay/utils/pinpad.dart';
 
 import 'commProgress.dart';
 import 'components/CommError.dart';
@@ -15,6 +16,7 @@ class TechVisit extends StatelessWidget {
   Widget build(BuildContext context) {
     final TechVisitBloc techVisitBloc = BlocProvider.of<TechVisitBloc>(context);
     Comm comm;
+    Pinpad pinpad = new Pinpad(context);
 
     return WillPopScope(
       child: Container(
@@ -24,12 +26,17 @@ class TechVisit extends StatelessWidget {
             return BlocBuilder<TechVisitBloc, TechVisitState>(builder: (context, state) {
               if (state is TechVisitInitial) {
                 //techVisitBloc.add(TechVisitConnect(comm));
+                techVisitBloc.add(TechVisitInitPinpad(pinpad));
                 return CommProgress('Conformidad De Visita').build(context);
+              } else if (state is TechVisitGetCard) {
+                return ShowMessage('Visita técnica Deslice Tarjeta');
               } else if (state is TechVisitAskVisitType) {
                 return AskVisitType('Tipo', 'De Atención', '', 1, 2, AskNumeric.NO_DECIMALS, onClickVisitTypeEnter, onClickVisitTypeBack);
               } else if (state is TechVisitAskRequirementType)
                 return AskRequirementType(
                     'Tipo', 'De Requerimiento', '', 1, 9, AskNumeric.NO_DECIMALS, onClickRequirementTypeEnter, onClickRequirementTypeBack);
+              else if (state is TechVisitShowPinMessage)
+                return PinEntryMessage('Ingresa Clave De Técnico');
               else if (state is TechVisitConnecting)
                 return CommProgress('Conformidad De Visita', status: 'Conectando').build(context);
               else if (state is TechVisitSending)
@@ -148,6 +155,36 @@ class TechVisitFinalScreen extends StatelessWidget {
                 ),
               ),
             Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PinEntryMessage extends StatelessWidget {
+  final String message;
+
+  PinEntryMessage(this.message);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Scaffold(
+        body: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: 90),
+            Center(
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
         ),
       ),

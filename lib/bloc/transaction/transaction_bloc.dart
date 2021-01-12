@@ -278,7 +278,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, '', ''); // parameter 3 and 4 are not shown by the BC library
+        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '', 'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
       } else
         yield TransactionAskConfirmation(trans, acquirer);
     }

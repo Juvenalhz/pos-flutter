@@ -626,7 +626,7 @@ public class PinpadManager implements PinpadCallbacks {
         return Pinpad.PP_OK;
     }
 
-    public int askPin(int keyIndex, String pan, String msg1, String msg2) {
+    public int askPin(int keyIndex, String pan, String msg1, String msg2, String type) {
         if (Build.MODEL.contains("APOS")) {
             new Thread(() -> {
                 int ret = 0;
@@ -661,6 +661,7 @@ public class PinpadManager implements PinpadCallbacks {
                                 methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
                                 methodParams.put("PINKSN", psOutputGetPIN.substring(16));
                                 methodParams.put("resultCode", ret);
+                                methodParams.put("type", type);
 
                                 channel.invokeMethod("pinEntered", methodParams);
                             };
