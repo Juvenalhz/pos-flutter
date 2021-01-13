@@ -607,8 +607,8 @@ public class PinpadManager implements PinpadCallbacks {
 //                new Handler(Looper.getMainLooper()).post(new Runnable() {
 //                    @Override
 //                    public void run() {
-                        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                        channel.invokeMethod("showPinAmount", null);
+                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                channel.invokeMethod("showPinAmount", null);
 //                    }
 //                });
             }
@@ -691,14 +691,14 @@ public class PinpadManager implements PinpadCallbacks {
 
         Boolean isvm = false;
         if( "google_sdk".equals(Build.PRODUCT) ||
-            "sdk_google_phone_x86".equals(Build.PRODUCT) ||
-            "sdk".equals(Build.PRODUCT) ||
-            "sdk_x86".equals(Build.PRODUCT) ||
-            "vbox86p".equals(Build.PRODUCT) ||
-            Build.FINGERPRINT.contains("generic") ||
-            Build.MANUFACTURER.contains("Genymotion") ||
-            Build.MODEL.contains("Emulator") ||
-            Build.MODEL.contains("Android SDK built for x86")
+                "sdk_google_phone_x86".equals(Build.PRODUCT) ||
+                "sdk".equals(Build.PRODUCT) ||
+                "sdk_x86".equals(Build.PRODUCT) ||
+                "vbox86p".equals(Build.PRODUCT) ||
+                Build.FINGERPRINT.contains("generic") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86")
         ){
             isvm =  true;
         }

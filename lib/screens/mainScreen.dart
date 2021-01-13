@@ -58,6 +58,7 @@ class MainScreen extends StatelessWidget {
               }
               if (state is MerchantLoaded) {
                 return Scaffold(
+                 //body: Text('aqui'),
                   body: Column(
                     children: <Widget>[
                       Stack(children: <Widget>[
