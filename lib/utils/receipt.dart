@@ -16,7 +16,7 @@ class Receipt {
   
   Receipt(this.context);
   
-  printTransactionReceipt(bool type, Trans trans) {
+  printTransactionReceipt(bool type, Trans trans) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
     BinRepository binRepository = new BinRepository();
