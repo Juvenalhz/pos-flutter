@@ -14,8 +14,9 @@ class Communication {
   int _frameSize;
   bool _listenSet;
   bool _isDone;
+  int _timeout;
 
-  Communication(this._host, this._port, this._secure) {
+  Communication(this._host, this._port, this._secure, this._timeout) {
     _size = 0;
     _frameSize = 0;
     _message = new Uint8List(2000);
@@ -23,6 +24,8 @@ class Communication {
   }
 
   Future<bool> connect() async {
+    //TODO: change the connection to use secure connection
+    _secure = false;
     try {
       if (_secure == true) {
         SecurityContext securityContext = SecurityContext();
@@ -70,9 +73,7 @@ class Communication {
   }
 
   Future<Uint8List> receiveMessage() async {
-    _isDone = false;
-    _message.fillRange(0, _message.length, 0);
-
+    int time = 0;
     if (_secure) {
       if (_secureSocket != null) {
         _secureSocket.listen((data) {
@@ -116,6 +117,12 @@ class Communication {
 
     while (_isDone == false) {
       await Future.delayed(Duration(seconds: 1));
+      time++;
+      if (time > _timeout) {
+        _frameSize = 0;
+        _size = 0;
+        return null;
+      }
     }
 
     print("received bytes len: ${_frameSize + 2}");
@@ -141,5 +148,8 @@ class Communication {
     }
     _size = 0;
     _frameSize = 0;
+
+    _isDone = false;
+    _message.fillRange(0, _message.length, 0);
   }
 }

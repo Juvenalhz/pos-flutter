@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/TransApprovedScreen.dart';
@@ -16,6 +17,7 @@ import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
 import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
+import 'components/CommError.dart';
 import 'mainScreen.dart';
 
 class Transaction extends StatelessWidget {
@@ -25,7 +27,19 @@ class Transaction extends StatelessWidget {
     Pinpad pinpad = new Pinpad(context);
     bool pinpadInit = false;
 
-    return Container(
+    return BlocListener<TransactionBloc, TransactionState>(
+            listener: (context, state) {
+              if ((state is TransactionFinish) || (state is TransactionError)){
+                if ((state is TransactionFinish) && (state.trans.type == 'Anulación')){
+                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                  detailReportBloc.add(DetailReportInitialEvent());
+                }
+                Navigator.of(context).pop();
+              }
+          },
+    child:
+      Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
         if (pinpadInit == false) {
           transactionBloc.add(TransInitPinpad(pinpad));
@@ -37,11 +51,11 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
         } else if (state is TransactionAskIdNumber) {
-          return new AskID('Numero', 'De Cedula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
+          return new AskID('Numero', 'De Cédula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
-          return new AskCVV('Ingrese Codigo', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
+          return new AskCVV('Ingrese Código', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
         } else if (state is TransactionAskAccountType) {
@@ -71,21 +85,19 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans);
         } else if (state is TransactionPrintMerchantReceipt) {
-          return TransMessage("Print Merchant Receipt");
+          return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
-          return TransMessage("Print Customer Receipt");
-        } else if (state is TransactionFinish){
-          Navigator.of(context).pop();
-          return TransMessage("");
+          return TransMessage('Print Customer Receipt');
+        } else if (state is TransactionCommError)
+          return CommError('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
+        else if (state is TransactionFinshChip) {
+          return TransMessage('');
         }
-
-        else if (state is TransactionError) {
-          transactionBloc.add(TransStartTransaction());
-          return TransMessage("Transacción Cancelada");
-        } else
-          //TODO: change the default screen to something valid
-          return TransMessage('procesessing!!');
+        else
+          print('state:' + state.toString());
+          return TransMessage('');
       }),
+    )
     );
   }
 
@@ -131,6 +143,18 @@ class Transaction extends StatelessWidget {
     if (value == 0)
       transactionBloc.add(TransAddAccountType(2)); // checking account
     else if (value == 1) transactionBloc.add(TransAddAccountType(1)); // saving account
+  }
+
+  void onClickCancel(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCardError());
+  }
+
+  void onClickRetry(BuildContext context) {
+    final TransactionBloc initializationBloc = BlocProvider.of<TransactionBloc>(context);
+
+    initializationBloc.add(TransConnect());
   }
 }
 

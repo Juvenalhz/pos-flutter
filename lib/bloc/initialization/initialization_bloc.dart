@@ -40,17 +40,20 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
   Stream<InitializationState> mapEventToState(
     InitializationEvent event,
   ) async* {
-    if (event is InitializationConnect) {
+    if (event is InitializationInitialEvent)
+      yield InitializationInitial();
+    else if (event is InitializationConnect) {
       comm = event.comm;
       initialization = new MessageInitialization(comm);
 
       yield InitializationConnecting(comm);
 
-      //TODO: change the connection to use secure connection
-      connection = new Communication(comm.ip, comm.port, false);
-      await connection.connect();
-      this.add(InitializationSend());
-      yield InitializationSending();
+      connection = new Communication(comm.ip, comm.port, true, comm.timeout);
+      if (await connection.connect()) {
+        this.add(InitializationSend());
+        yield InitializationSending();
+      } else
+        yield InitializationCommError();
     } else if (event is InitializationSend) {
       connection.sendMessage(await initialization.buildMessage());
       incrementStan();
@@ -60,24 +63,63 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       Uint8List response;
       if (connection.rxSize == 0) {
         response = await connection.receiveMessage();
+        if (response == null) {
+          connection.disconnect();
+          yield InitializationFailed();
+        }
       }
       if (connection.frameSize != 0) {
+        Merchant merchant;
+        Terminal terminal;
         MerchantRepository merchantRepository = new MerchantRepository();
         TerminalRepository terminalRepository = new TerminalRepository();
         EmvRepository emvRepository = new EmvRepository();
-        Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
-        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
         Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
-        Map<int, String> respMap = initialization.parseRenponse(response);
+        Map<int, String> respMap = await initialization.parseRenponse(response);
+
+        if (await merchantRepository.getMerchant(1) == null) {
+          merchant = new Merchant('', '', '');
+          merchant.id = 1;
+          await merchantRepository.createMerchant(merchant);
+        } else
+          merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+        if (await terminalRepository.getTerminal(1) == null) {
+          terminal = new Terminal(1, '1');
+          terminal.password = '0000';
+          terminal.kin = 1;
+          terminal.minPinDigits = 4;
+          terminal.maxPinDigits = 12;
+          terminal.keyIndex = 2;
+          terminal.techPassword = '000000';
+          terminal.timeoutPrompt = 60;
+
+          await terminalRepository.createTerminal(terminal);
+        } else
+          terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
           newComm = comm;
           Map acquirerIndicators = new Map<int, String>();
+
+          if ((respMap[41] != null) && (merchant.tid.length == 0)) {
+            merchant.tid = respMap[41];
+            merchant.id = 1;
+            // these are default values, some will not change
+            merchant.password = '';
+            merchant.amountMaxDigits = 12;
+            merchant.amountDecimalPosition = 2;
+            merchant.batchNumber = 0;
+            merchant.maxTip = 0;
+            merchant.logo = '';
+
+            await merchantRepository.updateMerchant(merchant);
+          }
           if (respMap[43] != null) {
             processField43(respMap[43], merchant);
           }
           if (respMap[60] != null) {
-            processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
+            await processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
@@ -156,7 +198,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     emv.currencyCode = merchant.currencyCode;
 
     index += 2;
-    //todo: extract aquirer parameters [86 - 122]
+
     acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
     index += 6;
     acquirerIndicators.putIfAbsent(1, () => data.substring(index, index + 6));

@@ -4,8 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test30.db";
-  static final _databaseVersion = 1;
+  static final _databaseName = "test31.db";
+  static final _databaseVersion = 2;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -115,6 +115,24 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'headerLength', 'integer');
   }
 
+  Future<void> _fillDefaultComm() async {
+    // row to insert
+    Map<String, dynamic> testComm = {
+      'id': 1,
+      'Name': 'Platco',
+      'tpdu': '6000030000',
+      'nii': '003',
+      'timeout': 60,
+      'ip': '192.168.11.209',
+      'port': 15000,
+      'headerLength': 1,
+    };
+
+    await deleteAll('comm');
+    final id = await insert('comm', testComm);
+    print('inserted row id: $id');
+  }
+
   void _createEmvTable(Database db) async {
     await db.execute('''
           CREATE TABLE emv (
@@ -134,12 +152,32 @@ class DatabaseHelper {
     _tableAlter(db, 'emv', 'countryCode', 'integer');
   }
 
+  Future<void> _fillDefaultEmv() async {
+    // row to insert
+    Map<String, dynamic> testEmv = {
+      'id': 1,
+      'terminalType': '22',
+      'terminalCapabilities': 'E0F8C8',
+      'addTermCapabilities': 'F0000F0F001',
+      'fallback': 1,
+      'forceOnline': 1,
+      'CurrencyCode': 0,
+      'CountryCode': 0,
+    };
+
+    await deleteAll('emv');
+    final id = await insert('emv', testEmv);
+    print('inserted row id: $id');
+  }
+
   void _createCountersTable(Database db) async {
     await db.execute('''
           CREATE TABLE counters (
-          id integer PRIMARY KEY,
+          id integer PRIMARY KEY AUTOINCREMENT,
           stan integer )
           ''');
+
+    _upgradeCountersTable(db);
   }
 
   void _upgradeCountersTable(Database db) async {}
@@ -271,9 +309,6 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'cashback', 'integer');
     _tableAlter(db, 'trans', 'total', 'integer');
     _tableAlter(db, 'trans', 'originalTotal', 'integer');
-    _tableAlter(db, 'trans', 'responseCode', 'text');
-    _tableAlter(db, 'trans', 'authNumber', 'text');
-    _tableAlter(db, 'trans', 'hostRRN', 'text');
     _tableAlter(db, 'trans', 'emvTags', 'text');
     _tableAlter(db, 'trans', 'appType', 'integer');
     _tableAlter(db, 'trans', 'cardType', 'integer');
@@ -294,6 +329,9 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'authCode', 'text');
     _tableAlter(db, 'trans', 'respCode', 'text');
     _tableAlter(db, 'trans', 'batchNum', 'integer');
+    _tableAlter(db, 'trans', 'binType', 'integer');
+    _tableAlter(db, 'trans', 'foodBalance', 'integer');
+    _tableAlter(db, 'trans', 'voided', 'integer');
   }
 
   // SQL code to create the database table
@@ -310,11 +348,14 @@ class DatabaseHelper {
     _createTransTable(db);
 
     Map<String, dynamic> initialCounter = {
-      'id': 1,
+      //'id': 1,
       'stan': 1,
     };
 
     await db.insert('counters', initialCounter);
+
+    _fillDefaultComm();
+    _fillDefaultEmv();
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -356,9 +397,13 @@ class DatabaseHelper {
 
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
-  Future<int> queryRowCount(String table) async {
+  Future<int> queryRowCount(String table, {String where}) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+
+    if (where == null)
+      return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+    else
+      return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table where $where'));
   }
 
   // We are assuming here that the id column in the map is set. The other
@@ -388,5 +433,30 @@ class DatabaseHelper {
   Future<int> queryRowCountArguments(String table, {String where}) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table WHERE $where'));
+  }
+
+  Future<Map<String, dynamic>> queryByField(String table, String field, String value) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> rowList = await db.query(table, where: '$field=$value', limit: 1);
+    if (rowList.length != 0) {
+      return rowList[0];
+    } else
+      return null;
+  }
+
+  Future<int> queryMaxId(String table) async {
+    Database db = await instance.database;
+
+    int id = Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(id) FROM $table'));
+
+    if (id == null)
+      return 0;
+    else
+      return id;
+  }
+
+  Future<int> querySumColumnArguments(String table, String column, {String where}) async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
   }
 }

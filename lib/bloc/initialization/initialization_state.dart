@@ -37,3 +37,8 @@ class InitializationFailed extends InitializationState {
   @override
   List<Object> get props => [];
 }
+
+class InitializationCommError extends InitializationState {
+  @override
+  List<Object> get props => [];
+}

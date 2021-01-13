@@ -18,6 +18,7 @@ class CommProgress extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     this.title,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,

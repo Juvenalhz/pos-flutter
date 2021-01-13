@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_bloc.dart';
-import 'package:pay/bloc/acquirer/acquirer_event.dart';
+import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
@@ -11,10 +10,16 @@ import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
+import 'package:pay/screens/DeleteBatch.dart';
+import 'package:pay/screens/DeleteReversal.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
+import 'DetailReport.dart';
+import 'EchoTest.dart';
 import 'Initialization.dart';
+import 'LastSale.dart';
+import 'SelectAcquirer.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
@@ -44,6 +49,12 @@ class MainScreen extends StatelessWidget {
         '/configuration': (context) => ConfigurationScreen(),
         '/initialization': (context) => Initialization(),
         '/transaction': (contex) => Transaction(),
+        '/deleteReversal': (context) => DeleteReversal(),
+        '/SelectAcquirer': (context) => SelectAcquirer(),
+        '/EchoTest': (context) => EchoTest(),
+        '/LastSale': (context) => LastSale(),
+        '/DetailReport': (context) => DetailReport(),
+        '/DeleteBatch': (context) => DeleteBatch(),
       },
       home: Scaffold(
           key: scaffoldKey,
@@ -135,8 +146,7 @@ class MainScreen extends StatelessWidget {
                     ),
                   ],
                 );
-              }
-              else {
+              } else {
                 return SplashScreen();
               }
             }),

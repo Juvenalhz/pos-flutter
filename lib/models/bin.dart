@@ -11,6 +11,10 @@ class Bin {
   bool _pin;
   bool _manualEntry;
   bool _fallback;
+  static const int TYPE_CREDIT = 1;
+  static const int TYPE_DEBIT = 2;
+  static const int TYPE_FOOD = 3;
+  static const int TYPE_PROPIETARY = 4;
 
   Bin();
 

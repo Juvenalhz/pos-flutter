@@ -13,4 +13,6 @@ class AcquirerRepository {
   Future deleteacquirer(int id) => appdb.delete('acquirer', id);
 
   Future getCountacquirers() => appdb.queryRowCount('acquirer');
+
+  Future<List<Map<String, dynamic>>> getAllacquirers() async => await appdb.queryAllRows('acquirer');
 }

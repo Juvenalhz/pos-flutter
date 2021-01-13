@@ -58,5 +58,5 @@ Uint8List int2Bcd(int i, [int size]) {
 bool intToBool(int a) => a == 1 ? true : false;
 bool stringToBool(String a) => a == '1' ? true : false;
 
-int boolToInt(bool a) => a ? 1 : 0;
-String boolToString(bool a) => a ? '1' : '0';
+int boolToInt(bool a) => (a != null) && (a) ? 1 : 0;
+String boolToString(bool a) => (a != null) && (a) ? '1' : '0';

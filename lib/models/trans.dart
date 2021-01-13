@@ -1,3 +1,4 @@
+import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/dataUtils.dart';
 
 class Trans {
@@ -25,9 +26,6 @@ class Trans {
   int _cashback = 0;
   int _total = 0;
   int _originalTotal = 0;
-  String _responseCode = '';
-  String _authNumber = '';
-  String _hostRRN = '';
   String _emvTags = '';
   int _appType = 0;
   int _cardType = 0;
@@ -56,6 +54,9 @@ class Trans {
   String _respCode = '';
   int _batchNum = 0;
   String _respMessage = '';
+  int _binType = 0;
+  int _foodBalance = 0;
+  bool _voided = false;
 
   Trans();
 
@@ -83,9 +84,6 @@ class Trans {
   int get cashback => this._cashback;
   int get total => this._total;
   int get originalTotal => this._originalTotal;
-  String get responseCode => this._responseCode;
-  String get authNumber => this._authNumber;
-  String get hostRRN => this._hostRRN;
   String get emvTags => this._emvTags;
   int get appType => this._appType;
   int get cardType => this._cardType;
@@ -114,6 +112,9 @@ class Trans {
   String get respCode => this._respCode;
   int get batchNum => this._batchNum;
   String get respMessage => this._respMessage;
+  int get binType => this._binType;
+  int get foodBalance => this._foodBalance;
+  bool get voided => _voided;
 
   set id(int id) {
     this._id = id;
@@ -209,18 +210,6 @@ class Trans {
 
   set originalTotal(int originalTotal) {
     this._originalTotal = originalTotal;
-  }
-
-  set responseCode(String responseCode) {
-    this._responseCode = responseCode;
-  }
-
-  set authNumber(String authNumber) {
-    this._authNumber = authNumber;
-  }
-
-  set hostRRN(String hostRRN) {
-    this._hostRRN = hostRRN;
   }
 
   set emvTags(String emvTags) {
@@ -335,13 +324,25 @@ class Trans {
     this._respMessage = respMessage;
   }
 
+  set binType(int binType) {
+    this._binType = binType;
+  }
+
+  set foodBalance(int foodBalance) {
+    this._foodBalance = foodBalance;
+  }
+
+  set voided(bool voided) {
+    this._voided = voided;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
-    map['dateTime'] = this._dateTime;
+    map['dateTime'] = this._dateTime.toString();
     map['type'] = this._type;
     map['reverse'] = boolToInt(this._reverse);
     map['advice'] = boolToInt(this._advice);
@@ -355,6 +356,7 @@ class Trans {
     map['panHash'] = this._panHash;
     map['cipheredCardHolderName'] = this._cipheredCardHolderName;
     map['cipheredTrack2'] = this._cipheredTrack2;
+    map['appLabel'] = this._appLabel;
     map['expDate'] = this._expDate;
     map['serviceCode'] = this._serviceCode;
     map['currency'] = this._currency;
@@ -365,9 +367,6 @@ class Trans {
     map['cashback'] = this._cashback;
     map['total'] = this._total;
     map['originalTotal'] = this._originalTotal;
-    map['responseCode'] = this._responseCode;
-    map['authNumber'] = this._authNumber;
-    map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
     map['responseEmvTags'] = this._responseEmvTags;
@@ -388,15 +387,22 @@ class Trans {
     map['respCode'] = this._respCode;
     map['batchNum'] = this._batchNum;
     map['respMessage'] = this._respMessage;
+    map['binType'] = this._binType;
+    map['foodBalance'] = this._foodBalance;
+    map['voided'] = boolToInt(this._voided);
 
     return map;
   }
 
-  Map<String, dynamic> toDBMap() {
+  Future<Map<String, dynamic>> toDBMap() async {
     var map = Map<String, dynamic>();
     // NOTE IMPORTANT!!!!!!
     // some fields from trans should not be stored in the DB for security
     // !!!!!!!!!!!!!!!!!!!!
+    var cipher = Cipher();
+    this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
+    this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+
     map['id'] = this._id;
     map['number'] = this._number;
     map['stan'] = this._stan;
@@ -411,6 +417,7 @@ class Trans {
     map['panHash'] = this._panHash;
     map['cipheredCardHolderName'] = this._cipheredCardHolderName;
     map['cipheredTrack2'] = this._cipheredTrack2;
+    map['appLabel'] = this._appLabel;
     map['expDate'] = this._expDate;
     map['serviceCode'] = this._serviceCode;
     map['currency'] = this._currency;
@@ -421,9 +428,6 @@ class Trans {
     map['cashback'] = this._cashback;
     map['total'] = this._total;
     map['originalTotal'] = this._originalTotal;
-    map['responseCode'] = this._responseCode;
-    map['authNumber'] = this._authNumber;
-    map['hostRRN'] = this._hostRRN;
     map['emvTags'] = this._emvTags;
     map['aidID'] = this._aidID;
     map['responseEmvTags'] = this._responseEmvTags;
@@ -439,6 +443,9 @@ class Trans {
     map['authCode'] = this._authCode;
     map['respCode'] = this._respCode;
     map['batchNum'] = this._batchNum;
+    map['binType'] = this._binType;
+    map['foodBalance'] = this._foodBalance;
+    map['voided'] = boolToInt(this._voided);
 
     return map;
   }
@@ -458,6 +465,7 @@ class Trans {
     this._panHash = trans['panHash'];
     this._cipheredCardHolderName = trans['cipheredCardHolderName'];
     this._cipheredTrack2 = trans['cipheredTrack2'];
+    this._appLabel = trans['appLabel'];
     this._expDate = trans['expDate'];
     this._serviceCode = trans['serviceCode'];
     this._currency = trans['currency'];
@@ -468,9 +476,6 @@ class Trans {
     this._cashback = trans['cashback'];
     this._total = trans['total'];
     this._originalTotal = trans['originalTotal'];
-    this._responseCode = trans['responseCode'];
-    this._authNumber = trans['authNumber'];
-    this._hostRRN = trans['hostRRN'];
     this._emvTags = trans['emvTags'];
     this._aidID = trans['aidID'];
     this._responseEmvTags = trans['responseEmvTags'];
@@ -491,6 +496,9 @@ class Trans {
     this._respCode = trans['respCode'];
     this._batchNum = trans['batchNum'];
     this._respMessage = trans['respMessage'];
+    this._binType = trans['binType'];
+    this._foodBalance = trans['foodBalance'];
+    this._voided = intToBool(trans['voided']);
   }
 
   void clear() {
@@ -517,9 +525,6 @@ class Trans {
     _cashback = 0;
     _total = 0;
     _originalTotal = 0;
-    _responseCode = '';
-    _authNumber = '';
-    _hostRRN = '';
     _emvTags = '';
     _appType = 0;
     _cardType = 0;
@@ -548,6 +553,9 @@ class Trans {
     _respCode = '';
     _batchNum = 0;
     _respMessage = '';
+    _binType = 0;
+    _foodBalance = 0;
+    _voided = false;
   }
 
   void clearCardData() {
@@ -580,5 +588,13 @@ class Trans {
     _onlinePIN = false;
     _pinBlock = '';
     _pinKSN = '';
+    _binType = 0;
+    _foodBalance = 0;
+  }
+
+  Future<String> getClearPan() async {
+    final cipher = Cipher();
+
+    return await cipher.decryptCriticalData(cipheredPAN);
   }
 }

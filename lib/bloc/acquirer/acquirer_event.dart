@@ -1,5 +1,5 @@
-import 'package:equatable/equatable.dart';
-import 'package:pay/models/acquirer.dart';
+
+part of 'acquirer_bloc.dart';
 
 abstract class AcquirerEvent extends Equatable {
   const AcquirerEvent();
@@ -40,4 +40,14 @@ class UpdateAcquirer extends AcquirerEvent {
   final Acquirer acquirer;
 
   const UpdateAcquirer(this.acquirer);
+}
+
+class GetAllAcquirer extends AcquirerEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class AcquirerSelectionFinish extends AcquirerEvent {
+  @override
+  List<Object> get props => [];
 }

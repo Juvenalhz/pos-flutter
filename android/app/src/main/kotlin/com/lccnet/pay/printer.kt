@@ -20,7 +20,7 @@ class Printer : MethodChannel.MethodCallHandler{
     private val FONT_SIZE_LARGE = 2
     private var currentSize : Int = FONT_SIZE_NORMAL;
 
-    fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context){
+    fun registerWith(@NonNull flutterEngine: FlutterEngine){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "printer")
         channel.setMethodCallHandler(Printer())
 
@@ -29,8 +29,6 @@ class Printer : MethodChannel.MethodCallHandler{
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-
-
         if (call.method == "addText") {
             var align : Int? = call.argument("alignMode")
             var data : String? = call.argument("data")

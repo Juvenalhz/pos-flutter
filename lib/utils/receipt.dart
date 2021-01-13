@@ -9,15 +9,14 @@ import 'package:pay/utils/printer.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/models/merchant.dart';
 
-class Receipt{
+class Receipt {
   final BuildContext context;
   bool type;
-
-  Receipt(this.context);
   Printer printer = new Printer();
-
-
-  printTransactionReceipt(bool type, Trans trans) async{
+  
+  Receipt(this.context);
+  
+  printTransactionReceipt(bool type, Trans trans) {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
     BinRepository binRepository = new BinRepository();
@@ -33,18 +32,16 @@ class Receipt{
     //if (bin.cardType == Bin.TYPE_DEBIT)
     else if (bin.cardType == 2) DebitReceipt( trans,  merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
 
-    // else if (bin.cardType == Bin.TYPE_FOOD)
-    else if (bin.cardType == 3)FoodReceipt( trans, merchant, type);//the var type is a bool, false = merchantReceipt and true = clientReceipt
-
-    // else if (bin.cardType == Bin.TYPE_PROPIETARY)
-    else if (bin.cardType == 4)FoodReceipt( trans, merchant, type);
-
-
-
+    printer.print(onPrintReceiptOK, onPrintError);
   }
 
   void onPrintReceiptOK() {
-  print('imprimiendo...');
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    if (this.type)
+      transactionBloc.add(TransCustomerReceipt());
+    else
+      transactionBloc.add(TransCustomerReceipt());
 
   }
 
@@ -204,78 +201,22 @@ HostNotAnswerReceipt(Trans trans, Merchant merchant) {
     printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX');
     printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
   }
+
+  printTransactionReceiptCopy(bool type, Trans trans) {
+    Printer printer = new Printer();
+
+    this.type = type;
+    if (type)
+      printer.addText(Printer.CENTER, 'Merchant Receipt');
+    else
+      printer.addText(Printer.CENTER, 'Customer Receipt');
+
+    printer.feedLine(2);
+
+    printer.print(onPrintCopyReceiptOK, onPrintError);
+  }
+
+  void onPrintCopyReceiptOK() {
+
+  }
 }
-
-
-// class ReceiptGeneric {
-// String _merchantName;
-// String _location;
-// String _rif;
-// String _afiliado;
-// String _infoAdditional;
-// String _transType;
-// String _marca;
-// String _xxx;
-// String _bank;
-// String _rifBank;
-// String _nroOperation;
-// String _date;
-// String _hour;
-// String _pos;
-// String _author;
-// String _nroOperation2;
-// String _mesero;
-// String _terminal;
-// String _lote;
-// String _ticket;
-// String _mount;
-// String _propina;
-// String _totalBss;
-// String _firma;
-// String _saldoBss;
-// String _ptos;
-// String _namelabel;
-// String _aid;
-// String _ct;
-// String _text;
-// String _versionDocument;
-// String _versionPOS;
-//
-// ReceiptGeneric();
-//
-//
-// String get merchantName => this._merchantName;
-// String get location => this._location;
-// String get rif => this._rif;
-// String get afiliado => this._afiliado;
-// String get infoAdditional => this._infoAdditional;
-// String get transType => this._transType;
-// String get marca => this._marca;
-// String get xxx => this._xxx;
-// String get bank => this._bank;
-// String get rifBank => this._rifBank;
-// String get nroOperation => this._nroOperation;
-// String get date => this._date;
-// String get hour => this._hour;
-// String get pos => this._pos;
-// String get author => this._author;
-// String get nroOperation2 => this._nroOperation2;
-// String get mesero => this._mesero;
-// String get terminal => this._terminal;
-// String get lote => this._lote;
-// String get ticket => this._ticket;
-// String get mount => this._mount;
-// String get propina => this._propina;
-// String get totalBss => this._totalBss;
-// String get firma => this._firma;
-// String get saldoBss => this._saldoBss;
-// String get ptos => this._ptos;
-// String get namelabel => this._namelabel;
-// String get aid => this._aid;
-// String get ct => this._ct;
-// String get text => this._text;
-// String get versionDocument => this._versionDocument;
-// String get versionPOS => this._versionPOS;
-//
-//
-// }

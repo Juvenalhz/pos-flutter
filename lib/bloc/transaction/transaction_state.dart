@@ -29,11 +29,12 @@ class TransactionAddTip extends TransactionState {
 
 class TransactionAskConfirmation extends TransactionState {
   final Trans trans;
+  final Acquirer acquierer;
 
-  TransactionAskConfirmation(this.trans);
+  TransactionAskConfirmation(this.trans, this.acquierer);
 
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [trans, acquierer];
 }
 
 class TransactionLoadEmvTable extends TransactionState {
@@ -183,6 +184,15 @@ class TransactionPrintCustomerReceipt extends TransactionState {
 }
 
 class TransactionFinish extends TransactionState {
+  final Trans trans;
+
+  TransactionFinish(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TransactionCommError extends TransactionState {
   @override
   List<Object> get props => [];
 }

@@ -187,6 +187,11 @@ class TransLast4Back extends TransactionEvent {
   List<Object> get props => [];
 }
 
+class TransAskIdNumber extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class TransAddIdNumber extends TransactionEvent {
   final int idNumber;
 
@@ -235,8 +240,12 @@ class TransSendReversal extends TransactionEvent {
 }
 
 class TransReceiveReversal extends TransactionEvent {
+  Trans transReversal;
+
+  TransReceiveReversal(this.transReversal);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [transReversal];
 }
 
 class TransSendRequest extends TransactionEvent {
@@ -248,7 +257,6 @@ class TransReceive extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
-
 
 class TransPinEntered extends TransactionEvent {
   final Map<String, dynamic> pinData;
@@ -267,4 +275,13 @@ class TransMercahntReceipt extends TransactionEvent {
 class TransCustomerReceipt extends TransactionEvent {
   @override
   List<Object> get props => [];
+}
+
+class TransVoidTransaction extends TransactionEvent {
+  final int id;
+
+  TransVoidTransaction(this.id);
+
+  @override
+  List<Object> get props => [id];
 }

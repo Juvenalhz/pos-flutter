@@ -28,9 +28,7 @@ class Emv : MethodChannel.MethodCallHandler{
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "pinpad")
         channel.setMethodCallHandler(Emv())
 
-//        if (Build.MODEL.contains("APOS")) {
-            this.pinpad = PinpadManager.init(context, channel)
-//        }
+        this.pinpad = PinpadManager.init(context, channel)
 
     }
 
