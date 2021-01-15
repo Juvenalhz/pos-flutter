@@ -681,6 +681,7 @@ public class PinpadManager implements PinpadCallbacks {
                     methodParams.put("PINBlock", "DE15C00192CE56D8");
                     methodParams.put("PINKSN", "FFFF0000000000000043");
                     methodParams.put("resultCode", 0);
+                    methodParams.put("type", type);
 
                     channel.invokeMethod("pinEntered", methodParams);
                 }

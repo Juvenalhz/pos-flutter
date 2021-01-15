@@ -47,9 +47,9 @@ class TechVisit extends StatelessWidget {
                 return CommProgress('Conformidad De Visita').build(context);
               else if (state is TechVisitShowMessage)
                 return TransMessage(state.message);
-              // else if (state is TechVisitCompleted) {
-              //   return TechVisitDetail(state.trans, state.cardBrand, onClickDone);
-              // }
+              else if (state is TechVisitCompleted) {
+                 return TechVisitFinalScreen(state.message, true, onClickDone);
+              }
               else if (state is TechVisitFailed) {
                 return TechVisitFinalScreen(state.message, false, onClickDone);
               } else if (state is TechVisitCommError)

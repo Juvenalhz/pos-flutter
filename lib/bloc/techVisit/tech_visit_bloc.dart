@@ -37,10 +37,11 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
     if (event is TechVisitInitialEvent) {
-      yield TechVisitGetCard();
-      this.add(TechVisitCardRead());
+      yield TechVisitInitial();
     } else if (event is TechVisitInitPinpad) {
       pinpad = event.pinpad;
+      yield TechVisitGetCard();
+      this.add(TechVisitCardRead());
     } else if (event is TechVisitCardRead) {
       yield TechVisitAskVisitType();
     } else if (event is TechVisitAddVisitType) {
@@ -49,7 +50,8 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
     } else if (event is TechVisitAddRequirementType) {
       TerminalRepository terminalRepository = new TerminalRepository();
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-      String pan;
+      track2 = '4540422020094301=190720118753445';
+      String pan = track2.substring(0, track2.indexOf('='));
       requirementType = event.requirementType;
 
       yield TechVisitShowPinMessage();
@@ -103,49 +105,9 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
         await new Future.delayed(const Duration(seconds: 3));
         yield TechVisitFailed('Error En Prueba De Comunicación');
       } else if ((connection.frameSize != 0) || (isCommOffline == true)) {
-        Map<int, String> respMap = await lastSale.parseRenponse(response);
+        Map<int, String> respMap = await techVisitMessage.parseRenponse(response);
         if (respMap[39] == '00') {
-          var trans = new Trans();
-          BinRepository binRepository = new BinRepository();
-          int binId = await binRepository.getBinId(respMap[2].substring(0, 8));
-          Bin bin = Bin.fromMap(await binRepository.getBin(binId));
-          int lastTransState = int.parse(respMap[6220].substring(0, 1));
-          int lastTransType = int.parse(respMap[6220].substring(1, 2));
-          int lastTransDay = int.parse(respMap[6220].substring(3, 5));
-          int lastTransMonth = int.parse(respMap[6220].substring(5, 7));
-          int lastTransYear = 2000 + int.parse(respMap[6220].substring(7, 9));
-
-          trans.type = 'Venta';
-
-          if (lastTransState == 0)
-            trans.respCode = '00';
-          else if (lastTransState == 2)
-            trans.respCode = '01';
-          else if (lastTransState == 1) {
-            trans.type = 'Anulación';
-            trans.respCode = '00';
-          }
-
-          trans.bin = binId;
-          trans.binType = bin.cardType;
-
-          trans.total = int.parse(respMap[4]);
-          trans.maskedPAN = respMap[2].substring(0, 4) + '....' + respMap[2].substring(respMap[2].length - 4);
-
-          trans.stan = int.parse(respMap[6201]);
-
-          if (respMap[62.02] != null) trans.batchNum = int.parse(respMap[62.02]);
-
-          trans.dateTime = DateTime(lastTransYear, lastTransMonth, lastTransDay, int.parse(respMap[12].substring(0, 2)),
-              int.parse(respMap[12].substring(2, 4)), int.parse(respMap[12].substring(4, 6)));
-
-          trans.referenceNumber = respMap[37];
-          trans.authCode = respMap[38];
-          trans.respMessage = respMap[6208];
-
-          if (respMap[6216] != null) trans.foodBalance = int.parse(respMap[6216]);
-
-          yield TechVisitCompleted(trans, bin.brand);
+          yield TechVisitCompleted(respMap[6208]);
         } else // error in echo test response
           yield TechVisitFailed('Error En Prueba De Comunicación');
       }

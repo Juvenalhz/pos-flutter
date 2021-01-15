@@ -45,13 +45,12 @@ class TechVisitReceiving extends TechVisitState {
 }
 
 class TechVisitCompleted extends TechVisitState {
-  final Trans trans;
-  final String cardBrand;
+  final String message;
 
-  TechVisitCompleted(this.trans, this.cardBrand);
+  TechVisitCompleted(this.message);
 
   @override
-  List<Object> get props => [trans, cardBrand];
+  List<Object> get props => [message];
 }
 
 class TechVisitFailed extends TechVisitState {

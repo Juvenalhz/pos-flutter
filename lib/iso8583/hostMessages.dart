@@ -354,7 +354,12 @@ class EchoTestMessage extends HostMessage {
     message.setMID(800);
     message.fieldData(3, '990000');
     message.fieldData(
-        7, dateTime.month.toString() + dateTime.day.toString() + dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+        7,
+        dateTime.month.toString().padLeft(2, '0') +
+            dateTime.day.toString().padLeft(2, '0') +
+            dateTime.hour.toString().padLeft(2, '0') +
+            dateTime.minute.toString().padLeft(2, '0') +
+            dateTime.second.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
     message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
@@ -496,7 +501,12 @@ class TechVisitMessage extends HostMessage {
     message.setMID(800);
     message.fieldData(3, '970000');
     message.fieldData(
-        7, dateTime.month.toString() + dateTime.day.toString() + dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+        7,
+        dateTime.month.toString().padLeft(2, '0') +
+            dateTime.day.toString().padLeft(2, '0') +
+            dateTime.hour.toString().padLeft(2, '0') +
+            dateTime.minute.toString().padLeft(2, '0') +
+            dateTime.second.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(35, track2);
