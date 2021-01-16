@@ -11,7 +11,11 @@ import 'package:pay/bloc/merchant/merchant_bloc.dart';
 import 'package:pay/bloc/merchant/merchant_event.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
+import 'package:pay/models/merchant.dart';
+import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
 import 'components/CommError.dart';
@@ -114,18 +118,20 @@ class InitializationAlert extends StatelessWidget {
             'OK',
             style: TextStyle(color: Color(0xFF0D47A1)),
           ),
-          onPressed: () {
+          onPressed: () async {
             final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
             final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
             final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
             final EmvBloc emvBloc = BlocProvider.of<EmvBloc>(context);
             final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
+            MerchantRepository merchantRepository = new MerchantRepository();
+            Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
             merchantBloc.add(GetMerchant(1));
             terminalBloc.add(GetTerminal(1));
             commBloc.add(GetComm(1));
             emvBloc.add(GetEmv(1));
-            acquirerBloc.add(GetAcquirer(1));
+            acquirerBloc.add(GetAcquirer(merchant.acquirerCode));
 
             Navigator.of(context).pop();
           },

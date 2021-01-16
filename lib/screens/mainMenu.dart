@@ -14,8 +14,10 @@ import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/models/acquirer.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/utils/testConfig.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pay/bloc/echotestBloc.dart';
@@ -38,7 +40,7 @@ class MainMenu extends StatelessWidget {
           ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
             _createDrawerItem(
               //icon: Icons.calendar_view_day,
-              text: 'Reporte Resumen',
+              text: 'Reporte De Totales',
 //              onTap: () =>
 //                  Navigator.pushReplacementNamed(context, Routes.contacts)
             ),
@@ -50,18 +52,30 @@ class MainMenu extends StatelessWidget {
                   detailReportBloc.add(DetailReportInitialEvent());
                   Navigator.pushNamed(context, '/DetailReport');
                 }),
-            _createDrawerItem(
-              //icon: Icons.room_service,
-              text: 'Reporte Meseros',
-//              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.contacts)
-            ),
-            _createDrawerItem(
-              //icon: Icons.repeat,
-              text: 'Reimpresión',
-//              onTap: () =>
-//                  Navigator.pushReplacementNamed(context, Routes.notes)
-            ),
+
+
+            BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state is MerchantLoaded) {
+                AcquirerRepository acquirerRepository = new AcquirerRepository();
+                final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
+                acquirerBloc.add(GetAcquirer(state.merchant.acquirerCode));
+
+                return BlocBuilder<AcquirerBloc, AcquirerState>(builder: (context, state) {
+                  if (state is AcquirerLoaded) {
+                    if (state.acquirer.industryType)
+                    return  _createDrawerItem(
+                      text: 'Reporte De Propina',
+                      //onTap: () =>
+                      // Navigator.pushReplacementNamed(context, Routes.contacts)
+                    );
+                    else return SizedBox();
+                  }
+                  else return SizedBox();
+                });
+              }
+              else return SizedBox();
+            }),
+
           ]),
           Divider(),
           _createDrawerItem(

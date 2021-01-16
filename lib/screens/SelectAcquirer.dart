@@ -156,7 +156,9 @@ class SelectAcquirer extends StatelessWidget {
             _merchant.acquirerCode = _selectedAcquirer;
             await merchantRepository.updateMerchant(_merchant);
             merchantBloc.add(GetMerchant(1));
+
             acquirerBloc.add(AcquirerSelectionFinish());
+            acquirerBloc.add(GetAcquirer(_selectedAcquirer));
           }
         },
         color: Colors.green,

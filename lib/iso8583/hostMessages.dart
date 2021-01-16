@@ -39,37 +39,6 @@ void incrementStan() async {
   await appdb.update('counters', 1, newCounter);
 }
 
-String old_addField62Table(int table, String data) {
-  String temp;
-  String tableMsg = table.toString().padLeft(2, '0');
-  temp = bcdToStr(AsciiEncoder().convert(tableMsg));
-
-  switch (table) {
-    case 1:
-      temp += bcdToStr(AsciiEncoder().convert(data.padLeft(4, '0')));
-      break;
-    case 2:
-    case 3:
-      temp += bcdToStr(AsciiEncoder().convert(data.padLeft(3, '0')));
-      break;
-    case 4:
-      temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
-      break;
-    case 18:
-      temp += bcdToStr(AsciiEncoder().convert(data.padRight(2, ' ')));
-      break;
-    case 41:
-      String serial;
-      if (data.length >= 16)
-        serial = data.substring(data.length - 16, data.length).padRight(16, ' ');
-      else
-        serial = data.padRight(16, ' ');
-      temp += bcdToStr(AsciiEncoder().convert(serial));
-      break;
-  }
-  return (temp.length ~/ 2).toString().padLeft(4, '0') + temp;
-}
-
 class HostMessage {
   Comm _comm;
   int _msgId;
