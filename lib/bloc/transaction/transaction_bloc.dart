@@ -262,13 +262,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
-      trans.cardholderID = event.idNumber.toString();
       trans.binType = bin.cardType;
+      trans.cardholderID = event.idNumber.toString();
 
-      if (trans.binType == Bin.TYPE_DEBIT) {
+      trans.binType = Bin.TYPE_CREDIT;
+      if (trans.binType == Bin.TYPE_CREDIT) {
+        acquirer.industryType = true;
+        if (acquirer.industryType) // true = restaurant
+          yield TransactionAskServerNumber();
+        else
+          yield TransactionAskConfirmation(trans, acquirer);
+      } else {
         yield TransactionAskAccountType();
-      } else
-        yield TransactionAskConfirmation(trans, acquirer);
+      }
+    } else if (event is TransAddServerNumber) {
+      trans.server = event.server;
+      yield TransactionAskConfirmation(trans, acquirer);
+    } else if (event is TransServerBack) {
+      trans.server = 0;
+      yield TransactionAskIdNumber();
     }
     // account type ase selected
     else if (event is TransAddAccountType) {

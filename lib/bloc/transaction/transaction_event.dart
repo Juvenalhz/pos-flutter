@@ -285,3 +285,17 @@ class TransVoidTransaction extends TransactionEvent {
   @override
   List<Object> get props => [id];
 }
+
+class TransAddServerNumber extends TransactionEvent {
+  final int server;
+
+  TransAddServerNumber(this.server);
+
+  @override
+  List<Object> get props => [server];
+}
+
+class TransServerBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

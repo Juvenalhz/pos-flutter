@@ -116,6 +116,9 @@ class Confirmation extends StatelessWidget {
                             RowDetail(label: "T. Cuenta:", strAmount: 'Corriente')
                           else if (state.trans.accType == 1)
                             RowDetail(label: "T. Cuenta:", strAmount: 'Ahorro'),
+                          Spacer(flex: 1),
+                          if ((state.trans.binType == Bin.TYPE_CREDIT) && (state.trans.server != 0))
+                            RowDetail(label: "Num. Mesero:", strAmount: state.trans.server.toString()),
                           Spacer(flex: 3),
                           if (state.acquierer.industryType) RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
                           if (state.acquierer.industryType) Spacer(flex: 1),
