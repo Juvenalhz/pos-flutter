@@ -78,6 +78,7 @@ class Reports {
     printer.print(onPrintReportOK, onPrintError);
   }
 
+  printTipReport(List<Trans> transList) async {}
   void onPrintReportOK() {}
 
   void onPrintError(int error) {

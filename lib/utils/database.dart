@@ -333,6 +333,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'foodBalance', 'integer');
     _tableAlter(db, 'trans', 'voided', 'integer');
     _tableAlter(db, 'trans', 'server', 'integer');
+    _tableAlter(db, 'trans', 'tipAdjusted', 'integer');
   }
 
   // SQL code to create the database table

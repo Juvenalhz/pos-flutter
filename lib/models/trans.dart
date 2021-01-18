@@ -58,6 +58,7 @@ class Trans {
   int _foodBalance = 0;
   bool _voided = false;
   int _server = 0;
+  bool _tipAdjusted = false;
 
   Trans();
 
@@ -117,6 +118,7 @@ class Trans {
   int get foodBalance => this._foodBalance;
   bool get voided => _voided;
   int get server => _server;
+  bool get tipAdjusted => _tipAdjusted;
 
   set id(int id) {
     this._id = id;
@@ -342,6 +344,10 @@ class Trans {
     this._server = server;
   }
 
+  set tipAdjusted(bool tipAdjusted) {
+    this._tipAdjusted = tipAdjusted;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -397,6 +403,7 @@ class Trans {
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
     map['server'] = this._server;
+    map['tipAdjusted'] = boolToInt(this._tipAdjusted);
 
     return map;
   }
@@ -454,6 +461,7 @@ class Trans {
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
     map['server'] = this._server;
+    map['tipAdjusted'] = boolToInt(this._tipAdjusted);
 
     return map;
   }
@@ -508,6 +516,7 @@ class Trans {
     this._foodBalance = trans['foodBalance'];
     this._voided = intToBool(trans['voided']);
     this._server = trans['server'];
+    this._tipAdjusted = intToBool(trans['tipAdjusted']);
   }
 
   void clear() {
@@ -566,6 +575,7 @@ class Trans {
     _foodBalance = 0;
     _voided = false;
     _server = 0;
+    _tipAdjusted = false;
   }
 
   void clearCardData() {

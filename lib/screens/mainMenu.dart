@@ -14,6 +14,7 @@ import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/tipReportBloc.dart';
 import 'package:pay/models/acquirer.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
@@ -52,8 +53,6 @@ class MainMenu extends StatelessWidget {
                   detailReportBloc.add(DetailReportInitialEvent());
                   Navigator.pushNamed(context, '/DetailReport');
                 }),
-
-
             BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
                 AcquirerRepository acquirerRepository = new AcquirerRepository();
@@ -63,19 +62,22 @@ class MainMenu extends StatelessWidget {
                 return BlocBuilder<AcquirerBloc, AcquirerState>(builder: (context, state) {
                   if (state is AcquirerLoaded) {
                     if (state.acquirer.industryType)
-                    return  _createDrawerItem(
-                      text: 'Reporte De Propina',
-                      //onTap: () =>
-                      // Navigator.pushReplacementNamed(context, Routes.contacts)
-                    );
-                    else return SizedBox();
-                  }
-                  else return SizedBox();
-                });
-              }
-              else return SizedBox();
-            }),
+                      return _createDrawerItem(
+                          text: 'Reporte De Propina',
+                          onTap: () {
+                            final TipReportBloc tipReportBloc = BlocProvider.of<TipReportBloc>(context);
 
+                            tipReportBloc.add(TipReportInitialEvent());
+                            Navigator.pushNamed(context, '/TipReport');
+                          });
+                    else
+                      return SizedBox();
+                  } else
+                    return SizedBox();
+                });
+              } else
+                return SizedBox();
+            }),
           ]),
           Divider(),
           _createDrawerItem(
