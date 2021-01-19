@@ -12,6 +12,7 @@ import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/initialization/initialization_bloc.dart';
 import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/summaryReportBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'dart:io';
@@ -102,7 +103,15 @@ class MainMenu extends StatelessWidget {
                   acquirerBloc.add(GetAllAcquirer());
                   Navigator.pushNamed(context, '/configuration');
                 }),
-            _createDrawerItem(text: 'Reporte de Parametros'),
+            _createDrawerItem(
+                text: 'Resumen De Parámetros',
+                onTap: () {
+                  final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
+
+                  summaryReportBloc.add(SummaryReportInitialEvent());
+                  Navigator.pushNamed(context, '/SummaryReport');
+                }),
+            _createDrawerItem(text: 'Reporte de Parámetros'),
             _createDrawerItem(
                 text: 'Inicialización',
                 onTap: () {

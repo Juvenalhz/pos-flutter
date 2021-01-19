@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/models/acquirer.dart';
+import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/printer.dart';
 import 'package:pay/utils/serialNumber.dart';
@@ -76,6 +82,17 @@ class Reports {
     printer.feedLine(5);
 
     printer.print(onPrintReportOK, onPrintError);
+  }
+
+  printSummaryReport() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    TerminalRepository terminalRepository = new TerminalRepository();
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    CommRepository commRepository = new CommRepository();
+    Comm comm = Comm.fromMap(await commRepository.getComm(1));
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
   }
 
   void onPrintReportOK() {}
