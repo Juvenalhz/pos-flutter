@@ -461,4 +461,9 @@ class DatabaseHelper {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
   }
+
+  Future rawQuery(String query) async {
+    Database db = await instance.database;
+    return await db.rawQuery(query);
+  }
 }

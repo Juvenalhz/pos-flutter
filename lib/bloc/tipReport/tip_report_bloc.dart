@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/receipt.dart';
@@ -21,15 +22,30 @@ class TipReportBloc extends Bloc<TipReportEvent, TipReportState> {
     TipReportEvent event,
   ) async* {
     if (event is TipReportInitialEvent) {
+      AcquirerRepository acquirerRepository = new AcquirerRepository();
       TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0 and binType = 1');
-      List<Trans> listTrans = new List<Trans>();
+      List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers();
+      List<Map<String, dynamic>> tipsList = await transRepository.getTipsByServer();
+      List<Map<String, dynamic>> transPerAcquirer = new List<Map<String, dynamic>>();
+      int tipGrandTotal = 0;
 
-      transList.forEach((element) {
-        listTrans.add(Trans.fromMap(element));
+      acquirers.forEach((acquirer) {
+        if (transPerAcquirer.firstWhere((item) => item['acquirer'] == acquirer['id'], orElse: () => null) == null) {
+          transPerAcquirer
+              .add({'id': acquirer['id'], 'acquirer': acquirer['name'].toString().trim(), 'total': 0, 'tips': new List<Map<String, dynamic>>()});
+        }
+
+        tipsList.forEach((element) {
+          if (acquirer['id'] == element['acquirer']) {
+            tipGrandTotal += element['total'];
+            ;
+            transPerAcquirer[acquirer['id']]['total'] += element['total'];
+            transPerAcquirer[acquirer['id']]['tips'].add({'server': element['server'], 'count': element['count'], 'total': element['total']});
+          }
+        });
       });
 
-      yield TipReportDataReady(listTrans);
+      yield TipReportDataReady(transPerAcquirer, tipGrandTotal);
     } else if (event is TipReportPrintReceiptCopy) {
       TransRepository transRepository = new TransRepository();
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));

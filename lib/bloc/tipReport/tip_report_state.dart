@@ -10,11 +10,12 @@ class TipReportInitial extends TipReportState {
 }
 
 class TipReportDataReady extends TipReportState {
-  final List<Trans> transList;
+  final List<Map<String, dynamic>> transList;
+  final int tipGrandTotal;
 
-  TipReportDataReady(this.transList);
+  TipReportDataReady(this.transList, this.tipGrandTotal);
   @override
-  List<Object> get props => [transList];
+  List<Object> get props => [transList, tipGrandTotal];
 }
 
 class TipReportShowTransDetail extends TipReportState {
