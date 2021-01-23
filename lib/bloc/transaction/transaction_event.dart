@@ -163,13 +163,14 @@ class TransFinishChipComplete extends TransactionEvent {
   List<Object> get props => [this.finishData];
 }
 
-class TransCardRemoved extends TransactionEvent {
-  final Map<String, dynamic> finishData;
-
-  TransCardRemoved([this.finishData]);
-
+class TransRemoveCard extends TransactionEvent {
   @override
-  List<Object> get props => [this.finishData];
+  List<Object> get props => [];
+}
+
+class TransCardRemoved extends TransactionEvent {
+  @override
+  List<Object> get props => [];
 }
 
 class TransShowPinAmount extends TransactionEvent {

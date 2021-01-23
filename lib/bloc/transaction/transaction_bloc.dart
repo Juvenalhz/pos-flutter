@@ -495,7 +495,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.createTrans(trans);
             }
             yield TransactionCompleted(trans);
-            yield TransactionCompleted(trans);
+
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -521,22 +521,31 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (trans.type == 'Venta')
           transRepository.updateTrans(trans);
         else {
-          //update original transaaction
+          //update original transaction
           originalTrans.voided = true;
           transRepository.updateTrans(originalTrans);
           //add void to database
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
-        yield TransactionCompleted(trans);
+        this.add(TransMercahntReceipt());
+        yield TransactionPrintMerchantReceipt(trans);
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
     }
     // card was removed at the end of the emv flow - this the normal scenario
+    else if (event is TransRemoveCard) {
+      if (trans.cardType == Pinpad.CHIP) {
+        pinpad.removeCard();
+        yield TransactionShowMessage('Retire Tarjeta');
+      }
+      else
+        yield TransactionFinish(trans);
+    }
     else if (event is TransCardRemoved) {
-
+      yield TransactionFinish(trans);
     }
     //print receipt
     else if (event is TransMercahntReceipt) {
@@ -551,7 +560,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionPrintCustomerReceipt(trans);
       receipt.printTransactionReceipt(false, trans);
       await new Future.delayed(const Duration(seconds: 3));
-      yield TransactionFinish(trans);
+      if (trans.cardType == Pinpad.CHIP) {
+        //pinpad.removeCard();
+        //yield TransactionShowMessage('Retire Tarjeta');
+        yield TransactionCompleted(trans);
+      } else {
+        yield TransactionFinish(trans);
+      }
     }
     // pinpad error detected
     else if (event is TransCardError) {

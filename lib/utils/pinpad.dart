@@ -43,6 +43,11 @@ class Pinpad {
     return ret;
   }
 
+  Future<int> removeCard() async {
+    int ret = await _channel.invokeMethod('removeCard');
+    return ret;
+  }
+
   Pinpad(this.context) {
     _channel.setMethodCallHandler(this._callHandler);
     transactionBloc = BlocProvider.of<TransactionBloc>(this.context);
@@ -77,11 +82,7 @@ class Pinpad {
 
       transactionBloc.add(TransFinishChipComplete(params));
     } else if (call.method == 'cardRemoved') {
-      call.arguments.forEach((key, value) {
-        params[key] = value;
-      });
-
-      transactionBloc.add(TransCardRemoved(params));
+      transactionBloc.add(TransCardRemoved());
     } else if (call.method == 'showPinAmount') {
       print('showPinAmount');
       transactionBloc.add(TransShowPinAmount());
