@@ -450,25 +450,33 @@ public class PinpadManager implements PinpadCallbacks {
                 finishChipData.put("tags", out.substring(4, 4 + tagsLen * 2));
             }
 
-            // if chip, ask user to remove card
-            if (entryMode == MODE_CHIP) {
-                pinpad.removeCard("Retire Tarjeta", removeOutput -> {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            channel.invokeMethod("cardRemoved", finishChipData);
-                        }
-                    });
+//            // if chip, ask user to remove card
+//            if (entryMode == MODE_CHIP) {
+//                pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            channel.invokeMethod("cardRemoved", finishChipData);
+//                        }
+//                    });
+//
+//                });
+//            } else {
+//                new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        channel.invokeMethod("cardRemoved", finishChipData);
+//                    }
+//                });
+//            }
 
-                });
-            } else {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        channel.invokeMethod("cardRemoved", finishChipData);
-                    }
-                });
-            }
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    channel.invokeMethod("finishChipComplete", finishChipData);
+                }
+            });
+                
             return output.getResultCode();
         }
         else if (isEmulator()){
@@ -507,6 +515,24 @@ public class PinpadManager implements PinpadCallbacks {
         }
         else
             return Pinpad.PP_CANCEL;
+    }
+
+    public void RemoveCard(){
+        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+        HashMap<String, Object> removeChipData = new HashMap<>();
+
+        if (Build.MODEL.contains("APOS")) {
+            // if chip, ask user to remove card
+            pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("cardRemoved", removeChipData);
+                    }
+                });
+            });
+        }
+
     }
 
     public static class TrackData {

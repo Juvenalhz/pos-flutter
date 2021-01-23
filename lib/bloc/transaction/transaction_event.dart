@@ -154,6 +154,15 @@ class TransFinishChip extends TransactionEvent {
   List<Object> get props => [trans];
 }
 
+class TransFinishChipComplete extends TransactionEvent {
+  final Map<String, dynamic> finishData;
+
+  TransFinishChipComplete([this.finishData]);
+
+  @override
+  List<Object> get props => [this.finishData];
+}
+
 class TransCardRemoved extends TransactionEvent {
   final Map<String, dynamic> finishData;
 

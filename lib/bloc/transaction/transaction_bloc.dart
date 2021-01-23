@@ -495,6 +495,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.createTrans(trans);
             }
             yield TransactionCompleted(trans);
+            yield TransactionCompleted(trans);
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -504,14 +505,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransFinishChip) {
+
       if (await pinpad.finishChip(event.trans.respCode, event.trans.entryMode, event.trans.responseEmvTags) != 0) {
         //TODO: if approved reversal may be needed at this point
         trans.clear();
         yield TransactionError();
       }
     }
-    // card was removed at the end of the emv flow - this the normal scenario
-    else if (event is TransCardRemoved) {
+    // finish chip
+    else if (event is TransFinishChipComplete){
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
@@ -531,7 +533,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
-    } else if (event is TransMercahntReceipt) {
+    }
+    // card was removed at the end of the emv flow - this the normal scenario
+    else if (event is TransCardRemoved) {
+
+    }
+    //print receipt
+    else if (event is TransMercahntReceipt) {
       Receipt receipt = new Receipt(context);
 
       yield TransactionPrintMerchantReceipt(trans);

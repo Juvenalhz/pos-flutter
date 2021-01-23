@@ -70,6 +70,12 @@ class Pinpad {
       final result =
           await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments, true)));
       return result;
+    } else if (call.method == 'finishChipComplete') {
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+
+      transactionBloc.add(TransFinishChipComplete(params));
     } else if (call.method == 'cardRemoved') {
       call.arguments.forEach((key, value) {
         params[key] = value;

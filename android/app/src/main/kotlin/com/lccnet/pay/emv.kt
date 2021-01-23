@@ -71,8 +71,9 @@ class Emv : MethodChannel.MethodCallHandler{
             if ((keyIndex != null) && (pan != null) && (msg1 != null) && (msg2 != null)) {
                 result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2));
             }
+        } else if (call.method == "removeCard"){
+            PinpadManager.me().RemoveCard();
         }
-        
         
         else {
             result.notImplemented()
