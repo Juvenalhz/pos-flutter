@@ -56,9 +56,9 @@ class TipReport extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Text(
-                          'Reporte De Propina',
+                          'Resumen De Propina',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
                         ),
                       ),
                       BlocBuilder<TipReportBloc, TipReportState>(builder: (context, state) {
@@ -79,15 +79,6 @@ class TipReport extends StatelessWidget {
                           return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
                       }),
                     ]);
-                  } else if (state is TipReportShowTransDetail) {
-                    return Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        'Reporte De Propina',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
-                      ),
-                    );
                   } else {
                     return Text('');
                   }
@@ -248,108 +239,11 @@ class TipReport extends StatelessWidget {
                           ),
                         ],
                       );
-                    } else if (state is TipReportShowTransDetail) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Spacer(flex: 1),
-                          Text(state.trans.type + ' - ' + state.cardBrand, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                          Spacer(flex: 1),
-                          RowDetail(
-                              label: DateFormat('dd/MM/yyyy').format(state.trans.dateTime),
-                              strAmount: DateFormat('hh:mm:ss').format(state.trans.dateTime)),
-                          Spacer(flex: 1),
-                          RowDetail(label: "Ticket:", strAmount: state.trans.stan.toString()),
-                          Spacer(flex: 2),
-                          RowDetailAmount(label: "Total:", strAmount: formatter.format(state.trans.total / 100)),
-                          Spacer(flex: 2),
-                          RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
-                          Spacer(flex: 1),
-                          RowDetail(label: "Autorizacion:", strAmount: state.trans.authCode),
-                          Spacer(flex: 1),
-                          RowDetail(label: "Referencia:", strAmount: state.trans.referenceNumber),
-                          Spacer(flex: 2),
-                          if (state.trans.respCode == '00') btnEnter(context, true) else btnEnter(context, false),
-                          Spacer(flex: 1),
-                        ],
-                      );
                     } else
                       return SplashScreen();
                   }))
             ])),
           ],
-        ),
-      ),
-    );
-  }
-
-  void menuData(int id, GlobalKey btnKey, BuildContext context, bool withVoid) {
-    List<MenuItemProvider> setData = new List<MenuItemProvider>();
-    setData.clear();
-    for (var io in (withVoid) ? menuListWithVoid : menuList) {
-      setData.add(MenuItem(title: io));
-    }
-
-    SpearMenu menu = SpearMenu(
-        //backgroundColor: Colors.teal,
-        // lineColor: Colors.tealAccent,
-        items: setData,
-        onClickMenu: onClickMenu,
-        stateChanged: stateChanged,
-        onDismiss: onDismiss,
-        context: context,
-        id: id);
-
-    menu.show(widgetKey: btnKey);
-  }
-
-  void onClickMenu(MenuItemProvider item, int id, BuildContext context) {
-    final TipReportBloc detailReportBloc = BlocProvider.of<TipReportBloc>(context);
-
-    print('Click menu -> ${item.menuTitle} - id:$id');
-    if (item.menuTitle == 'Copia del Comercio') {
-      detailReportBloc.add(TipReportPrintReceiptCopy(true, id, context));
-    } else if (item.menuTitle == 'Copia del Cliente') {
-      detailReportBloc.add(TipReportPrintReceiptCopy(false, id, context));
-    } else if (item.menuTitle == 'Ver Detalles') {
-      detailReportBloc.add(TipReportViewTransDetail(id));
-    } else if (item.menuTitle == 'Anulación') {
-      final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-      Pinpad pinpad = new Pinpad(context);
-      //TODO: this pinpad instance for now is a work around, need a way to remove it as it will not be used
-      transactionBloc.add(TransInitPinpad(pinpad));
-      transactionBloc.add(TransVoidTransaction(id));
-      Navigator.pushNamed(context, '/transaction');
-    }
-  }
-
-  void stateChanged(bool isShow) {
-    //print('menu is ${isShow ? 'showing' : 'closed'}');
-  }
-
-  void onDismiss() {
-    //print('Menu is dismiss');
-  }
-
-  Widget btnEnter(BuildContext context, bool approved) {
-    Color btnColor = (approved) ? Colors.green : Colors.red;
-    IconData btnIcon = (approved) ? Icons.done_outline : Icons.error_outline;
-
-    return Container(
-      padding: EdgeInsets.only(bottom: 10.0),
-      child: FlatButton(
-        child: Icon(btnIcon, size: 35, color: Colors.white),
-        onPressed: () {
-          final TipReportBloc detailReportBloc = BlocProvider.of<TipReportBloc>(context);
-
-          detailReportBloc.add(TipReportInitialEvent());
-        },
-        color: btnColor,
-        padding: EdgeInsets.all(15.0),
-        splashColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: Colors.blueGrey)
         ),
       ),
     );
