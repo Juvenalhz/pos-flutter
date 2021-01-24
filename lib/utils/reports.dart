@@ -91,6 +91,7 @@ class Reports {
     transList.forEach((element) {
       List<Map<String, dynamic>> tips = element['tips'];
 
+      printer.feedLine(1);
       printer.addText(Printer.CENTER, 'ADQUIRIENCIA: ' + element['acquirer'].trim());
       printer.addTextSideBySide(' Num   Mesero', 'Propina');
 
@@ -99,17 +100,13 @@ class Reports {
             formatter.format(i['total'] / 100).padLeft(15, ' ').trim());
       });
 
-      printer.setFontSize(Printer.FONT_SIZE_SMALL);
       printer.addTextSideBySide('Total Propinas:', formatter.format(element['total'] / 100).padLeft(15, ' ').trim());
-      printer.setFontSize(Printer.FONT_SIZE_NORMAL);
     });
-    printer.setFontSize(Printer.FONT_SIZE_SMALL);
-    printer.addTextSideBySide('Total Gral. Propinas:', formatter.format(tipGrandTotal / 100).padLeft(15, ' ').trim());
-    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
+    printer.addTextSideBySide('T.Gral Propinas:', formatter.format(tipGrandTotal / 100).padLeft(15, ' ').trim());
 
     printer.addTextSideBySide('V08.01-05', '01.01');
 
-    printer.feedLine(5);
+    printer.feedLine(4);
 
     printer.print(onPrintReportOK, onPrintError);
   }

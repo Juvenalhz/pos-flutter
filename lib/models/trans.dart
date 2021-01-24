@@ -415,7 +415,8 @@ class Trans {
     // !!!!!!!!!!!!!!!!!!!!
     var cipher = Cipher();
     this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
-    this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+    if (this.cardholderName.length > 0)
+      this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
 
     map['id'] = this._id;
     map['number'] = this._number;

@@ -111,101 +111,104 @@ class TipReport extends StatelessWidget {
                               controller: ScrollController(),
                               itemBuilder: (context, index) {
                                 if (index < state.transList.length)
-                                  return Card(
-                                    elevation: 5,
-                                    child: Column(
-                                      children: [
-                                        SizedBox(height: 10),
-                                        Text('ADQUIRIENCIA: ' + state.transList[index]['acquirer'],
-                                            style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.bold,
-                                              fontFeatures: [FontFeature.tabularFigures()],
-                                            )),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
-                                          child: Row(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                                                child: Text('Num', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              ),
-                                              Spacer(flex: 2),
-                                              Text('Mesero', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Spacer(flex: 4),
-                                              Padding(
-                                                padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                                child: Text('Propina', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              ),
-                                            ],
+                                  if (state.transList[index]['total'] > 0)
+                                    return Card(
+                                      elevation: 5,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(height: 10),
+                                          Text('ADQUIRIENCIA: ' + state.transList[index]['acquirer'],
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                                fontFeatures: [FontFeature.tabularFigures()],
+                                              )),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(0, 12, 1, 5),
+                                            child: Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                                                  child: Text('Num', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                ),
+                                                Spacer(flex: 2),
+                                                Text('Mesero', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                Spacer(flex: 4),
+                                                Padding(
+                                                  padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                                  child: Text('Propina', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        ListView.builder(
-                                            shrinkWrap: true,
-                                            physics: ClampingScrollPhysics(),
-                                            itemCount: state.transList[index]['tips'].length,
-                                            itemBuilder: (context, i) {
-                                              Map<String, dynamic> tips = state.transList[index]['tips'][i];
-                                              return Card(
-                                                  elevation: 3,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
-                                                    child: Row(
-                                                      //mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Spacer(flex: 2),
-                                                        Text(tips['count'].toString(), style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15)),
-                                                        Spacer(flex: 7),
-                                                        SizedBox(
-                                                          width: 30,
-                                                          child: Text(tips['server'].toString(),
-                                                              textAlign: TextAlign.left,
-                                                              style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight: FontWeight.normal,
-                                                                fontFeatures: [FontFeature.tabularFigures()],
-                                                              )),
-                                                        ),
-                                                        Spacer(flex: 6),
-                                                        SizedBox(
-                                                          width: 100,
-                                                          child: Text(formatter.format(tips['total'] / 100),
-                                                              textAlign: TextAlign.right,
-                                                              style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight: FontWeight.normal,
-                                                                fontFeatures: [FontFeature.tabularFigures()],
-                                                              )),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ));
-                                            }),
-                                        SizedBox(height: 10),
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(8, 0, 13, 0),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Total Propinas:',
-                                                  style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFeatures: [FontFeature.tabularFigures()],
-                                                  )),
-                                              Text(formatter.format(state.transList[index]['total'] / 100),
-                                                  textAlign: TextAlign.right,
-                                                  style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFeatures: [FontFeature.tabularFigures()],
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
+                                          ListView.builder(
+                                              shrinkWrap: true,
+                                              physics: ClampingScrollPhysics(),
+                                              itemCount: state.transList[index]['tips'].length,
+                                              itemBuilder: (context, i) {
+                                                Map<String, dynamic> tips = state.transList[index]['tips'][i];
+                                                return Card(
+                                                    elevation: 3,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.fromLTRB(0, 4, 10, 2),
+                                                      child: Row(
+                                                        //mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Spacer(flex: 2),
+                                                          Text(tips['count'].toString(), style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15)),
+                                                          Spacer(flex: 7),
+                                                          SizedBox(
+                                                            width: 30,
+                                                            child: Text(tips['server'].toString(),
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.normal,
+                                                                  fontFeatures: [FontFeature.tabularFigures()],
+                                                                )),
+                                                          ),
+                                                          Spacer(flex: 6),
+                                                          SizedBox(
+                                                            width: 100,
+                                                            child: Text(formatter.format(tips['total'] / 100),
+                                                                textAlign: TextAlign.right,
+                                                                style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.normal,
+                                                                  fontFeatures: [FontFeature.tabularFigures()],
+                                                                )),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ));
+                                              }),
+                                          SizedBox(height: 10),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(8, 0, 13, 0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text('Total Propinas:',
+                                                    style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFeatures: [FontFeature.tabularFigures()],
+                                                    )),
+                                                Text(formatter.format(state.transList[index]['total'] / 100),
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFeatures: [FontFeature.tabularFigures()],
+                                                    )),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  else
+                                    return Container();
                                 else
                                   return Column(
                                     children: [

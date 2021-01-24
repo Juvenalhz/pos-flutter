@@ -48,6 +48,10 @@ class Pinpad {
     return ret;
   }
 
+  Future<void> beep() async {
+    _channel.invokeMethod('beep');
+  }
+
   Pinpad(this.context) {
     _channel.setMethodCallHandler(this._callHandler);
     transactionBloc = BlocProvider.of<TransactionBloc>(this.context);

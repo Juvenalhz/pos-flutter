@@ -47,6 +47,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   AcquirerRepository acquirerRepository = new AcquirerRepository();
   Merchant merchant;
   Acquirer acquirer;
+  bool doBeep = false;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -58,6 +59,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
     print(event.toString());
+
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
@@ -528,7 +530,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
-        this.add(TransMercahntReceipt());
+        this.add(TransMerchantReceipt());
         yield TransactionPrintMerchantReceipt(trans);
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
@@ -538,17 +540,29 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
       if (trans.cardType == Pinpad.CHIP) {
+        doBeep = true;
         pinpad.removeCard();
+        this.add(RemovingCard());
         yield TransactionShowMessage('Retire Tarjeta');
       }
       else
         yield TransactionFinish(trans);
     }
+    // alarm to beep while card is not removed
+    else if (event is RemovingCard){
+      if (doBeep) {
+        pinpad.beep();
+        this.add(RemovingCard());
+        await new Future.delayed(const Duration(seconds: 2));
+      }
+    }
     else if (event is TransCardRemoved) {
+      doBeep = false;
+      this.add(TransfinishTransaction());
       yield TransactionFinish(trans);
     }
     //print receipt
-    else if (event is TransMercahntReceipt) {
+    else if (event is TransMerchantReceipt) {
       Receipt receipt = new Receipt(context);
 
       yield TransactionPrintMerchantReceipt(trans);
