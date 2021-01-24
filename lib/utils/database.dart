@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static final _databaseName = "test31.db";
-  static final _databaseVersion = 2;
+  static final _databaseVersion = 3;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
