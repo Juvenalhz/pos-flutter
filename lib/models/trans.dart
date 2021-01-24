@@ -57,6 +57,8 @@ class Trans {
   int _binType = 0;
   int _foodBalance = 0;
   bool _voided = false;
+  int _server = 0;
+  bool _tipAdjusted = false;
 
   Trans();
 
@@ -115,6 +117,8 @@ class Trans {
   int get binType => this._binType;
   int get foodBalance => this._foodBalance;
   bool get voided => _voided;
+  int get server => _server;
+  bool get tipAdjusted => _tipAdjusted;
 
   set id(int id) {
     this._id = id;
@@ -336,6 +340,14 @@ class Trans {
     this._voided = voided;
   }
 
+  set server(int server) {
+    this._server = server;
+  }
+
+  set tipAdjusted(bool tipAdjusted) {
+    this._tipAdjusted = tipAdjusted;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -390,6 +402,8 @@ class Trans {
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
+    map['server'] = this._server;
+    map['tipAdjusted'] = boolToInt(this._tipAdjusted);
 
     return map;
   }
@@ -401,7 +415,8 @@ class Trans {
     // !!!!!!!!!!!!!!!!!!!!
     var cipher = Cipher();
     this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
-    this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+    if (this.cardholderName.length > 0)
+      this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
 
     map['id'] = this._id;
     map['number'] = this._number;
@@ -446,6 +461,8 @@ class Trans {
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
+    map['server'] = this._server;
+    map['tipAdjusted'] = boolToInt(this._tipAdjusted);
 
     return map;
   }
@@ -499,6 +516,8 @@ class Trans {
     this._binType = trans['binType'];
     this._foodBalance = trans['foodBalance'];
     this._voided = intToBool(trans['voided']);
+    this._server = trans['server'];
+    this._tipAdjusted = intToBool(trans['tipAdjusted']);
   }
 
   void clear() {
@@ -556,6 +575,8 @@ class Trans {
     _binType = 0;
     _foodBalance = 0;
     _voided = false;
+    _server = 0;
+    _tipAdjusted = false;
   }
 
   void clearCardData() {

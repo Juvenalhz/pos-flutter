@@ -12,6 +12,10 @@ class TransStartTransaction extends TransactionEvent {
   List<Object> get props => [];
 }
 
+class TransfinishTransaction extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
 class TransInitPinpad extends TransactionEvent {
   final Pinpad pinpad;
 
@@ -154,13 +158,28 @@ class TransFinishChip extends TransactionEvent {
   List<Object> get props => [trans];
 }
 
-class TransCardRemoved extends TransactionEvent {
+class TransFinishChipComplete extends TransactionEvent {
   final Map<String, dynamic> finishData;
 
-  TransCardRemoved([this.finishData]);
+  TransFinishChipComplete([this.finishData]);
 
   @override
   List<Object> get props => [this.finishData];
+}
+
+class TransRemoveCard extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class RemovingCard extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransCardRemoved extends TransactionEvent {
+  @override
+  List<Object> get props => [];
 }
 
 class TransShowPinAmount extends TransactionEvent {
@@ -267,7 +286,7 @@ class TransPinEntered extends TransactionEvent {
   List<Object> get props => [this.pinData];
 }
 
-class TransMercahntReceipt extends TransactionEvent {
+class TransMerchantReceipt extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
@@ -284,4 +303,18 @@ class TransVoidTransaction extends TransactionEvent {
 
   @override
   List<Object> get props => [id];
+}
+
+class TransAddServerNumber extends TransactionEvent {
+  final int server;
+
+  TransAddServerNumber(this.server);
+
+  @override
+  List<Object> get props => [server];
+}
+
+class TransServerBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
 }

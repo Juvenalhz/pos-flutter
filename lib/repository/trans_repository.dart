@@ -25,4 +25,6 @@ class TransRepository {
   Future getMaxId() => appdb.queryMaxId('trans');
 
   Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0 and type <> \'Anulación\' ');
+
+  Future getTipsByServer()  => appdb.rawQuery('SELECT acquirer, server, count(id) as count, SUM(tip) as total FROM trans where tip<>0 group by  server  order by acquirer, server');
 }

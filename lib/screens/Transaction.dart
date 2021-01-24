@@ -27,19 +27,16 @@ class Transaction extends StatelessWidget {
     Pinpad pinpad = new Pinpad(context);
     bool pinpadInit = false;
 
-    return BlocListener<TransactionBloc, TransactionState>(
-            listener: (context, state) {
-              if ((state is TransactionFinish) || (state is TransactionError)){
-                if ((state is TransactionFinish) && (state.trans.type == 'Anulación')){
-                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+    return BlocListener<TransactionBloc, TransactionState>(listener: (context, state) {
+      if ((state is TransactionFinish) || (state is TransactionError)) {
+        if ((state is TransactionFinish) && (state.trans.type == 'Anulación')) {
+          final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                  detailReportBloc.add(DetailReportInitialEvent());
-                }
-                Navigator.of(context).pop();
-              }
-          },
-    child:
-      Container(
+          detailReportBloc.add(DetailReportInitialEvent());
+        }
+        Navigator.of(context).pop();
+      }
+    }, child: Container(
       child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
         if (pinpadInit == false) {
           transactionBloc.add(TransInitPinpad(pinpad));
@@ -51,11 +48,13 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAddTip) {
           return TipScreen(state.trans);
         } else if (state is TransactionAskIdNumber) {
-          return new AskID('Numero', 'De Cédula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
+          return new AskID('Número', 'De Cédula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskLast4Digits) {
           return new AskLast4('Ingrese', 'Ultimos 4 Digitos', '', 4, 4, AskNumeric.NO_SEPARATORS, onClickLast4Enter, onClickLast4Back);
         } else if (state is TransactionAskCVV) {
           return new AskCVV('Ingrese Código', 'De Seguridad', '', 3, 3, AskNumeric.NO_SEPARATORS, onClickCVVEnter, onClickCVVBack);
+        } else if (state is TransactionAskServerNumber) {
+          return new AskServer('Ingrese Número', 'De Mesero', '', 0, 2, AskNumeric.NO_SEPARATORS, onClickServerEnter, onClickServerBack);
         } else if (state is TransactionAskConfirmation) {
           return Confirmation(trans: state.trans);
         } else if (state is TransactionAskAccountType) {
@@ -92,13 +91,11 @@ class Transaction extends StatelessWidget {
           return CommError('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
         else if (state is TransactionFinshChip) {
           return TransMessage('');
-        }
-        else
+        } else
           print('state:' + state.toString());
-          return TransMessage('');
+        return TransMessage('');
       }),
-    )
-    );
+    ));
   }
 
   void onClickLast4Enter(BuildContext context, int value) {
@@ -135,6 +132,18 @@ class Transaction extends StatelessWidget {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     transactionBloc.add(TransCVVBack());
+  }
+
+  void onClickServerEnter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddServerNumber(value));
+  }
+
+  void onClickServerBack(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransServerBack());
   }
 
   void onAccTypeSelection(BuildContext context, int value) {

@@ -47,6 +47,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   AcquirerRepository acquirerRepository = new AcquirerRepository();
   Merchant merchant;
   Acquirer acquirer;
+  bool doBeep = false;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -58,6 +59,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
     print(event.toString());
+
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
@@ -214,7 +216,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // last 4 digits entered need to match
     else if (event is TransAddLast4) {
-      if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
+      if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString().padLeft(4, '0')) {
         if (acquirer.cvv2) {
           if (trans.type == 'Venta')
             yield TransactionAskCVV();
@@ -262,13 +264,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
-      trans.cardholderID = event.idNumber.toString();
       trans.binType = bin.cardType;
+      trans.cardholderID = event.idNumber.toString();
 
-      if (trans.binType == Bin.TYPE_DEBIT) {
+      trans.binType = Bin.TYPE_CREDIT;
+      if (trans.binType == Bin.TYPE_CREDIT) {
+        acquirer.industryType = true;
+        if (acquirer.industryType) // true = restaurant
+          yield TransactionAskServerNumber();
+        else
+          yield TransactionAskConfirmation(trans, acquirer);
+      } else {
         yield TransactionAskAccountType();
-      } else
-        yield TransactionAskConfirmation(trans, acquirer);
+      }
+    } else if (event is TransAddServerNumber) {
+      trans.server = event.server;
+      yield TransactionAskConfirmation(trans, acquirer);
+    } else if (event is TransServerBack) {
+      trans.server = 0;
+      yield TransactionAskIdNumber();
     }
     // account type ase selected
     else if (event is TransAddAccountType) {
@@ -483,6 +497,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.createTrans(trans);
             }
             yield TransactionCompleted(trans);
+
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -492,14 +507,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransFinishChip) {
+
       if (await pinpad.finishChip(event.trans.respCode, event.trans.entryMode, event.trans.responseEmvTags) != 0) {
         //TODO: if approved reversal may be needed at this point
         trans.clear();
         yield TransactionError();
       }
     }
-    // card was removed at the end of the emv flow - this the normal scenario
-    else if (event is TransCardRemoved) {
+    // finish chip
+    else if (event is TransFinishChipComplete){
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
@@ -507,19 +523,46 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (trans.type == 'Venta')
           transRepository.updateTrans(trans);
         else {
-          //update original transaaction
+          //update original transaction
           originalTrans.voided = true;
           transRepository.updateTrans(originalTrans);
           //add void to database
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
-        yield TransactionCompleted(trans);
+        this.add(TransMerchantReceipt());
+        yield TransactionPrintMerchantReceipt(trans);
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
-    } else if (event is TransMercahntReceipt) {
+    }
+    // card was removed at the end of the emv flow - this the normal scenario
+    else if (event is TransRemoveCard) {
+      if (trans.cardType == Pinpad.CHIP) {
+        doBeep = true;
+        pinpad.removeCard();
+        this.add(RemovingCard());
+        yield TransactionShowMessage('Retire Tarjeta');
+      }
+      else
+        yield TransactionFinish(trans);
+    }
+    // alarm to beep while card is not removed
+    else if (event is RemovingCard){
+      if (doBeep) {
+        pinpad.beep();
+        this.add(RemovingCard());
+        await new Future.delayed(const Duration(seconds: 2));
+      }
+    }
+    else if (event is TransCardRemoved) {
+      doBeep = false;
+      this.add(TransfinishTransaction());
+      yield TransactionFinish(trans);
+    }
+    //print receipt
+    else if (event is TransMerchantReceipt) {
       Receipt receipt = new Receipt(context);
 
       yield TransactionPrintMerchantReceipt(trans);
@@ -531,7 +574,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionPrintCustomerReceipt(trans);
       receipt.printTransactionReceipt(false, trans);
       await new Future.delayed(const Duration(seconds: 3));
-      yield TransactionFinish(trans);
+      if (trans.cardType == Pinpad.CHIP) {
+        //pinpad.removeCard();
+        //yield TransactionShowMessage('Retire Tarjeta');
+        yield TransactionCompleted(trans);
+      } else {
+        yield TransactionFinish(trans);
+      }
     }
     // pinpad error detected
     else if (event is TransCardError) {

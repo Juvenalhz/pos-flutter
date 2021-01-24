@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static final _databaseName = "test31.db";
-  static final _databaseVersion = 2;
+  static final _databaseVersion = 3;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -332,6 +332,8 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'binType', 'integer');
     _tableAlter(db, 'trans', 'foodBalance', 'integer');
     _tableAlter(db, 'trans', 'voided', 'integer');
+    _tableAlter(db, 'trans', 'server', 'integer');
+    _tableAlter(db, 'trans', 'tipAdjusted', 'integer');
   }
 
   // SQL code to create the database table
@@ -458,5 +460,10 @@ class DatabaseHelper {
   Future<int> querySumColumnArguments(String table, String column, {String where}) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+  }
+
+  Future rawQuery(String query) async {
+    Database db = await instance.database;
+    return await db.rawQuery(query);
   }
 }

@@ -78,6 +78,39 @@ class Reports {
     printer.print(onPrintReportOK, onPrintError);
   }
 
+  printTipReport(List<Map<String, dynamic>> transList, int tipGrandTotal) async {
+    Printer printer = new Printer();
+    var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+
+    await _addHeader(printer);
+    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
+    printer.addText(Printer.CENTER, 'RESUMEN DE PROPINAS');
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    await _addTerminalData(printer);
+
+    transList.forEach((element) {
+      List<Map<String, dynamic>> tips = element['tips'];
+
+      printer.feedLine(1);
+      printer.addText(Printer.CENTER, 'ADQUIRIENCIA: ' + element['acquirer'].trim());
+      printer.addTextSideBySide(' Num   Mesero', 'Propina');
+
+      tips.forEach((i) {
+        printer.addTextSideBySide(i['count'].toString().padLeft(3, ' ') + i['server'].toString().padLeft(8, ' '),
+            formatter.format(i['total'] / 100).padLeft(15, ' ').trim());
+      });
+
+      printer.addTextSideBySide('Total Propinas:', formatter.format(element['total'] / 100).padLeft(15, ' ').trim());
+    });
+    printer.addTextSideBySide('T.Gral Propinas:', formatter.format(tipGrandTotal / 100).padLeft(15, ' ').trim());
+
+    printer.addTextSideBySide('V08.01-05', '01.01');
+
+    printer.feedLine(4);
+
+    printer.print(onPrintReportOK, onPrintError);
+  }
+
   void onPrintReportOK() {}
 
   void onPrintError(int error) {

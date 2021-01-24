@@ -47,8 +47,8 @@ class TransApprovedScreen extends StatelessWidget {
               onPressed: () {
                 final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-                transactionBloc.add(TransMercahntReceipt());
-                //Navigator.of(context).pop();
+                transactionBloc.add(TransRemoveCard());
+
               },
               color: Colors.green,
               padding: EdgeInsets.all(15.0),

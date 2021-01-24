@@ -43,6 +43,15 @@ class Pinpad {
     return ret;
   }
 
+  Future<int> removeCard() async {
+    int ret = await _channel.invokeMethod('removeCard');
+    return ret;
+  }
+
+  Future<void> beep() async {
+    _channel.invokeMethod('beep');
+  }
+
   Pinpad(this.context) {
     _channel.setMethodCallHandler(this._callHandler);
     transactionBloc = BlocProvider.of<TransactionBloc>(this.context);
@@ -70,12 +79,14 @@ class Pinpad {
       final result =
           await Navigator.push(context, MaterialPageRoute(builder: (context) => SelectionMenu('Seleccionar Aplication:', call.arguments, true)));
       return result;
-    } else if (call.method == 'cardRemoved') {
+    } else if (call.method == 'finishChipComplete') {
       call.arguments.forEach((key, value) {
         params[key] = value;
       });
 
-      transactionBloc.add(TransCardRemoved(params));
+      transactionBloc.add(TransFinishChipComplete(params));
+    } else if (call.method == 'cardRemoved') {
+      transactionBloc.add(TransCardRemoved());
     } else if (call.method == 'showPinAmount') {
       print('showPinAmount');
       transactionBloc.add(TransShowPinAmount());

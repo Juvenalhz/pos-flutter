@@ -218,8 +218,7 @@ class _NumericEntryState extends State<NumericEntry> {
 
             if ((separatorType == AskNumeric.NO_DECIMALS) && (amount.length == 0) && btntext == '0') {
               // in this case do nothing, leading zeros should be ignored
-            }
-            else if (amount.length < this.max) {
+            } else if (amount.length < this.max) {
               amount = amount + btntext;
 
               if (separatorType == AskNumeric.DECIMALS) {
@@ -232,7 +231,6 @@ class _NumericEntryState extends State<NumericEntry> {
 
                 textControllerInput.text = _formatter.format(double.parse(formattedAmount));
               } else if (separatorType == AskNumeric.NO_DECIMALS)
-
                 textControllerInput.text = _formatter.format(double.parse(amount + '.00'));
               else
                 textControllerInput.text = amount;
@@ -304,6 +302,12 @@ class AskCVV extends AskNumeric {
 
 class AskID extends AskNumeric {
   AskID(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskServer extends AskNumeric {
+  AskServer(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
       Function(BuildContext p1) onClickBack)
       : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
 }

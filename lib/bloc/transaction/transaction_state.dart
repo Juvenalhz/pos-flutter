@@ -196,3 +196,8 @@ class TransactionCommError extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionAskServerNumber extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

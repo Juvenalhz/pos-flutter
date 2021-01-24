@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
-import com.ingenico.lar.bc.Pinpad
-import com.ingenico.lar.bc.PinpadCallbacks
-import com.ingenico.lar.bc.PinpadOutputHandler
+import com.ingenico.lar.apos.DeviceHelper
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -52,7 +50,7 @@ class Emv : MethodChannel.MethodCallHandler{
             val keyIndex : Int? = call.argument("keyIndex")
 
             if ((trans != null) && (aid != null) && (keyIndex != null)) {
-                result.success(goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex,  aid))
+                result.success(goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex, aid))
             }
         } else if (call.method == "finishChip"){
             val respCode : String? = call.argument("respCode")
@@ -71,8 +69,12 @@ class Emv : MethodChannel.MethodCallHandler{
             if ((keyIndex != null) && (pan != null) && (msg1 != null) && (msg2 != null)) {
                 result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2));
             }
+        } else if (call.method == "removeCard"){
+            PinpadManager.me().RemoveCard();
+        } else if (call.method == "beep"){
+            if (Build.MODEL.contains("APOS"))
+                DeviceHelper.me().beeper.startBeep(200)
         }
-        
         
         else {
             result.notImplemented()
@@ -171,11 +173,11 @@ class Emv : MethodChannel.MethodCallHandler{
         return ret
     }
 
-    private fun goOnChip(total : Int, cashBack : Int, keyIndex: Int, aid : HashMap<String, Any?>): Int {
+    private fun goOnChip(total: Int, cashBack: Int, keyIndex: Int, aid: HashMap<String, Any?>): Int {
         return PinpadManager.me().goOnChip(total, cashBack, keyIndex, aid)
     }
 
-    private fun finishChip(respCode : String, entryMode : Int, respEmvTags : String): Int{
+    private fun finishChip(respCode: String, entryMode: Int, respEmvTags: String): Int{
         return PinpadManager.me().finishChip(respCode, entryMode, respEmvTags)
     }
 }
