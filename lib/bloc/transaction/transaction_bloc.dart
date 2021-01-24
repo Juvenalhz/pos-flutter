@@ -216,7 +216,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // last 4 digits entered need to match
     else if (event is TransAddLast4) {
-      if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString()) {
+      if (trans.pan.substring(trans.pan.length - 4) == event.last4.toString().padLeft(4, '0')) {
         if (acquirer.cvv2) {
           if (trans.type == 'Venta')
             yield TransactionAskCVV();
