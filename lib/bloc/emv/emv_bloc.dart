@@ -29,7 +29,7 @@ class EmvBloc extends Bloc<EmvEvent, EmvState> {
 
         if (emv == null) yield EmvLoading();
 
-        yield EmvLoaded(emv: emv);
+        yield   EmvLoaded(emv: emv);
       }
     } else if (event is UpdateEmv) {
       yield EmvLoading();

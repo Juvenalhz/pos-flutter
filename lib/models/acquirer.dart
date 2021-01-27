@@ -161,26 +161,26 @@ class Acquirer {
     return map;
   }
 
-  Acquirer.fromMap(Map<String, dynamic> acquirer) {
-    this._id = acquirer['id'];
-    this._name = acquirer['name'];
-    this._rif = acquirer['rif'];
-    this._industryType = intToBool(acquirer['industryType']);
-    this._cashback = intToBool(acquirer['cashback']);
-    this._installmets = intToBool(acquirer['installmets']);
-    this._refund = intToBool(acquirer['refund']);
-    this._provimillas = intToBool(acquirer['provimillas']);
-    this._cheque = intToBool(acquirer['cheque']);
-    this._checkIncheckOut = intToBool(acquirer['checkIncheckOut']);
-    this._saleOffline = intToBool(acquirer['saleOffline']);
-    this._cvv2 = intToBool(acquirer['cvv2']);
-    this._last4Digits = intToBool(acquirer['last4Digits']);
-    this._passwordVoid = intToBool(acquirer['passwordVoid']);
-    this._passwordSettlement = intToBool(acquirer['passwordSettlement']);
-    this._maskPan = intToBool(acquirer['maskPan']);
-    this._prePrint = intToBool(acquirer['prePrint']);
-    this._manualEntry = intToBool(acquirer['manualEntry']);
-  }
+   Acquirer.fromMap(Map<String, dynamic> acquirer) {
+     this._id = acquirer['id'];
+     this._name = acquirer['name'];
+     this._rif = acquirer['rif'];
+     this._industryType = intToBool(acquirer['industryType']);
+     this._cashback = intToBool(acquirer['cashback']);
+     this._installmets = intToBool(acquirer['installmets']);
+     this._refund = intToBool(acquirer['refund']);
+     this._provimillas = intToBool(acquirer['provimillas']);
+     this._cheque = intToBool(acquirer['cheque']);
+     this._checkIncheckOut = intToBool(acquirer['checkIncheckOut']);
+     this._saleOffline = intToBool(acquirer['saleOffline']);
+     this._cvv2 = intToBool(acquirer['cvv2']);
+     this._last4Digits = intToBool(acquirer['last4Digits']);
+     this._passwordVoid = intToBool(acquirer['passwordVoid']);
+     this._passwordSettlement = intToBool(acquirer['passwordSettlement']);
+     this._maskPan = intToBool(acquirer['maskPan']);
+     this._prePrint = intToBool(acquirer['prePrint']);
+     this._manualEntry = intToBool(acquirer['manualEntry']);
+   }
 
   setIndicators(String indicator) {
     if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x01) != 0) this._industryType = true;

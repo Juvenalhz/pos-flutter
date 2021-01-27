@@ -14,9 +14,10 @@ class SummaryReportDataReady extends SummaryReportState {
   final Terminal terminal;
   final Comm comm;
   final Acquirer acquirer;
+  final Emv emv;
 
-  SummaryReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer);
+  SummaryReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer,this.emv);
 
   @override
-  List<Object> get props => [merchant, terminal, comm, acquirer];
+  List<Object> get props => [merchant, terminal, comm, acquirer, emv];
 }

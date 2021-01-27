@@ -7,9 +7,11 @@ import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/comm.dart';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
+import 'package:pay/models/emv.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/comm_repository.dart';
+import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
@@ -36,7 +38,10 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
       AcquirerRepository acquirerRepository = new AcquirerRepository();
       Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
-      yield SummaryReportDataReady(merchant, terminal, comm, acquirer);
+      EmvRepository emvRepository = new EmvRepository();
+      Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+
+      yield SummaryReportDataReady(merchant, terminal, comm, acquirer,emv);
     } else if (event is SummaryReportPrintReport) {
       Reports report = new Reports(event.context);
 
