@@ -86,7 +86,6 @@ class Reports {
     printer.print(onPrintReportOK, onPrintError);
   }
 
-  //build summaryReport ticket to print J.Q
   void _summaryReportHeader(Printer printer) async {
     DateTime now = DateTime.now();
     MerchantRepository merchantRepository = new MerchantRepository();
@@ -104,7 +103,6 @@ class Reports {
     printer.addText(Printer.LEFT,'RIF:' + merchant.taxID.toString());
     printer.addText(Printer.LEFT,merchant.city);
   }
-  //body SummaryReport
   printSummaryReport() async {
     Printer printer = new Printer();
     MerchantRepository merchantRepository = new MerchantRepository();
@@ -118,10 +116,9 @@ class Reports {
     EmvRepository emvRepository  = new EmvRepository();
     Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
 
-
     await _summaryReportHeader(printer);
-    printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
      printer.addTextFillLine('-');
      printer.addText(Printer.LEFT, '**PARAMETROS GENERALES**');
      printer.addTextSideBySideWithCenter("COD. COMERCIO",     ":",merchant.mid.toString());

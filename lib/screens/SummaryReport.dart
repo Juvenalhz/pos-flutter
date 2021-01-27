@@ -112,85 +112,39 @@ class SummaryReport extends StatelessWidget {
                                   Divider(thickness:3,color: Colors.black54),
                                   fileReportsubHead("**Parámetros Generales**","",325),
                                   fileReportBody("Cód Comercio",":",state.merchant.mid.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Número de Serie",":",state.merchant.maxTip.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("N° de Terminal",":",state.merchant.tid),
-                                  // Divider(thickness:1 ),
                                   fileReportBody("Cód. Moneda",":",state.merchant.currencyCode.toString()),
-                                  // Divider(thickness:1 ),
                                   fileReportBody("Simbolo Moneda",":",state.merchant.currencySymbol.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Cód. Adquiriente",":",state.merchant.acquirerCode.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Tlf. Primario",":",'Unknown'),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Tlf. Secundario",":",'Unknown'),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("TPDU",":",state.comm.tpdu),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("NII",":",state.comm.nii),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Tipo Soft",":",'Normal'),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Cash Back",":",state.acquirer.cashback==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Cuotas",":",state.terminal.installments==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Devolución",":",state.acquirer==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Provimilla",":",state.acquirer.provimillas==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Cheque",":",state.acquirer.cheque==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Check In/Out",":",state.acquirer.checkIncheckOut==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("VTA. Fuera Línea",":",state.acquirer.saleOffline==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("CVV2",":",state.acquirer.cvv2==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("4 Ult. Dígitos",":",state.acquirer.last4Digits==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Clave Anulación",":",state.terminal.passwordRefund==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Clave Cierre",":",state.terminal.passwordBatch==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Clave Devolución",":",state.terminal.passwordRefund==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Mask Card",":",state.terminal.maskPan==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Pre-Impresión",":",state.acquirer.prePrint==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Amount Confirm",":",state.terminal.amountConfirmation==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Clave Supervisor",":",state.terminal.techPassword.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("% Propina:",":",'Unknown'),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Temp RPTA",":",state.terminal.timeoutPrompt.toString()),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Temp ENT Datos",":",state.terminal.timeoutPrompt.toString()),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Fecha y Hora",":",new DateFormat("ddMMyyyyhhmmss").format(DateTime.now())),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Cód País Term...",":",state.merchant.countryCode.toString()),
-                                  //Divider(thickness:1 ),
-
                                   fileReportBody("Fallback",":",state.emv.fallback==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
                                   fileReportBody("Forzar Online",":",state.emv.forceOnline==true ? "Si":"No"),
-                                  //Divider(thickness:1 ),
-
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 ),
@@ -198,11 +152,7 @@ class SummaryReport extends StatelessWidget {
                                 ],
                               )
                             ),
-
-
-
                           ],
-
                         ),
                       );
                     } else
