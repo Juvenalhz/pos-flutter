@@ -5,6 +5,7 @@ import 'package:pay/bloc/deleteBatchBloc.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/echotestBloc.dart';
 import 'package:pay/bloc/emv/emv_bloc.dart';
+import 'package:pay/bloc/tipAdjustBloc.dart';
 import 'package:pay/bloc/tipReportBloc.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
@@ -64,6 +65,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
         BlocProvider<TipReportBloc>(create: (context) => TipReportBloc()),
+        BlocProvider<TipAdjustBloc>(create: (context) => TipAdjustBloc()),
       ], child: MainScreen()),
     ));
   }
