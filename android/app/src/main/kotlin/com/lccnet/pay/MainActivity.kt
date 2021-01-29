@@ -1,5 +1,6 @@
 package com.lccnet.pay
 
+import com.ingenico.lar.apos.DeviceHelper
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -16,7 +17,7 @@ class MainActivity: FlutterActivity() {
         sn.registerWith(flutterEngine)
         dt.registerWith(flutterEngine)
         emv.registerWith(flutterEngine, this.context)
-        printer.registerWith(flutterEngine)
+        printer.registerWith(flutterEngine, this.context)
         cipher.registerWith(flutterEngine)
 
     }
