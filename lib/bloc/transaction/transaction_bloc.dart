@@ -85,9 +85,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.stan = await getStan();
       trans.acquirer = merchant.acquirerCode;
 
-      if (acquirer.industryType) // true = restaurant
-        yield TransactionAddTip(trans);
-      else
+      // take ouf tip prompt from transaction flow to avoid problems with specifications
+      // platco doesn't want this and use the % extra instead
+      // if (acquirer.industryType) // true = restaurant
+      //   yield TransactionAddTip(trans);
+      // else
         this.add(TransAddTip(0)); // skip tip prompt
     }
     // going back to the base amount entry
@@ -98,8 +100,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // add tip amount to the transaction
     else if (event is TransAddTip) {
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
       trans.tip = event.tip;
       trans.total += event.tip;
+      trans.originalTotal = trans.total;
+      if (acquirer.industryType) {
+        trans.originalTotal += trans.total  * (terminal.maxTipPercentage ~/ 100);
+      }
       trans.dateTime = DateTime.now();
       if (emvTablesInit == false) {
         this.add(TransLoadEmvTables(this.pinpad));

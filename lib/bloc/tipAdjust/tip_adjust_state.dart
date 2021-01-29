@@ -26,3 +26,22 @@ class TipAdjustShowTransDetail extends TipAdjustState {
   @override
   List<Object> get props => [trans, cardBrand];
 }
+
+class TipAdjustPromptTip extends TipAdjustState {
+  final Trans trans;
+
+  TipAdjustPromptTip(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TipAdjustShowMessage extends TipAdjustState {
+  final Trans trans;
+  final String message;
+
+  TipAdjustShowMessage(this.trans, this.message);
+
+  @override
+  List<Object> get props => [trans, message];
+}

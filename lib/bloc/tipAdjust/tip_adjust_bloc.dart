@@ -15,6 +15,7 @@ part 'tip_adjust_state.dart';
 
 class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
   TipAdjustBloc() : super(TipAdjustInitial());
+  var trans = new Trans();
 
   @override
   Stream<TipAdjustState> mapEventToState(
@@ -32,19 +33,24 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       yield TipAdjustDataReady(listTrans);
     } else if (event is TipAdjustPrintReceiptCopy) {
       TransRepository transRepository = new TransRepository();
-      Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
+      trans = Trans.fromMap(await transRepository.getTrans(event.id));
       Receipt receipt = new Receipt(event.context);
 
       receipt.printTransactionReceiptCopy(event.type, trans);
-    } else if (event is TipAdjustPrintReport) {
-      Reports report = new Reports(event.context);
-      TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
-      List<Trans> listTrans = new List<Trans>();
-
-      transList.forEach((element) {
-        listTrans.add(Trans.fromMap(element));
-      });
+    } else if (event is TipAdjustAskTip) {
+      trans = event.trans;
+      if (trans.tipAdjusted == false) {
+        yield TipAdjustPromptTip(event.trans);
+      } else {
+        this.add(TipAdjustInitialEvent());
+      }
+    } else if (event is TipAdjustAddTip) {
+      if (trans.baseAmount + event.tip <= trans.originalTotal) {
+        trans.tip = event.tip;
+        trans.total = trans.baseAmount + trans.tip;
+      } else {
+        yield TipAdjustShowMessage(trans, 'Promina Exede El Monto Maximo Permitido');
+      }
     }
   }
 }

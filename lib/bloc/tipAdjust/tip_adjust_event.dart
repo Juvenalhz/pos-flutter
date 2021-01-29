@@ -20,20 +20,20 @@ class TipAdjustPrintReceiptCopy extends TipAdjustEvent {
   List<Object> get props => [type, id];
 }
 
-class TipAdjustPrintReport extends TipAdjustEvent {
-  final BuildContext context;
+class TipAdjustAskTip extends TipAdjustEvent {
+  final Trans trans;
 
-  TipAdjustPrintReport(this.context);
+  TipAdjustAskTip(this.trans);
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [trans];
 }
 
-class TipAdjustViewTransDetail extends TipAdjustEvent {
-  final int id;
+class TipAdjustAddTip extends TipAdjustEvent {
+  final int tip;
 
-  TipAdjustViewTransDetail(this.id);
+  TipAdjustAddTip(this.tip);
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [tip];
 }

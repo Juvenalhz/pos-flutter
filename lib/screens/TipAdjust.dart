@@ -8,7 +8,10 @@ import 'package:pay/bloc/tipAdjustBloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/TipScreen.dart';
+import 'package:pay/screens/amount.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
 
@@ -55,6 +58,65 @@ class TipAdjust extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                         ),
                       ),
+                    ]);
+                  } else if ((state is TipAdjustPromptTip) || (state is TipAdjustShowMessage)) {
+                    return Stack(children: <Widget>[
+                      Positioned(
+                        left: 6,
+                        top: 6,
+                        child: IconButton(
+                          color: Colors.white,
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
+                            tipAdjustBloc.add(TipAdjustInitialEvent());
+                          },
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                            padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),
+                            child: BlocBuilder<TipAdjustBloc, TipAdjustState>(builder: (context, state) {
+                              if ((state is TipAdjustPromptTip) || (state is TipAdjustShowMessage)) {
+                                Trans trans;
+                                if (state is TipAdjustPromptTip) {
+                                  trans = state.trans;
+                                }
+                                if (state is TipAdjustShowMessage) {
+                                  // send similar if is a work around
+                                  trans = state.trans;
+                                }
+                                int amount = trans.baseAmount;
+                                String formattedAmount;
+                                var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
+
+                                formattedAmount = formatter.format(amount / 100).trim();
+
+                                return Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Monto:',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                                      ),
+                                      Text(
+                                        formattedAmount,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return Text(
+                                  'Propina',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                                );
+                              }
+                            })),
+                      )
                     ]);
                   } else {
                     return Container();
@@ -138,7 +200,11 @@ class TipAdjust extends StatelessWidget {
                                     elevation: 3,
                                     child: InkWell(
                                       splashColor: Colors.blueAccent.withAlpha(180),
-                                      onTap: () {},
+                                      onTap: () {
+                                        final TipAdjustBloc detailReportBloc = BlocProvider.of<TipAdjustBloc>(context);
+
+                                        detailReportBloc.add(TipAdjustAskTip(trans));
+                                      },
                                       child: Column(
                                         children: [
                                           Padding(
@@ -217,14 +283,36 @@ class TipAdjust extends StatelessWidget {
                           ),
                         ],
                       );
+                    } else if (state is TipAdjustPromptTip) {
+                      return AmountEntry('Propina:', onClickEnter);
+                    } else if (state is TipAdjustShowMessage) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
                     } else
-                      return SplashScreen();
+                      return Container();
                   }))
             ])),
           ],
         ),
       ),
     );
+  }
+
+  void onClickEnter(BuildContext context, int amount) {
+    final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
+
+    tipAdjustBloc.add(TipAdjustAddTip(amount));
   }
 
   Widget btnEnter(BuildContext context, bool approved) {
