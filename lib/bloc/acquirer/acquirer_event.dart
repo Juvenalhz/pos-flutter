@@ -1,4 +1,3 @@
-
 part of 'acquirer_bloc.dart';
 
 abstract class AcquirerEvent extends Equatable {
