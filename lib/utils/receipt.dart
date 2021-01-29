@@ -27,23 +27,27 @@ class Receipt {
     // static const int TYPE_PROPIETARY = 4;
     this.type = type;
     //if (bin.cardType == Bin.TYPE_CREDIT)
-    if (bin.cardType == 1) CreditReceipt( trans,  merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
-
+    if (bin.cardType == 1) {
+      CreditReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      printer.feedLine(2);
+      printer.print(onPrintReceiptOK, onPrintError);
+    }
     //if (bin.cardType == Bin.TYPE_DEBIT)
-    else if (bin.cardType == 2) DebitReceipt( trans,  merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+    else if (bin.cardType == 2) {
+      DebitReceipt( trans,  merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      printer.feedLine(2);
+      printer.print(onPrintReceiptOK, onPrintError);
+    }
+    else if (bin.cardType == 3) {
+      FoodReceipt( trans,  merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      printer.feedLine(2);
+      printer.print(onPrintReceiptOK, onPrintError);
+    }
 
-    printer.print(onPrintReceiptOK, onPrintError);
+    //printer.print(onPrintReceiptOK, onPrintError);
   }
 
-  void onPrintReceiptOK() {
-    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
-    if (this.type)
-      transactionBloc.add(TransCustomerReceipt());
-    else
-      transactionBloc.add(TransCustomerReceipt());
-
-  }
+  void onPrintReceiptOK() {}
 
   void onPrintError(int error) {
     print('onPrintError:' + error.toString());
@@ -76,7 +80,7 @@ class Receipt {
     trans.type == 'Compra' ? printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX') : printer.addText(Printer.RIGHT, 'AID:XXXXXXXXXXXXXX');
     isCliente == true ? printer.addText(Printer.CENTER, 'CAMPO TEXTO') : null ;
     printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
-    isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
+   // isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
   }
 
 
@@ -104,7 +108,7 @@ class Receipt {
     trans.type == 'Compra' ? printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX') : printer.addText(Printer.RIGHT, 'AID:XXXXXXXXXXXXXX');
     isCliente == true ? printer.addText(Printer.CENTER, 'CAMPO TEXTO') : null ;
     printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
-    isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
+    //isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
   }
 
   ////////////////////////////////////////////////RECIBO ALIMENTACIÓN COMERCIO////////////////////////////////////////////////////
@@ -132,7 +136,7 @@ class Receipt {
     printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX') ;
     if(isCliente == true && trans.type == 'Compra')  printer.addText(Printer.CENTER, 'CAMPO TEXTO'); else null;
     printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
-    isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
+    //isCliente == true ? printer.feedLine(2) : printer.print(onPrintReceiptOK, onPrintError) ;
   }
 
 

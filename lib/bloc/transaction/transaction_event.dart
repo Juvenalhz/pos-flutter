@@ -285,3 +285,12 @@ class TransVoidTransaction extends TransactionEvent {
   @override
   List<Object> get props => [id];
 }
+
+class TransAskPrintCustomer extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+class TransDigitalReceiptCustomer extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

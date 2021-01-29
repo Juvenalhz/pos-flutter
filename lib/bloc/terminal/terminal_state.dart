@@ -48,3 +48,4 @@ class TerminalLoaded extends TerminalState {
   @override
   List<Object> get props => [terminal];
 }
+

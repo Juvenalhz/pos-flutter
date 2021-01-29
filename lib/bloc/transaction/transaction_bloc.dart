@@ -482,7 +482,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               trans.id = (await transRepository.getMaxId()) + 1;
               transRepository.createTrans(trans);
             }
-            yield TransactionCompleted(trans);
+            Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+            yield TransactionCompleted(trans, terminal);
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -514,23 +515,34 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
-        yield TransactionCompleted(trans);
+        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+        yield TransactionCompleted(trans, terminal);
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
     } else if (event is TransMercahntReceipt) {
       Receipt receipt = new Receipt(context);
-
+      receipt.printTransactionReceipt(false, trans);
       yield TransactionPrintMerchantReceipt(trans);
-      receipt.printTransactionReceipt(true, trans);
-      this.add(TransCustomerReceipt());
+      await new Future.delayed(const Duration(seconds: 3));
+      yield TransactionAskPrintCustomer(trans,acquirer);
+
     } else if (event is TransCustomerReceipt) {
       Receipt receipt = new Receipt(context);
       yield TransactionPrintCustomerReceipt(trans);
-      receipt.printTransactionReceipt(false, trans);
+      receipt.printTransactionReceipt(true, trans);
       await new Future.delayed(const Duration(seconds: 3));
       yield TransactionFinish(trans);
+    }
+    else if (event is TransDigitalReceiptCustomer) {
+      MerchantRepository merchantRepository = new MerchantRepository();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      TerminalRepository terminalRepository = new TerminalRepository();
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+      AcquirerRepository acquirerRepository = new AcquirerRepository();
+      Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+      yield TransactionDigitalReceiptCustomer(trans , acquirer, merchant, terminal );
     }
     // pinpad error detected
     else if (event is TransCardError) {

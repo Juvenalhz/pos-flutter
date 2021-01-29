@@ -100,10 +100,11 @@ class TransactionProcessResponse extends TransactionState {
 
 class TransactionCompleted extends TransactionState {
   final Trans trans;
-  TransactionCompleted(this.trans);
+  final Terminal terminal;
+  TransactionCompleted(this.trans,this.terminal);
 
   @override
-  List<Object> get props => [trans];
+  List<Object> get props => [trans, terminal];
 }
 
 class TransactionFinshChip extends TransactionState {
@@ -195,4 +196,27 @@ class TransactionFinish extends TransactionState {
 class TransactionCommError extends TransactionState {
   @override
   List<Object> get props => [];
+}
+
+class TransactionAskPrintCustomer extends TransactionState {
+  final Trans trans;
+  final Acquirer acquierer;
+
+  TransactionAskPrintCustomer(this.trans, this.acquierer);
+  @override
+  List<Object> get props => [trans];
+
+
+}
+class TransactionDigitalReceiptCustomer extends TransactionState {
+  final Trans trans;
+  final Acquirer acquierer;
+  final Merchant merchant;
+  final Terminal terminal;
+
+ TransactionDigitalReceiptCustomer(this.trans, this.acquierer, this.merchant, this.terminal);
+  @override
+  List<Object> get props => [trans, acquierer, merchant, terminal];
+
+
 }

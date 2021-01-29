@@ -99,6 +99,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     );
   }
 
+   ClickBoxPrint( Object campo, bool newValue) {
+     setState(() {
+       campo = newValue;
+     });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -361,32 +367,34 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ),*/
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged: null),
-                                      rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged:
+                                        (newValue) =>  setState((){_terminal.print = newValue;})
+                                      ),
+                                      rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: (newValue) =>  setState((){_terminal.cashback = newValue;})),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged: null),
-                                      rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged:  (newValue) =>  setState((){_terminal.installments = newValue;})),
+                                      rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged:  (newValue) =>  setState((){_terminal.refund = newValue;})),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged: null),
-                                      rightLabel: CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged:  (newValue) =>  setState((){_acquirer.cheque = newValue;})),
+                                      rightLabel: CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged:  (newValue) =>  setState((){_acquirer.checkIncheckOut = newValue;})),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'CVV2', value: _acquirer.cvv2, onChanged: null),
-                                      rightLabel: CheckboxItem(label: '4 últimos\ndígitos', value: _terminal.last4Digits, onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'CVV2', value: _acquirer.cvv2, onChanged:  (newValue) =>  setState((){_acquirer.cvv2 = newValue;})),
+                                      rightLabel: CheckboxItem(label: '4 últimos\ndígitos', value: _terminal.last4Digits, onChanged:  (newValue) =>  setState((){_terminal.last4Digits = newValue;})),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Clave\nAnulación', value: _terminal.passwordVoid, onChanged: null),
-                                      rightLabel: CheckboxItem(label: 'Clave Cierre', value: _terminal.passwordBatch, onChanged: null),
+                                      leftLabel: CheckboxItem(label: 'Clave\nAnulación', value: _terminal.passwordVoid, onChanged:  (newValue) =>  setState((){_terminal.passwordVoid = newValue;})),
+                                      rightLabel: CheckboxItem(label: 'Clave Cierre', value: _terminal.passwordBatch, onChanged:  (newValue) =>  setState((){_terminal.passwordBatch = newValue;})),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -395,12 +403,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Clave\nDevolución',
                                         value: _terminal.passwordRefund,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_terminal.passwordRefund = newValue;}),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Enmascarar\nTarjeta',
                                         value: _terminal.maskPan,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_terminal.maskPan = newValue;}),
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -409,12 +417,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Pre-impresión',
                                         value: _acquirer.prePrint,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_acquirer.prePrint = newValue;}),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Entrada\nManual PAN',
                                         value: _acquirer.manualEntry,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_acquirer.manualEntry = newValue;}),
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -423,12 +431,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Confirmación\nde Importe',
                                         value: _terminal.amountConfirmation,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_terminal.amountConfirmation = newValue;}),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Ventas Fuera\nde Línea',
                                         value: _acquirer.saleOffline,
-                                        onChanged: null,
+                                        onChanged:  (newValue) =>  setState((){_acquirer.saleOffline = newValue;}),
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -637,6 +645,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     );
   }
 }
+
+
 
 Widget onOffTile(String myTitle, int value) {
   return SwitchListTile(

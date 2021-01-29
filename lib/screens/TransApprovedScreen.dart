@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 
 class TransApprovedScreen extends StatelessWidget {
   final Trans trans;
+  final Terminal terminal;
 
-  TransApprovedScreen(this.trans);
+  TransApprovedScreen(this.trans,this.terminal);
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +48,8 @@ class TransApprovedScreen extends StatelessWidget {
               ),
               onPressed: () {
                 final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
-                transactionBloc.add(TransMercahntReceipt());
+                if(terminal.print) transactionBloc.add(TransMercahntReceipt());
+                else transactionBloc.add(TransDigitalReceiptCustomer());
                 //Navigator.of(context).pop();
               },
               color: Colors.green,

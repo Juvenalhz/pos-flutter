@@ -14,6 +14,7 @@ import 'package:pay/screens/selectionMenu.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
+import 'DigitalReceipt.dart';
 import 'TipScreen.dart';
 import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
@@ -81,17 +82,22 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionReceiving) {
           return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
-          return TransApprovedScreen(state.trans);
+          return TransApprovedScreen(state.trans, state.terminal);
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans);
         } else if (state is TransactionPrintMerchantReceipt) {
           return TransMessage('Print Merchant Receipt');
-        } else if (state is TransactionPrintCustomerReceipt) {
+        } else if (state is TransactionAskPrintCustomer) {
+          return Confirmation(trans: state.trans);
+        }else if (state is TransactionPrintCustomerReceipt) {
           return TransMessage('Print Customer Receipt');
         } else if (state is TransactionCommError)
           return CommError('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
         else if (state is TransactionFinshChip) {
           return TransMessage('');
+        }
+        else if (state is TransactionDigitalReceiptCustomer) {
+          return DigitalReceipt(state.trans,state.acquierer,state.merchant,state.terminal);
         }
         else
           print('state:' + state.toString());
