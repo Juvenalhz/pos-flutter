@@ -20,12 +20,17 @@ class Printer : MethodChannel.MethodCallHandler{
     private val FONT_SIZE_LARGE = 2
     private var currentSize : Int = FONT_SIZE_NORMAL;
 
-    fun registerWith(@NonNull flutterEngine: FlutterEngine){
+    fun registerWith(@NonNull flutterEngine: FlutterEngine, context: Context ){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "printer")
         channel.setMethodCallHandler(Printer())
 
         params.put("MethodChannel", channel)
         currentSize = FONT_SIZE_NORMAL;
+
+        if (Build.MODEL.contains("APOS")) {
+            DeviceHelper.me().init(context)
+            DeviceHelper.me().bindService()
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
