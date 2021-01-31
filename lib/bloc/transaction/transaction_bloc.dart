@@ -90,7 +90,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       // if (acquirer.industryType) // true = restaurant
       //   yield TransactionAddTip(trans);
       // else
-        this.add(TransAddTip(0)); // skip tip prompt
+      this.add(TransAddTip(0)); // skip tip prompt
     }
     // going back to the base amount entry
     else if (event is TransAskAmount) {
@@ -106,7 +106,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.total += event.tip;
       trans.originalTotal = trans.total;
       if (acquirer.industryType) {
-        trans.originalTotal += trans.total  * (terminal.maxTipPercentage ~/ 100);
+        trans.originalTotal += (trans.total * terminal.maxTipPercentage) ~/ 100;
       }
       trans.dateTime = DateTime.now();
       if (emvTablesInit == false) {
@@ -330,7 +330,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowPinAmount) {
       yield TransactionShowPinAmount(trans);
     } else if (event is TransConfirmOK) {
-      trans.originalTotal = trans.total;
       if (trans.cardType == Pinpad.CHIP) {
         this.add(TransGoOnChip(trans));
       } else {
@@ -475,7 +474,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
       if ((event.respMap[4] == null) ||
-          (trans.total != int.parse(event.respMap[4])) ||
+          (trans.originalTotal != int.parse(event.respMap[4])) ||
           (event.respMap[11] == null) ||
           (trans.stan != int.parse(event.respMap[11])) ||
           (event.respMap[41] == null) ||
@@ -505,7 +504,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.createTrans(trans);
             }
             yield TransactionCompleted(trans);
-
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -515,15 +513,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //
     else if (event is TransFinishChip) {
-
       if (await pinpad.finishChip(event.trans.respCode, event.trans.entryMode, event.trans.responseEmvTags) != 0) {
         //TODO: if approved reversal may be needed at this point
         trans.clear();
         yield TransactionError();
+      } else {
+        yield TransactionCompleted(trans);
       }
     }
     // finish chip
-    else if (event is TransFinishChipComplete){
+    else if (event is TransFinishChipComplete) {
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
@@ -552,19 +551,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         pinpad.removeCard();
         this.add(RemovingCard());
         yield TransactionShowMessage('Retire Tarjeta');
-      }
-      else
+      } else
         yield TransactionFinish(trans);
     }
     // alarm to beep while card is not removed
-    else if (event is RemovingCard){
+    else if (event is RemovingCard) {
       if (doBeep) {
         pinpad.beep();
         this.add(RemovingCard());
         await new Future.delayed(const Duration(seconds: 2));
       }
-    }
-    else if (event is TransCardRemoved) {
+    } else if (event is TransCardRemoved) {
       doBeep = false;
       this.add(TransfinishTransaction());
       yield TransactionFinish(trans);
@@ -583,8 +580,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       receipt.printTransactionReceipt(false, trans);
       await new Future.delayed(const Duration(seconds: 3));
       if (trans.cardType == Pinpad.CHIP) {
-        //pinpad.removeCard();
-        //yield TransactionShowMessage('Retire Tarjeta');
         yield TransactionCompleted(trans);
       } else {
         yield TransactionFinish(trans);

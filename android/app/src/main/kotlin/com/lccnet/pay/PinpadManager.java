@@ -469,17 +469,7 @@ public class PinpadManager implements PinpadCallbacks {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        HashMap<String, Object> methodParams = new HashMap<>();
-                        methodParams.put("id", 0);
-                        methodParams.put("msg", "Retire Tarjeta");
-                        channel.invokeMethod("showMessage", methodParams);
-                        try {
-                            sleep(1500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        channel.invokeMethod("cardRemoved", finishChipData);
+                        channel.invokeMethod("finishChipComplete", finishChipData);
                     }
                 });
             }).start();
@@ -513,15 +503,22 @@ public class PinpadManager implements PinpadCallbacks {
             });
         }
         else if (isEmulator()) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    channel.invokeMethod("cardRemoved", removeChipData);
+
+            new Thread(() -> {
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            });
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("cardRemoved", removeChipData);
+                    }
+                });
+            }).start();
         }
-
-
     }
 
     public static class TrackData {
