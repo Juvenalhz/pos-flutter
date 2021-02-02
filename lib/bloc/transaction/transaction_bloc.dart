@@ -28,6 +28,7 @@ import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'transaction_event.dart';
+
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
@@ -51,9 +52,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionBloc(this.context) : super(TransactionInitial());
 
   @override
-  Stream<TransactionState> mapEventToState(
-    TransactionEvent event,
-  ) async* {
+  Stream<TransactionState> mapEventToState(TransactionEvent event,) async* {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -526,13 +525,52 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       receipt.printTransactionReceipt(false, trans);
       yield TransactionPrintMerchantReceipt(trans);
       await new Future.delayed(const Duration(seconds: 3));
-      yield TransactionAskPrintCustomer(trans,acquirer);
+      TerminalRepository terminalRepository = new TerminalRepository();
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+      BinRepository binRepository = new BinRepository();
+      Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
+      switch(bin.cardType) {
+        case 1: {
+          // case credit;
+          if (terminal.creditPrint)
+            yield TransactionAskPrintCustomer(trans, acquirer);
+          else
+            this.add(TransDigitalReceiptCustomer());
+        }
+        break;
 
+        case 2: {
+          //case debit;
+          if (terminal.debitPrint)
+            yield TransactionAskPrintCustomer(trans, acquirer);
+          else
+            this.add(TransDigitalReceiptCustomer());
+        }
+        break;
+
+        default: {
+          //statements;
+          if (terminal.creditPrint)
+            yield TransactionAskPrintCustomer(trans, acquirer);
+          else
+            this.add(TransDigitalReceiptCustomer());
+        }
+        break;
+      }
+      if (terminal.debitPrint)
+        yield TransactionAskPrintCustomer(trans, acquirer);
+      else
+        this.add(TransDigitalReceiptCustomer());
     } else if (event is TransCustomerReceipt) {
+      TerminalRepository terminalRepository = new TerminalRepository();
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
       Receipt receipt = new Receipt(context);
       yield TransactionPrintCustomerReceipt(trans);
+      for (int i = 0; i < terminal.numPrint; i++) {
       receipt.printTransactionReceipt(true, trans);
       await new Future.delayed(const Duration(seconds: 3));
+      }
+
       yield TransactionFinish(trans);
     }
     else if (event is TransDigitalReceiptCustomer) {
@@ -542,7 +580,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
       AcquirerRepository acquirerRepository = new AcquirerRepository();
       Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-      yield TransactionDigitalReceiptCustomer(trans , acquirer, merchant, terminal );
+      yield TransactionDigitalReceiptCustomer(trans, acquirer, merchant, terminal);
     }
     // pinpad error detected
     else if (event is TransCardError) {
