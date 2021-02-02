@@ -99,12 +99,6 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
     );
   }
 
-   ClickBoxPrint( Object campo, bool newValue) {
-     setState(() {
-       campo = newValue;
-     });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -367,34 +361,120 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 ),*/
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged:
-                                        (newValue) =>  setState((){_terminal.print = newValue;})
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión',
+                                          value: _terminal.print,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.print = newValue;
+                                              })),
+                                      rightLabel: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text('Número de\ncopias'),
+                                          DropdownButton(
+                                            value: _terminal.numPrint,
+                                            onChanged: (int newValue) {
+                                              setState(() {
+                                                _terminal.numPrint = newValue;
+                                              });
+                                            },
+                                            items: <int>[0, 1, 2, 3,4,5]
+                                                .map<DropdownMenuItem<int>>((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text(value.toString()),
+                                              );
+                                            }).toList(),
+                                          )
+                                        ],
                                       ),
-                                      rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: (newValue) =>  setState((){_terminal.cashback = newValue;})),
+                                      // CheckboxItem(
+                                      //     label: 'Número de\ncopias',
+                                      //     value: _terminal.cashback,
+                                      //     onChanged: (newValue) => setState(() {
+                                      //           _terminal.cashback = newValue;
+                                      //         })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged:  (newValue) =>  setState((){_terminal.installments = newValue;})),
-                                      rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged:  (newValue) =>  setState((){_terminal.refund = newValue;})),
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión\nDébito',
+                                          value: _terminal.debitPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.debitPrint = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Impresión\nCrédito',
+                                          value: _terminal.creditPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.creditPrint = newValue;
+                                              })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged:  (newValue) =>  setState((){_acquirer.cheque = newValue;})),
-                                      rightLabel: CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged:  (newValue) =>  setState((){_acquirer.checkIncheckOut = newValue;})),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Cuotas',
+                                          value: _terminal.installments,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.installments = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Devolución',
+                                          value: _terminal.refund,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.refund = newValue;
+                                              })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'CVV2', value: _acquirer.cvv2, onChanged:  (newValue) =>  setState((){_acquirer.cvv2 = newValue;})),
-                                      rightLabel: CheckboxItem(label: '4 últimos\ndígitos', value: _terminal.last4Digits, onChanged:  (newValue) =>  setState((){_terminal.last4Digits = newValue;})),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Cheque',
+                                          value: _acquirer.cheque,
+                                          onChanged: (newValue) => setState(() {
+                                                _acquirer.cheque = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Check In/\nCheckOut',
+                                          value: _acquirer.checkIncheckOut,
+                                          onChanged: (newValue) => setState(() {
+                                                _acquirer.checkIncheckOut = newValue;
+                                              })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(label: 'Clave\nAnulación', value: _terminal.passwordVoid, onChanged:  (newValue) =>  setState((){_terminal.passwordVoid = newValue;})),
-                                      rightLabel: CheckboxItem(label: 'Clave Cierre', value: _terminal.passwordBatch, onChanged:  (newValue) =>  setState((){_terminal.passwordBatch = newValue;})),
+                                      leftLabel: CheckboxItem(
+                                          label: 'CVV2',
+                                          value: _acquirer.cvv2,
+                                          onChanged: (newValue) => setState(() {
+                                                _acquirer.cvv2 = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: '4 últimos\ndígitos',
+                                          value: _terminal.last4Digits,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.last4Digits = newValue;
+                                              })),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      leftLabel: CheckboxItem(
+                                          label: 'Clave\nAnulación',
+                                          value: _terminal.passwordVoid,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.passwordVoid = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Clave Cierre',
+                                          value: _terminal.passwordBatch,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.passwordBatch = newValue;
+                                              })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -403,12 +483,16 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Clave\nDevolución',
                                         value: _terminal.passwordRefund,
-                                        onChanged:  (newValue) =>  setState((){_terminal.passwordRefund = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _terminal.passwordRefund = newValue;
+                                        }),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Enmascarar\nTarjeta',
                                         value: _terminal.maskPan,
-                                        onChanged:  (newValue) =>  setState((){_terminal.maskPan = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _terminal.maskPan = newValue;
+                                        }),
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -417,12 +501,16 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Pre-impresión',
                                         value: _acquirer.prePrint,
-                                        onChanged:  (newValue) =>  setState((){_acquirer.prePrint = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _acquirer.prePrint = newValue;
+                                        }),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Entrada\nManual PAN',
                                         value: _acquirer.manualEntry,
-                                        onChanged:  (newValue) =>  setState((){_acquirer.manualEntry = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _acquirer.manualEntry = newValue;
+                                        }),
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -431,13 +519,28 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Confirmación\nde Importe',
                                         value: _terminal.amountConfirmation,
-                                        onChanged:  (newValue) =>  setState((){_terminal.amountConfirmation = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _terminal.amountConfirmation = newValue;
+                                        }),
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Ventas Fuera\nde Línea',
                                         value: _acquirer.saleOffline,
-                                        onChanged:  (newValue) =>  setState((){_acquirer.saleOffline = newValue;}),
+                                        onChanged: (newValue) => setState(() {
+                                          _acquirer.saleOffline = newValue;
+                                        }),
                                       ),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Cash back',
+                                          value: _terminal.cashback,
+                                          onChanged: (newValue) => setState(() {
+                                                _terminal.cashback = newValue;
+                                              })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -602,8 +705,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                             itemBuilder: (context, index) {
                               return ListTile(
                                 //padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                                title: Column(
-                                  children: <Widget>[
+                                title: Column(children: <Widget>[
                                   ItemTileTwoColumn(
                                     leftLabel: Text('Código Adquiriente'),
                                     leftItem: Text(acquirers[index]['id'].toString()),
@@ -623,14 +725,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                     leftWidth: size.width / 2.5,
                                     rightWidth: size.width / 2.5,
                                   ),
-                                    Divider(thickness: 3),
+                                  Divider(thickness: 3),
                                 ]),
                               );
-
                             },
                           );
-
-
                         }
                         return retWidget;
                       },
@@ -646,11 +745,9 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   }
 }
 
-
-
 Widget onOffTile(String myTitle, int value) {
   return SwitchListTile(
-    onChanged: (bool b) {} ,
+    onChanged: (bool b) {},
     title: Text(myTitle),
     value: (value == 1) ? true : false,
   );
