@@ -117,8 +117,8 @@ class SummaryReport extends StatelessWidget {
                                   fileReportBody("Cód. Moneda",":",state.merchant.currencyCode.toString()),
                                   fileReportBody("Simbolo Moneda",":",state.merchant.currencySymbol.toString()),
                                   fileReportBody("Cód. Adquiriente",":",state.merchant.acquirerCode.toString()),
-                                  fileReportBody("Tlf. Primario",":",'Unknown'),
-                                  fileReportBody("Tlf. Secundario",":",'Unknown'),
+                                  fileReportBody("Tlf. Primario",":",'N/A'),
+                                  fileReportBody("Tlf. Secundario",":",'N/A'),
                                   fileReportBody("TPDU",":",state.comm.tpdu),
                                   fileReportBody("NII",":",state.comm.nii),
                                   fileReportBody("Tipo Soft",":",'Normal'),
@@ -138,7 +138,7 @@ class SummaryReport extends StatelessWidget {
                                   fileReportBody("Pre-Impresión",":",state.acquirer.prePrint==true ? "Si":"No"),
                                   fileReportBody("Amount Confirm",":",state.terminal.amountConfirmation==true ? "Si":"No"),
                                   fileReportBody("Clave Supervisor",":",state.terminal.techPassword.toString()),
-                                  fileReportBody("% Propina:",":",'Unknown'),
+                                  fileReportBody("% Propina:",":",'N/A'),
                                   fileReportBody("Temp RPTA",":",state.terminal.timeoutPrompt.toString()),
                                   fileReportBody("Temp ENT Datos",":",state.terminal.timeoutPrompt.toString()),
                                   fileReportBody("Fecha y Hora",":",new DateFormat("ddMMyyyyhhmmss").format(DateTime.now())),
@@ -148,7 +148,7 @@ class SummaryReport extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 ),
-                                  fileReportFooter("V08.01.05",'01.01',122.5),
+
                                 ],
                               )
                             ),
