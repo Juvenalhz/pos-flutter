@@ -37,3 +37,46 @@ class TipAdjustAddTip extends TipAdjustEvent {
   @override
   List<Object> get props => [tip];
 }
+
+class TipAdjustConfirmOK extends TipAdjustEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustConnect extends TipAdjustEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustSendReversal extends TipAdjustEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustReceiveReversal extends TipAdjustEvent {
+  Trans transReversal;
+
+  TipAdjustReceiveReversal(this.transReversal);
+
+  @override
+  List<Object> get props => [transReversal];
+}
+
+class TipAdjustSendRequest extends TipAdjustEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustReceive extends TipAdjustEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustProcessResponse extends TipAdjustEvent {
+  final Map<int, String> respMap;
+
+  TipAdjustProcessResponse(this.respMap);
+
+  @override
+  List<Object> get props => [respMap];
+}

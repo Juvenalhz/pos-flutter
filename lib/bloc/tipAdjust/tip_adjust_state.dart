@@ -45,3 +45,50 @@ class TipAdjustShowMessage extends TipAdjustState {
   @override
   List<Object> get props => [trans, message];
 }
+
+class TipAdjustConfirmation extends TipAdjustState {
+  final Trans trans;
+
+  TipAdjustConfirmation(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TipAdjustConnecting extends TipAdjustState {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustSending extends TipAdjustState {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustReceiving extends TipAdjustState {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustCommError extends TipAdjustState {
+  @override
+  List<Object> get props => [];
+}
+
+class TipAdjustCompleted extends TipAdjustState {
+  final Trans trans;
+
+  TipAdjustCompleted(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}
+
+class TipAdjustRejected extends TipAdjustState {
+  final Trans trans;
+
+  TipAdjustRejected(this.trans);
+
+  @override
+  List<Object> get props => [trans];
+}

@@ -406,7 +406,7 @@ class VoidMessage extends HostMessage {
 
     String sn = await SerialNumber.serialNumber;
 
-    message.setMID(200);
+    message.setMID(220);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
@@ -431,6 +431,66 @@ class VoidMessage extends HostMessage {
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
     field62 += addField62Table(18, merchant.acquirerCode.toString());
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    return message.buildIso();
+  }
+}
+
+class AdjustMessage extends HostMessage {
+  Iso8583 message;
+  Trans trans;
+  Comm _comm;
+
+  AdjustMessage(this.trans, this._comm) : super(_comm, 200) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage() async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    TransRepository transRepository = new TransRepository();
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+    String originalData;
+
+    message.setMID(220);
+    message.fieldData(3, '00' + trans.accType.toString() + '000');
+    message.fieldData(4, trans.total.toString());
+    message.fieldData(11, trans.stan.toString());
+    message.fieldData(22, trans.entryMode.toString());
+    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(25, '00');
+    //message.fieldData(35, trans.track2);
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    message.fieldData(49, merchant.currencyCode.toString());
+    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
+    message.fieldData(60, '01.00');
+
+    originalData = trans.referenceNumber;
+    originalData += trans.stan.toString().padLeft(6, '0');
+    originalData += trans.authCode;
+    originalData += trans.id.toString().padLeft(4, '0');
+
+    field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(13, originalData);
+    field62 += addField62Table(18, trans.acquirer.toString());
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);
