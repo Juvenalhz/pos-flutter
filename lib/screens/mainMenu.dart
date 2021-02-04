@@ -100,6 +100,7 @@ class MainMenu extends StatelessWidget {
                 text: 'Configuracion',
                 onTap: () {
                   acquirerBloc.add(GetAllAcquirer());
+                  terminalBloc.add(GetTerminal(1));
                   Navigator.pushNamed(context, '/configuration');
                 }),
             _createDrawerItem(text: 'Reporte de Parametros'),

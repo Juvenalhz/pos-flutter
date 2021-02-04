@@ -365,6 +365,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           label: 'Impresión',
                                           value: _terminal.print,
                                           onChanged: (newValue) => setState(() {
+                                                //If print is false, it cant print credit or debit
+                                                if (newValue == false) {
+                                                  _terminal.creditPrint = newValue;
+                                                  _terminal.debitPrint = newValue;
+                                                  _terminal.numPrint = 0;
+                                                }
                                                 _terminal.print = newValue;
                                               })),
                                       rightLabel: Row(
@@ -375,11 +381,13 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                             value: _terminal.numPrint,
                                             onChanged: (int newValue) {
                                               setState(() {
-                                                _terminal.numPrint = newValue;
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.numPrint = newValue;
                                               });
                                             },
-                                            items: <int>[0, 1, 2, 3,4,5]
-                                                .map<DropdownMenuItem<int>>((int value) {
+                                            items: <int>[0, 1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
                                               return DropdownMenuItem<int>(
                                                 value: value,
                                                 child: Text(value.toString()),
@@ -403,13 +411,19 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           label: 'Impresión\nDébito',
                                           value: _terminal.debitPrint,
                                           onChanged: (newValue) => setState(() {
-                                                _terminal.debitPrint = newValue;
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.debitPrint = newValue;
                                               })),
                                       rightLabel: CheckboxItem(
                                           label: 'Impresión\nCrédito',
                                           value: _terminal.creditPrint,
                                           onChanged: (newValue) => setState(() {
-                                                _terminal.creditPrint = newValue;
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.creditPrint = newValue;
                                               })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,

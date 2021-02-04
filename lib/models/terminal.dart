@@ -207,7 +207,7 @@ class Terminal {
     map['maxTipPercentage'] = this._maxTipPercentage;
     map['keyIndex'] = this._keyIndex;
     map['industry'] = this._industry;
-    map['print'] = boolToString(this._print);
+    map['print'] = boolToInt(this._print);
     map['cashback'] = boolToInt(this._cashback);
     map['installments'] = boolToInt(this._installments);
     map['refund'] = boolToInt(this._refund);
