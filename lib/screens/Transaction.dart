@@ -80,9 +80,9 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionReceiving) {
           return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
-          return TransApprovedScreen(state.trans);
+          return TransApprovedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionRejected) {
-          return TransRejectedScreen(state.trans);
+          return TransRejectedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionPrintMerchantReceipt) {
           return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
@@ -176,6 +176,12 @@ class Transaction extends StatelessWidget {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     transactionBloc.add(TransAddTip(tip));
+  }
+
+  void onClickResponseMessage(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransRemoveCard());
   }
 }
 

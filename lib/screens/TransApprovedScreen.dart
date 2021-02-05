@@ -5,8 +5,9 @@ import 'package:pay/models/trans.dart';
 
 class TransApprovedScreen extends StatelessWidget {
   final Trans trans;
+  final Function(BuildContext) onClickFunction;
 
-  TransApprovedScreen(this.trans);
+  TransApprovedScreen(this.trans, this.onClickFunction);
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +46,7 @@ class TransApprovedScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 32, color: Colors.white),
               ),
               onPressed: () {
-                final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
-                transactionBloc.add(TransRemoveCard());
-
+                onClickFunction(context);
               },
               color: Colors.green,
               padding: EdgeInsets.all(15.0),
