@@ -65,7 +65,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
         BlocProvider<TipReportBloc>(create: (context) => TipReportBloc()),
-        BlocProvider<TipAdjustBloc>(create: (context) => TipAdjustBloc()),
+        BlocProvider<TipAdjustBloc>(create: (context) => TipAdjustBloc(context)),
       ], child: MainScreen()),
     ));
   }

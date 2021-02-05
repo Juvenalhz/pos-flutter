@@ -22,13 +22,15 @@ part 'tip_adjust_event.dart';
 part 'tip_adjust_state.dart';
 
 class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
-  TipAdjustBloc() : super(TipAdjustInitial());
   var trans = new Trans();
   static Communication connection;
   CommRepository commRepository = new CommRepository();
   TransRepository transRepository = new TransRepository();
   ReversalMessage reversalMessage;
   AdjustMessage adjustMessage;
+  BuildContext context;
+
+  TipAdjustBloc(this.context) : super(TipAdjustInitial());
 
   @override
   Stream<TipAdjustState> mapEventToState(
@@ -46,12 +48,6 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       });
 
       yield TipAdjustDataReady(listTrans);
-    } else if (event is TipAdjustPrintReceiptCopy) {
-      TransRepository transRepository = new TransRepository();
-      trans = Trans.fromMap(await transRepository.getTrans(event.id));
-      Receipt receipt = new Receipt(event.context);
-
-      receipt.printTransactionReceiptCopy(event.type, trans);
     } else if (event is TipAdjustAskTip) {
       trans = event.trans;
       if (trans.tipAdjusted == false) {
@@ -180,12 +176,15 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
+          Receipt receipt = new Receipt(context);
+
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
           if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
           trans.tipAdjusted = true;
 
           transRepository.updateTrans(trans);
+          receipt.tipAdjustReceipt(trans);
 
           yield TipAdjustCompleted(trans);
         } else {
