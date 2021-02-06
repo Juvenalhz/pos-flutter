@@ -42,8 +42,12 @@ class TechVisitAddRequirementBack extends TechVisitEvent {
 }
 
 class TechVisitCardRead extends TechVisitEvent {
+  final Map<String, dynamic> params;
+
+  TechVisitCardRead(this.params);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [params];
 }
 
 class TechVisitPinEntered extends TechVisitEvent {

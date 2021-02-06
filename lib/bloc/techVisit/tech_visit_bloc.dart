@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/comm.dart';
@@ -13,12 +15,13 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
+import 'package:pay/utils/receipt.dart';
 
 part 'tech_visit_event.dart';
 part 'tech_visit_state.dart';
 
 class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
-  TechVisitBloc() : super(TechVisitInitial());
+  BuildContext context;
   Pinpad pinpad;
   Comm comm;
   Communication connection;
@@ -28,6 +31,8 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
   int requirementType;
   String pinBlock;
   String pinKSN;
+
+  TechVisitBloc(context) : super(TechVisitInitial());
 
   @override
   Stream<TechVisitState> mapEventToState(
@@ -40,9 +45,10 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
       yield TechVisitInitial();
     } else if (event is TechVisitInitPinpad) {
       pinpad = event.pinpad;
+      pinpad.swipeCard(onSwipeCardRead);
       yield TechVisitGetCard();
-      this.add(TechVisitCardRead());
     } else if (event is TechVisitCardRead) {
+      track2 = event.params['track2'];
       yield TechVisitAskVisitType();
     } else if (event is TechVisitAddVisitType) {
       visitType = event.visitType;
@@ -50,7 +56,6 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
     } else if (event is TechVisitAddRequirementType) {
       TerminalRepository terminalRepository = new TerminalRepository();
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-      track2 = '4540422020094301=190720118753445';
       String pan = track2.substring(0, track2.indexOf('='));
       requirementType = event.requirementType;
 
@@ -107,11 +112,20 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
       } else if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await techVisitMessage.parseRenponse(response);
         if (respMap[39] == '00') {
+          Receipt receipt = new Receipt(context);
+
+          receipt.techVisitReceipt('', track2, visitType.toString(), requirementType.toString(), respMap[38]);
           yield TechVisitCompleted(respMap[6208]);
         } else // error in echo test response
           yield TechVisitFailed('Error En Prueba De Comunicación');
       }
       connection.disconnect();
     }
+  }
+
+  void onSwipeCardRead(BuildContext context, Map<String, dynamic> params) {
+    final TechVisitBloc lastSaleBloc = BlocProvider.of<TechVisitBloc>(context);
+
+    lastSaleBloc.add(TechVisitCardRead(params));
   }
 }

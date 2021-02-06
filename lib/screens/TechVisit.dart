@@ -29,7 +29,7 @@ class TechVisit extends StatelessWidget {
                 techVisitBloc.add(TechVisitInitPinpad(pinpad));
                 return CommProgress('Conformidad De Visita').build(context);
               } else if (state is TechVisitGetCard) {
-                return ShowMessage('Visita técnica Deslice Tarjeta');
+                return ShowMessage('Visita Técnica Deslice Tarjeta De Técnico');
               } else if (state is TechVisitAskVisitType) {
                 return AskVisitType('Tipo', 'De Atención', '', 1, 2, AskNumeric.NO_DECIMALS, onClickVisitTypeEnter, onClickVisitTypeBack);
               } else if (state is TechVisitAskRequirementType)

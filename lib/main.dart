@@ -63,7 +63,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<LastSaleBloc>(create: (context) => LastSaleBloc()),
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
-        BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc()),
+        BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc(context)),
       ], child: MainScreen()),
     ));
   }

@@ -72,6 +72,8 @@ class Emv : MethodChannel.MethodCallHandler{
             if ((keyIndex != null) && (pan != null) && (msg1 != null) && (msg2 != null)) {
                 result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2, type));
             }
+        } else if (call.method == "swipeCard") {
+            result.success(PinpadManager.me().swipeCard());
         }
         
         

@@ -721,6 +721,84 @@ public class PinpadManager implements PinpadCallbacks {
 
         return isvm;
     }
+
+    public int swipeCard() {
+        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+        HashMap<String, Object> card = new HashMap<>();
+        //int ret = 0;
+
+        if (Build.MODEL.contains("APOS")) {
+            final String input = String.format(Locale.US, "%d%d%d%d",
+                    0,  // disable keys
+                    1,  // enable mag stripe reader
+                    0,  // disable chip card reader
+                    0   // disable cless reader
+            );
+
+            new Thread(() -> {
+                int ret = 0;
+                pinpad.open();
+                ret = pinpad.checkEvent(input, output -> {
+                    //Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
+                    if (output.getResultCode() != Pinpad.PP_OK) {
+                        Log.i(TAG, "Pinpad result code error");
+                    } else if (output.getResultCode() == Pinpad.PP_OK) {
+                        final String out = output.getOutput();
+                        int i = 1;
+                        int trackLength = Integer.parseInt(out.substring(i, i + 2));
+
+                        i += 2;
+                        card.put("track1", out.substring(i, i + trackLength));
+                        i += trackLength;
+                        trackLength = Integer.parseInt(out.substring(i, i + 2));
+                        i += 2;
+                        card.put("track2", out.substring(i, i + trackLength));
+
+                        Log.i(TAG, "Pinpad.PP_OK");
+                    }
+
+                    card.put("resultCode", output.getResultCode());
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            channel.invokeMethod("swipeRead", card);
+                        }
+                    });
+                    //pinpad.close();
+                });
+                
+
+                //return ret;
+
+            }).start();
+            return 0;
+        }
+        else if (isEmulator()){
+            new Thread(() -> {
+                try {
+                    sleep(200);
+                    {
+                        card.put("track2", "9999030097638006=2304201169010677");
+                        card.put("resultCode", 0);
+                    }
+                    card.put("resultCode", 0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod("swipeRead", card);
+                    }
+                });
+            }).start();
+            return 0;
+        }
+        else
+            return Pinpad.PP_CANCEL;
+    }
 }
 
 
