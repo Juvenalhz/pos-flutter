@@ -5,6 +5,7 @@ import 'package:pay/models/merchant.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
+import 'package:pay/utils/constants.dart';
 import 'package:pay/utils/printer.dart';
 import 'package:pay/utils/serialNumber.dart';
 
@@ -71,7 +72,7 @@ class Reports {
     printer.addText(Printer.LEFT, 'Totales');
     printer.addTextSideBySide('Cantidad de Transacciones:', (await transRepository.getCountTrans()).toString());
     printer.addTextSideBySide('Bs.:', formatter.format(await transRepository.getBatchTotal() / 100).toString().trim());
-    printer.addTextSideBySide('V08.01-05', '01.01');
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
 
     printer.feedLine(5);
 
@@ -104,7 +105,7 @@ class Reports {
     });
     printer.addTextSideBySide('T.Gral Propinas:', formatter.format(tipGrandTotal / 100).padLeft(15, ' ').trim());
 
-    printer.addTextSideBySide('V08.01-05', '01.01');
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
 
     printer.feedLine(4);
 

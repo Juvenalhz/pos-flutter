@@ -15,6 +15,7 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
+import 'package:pay/utils/constants.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/serialNumber.dart';
@@ -167,7 +168,7 @@ class MessageInitialization extends HostMessage {
       message.fieldData(41, merchant.tid);
     message.contentType(60, 'ans');
     //TODO: get the application version from the project
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
     message.fieldData(62, field62);
 
     msgSeq++;
@@ -224,7 +225,7 @@ class TransactionMessage extends HostMessage {
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
@@ -285,7 +286,7 @@ class ReversalMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
@@ -328,7 +329,7 @@ class EchoTestMessage extends HostMessage {
     message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.tid);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(41, sn);
 
@@ -367,7 +368,7 @@ class LastSaleMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(41, sn);
 
@@ -420,7 +421,7 @@ class VoidMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     originalData = trans.referenceNumber;
     originalData += trans.stan.toString().padLeft(6, '0');
@@ -481,7 +482,7 @@ class AdjustMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     originalData = trans.referenceNumber;
     originalData += trans.stan.toString().padLeft(6, '0');
