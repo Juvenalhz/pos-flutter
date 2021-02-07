@@ -275,6 +275,21 @@ class _NumericEntryState extends State<NumericEntry> {
           if ((amount.length > 0) && (amount.length >= this.min)) {
             this.onClickEnter(context, int.parse(amount));
             deactivate();
+          } else {
+            final snackBarAmount = SnackBar(
+              content: Text('Valor Debe Ser Mayor a ' + this.min.toString(), textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
+              duration: Duration(seconds: 1),
+            );
+            final snackBarNumber = SnackBar(
+              content: Text('Longitud Minima Es ' + (this.min > 0 ? this.min : this.min + 1).toString(),
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
+              duration: Duration(seconds: 1),
+            );
+
+            if (this.separatorType == AskNumeric.DECIMALS)
+              Scaffold.of(context).showSnackBar(snackBarAmount);
+            else
+              Scaffold.of(context).showSnackBar(snackBarNumber);
           }
         },
         color: Colors.green,
