@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/TechVisitBloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
 
@@ -16,6 +17,7 @@ class Pinpad {
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');
   TransactionBloc transactionBloc;
+  Function(BuildContext, Map<String, dynamic>) onSwipeCardRread;
 
   void loadTables(Map<String, dynamic> emv, List<Map<String, dynamic>> aids, List<Map<String, dynamic>> pubKeys) async {
     await _channel.invokeMethod('loadTables', {'emv': emv, 'aids': aids, 'pubKeys': pubKeys});
@@ -38,8 +40,14 @@ class Pinpad {
     return ret;
   }
 
-  Future<int> askPin(int keyIndex, String pan, String msg1, String msg2) async {
-    int ret = await _channel.invokeMethod('askPin', {'keyIndex': keyIndex, 'pan': pan, 'msg1': msg1, 'msg2': msg2});
+  Future<int> askPin(int keyIndex, String pan, String msg1, String msg2, String type) async {
+    int ret = await _channel.invokeMethod('askPin', {'keyIndex': keyIndex, 'pan': pan, 'msg1': msg1, 'msg2': msg2, 'type': type});
+    return ret;
+  }
+
+  Future<int> swipeCard(Function onSwipeCallback) async {
+    onSwipeCardRread = onSwipeCallback;
+    int ret = await _channel.invokeMethod('swipeCard');
     return ret;
   }
 
@@ -100,8 +108,18 @@ class Pinpad {
         params[key] = value;
       });
       if (params['resultCode'] == 0) {
-        transactionBloc.add(TransPinEntered(params));
+        if (params['type'] == 'trans')
+          transactionBloc.add(TransPinEntered(params));
+        else if (params['type'] == 'techVisit') {
+          TechVisitBloc techVisitBloc = BlocProvider.of<TechVisitBloc>(context);
+          techVisitBloc.add(TechVisitPinEntered(params));
+        }
       }
+    } else if (call.method == 'swipeRead') {
+      call.arguments.forEach((key, value) {
+        params[key] = value;
+      });
+      this.onSwipeCardRread(context, params);
     }
 
     // handle error cases  - do not group on else if section
