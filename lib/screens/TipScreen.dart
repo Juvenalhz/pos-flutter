@@ -9,13 +9,14 @@ import 'amount.dart';
 
 class TipScreen extends StatelessWidget {
   Trans trans;
+  final Function(BuildContext, int) onClickEnter;
+  final Function(BuildContext, Trans) onClickBack;
 
-  TipScreen(this.trans);
+  TipScreen(this.trans, this.onClickEnter, this.onClickBack);
 
   @override
   Widget build(BuildContext context) {
     trans = ModalRoute.of(context).settings.arguments;
-    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -43,7 +44,7 @@ class TipScreen extends StatelessWidget {
                       color: Colors.white,
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
-                        transactionBloc.add(TransAskAmount(trans.baseAmount));
+                        onClickBack(context, trans);
                       },
                     ),
                   ),
@@ -102,11 +103,5 @@ class TipScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void onClickEnter(BuildContext context, int amount) {
-    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
-    transactionBloc.add(TransAddTip(amount));
   }
 }

@@ -3,8 +3,9 @@ import 'package:pay/models/trans.dart';
 
 class TransRejectedScreen extends StatelessWidget {
   final Trans trans;
+  final Function(BuildContext) onClickFunction;
 
-  TransRejectedScreen(this.trans);
+  TransRejectedScreen(this.trans, this.onClickFunction);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class TransRejectedScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 32, color: Colors.white),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                onClickFunction(context);
               },
               color: Colors.red,
               padding: EdgeInsets.all(15.0),

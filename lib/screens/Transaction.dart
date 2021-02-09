@@ -46,7 +46,7 @@ class Transaction extends StatelessWidget {
         if (state is TransactionAddAmount) {
           return (MainScreen());
         } else if (state is TransactionAddTip) {
-          return TipScreen(state.trans);
+          return TipScreen(state.trans, onClickTipEnter, onClickTipBack);
         } else if (state is TransactionAskIdNumber) {
           return new AskID('Número', 'De Cédula', '', 6, 9, AskNumeric.NO_DECIMALS, onClickIDEnter, onClickIDBack);
         } else if (state is TransactionAskLast4Digits) {
@@ -80,9 +80,9 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionReceiving) {
           return CommProgress('Autorización', status: 'Recibiendo').build(context);
         } else if (state is TransactionCompleted) {
-          return TransApprovedScreen(state.trans);
+          return TransApprovedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionRejected) {
-          return TransRejectedScreen(state.trans);
+          return TransRejectedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionPrintMerchantReceipt) {
           return TransMessage('Print Merchant Receipt');
         } else if (state is TransactionPrintCustomerReceipt) {
@@ -161,9 +161,27 @@ class Transaction extends StatelessWidget {
   }
 
   void onClickRetry(BuildContext context) {
-    final TransactionBloc initializationBloc = BlocProvider.of<TransactionBloc>(context);
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    initializationBloc.add(TransConnect());
+    transactionBloc.add(TransConnect());
+  }
+
+  void onClickTipBack(BuildContext context, Trans trans) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAskAmount(trans.baseAmount));
+  }
+
+  void onClickTipEnter(BuildContext context, int tip) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddTip(tip));
+  }
+
+  void onClickResponseMessage(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransRemoveCard());
   }
 }
 

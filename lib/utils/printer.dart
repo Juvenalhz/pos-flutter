@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 
 class Printer {
-  static const int LEFT = 0;
+  static const int LEFT = 2;
   static const int CENTER = 1;
-  static const int RIGHT = 2;
+  static const int RIGHT = 0;
 
   static const int FONT_SIZE_SMALL = 0;
   static const int FONT_SIZE_NORMAL = 1;

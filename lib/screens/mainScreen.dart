@@ -21,6 +21,7 @@ import 'EchoTest.dart';
 import 'Initialization.dart';
 import 'LastSale.dart';
 import 'SelectAcquirer.dart';
+import 'TipAdjust.dart';
 import 'amount.dart';
 import 'mainMenu.dart';
 
@@ -57,6 +58,7 @@ class MainScreen extends StatelessWidget {
         '/DetailReport': (context) => DetailReport(),
         '/DeleteBatch': (context) => DeleteBatch(),
         '/TipReport': (context) => TipReport(),
+        '/TipAdjust': (context) => TipAdjust(),
       },
       home: Scaffold(
           key: scaffoldKey,

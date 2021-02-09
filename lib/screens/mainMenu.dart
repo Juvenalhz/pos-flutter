@@ -14,6 +14,7 @@ import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/tipAdjustBloc.dart';
 import 'package:pay/bloc/tipReportBloc.dart';
 import 'package:pay/models/acquirer.dart';
 import 'dart:io';
@@ -53,6 +54,31 @@ class MainMenu extends StatelessWidget {
                   detailReportBloc.add(DetailReportInitialEvent());
                   Navigator.pushNamed(context, '/DetailReport');
                 }),
+            BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
+              if (state is MerchantLoaded) {
+                AcquirerRepository acquirerRepository = new AcquirerRepository();
+                final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
+                acquirerBloc.add(GetAcquirer(state.merchant.acquirerCode));
+
+                return BlocBuilder<AcquirerBloc, AcquirerState>(builder: (context, state) {
+                  if (state is AcquirerLoaded) {
+                    if (state.acquirer.industryType)
+                      return _createDrawerItem(
+                          text: 'Ajuste De Propina',
+                          onTap: () {
+                            final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
+
+                            tipAdjustBloc.add(TipAdjustInitialEvent());
+                            Navigator.pushNamed(context, '/TipAdjust');
+                          });
+                    else
+                      return SizedBox();
+                  } else
+                    return SizedBox();
+                });
+              } else
+                return SizedBox();
+            }),
             BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
                 AcquirerRepository acquirerRepository = new AcquirerRepository();
