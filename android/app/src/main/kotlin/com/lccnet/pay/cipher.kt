@@ -90,7 +90,7 @@ class Cipher : MethodChannel.MethodCallHandler{
                     pinpad.open()
                     try {
                         val decrypted = String(pinpad.calculateDes(PAN_KEY_ID, DESMode(DESMode.DM_DEC, DESMode.DM_OM_TCBC), null, data))
-                        if (decrypted == null) {
+                        if (decrypted.isEmpty()) {
                             Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
                         }
                         result.success(decrypted)

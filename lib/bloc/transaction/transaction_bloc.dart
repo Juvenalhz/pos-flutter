@@ -490,6 +490,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
           if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
 
+          if (event.respMap[6206] != null) {
+            trans.issuer = event.respMap[6206];
+          }
+
           if (trans.cardType == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {

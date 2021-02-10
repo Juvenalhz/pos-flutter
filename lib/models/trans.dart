@@ -57,6 +57,7 @@ class Trans {
   int _binType = 0;
   int _foodBalance = 0;
   bool _voided = false;
+  String _issuer = '';
   int _server = 0;
   bool _tipAdjusted = false;
 
@@ -117,6 +118,7 @@ class Trans {
   int get binType => this._binType;
   int get foodBalance => this._foodBalance;
   bool get voided => _voided;
+  String get issuer => _issuer;
   int get server => _server;
   bool get tipAdjusted => _tipAdjusted;
 
@@ -340,6 +342,10 @@ class Trans {
     this._voided = voided;
   }
 
+  set issuer(String issuer) {
+    this._issuer = issuer;
+  }
+
   set server(int server) {
     this._server = server;
   }
@@ -401,6 +407,8 @@ class Trans {
     map['respMessage'] = this._respMessage;
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
+    map['voided'] = this._voided;
+    map['issuer'] = this._issuer;
     map['voided'] = boolToInt(this._voided);
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
@@ -461,6 +469,7 @@ class Trans {
     map['binType'] = this._binType;
     map['foodBalance'] = this._foodBalance;
     map['voided'] = boolToInt(this._voided);
+    map['issuer'] = this._issuer;
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
 
@@ -516,6 +525,7 @@ class Trans {
     this._binType = trans['binType'];
     this._foodBalance = trans['foodBalance'];
     this._voided = intToBool(trans['voided']);
+    this._issuer = trans['issuer'];
     this._server = trans['server'];
     this._tipAdjusted = intToBool(trans['tipAdjusted']);
   }
@@ -575,6 +585,7 @@ class Trans {
     _binType = 0;
     _foodBalance = 0;
     _voided = false;
+    _issuer = '';
     _server = 0;
     _tipAdjusted = false;
   }
@@ -611,6 +622,7 @@ class Trans {
     _pinKSN = '';
     _binType = 0;
     _foodBalance = 0;
+    _issuer = '';
   }
 
   Future<String> getClearPan() async {

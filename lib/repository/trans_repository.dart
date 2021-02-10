@@ -24,7 +24,14 @@ class TransRepository {
 
   Future getMaxId() => appdb.queryMaxId('trans');
 
-  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0 and type <> \'Anulación\' ');
+  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
+
+  Future getTotalsData() => appdb.rawQuery(
+      'select c.name as acquirer, a.issuer as issuer, b.brand as brand,  b.cardType as cardType, count(a.id) as count, sum(a.total) as total ' +
+          'from trans as a, bin as b, acquirer as c ' +
+          'where a.bin = b.id and a.voided = 0 and a.type<>\'Anulación\' and a.reverse = 0 and a.acquirer = c.id ' +
+          'group by b.brand , a.issuer, b.cardType ' +
+          'order by a.acquirer, a.issuer, b.cardType');
 
   Future getTipsByServer()  => appdb.rawQuery('SELECT acquirer, server, count(id) as count, SUM(tip) as total FROM trans where tip<>0 group by  server  order by acquirer, server');
 }

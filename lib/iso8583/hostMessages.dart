@@ -571,6 +571,8 @@ class AdjustMessage extends HostMessage {
       message.printMessage();
     }
 
+    super._field62Type = DT.ASCII;
+
     return message.buildIso();
   }
 }
