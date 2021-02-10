@@ -233,13 +233,13 @@ class Receipt {
     printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
     printer.addText(Printer.CENTER, 'PROPINA DE CREDITO'); //tipo de transaccion
     printer.addText(Printer.CENTER, trans.maskedPAN); //MASKED PAN
-    printer.addTextSideBySide('BANCO ADQUIRIENTE', acquirer.rif); //Info banco
+    printer.addTextSideBySide('BANCO ADQUIRIENTE', acquirer.rif.trim()); //Info banco
     printer.addTextSideBySide('Fecha: ' + date.substring(0, 10), 'Hora: ' + date.substring(11, 22)); //Fecha y hora
-    printer.addText(Printer.LEFT, 'S/N POS:        No.Autor     No.Operac.     Mesero');
+    printer.addText(Printer.LEFT, 'S/N POS:        No.Autor     No.Operac.   Mesero');
     printer.addText(
         Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString());
     printer.addTextSideBySideWithCenter('Terminal ' + merchant.tid, 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
-    printer.addTextSideBySide('MONTOBs.', amount);
+    printer.addTextSideBySide('MONTOBs.', amount.trim());
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
     printer.addTextSideBySide('V08.01-05', '01.01');
     printer.feedLine(2);

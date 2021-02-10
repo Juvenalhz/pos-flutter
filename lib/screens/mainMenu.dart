@@ -21,6 +21,7 @@ import 'package:pay/models/acquirer.dart';
 import 'dart:io';
 import 'package:pay/models/merchant.dart';
 import 'package:pay/repository/acquirer_repository.dart';
+import 'package:pay/utils/constants.dart';
 import 'package:pay/utils/testConfig.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pay/bloc/echotestBloc.dart';
@@ -186,7 +187,7 @@ class MainMenu extends StatelessWidget {
               },
             ),
           ListTile(
-            title: Text('0.0.1'),
+            title: Text(Constants.appVersion),
             onTap: () {},
           ),
         ],

@@ -72,7 +72,7 @@ class Printer : MethodChannel.MethodCallHandler{
                 else{
                     var lineSize : Int
                     if (currentSize == FONT_SIZE_SMALL)
-                        lineSize = 50
+                        lineSize = 48
                     else
                         lineSize = 32
                     Log.i("printer", "|" + "".padEnd(lineSize, ' ') + "|")
