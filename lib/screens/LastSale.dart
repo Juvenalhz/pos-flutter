@@ -37,18 +37,16 @@ class LastSale extends StatelessWidget {
                 return TransMessage(state.message);
               else if (state is LastSaleCompleted) {
                 return LastSaleDetail(state.trans, state.cardBrand, onClickDone);
-              }
-              else if (state is LastSaleFailed) {
+              } else if (state is LastSaleFailed) {
                 return LastSaleFinalScreen(state.message, false, onClickDone);
-              }
-              else if (state is LastSaleCommError)
+              } else if (state is LastSaleCommError)
                 return CommError('Consulta Última Venta', 'Error de conexión....', onClickDone, onClickRetry);
               else {
-                return CommProgress('Consulta Última Venta200').build(context);
+                return CommProgress('Consulta Última Venta').build(context);
               }
             });
           } else
-            return CommProgress('Prueba De Comunicación').build(context);
+            return CommProgress('Consulta Última Venta').build(context);
         }),
       ),
       onWillPop: () async {
@@ -66,7 +64,6 @@ class LastSale extends StatelessWidget {
 
     lastSaleBloc.add(LastSaleInitialEvent());
   }
-
 }
 
 class LastSaleFinalScreen extends StatelessWidget {
@@ -84,10 +81,7 @@ class LastSaleFinalScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Spacer(),
-            if (approved)
-              Image.asset('assets/images/icon_success.png')
-            else
-              Image.asset('assets/images/icon_failure.png'),
+            if (approved) Image.asset('assets/images/icon_success.png') else Image.asset('assets/images/icon_failure.png'),
             Spacer(),
             Text(message, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
             Spacer(),

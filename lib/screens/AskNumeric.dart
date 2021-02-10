@@ -326,3 +326,15 @@ class AskServer extends AskNumeric {
       Function(BuildContext p1) onClickBack)
       : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
 }
+
+class AskVisitType extends AskNumeric {
+  AskVisitType(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskRequirementType extends AskNumeric {
+  AskRequirementType(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}

@@ -65,10 +65,13 @@ class Emv : MethodChannel.MethodCallHandler{
             val pan: String? = call.argument("pan")
             val msg1: String? = call.argument("msg1")
             val msg2: String? = call.argument("msg2")
-
+            val type: String? = call.argument("type")
+            
             if ((keyIndex != null) && (pan != null) && (msg1 != null) && (msg2 != null)) {
-                result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2));
+                result.success(PinpadManager.me().askPin(keyIndex, pan, msg1, msg2, type));
             }
+        } else if (call.method == "swipeCard") {
+            result.success(PinpadManager.me().swipeCard());
         } else if (call.method == "removeCard"){
             PinpadManager.me().RemoveCard();
         } else if (call.method == "beep"){

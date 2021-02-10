@@ -43,6 +43,7 @@ void incrementStan() async {
 class HostMessage {
   Comm _comm;
   int _msgId;
+  DT _field62Type;
 
   HostMessage(this._comm, this._msgId);
 
@@ -62,6 +63,7 @@ class HostMessage {
       case 4:
         temp += bcdToStr(AsciiEncoder().convert(data.padRight(11, ' ')));
         break;
+      case 5:
       case 13:
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
@@ -104,7 +106,7 @@ class HostMessage {
     } else {
       isoResponse.dataType(60, DT.BIN);
       isoResponse.dataType(61, DT.BIN);
-      if (_msgId == 800) isoResponse.dataType(62, DT.BIN);
+      isoResponse.dataType(62, _field62Type);
 
       isoResponse.setIsoContent(response);
       if (isDev) {
@@ -177,6 +179,8 @@ class MessageInitialization extends HostMessage {
       message.printMessage();
     }
 
+    super._field62Type = DT.BIN;
+
     return message.buildIso();
   }
 }
@@ -240,6 +244,8 @@ class TransactionMessage extends HostMessage {
       message.printMessage();
     }
 
+    super._field62Type = DT.ASCII;
+
     return message.buildIso();
   }
 }
@@ -298,6 +304,8 @@ class ReversalMessage extends HostMessage {
       message.printMessage();
     }
 
+    super._field62Type = DT.ASCII;
+
     return message.buildIso();
   }
 }
@@ -323,7 +331,12 @@ class EchoTestMessage extends HostMessage {
     message.setMID(800);
     message.fieldData(3, '990000');
     message.fieldData(
-        7, dateTime.month.toString() + dateTime.day.toString() + dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+        7,
+        dateTime.month.toString().padLeft(2, '0') +
+            dateTime.day.toString().padLeft(2, '0') +
+            dateTime.hour.toString().padLeft(2, '0') +
+            dateTime.minute.toString().padLeft(2, '0') +
+            dateTime.second.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
     message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
@@ -338,6 +351,8 @@ class EchoTestMessage extends HostMessage {
     if (isDev) {
       message.printMessage();
     }
+
+    super._field62Type = DT.ASCII;
 
     return message.buildIso();
   }
@@ -377,6 +392,8 @@ class LastSaleMessage extends HostMessage {
     if (isDev) {
       message.printMessage();
     }
+
+    super._field62Type = DT.ASCII;
 
     return message.buildIso();
   }
@@ -439,6 +456,60 @@ class VoidMessage extends HostMessage {
     if (isDev) {
       message.printMessage();
     }
+
+    super._field62Type = DT.ASCII;
+
+    return message.buildIso();
+  }
+}
+
+class TechVisitMessage extends HostMessage {
+  Iso8583 message;
+  Comm _comm;
+
+  TechVisitMessage(this._comm) : super(_comm, 800) {
+    message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
+  }
+
+  Future<Uint8List> buildMessage(String track2, int visitType, int requirementType, String pinBlock, String pinKSN) async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    DateTime dateTime = DateTime.now();
+    String temp;
+    String field62 = '';
+    var isDev = (const String.fromEnvironment('dev') == 'true');
+
+    String sn = await SerialNumber.serialNumber;
+
+    message.setMID(800);
+    message.fieldData(3, '970000');
+    message.fieldData(
+        7,
+        dateTime.month.toString().padLeft(2, '0') +
+            dateTime.day.toString().padLeft(2, '0') +
+            dateTime.hour.toString().padLeft(2, '0') +
+            dateTime.minute.toString().padLeft(2, '0') +
+            dateTime.second.toString().padLeft(2, '0'));
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(24, _comm.nii);
+    message.fieldData(35, track2);
+    message.fieldData(41, merchant.tid);
+    message.fieldData(42, merchant.mid);
+    if (pinBlock.length > 0) message.fieldData(52, pinBlock);
+    if (pinKSN.length > 0) message.fieldData(53, pinKSN);
+    message.fieldData(60, '01.00');
+
+    temp = visitType.toString().padRight(2, ' ') + requirementType.toString().padRight(12, ' ');
+    field62 += addField62Table(5, temp);
+    field62 += addField62Table(41, sn);
+
+    message.fieldData(62, field62);
+
+    if (isDev) {
+      message.printMessage();
+    }
+
+    super._field62Type = DT.ASCII;
 
     return message.buildIso();
   }

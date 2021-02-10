@@ -12,6 +12,7 @@ import 'package:pay/bloc/emv/emv_event.dart';
 import 'package:pay/bloc/initialization/initialization_bloc.dart';
 import 'package:pay/bloc/lastSale/last_sale_bloc.dart';
 import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/TechVisitBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/tipAdjustBloc.dart';
@@ -162,7 +163,14 @@ class MainMenu extends StatelessWidget {
                   deleteReversalBloc.add(DeleteReversalPending());
                   Navigator.pushNamed(context, '/deleteReversal');
                 }),
-            _createDrawerItem(text: 'Conformidad De Visita'),
+            _createDrawerItem(
+                text: 'Conformidad De Visita',
+                onTap: () {
+                  final TechVisitBloc techVisitBloc = BlocProvider.of<TechVisitBloc>(context);
+
+                  techVisitBloc.add(TechVisitInitialEvent());
+                  Navigator.pushNamed(context, '/TechVisit');
+                }),
           ]),
           if (isDev)
             _createDrawerItem(
