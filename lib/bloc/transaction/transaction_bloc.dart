@@ -185,6 +185,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // card analisys (BIN, Debit/Credit)
     else if (event is TransProcessCard) {
       int binId = await _validateBin(event.trans.pan);
+     
       if (binId == 0) {
         yield TransactionShowMessage(("BIN Invalido"));
         trans.clear();

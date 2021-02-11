@@ -18,14 +18,14 @@ import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/bloc/tipAdjustBloc.dart';
 import 'package:pay/bloc/tipReportBloc.dart';
 import 'package:pay/bloc/TechVisitBloc.dart';
+import 'package:pay/bloc/merchantBloc.dart';
+import 'package:pay/bloc/summaryReportBloc.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/mainScreen.dart';
 import 'package:pay/utils/database.dart';
-import 'package:pay/bloc/merchantBloc.dart';
-
 import 'repository/acquirer_repository.dart';
 
 void main() {
@@ -69,6 +69,7 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<DetailReportBloc>(create: (context) => DetailReportBloc()),
         BlocProvider<TotalsReportBloc>(create: (context) => TotalsReportBloc()),
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
+        BlocProvider<SummaryReportBloc>(create: (context) => SummaryReportBloc()),
         BlocProvider<TipReportBloc>(create: (context) => TipReportBloc()),
         BlocProvider<TipAdjustBloc>(create: (context) => TipAdjustBloc(context)),
         BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc(context)),

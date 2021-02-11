@@ -12,6 +12,7 @@ import 'package:pay/bloc/terminal/terminal_event.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/screens/DeleteBatch.dart';
 import 'package:pay/screens/DeleteReversal.dart';
+import 'package:pay/screens/SummaryReport.dart';
 import 'package:pay/screens/TipReport.dart';
 import 'package:pay/screens/TechVisit.dart';
 import 'package:pay/screens/splash.dart';
@@ -60,6 +61,7 @@ class MainScreen extends StatelessWidget {
         '/DetailReport': (context) => DetailReport(),
         '/TotalsReport': (context) => TotalsReport(),
         '/DeleteBatch': (context) => DeleteBatch(),
+        '/SummaryReport': (context) => SummaryReport(),
         '/TipReport': (context) => TipReport(),
         '/TipAdjust': (context) => TipAdjust(),
         '/TechVisit': (context) => TechVisit(),
