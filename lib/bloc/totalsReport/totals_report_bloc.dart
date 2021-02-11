@@ -75,12 +75,36 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
       totals.forEach((element) {
         print(element.toString());
         if (totalsData.firstWhere((item) => item['acquirer'] == element['acquirer'], orElse: () => null) == null) {
-
-          List<String> fields = ['visaCount', 'visaAmount', 'mastercardCount', 'mastercardAmount', 'dinersCount', 'dinersAmount',
-            'debitCount', 'debitAmount', 'electronCount', 'electronAmount', 'privateCount', 'privateAmount', 'foodCount', 'foodAmount',
-            'visaOtherCount', 'visaOtherAmount', 'mastercardOtherCount', 'mastercardOtherAmount', 'dinersOtherCount', 'dinersOtherAmount',
-            'debitOtherCount', 'debitOtherAmount',  'electronOtherCount', 'electronOtherAmount', 'privateOtherCount', 'privateOtherAmount',
-            'foodOtherCount', 'foodOtherAmount',  ];
+          List<String> fields = [
+            'visaCount',
+            'visaAmount',
+            'mastercardCount',
+            'mastercardAmount',
+            'dinersCount',
+            'dinersAmount',
+            'debitCount',
+            'debitAmount',
+            'electronCount',
+            'electronAmount',
+            'privateCount',
+            'privateAmount',
+            'foodCount',
+            'foodAmount',
+            'visaOtherCount',
+            'visaOtherAmount',
+            'mastercardOtherCount',
+            'mastercardOtherAmount',
+            'dinersOtherCount',
+            'dinersOtherAmount',
+            'debitOtherCount',
+            'debitOtherAmount',
+            'electronOtherCount',
+            'electronOtherAmount',
+            'privateOtherCount',
+            'privateOtherAmount',
+            'foodOtherCount',
+            'foodOtherAmount',
+          ];
           List<int> emptyValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           Map<String, dynamic> emptyRecord = Map.fromIterables(fields, emptyValues);
 
@@ -88,188 +112,191 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
           if (index == null)
             index = 0;
           else
-            index ++;
+            index++;
         }
 
-        if (element['acquirer'] == 'Platco'){
-          if (element['issuer'].length == 0){
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+        if (element['acquirer'] == 'Platco') {
+          if (element['issuer'].length == 0) {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaCount'] = element['count'];
               totalsData[index]['totals']['visaAmount'] = element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronCount'] = element['count'];
               totalsData[index]['totals']['electronAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardCount'] = element['count'];
               totalsData[index]['totals']['mastercardAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersCount'] = element['count'];
               totalsData[index]['totals']['dinersAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitCount'] = element['count'];
               totalsData[index]['totals']['debitAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateCount'] = element['count'];
               totalsData[index]['totals']['privateAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodCount'] = element['count'];
               totalsData[index]['totals']['foodAmount'] = element['total'];
             }
-          }
-          else {
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+          } else {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaOtherCount'] += element['count'];
               totalsData[index]['totals']['visaOtherAmount'] += element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronOtherCount'] += element['count'];
               totalsData[index]['totals']['electronOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardOtherCount'] += element['count'];
               totalsData[index]['totals']['mastercardOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersOtherCount'] += element['count'];
               totalsData[index]['totals']['dinersOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitOtherCount'] += element['count'];
               totalsData[index]['totals']['debitOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateOtherCount'] += element['count'];
               totalsData[index]['totals']['privateOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodOtherCount'] += element['count'];
               totalsData[index]['totals']['foodOtherAmount'] += element['total'];
             }
           }
-        } else if (element['acquirer'].toLowerCase().contains('mercantil')){
-          if (element['issuer'] == '0105'){
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+        } else if (element['acquirer'].toLowerCase().contains('mercantil')) {
+          if (element['issuer'] == '0105') {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaCount'] = element['count'];
               totalsData[index]['totals']['visaAmount'] = element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronCount'] = element['count'];
               totalsData[index]['totals']['electronAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardCount'] = element['count'];
               totalsData[index]['totals']['mastercardAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersCount'] = element['count'];
               totalsData[index]['totals']['dinersAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitCount'] = element['count'];
               totalsData[index]['totals']['debitAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateCount'] = element['count'];
               totalsData[index]['totals']['privateAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodCount'] = element['count'];
               totalsData[index]['totals']['foodAmount'] = element['total'];
             }
-          }
-          else {
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+          } else {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaOtherCount'] += element['count'];
               totalsData[index]['totals']['visaOtherAmount'] += element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronOtherCount'] += element['count'];
               totalsData[index]['totals']['electronOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardOtherCount'] += element['count'];
               totalsData[index]['totals']['mastercardOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersOtherCount'] += element['count'];
               totalsData[index]['totals']['dinersOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitOtherCount'] += element['count'];
               totalsData[index]['totals']['debitOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateOtherCount'] += element['count'];
               totalsData[index]['totals']['privateOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodOtherCount'] += element['count'];
               totalsData[index]['totals']['foodOtherAmount'] += element['total'];
             }
           }
-        }else if (element['acquirer'].toLowerCase().contains('provincial')){
-          if (element['issuer'] == '0108'){
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+        } else if (element['acquirer'].toLowerCase().contains('provincial')) {
+          if (element['issuer'] == '0108') {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaCount'] = element['count'];
               totalsData[index]['totals']['visaAmount'] = element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronCount'] = element['count'];
               totalsData[index]['totals']['electronAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardCount'] = element['count'];
               totalsData[index]['totals']['mastercardAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersCount'] = element['count'];
               totalsData[index]['totals']['dinersAmount'] = element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitCount'] = element['count'];
               totalsData[index]['totals']['debitAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateCount'] = element['count'];
               totalsData[index]['totals']['privateAmount'] = element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodCount'] = element['count'];
               totalsData[index]['totals']['foodAmount'] = element['total'];
             }
-          }
-          else {
-            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)){  // visa credit card
+          } else {
+            if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 1)) {
+              // visa credit card
               totalsData[index]['totals']['visaOtherCount'] += element['count'];
               totalsData[index]['totals']['visaOtherAmount'] += element['total'];
-            }
-            else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) { // visa debit card
+            } else if ((element['brand'].toLowerCase().contains('visa')) && (element['cardType'] == 2)) {
+              // visa debit card
               totalsData[index]['totals']['electronOtherCount'] += element['count'];
               totalsData[index]['totals']['electronOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('mastercard')) { // master card
+            } else if (element['brand'].toLowerCase().contains('mastercard')) {
+              // master card
               totalsData[index]['totals']['mastercardOtherCount'] += element['count'];
               totalsData[index]['totals']['mastercardOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('diners')) { // diners card
+            } else if (element['brand'].toLowerCase().contains('diners')) {
+              // diners card
               totalsData[index]['totals']['dinersOtherCount'] += element['count'];
               totalsData[index]['totals']['dinersOtherAmount'] += element['total'];
-            }
-            else if (element['brand'].toLowerCase().contains('maestro')) { // maestro debit card
+            } else if (element['brand'].toLowerCase().contains('maestro')) {
+              // maestro debit card
               totalsData[index]['totals']['debitOtherCount'] += element['count'];
               totalsData[index]['totals']['debitOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 4) { // master card
+            } else if (element['cardType'] == 4) {
+              // master card
               totalsData[index]['totals']['privateOtherCount'] += element['count'];
               totalsData[index]['totals']['privateOtherAmount'] += element['total'];
-            }
-            else if (element['cardType'] == 3) { // master card
+            } else if (element['cardType'] == 3) {
+              // master card
               totalsData[index]['totals']['foodOtherCount'] += element['count'];
               totalsData[index]['totals']['foodOtherAmount'] += element['total'];
             }
@@ -277,12 +304,9 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
         }
       });
 
-      if (totalsData[0].isNotEmpty)
-        print(totalsData[0].toString());
-      if (totalsData[1].isNotEmpty)
-        print(totalsData[1].toString());
-      if (totalsData[2].isNotEmpty)
-        print(totalsData[2].toString());
+      if (totalsData.length > 0) print(totalsData[0].toString());
+      if (totalsData.length > 1) print(totalsData[1].toString());
+      if (totalsData.length > 2) print(totalsData[2].toString());
 
       yield TotalsReportDataReady(totalsData);
     } else if (event is TotalsReportPrintReport) {
