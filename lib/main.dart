@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pay/bloc/batch/batch_bloc.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/echotestBloc.dart';
 import 'package:pay/bloc/deleteBatchBloc.dart';
@@ -71,7 +72,8 @@ class InitializationApp extends StatelessWidget {
         BlocProvider<DeleteBatchBloc>(create: (context) => DeleteBatchBloc()),
         BlocProvider<TipReportBloc>(create: (context) => TipReportBloc()),
         BlocProvider<TipAdjustBloc>(create: (context) => TipAdjustBloc(context)),
-        BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc(context)),
+        BlocProvider<TechVisitBloc>(create: (context) => TechVisitBloc()),
+        BlocProvider<BatchBloc>(create: (context) => BatchBloc()),
       ], child: MainScreen()),
     ));
   }

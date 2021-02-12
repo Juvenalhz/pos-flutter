@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirerBloc.dart';
+import 'package:pay/bloc/batch/batch_bloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/deleteBatchBloc.dart';
@@ -44,18 +45,18 @@ class MainMenu extends StatelessWidget {
           _createHeader(context),
           ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
             _createDrawerItem(
-              //icon: Icons.calendar_view_day,
-              text: 'Reporte Totales',
-              onTap: () {
-                final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+                //icon: Icons.calendar_view_day,
+                text: 'Reporte Totales',
+                onTap: () {
+                  final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                totalsReportBloc.add(TotalsReportInitialEvent());
-                Navigator.pushNamed(context, '/TotalsReport');
-              }),
+                  totalsReportBloc.add(TotalsReportInitialEvent());
+                  Navigator.pushNamed(context, '/TotalsReport');
+                }),
             _createDrawerItem(
-              text: 'Reporte Detallado',
-              onTap: () {
-                final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+                text: 'Reporte Detallado',
+                onTap: () {
+                  final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
                   detailReportBloc.add(DetailReportInitialEvent());
                   Navigator.pushNamed(context, '/DetailReport');
@@ -131,7 +132,14 @@ class MainMenu extends StatelessWidget {
                   lastSaleBloc.add(LastSaleInitialEvent());
                   Navigator.pushNamed(context, '/LastSale');
                 }),
-            _createDrawerItem(text: 'Cierre De Lote'),
+            _createDrawerItem(
+                text: 'Cierre De Lote',
+                onTap: () {
+                  final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
+
+                  batchBloc.add(BatchInitialEvent());
+                  Navigator.pushNamed(context, '/CloseBatch');
+                }),
             _createDrawerItem(
                 text: 'Borrar Lote',
                 onTap: () {

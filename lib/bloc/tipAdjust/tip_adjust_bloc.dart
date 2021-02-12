@@ -176,7 +176,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
-          Receipt receipt = new Receipt(context);
+          Receipt receipt = new Receipt();
 
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];

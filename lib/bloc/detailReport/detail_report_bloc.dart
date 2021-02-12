@@ -33,7 +33,7 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
     } else if (event is DetailReportPrintReceiptCopy) {
       TransRepository transRepository = new TransRepository();
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
-      Receipt receipt = new Receipt(event.context);
+      Receipt receipt = new Receipt();
 
       receipt.printTransactionReceipt(event.type, trans);
     } else if (event is DetailReportPrintReport) {

@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 
 class askOkCancel extends StatelessWidget {
-  String title1;
-  String title2;
-  String message;
-  Function(BuildContext) onClickOk;
-  Function(BuildContext) onClickCancel;
+  final String title;
+  final String message;
+  final Function(BuildContext) onClickOk;
+  final Function(BuildContext) onClickCancel;
 
-  askOkCancel(this.title1, this.title2, this.message, this.onClickOk, this.onClickCancel);
+  askOkCancel(this.title, this.message, this.onClickOk, this.onClickCancel);
 
   @override
   Widget build(BuildContext context) {
@@ -35,29 +34,12 @@ class askOkCancel extends StatelessWidget {
                 child: Stack(children: <Widget>[
                   Center(
                     child: Padding(
-                        padding: const EdgeInsets.fromLTRB(40, 20, 10, 0),
-                        child: BlocBuilder<TransactionBloc, TransactionState>(builder: (context, state) {
-                          if (state is TransactionAskConfirmation) {
-                            return Center(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    title1,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            // this text should not be shown, as the state should always be correct, but we need to return a widget
-                            return Text(
-                              title2,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                            );
-                          }
-                        })),
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                        )),
                   )
                 ]),
               ),
@@ -74,8 +56,8 @@ class askOkCancel extends StatelessWidget {
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Spacer(flex: 1),
-                    Text(this.message, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                    Spacer(flex: 2),
+                    Center(child: Text(this.message, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30))),
                     Spacer(flex: 2),
                     Padding(
                       padding: const EdgeInsets.all(40.0),

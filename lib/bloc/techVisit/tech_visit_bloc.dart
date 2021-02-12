@@ -21,7 +21,6 @@ part 'tech_visit_event.dart';
 part 'tech_visit_state.dart';
 
 class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
-  BuildContext context;
   Pinpad pinpad;
   Comm comm;
   Communication connection;
@@ -32,7 +31,7 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
   String pinBlock;
   String pinKSN;
 
-  TechVisitBloc(context) : super(TechVisitInitial());
+  TechVisitBloc() : super(TechVisitInitial());
 
   @override
   Stream<TechVisitState> mapEventToState(
@@ -108,11 +107,11 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
       if (response == null) {
         yield TechVisitShowMessage('Error - Timeout de comunicación');
         await new Future.delayed(const Duration(seconds: 3));
-        yield TechVisitFailed('Error En Prueba De Comunicación');
+        yield TechVisitFailed('Error En Conformidad de Visita');
       } else if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await techVisitMessage.parseRenponse(response);
         if (respMap[39] == '00') {
-          Receipt receipt = new Receipt(context);
+          Receipt receipt = new Receipt();
 
           receipt.techVisitReceipt('', track2, visitType.toString(), requirementType.toString(), respMap[38]);
           yield TechVisitCompleted(respMap[6208]);

@@ -300,7 +300,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '', 'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
+        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
+            'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
       } else
         yield TransactionAskConfirmation(trans, acquirer);
     }
@@ -572,13 +573,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     //print receipt
     else if (event is TransMerchantReceipt) {
-      Receipt receipt = new Receipt(context);
+      Receipt receipt = new Receipt();
 
       yield TransactionPrintMerchantReceipt(trans);
       receipt.printTransactionReceipt(true, trans);
       this.add(TransCustomerReceipt());
     } else if (event is TransCustomerReceipt) {
-      Receipt receipt = new Receipt(context);
+      Receipt receipt = new Receipt();
 
       yield TransactionPrintCustomerReceipt(trans);
       receipt.printTransactionReceipt(false, trans);
