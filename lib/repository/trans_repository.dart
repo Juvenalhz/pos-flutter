@@ -34,4 +34,10 @@ class TransRepository {
           'order by a.acquirer, a.issuer, b.cardType');
 
   Future getTipsByServer()  => appdb.rawQuery('SELECT acquirer, server, count(id) as count, SUM(tip) as total FROM trans where tip<>0 group by  server  order by acquirer, server');
+
+  Future getCountSale() => appdb.queryRowCount('trans', where: 'reverse=0 and voided=0');
+
+  Future getCountVoid() => appdb.queryRowCount('trans', where: 'reverse=0 and voided=1');
+
+  Future getTotalVoid() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=1');
 }

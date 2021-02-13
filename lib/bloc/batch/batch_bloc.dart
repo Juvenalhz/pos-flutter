@@ -50,7 +50,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
         }
-      }
+      } else
+        yield BatchConfirm();
     } else if (event is BatchCancel) {
       yield BatchFinish();
     } else if (event is BatchMissingTipsOk) {
@@ -108,8 +109,15 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
     // send request
     else if (event is BatchSendRequest) {
       yield BatchSending();
-      //trans.stan = await getStan();
-      batchMessage = new BatchMessage(comm);
+
+      int countSale = await transRepository.getCountSale();
+      int countVoid = await transRepository.getCountVoid();
+      int totalSale = await transRepository.getBatchTotal();
+      int totalVoid = (countVoid != 0) ? await transRepository.getTotalVoid() : 0;
+
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+      batchMessage = new BatchMessage(comm, merchant.batchNumber, countSale, totalSale, countVoid, totalVoid);
       if ((isDev == true) && (isCommOffline == true))
         await batchMessage.buildMessage();
       else

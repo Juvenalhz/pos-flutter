@@ -580,8 +580,13 @@ class AdjustMessage extends HostMessage {
 class BatchMessage extends HostMessage {
   Iso8583 message;
   Comm _comm;
+  int countSale;
+  int totalSale;
+  int countVoid;
+  int totalVoid;
+  int batchNumber;
 
-  BatchMessage(this._comm) : super(_comm, 800) {
+  BatchMessage(this._comm, this.batchNumber, this.countSale, this.totalSale, this.countVoid, this.totalVoid) : super(_comm, 500) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
   }
 
@@ -589,7 +594,7 @@ class BatchMessage extends HostMessage {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     DateTime dateTime = DateTime.now();
-    String temp;
+    String field63;
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -612,8 +617,13 @@ class BatchMessage extends HostMessage {
     message.fieldData(60, '01.00');
 
     field62 += addField62Table(41, sn);
-
     message.fieldData(62, field62);
+
+    field63 = batchNumber.toString().padLeft(3, '0');
+    field63 += countSale.toString().padLeft(4, '0') + totalSale.toString().padLeft(12, '0');
+    field63 += (0).toString().padLeft(4, '0') + (0).toString().padLeft(12, '0');
+    field63 += countVoid.toString().padLeft(4, '0') + totalVoid.toString().padLeft(12, '0');
+    message.fieldData(63, field63);
 
     if (isDev) {
       message.printMessage();
