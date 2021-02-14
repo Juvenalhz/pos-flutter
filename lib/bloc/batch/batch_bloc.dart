@@ -13,6 +13,7 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/receipt.dart';
 
 part 'batch_event.dart';
 part 'batch_state.dart';
@@ -28,6 +29,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
   ReversalMessage reversalMessage;
   Comm comm;
   BatchMessage batchMessage;
+  int batchStan;
 
   BatchBloc() : super(BatchInitial());
 
@@ -115,6 +117,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
       int totalSale = await transRepository.getBatchTotal();
       int totalVoid = (countVoid != 0) ? await transRepository.getTotalVoid() : 0;
 
+      batchStan = await getStan();
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
       batchMessage = new BatchMessage(comm, merchant.batchNumber, countSale, totalSale, countVoid, totalVoid);
@@ -147,6 +150,34 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
         this.add(BatchProcessResponse(respMap));
       }
       connection.disconnect();
+    } else if (event is BatchProcessResponse) {
+      MerchantRepository merchantRepository = new MerchantRepository();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+      if ((event.respMap[11] == null) ||
+          (batchStan != int.parse(event.respMap[11])) ||
+          (event.respMap[41] == null) ||
+          (merchant.tid.padLeft(8, '0') != event.respMap[41])) {
+        // reversal is stored in the DB
+        yield BatchError('Error en Respuesta');
+      } else {
+        if (event.respMap[39] != null) {
+          if ((event.respMap[39] == '00') || (event.respMap[39] == '95')) {
+            Receipt receipt = new Receipt();
+
+            if (event.respMap[6202] != null) merchant.batchNumber = int.parse(event.respMap[6202]);
+
+            merchantRepository.updateMerchant(merchant);
+            //receipt.tipAdjustReceipt(trans);
+            if (event.respMap[39] == '00')
+              yield BatchOK(event.respMap[6208]);
+            else
+              yield BatchNotInBalance(event.respMap[6208]);
+          } else {
+            yield BatchError(event.respMap[6208]);
+          }
+        }
+      }
     }
   }
 }

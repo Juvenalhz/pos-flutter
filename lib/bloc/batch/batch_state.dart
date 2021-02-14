@@ -57,3 +57,30 @@ class BatchCommError extends BatchState {
   @override
   List<Object> get props => [];
 }
+
+class BatchError extends BatchState {
+  final String message;
+
+  BatchError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class BatchOK extends BatchState {
+  final String message;
+
+  BatchOK(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class BatchNotInBalance extends BatchState {
+  final String message;
+
+  BatchNotInBalance(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

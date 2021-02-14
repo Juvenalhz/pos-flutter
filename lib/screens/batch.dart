@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/batchBloc.dart';
@@ -31,6 +32,12 @@ class Batch extends StatelessWidget {
         return CommProgress('Cierre De Lote', status: 'Recibiendo').build(context);
       } else if (state is BatchCommError) {
         return CommError('Cierre De Lote', 'Error de conexión....', onClickCancel, onClickRetry);
+      } else if (state is BatchNotInBalance) {
+        return WarningScreen('Cierre De Lote', 'Lote No Conciliado', onClickBatchFinish);
+      } else if (state is BatchNotInBalance) {
+        return WarningScreen('Cierre De Lote', 'Lote No Conciliado', onClickBatchFinish);
+      } else if (state is BatchOK) {
+        return BatchFinalScreen(state.message, onClickBatchFinish);
       } else
         return Container();
     })));
@@ -48,6 +55,12 @@ class Batch extends StatelessWidget {
     batchBloc.add(BatchMissingTipsOk());
   }
 
+  void onClickBatchFinish(BuildContext context) {
+    final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
+
+    batchBloc.add(BatchComplete());
+  }
+
   void onClickOkConfirm(BuildContext context) {
     final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
 
@@ -63,5 +76,47 @@ class Batch extends StatelessWidget {
   void onClickRetry(BuildContext context) {
     final BatchBloc tipAdjustBloc = BlocProvider.of<BatchBloc>(context);
     tipAdjustBloc.add(BatchConnect());
+  }
+}
+
+class BatchFinalScreen extends StatelessWidget {
+  final String message;
+  final Function(BuildContext) onClick;
+
+  BatchFinalScreen(this.message, this.onClick);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Spacer(),
+            Image.asset('assets/images/icon_success.png'),
+            Spacer(),
+            Text(message, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+            Spacer(),
+            FlatButton(
+              child: Text(
+                'OK',
+                style: TextStyle(fontSize: 32, color: Colors.white),
+              ),
+              onPressed: () {
+                onClick(context);
+              },
+              color: Colors.green,
+              padding: EdgeInsets.all(15.0),
+              splashColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                //side: BorderSide(color: Colors.blueGrey)
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
+      ),
+    );
   }
 }
