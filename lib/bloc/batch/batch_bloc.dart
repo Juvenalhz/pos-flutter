@@ -178,6 +178,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
           }
         }
       }
+    } else if (event is BatchComplete) {
+      yield BatchPrintDetailReport();
     }
   }
 }

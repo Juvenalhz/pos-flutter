@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/batchBloc.dart';
+import 'package:pay/bloc/detailReportBloc.dart';
+import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/screens/WarningScreen.dart';
 import 'package:pay/screens/askOkCancel.dart';
 import 'package:pay/screens/commProgress.dart';
@@ -13,8 +15,17 @@ class Batch extends StatelessWidget {
   Widget build(BuildContext context) {
     final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
 
-    return BlocListener<BatchBloc, BatchState>(listener: (context, state) {
-      if (state is BatchFinish) Navigator.of(context).pop();
+    return BlocListener<BatchBloc, BatchState>(listener: (context, state) async {
+      if (state is BatchFinish) {
+        Navigator.of(context).pop();
+      } else if (state is BatchPrintDetailReport) {
+        final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+        final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+        detailReportBloc.add(DetailReportPrintReport(context, printFromBatch: true));
+        await Navigator.pushNamed(context, '/DetailReport');
+
+      }
     }, child: Container(child: BlocBuilder<BatchBloc, BatchState>(builder: (context, state) {
       if (state is BatchEmpty)
         return WarningScreen('Cierre De Lote', 'Lote Vacio', onClickWarningEmpty);

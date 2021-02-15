@@ -14,6 +14,8 @@ part 'detail_report_event.dart';
 part 'detail_report_state.dart';
 
 class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
+  bool printFromBatch;
+
   DetailReportBloc() : super(DetailReportInitial());
 
   @override
@@ -45,8 +47,11 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
       transList.forEach((element) {
         listTrans.add(Trans.fromMap(element));
       });
-
-      report.printDetailReport(listTrans);
+      if ((event.printFromBatch != null) && (event.printFromBatch == true)) {
+        printFromBatch = event.printFromBatch;
+        yield DetailReportPrinting();
+      }
+      report.printDetailReport(listTrans, onPrintOK, onPrintError);
     } else if (event is DetailReportViewTransDetail) {
       TransRepository transRepository = new TransRepository();
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
@@ -55,6 +60,18 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
 
       if (trans.respMessage == null) trans.respMessage = '';
       yield DetailReportShowTransDetail(trans, bin.brand);
+    } else if (event is DetailReportOnPrintOKEvent) {
+      yield DetailReportPrintOk();
+    } else if (event is DetailReportOnPrintErrorEvent) {
+      yield DetailReportPrintError();
     }
+  }
+
+  void onPrintOK() {
+    this.add(DetailReportOnPrintOKEvent());
+  }
+
+  void onPrintError(int type) {
+    this.add(DetailReportOnPrintErrorEvent());
   }
 }

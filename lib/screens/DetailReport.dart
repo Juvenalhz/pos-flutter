@@ -9,6 +9,7 @@ import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
 
@@ -28,68 +29,76 @@ class DetailReport extends StatelessWidget {
           children: <Widget>[
             Stack(children: <Widget>[
               Container(
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  gradient: LinearGradient(
-                    begin: Alignment(0.0, 0.6),
-                    end: Alignment(0.0, 0.0),
-                    colors: <Color>[
-                      Color(0xFF0D47A1),
-                      Colors.blue,
-                    ],
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    gradient: LinearGradient(
+                      begin: Alignment(0.0, 0.6),
+                      end: Alignment(0.0, 0.0),
+                      colors: <Color>[
+                        Color(0xFF0D47A1),
+                        Colors.blue,
+                      ],
+                    ),
                   ),
-                ),
-                child: Center(child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                  if (state is DetailReportDataReady) {
-                    return Row(children: [
-                      IconButton(
-                        color: Colors.white,
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          'Reporte Detallado',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                        ),
-                      ),
-                      BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                        if (state is DetailReportDataReady) {
-                          if (state.transList.length > 0)
-                            return IconButton(
-                              color: Colors.white,
-                              icon: Icon(Icons.print_outlined),
-                              onPressed: () {
-                                final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+                  child: Center(
+                      child: BlocListener<DetailReportBloc, DetailReportState>(listener: (context, state) {
+                    if (state is DetailReportPrintOk) {
+                      Navigator.of(context).pop();
+                    }
+                  }, child: BlocBuilder<DetailReportBloc, DetailReportState>(
+                    builder: (context, state) {
+                      if (state is DetailReportDataReady) {
+                        return Row(children: [
+                          IconButton(
+                            color: Colors.white,
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              'Reporte Detallado',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                            ),
+                          ),
+                          BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                            if (state is DetailReportDataReady) {
+                              if (state.transList.length > 0)
+                                return IconButton(
+                                  color: Colors.white,
+                                  icon: Icon(Icons.print_outlined),
+                                  onPressed: () {
+                                    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                                detailReportBloc.add(DetailReportPrintReport(context));
-                              },
-                            );
-                          else
-                            return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                        } else
-                          return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                      }),
-                    ]);
-                  } else if (state is DetailReportShowTransDetail) {
-                    return Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        'Detalle De Transacción',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                      ),
-                    );
-                  } else {
-                    return Text('');
-                  }
-                })),
-              ),
+                                    detailReportBloc.add(DetailReportPrintReport(context));
+                                  },
+                                );
+                              else
+                                return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                            } else
+                              return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                          }),
+                        ]);
+                      } else if (state is DetailReportShowTransDetail) {
+                        return Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            'Detalle De Transacción',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                          ),
+                        );
+                      } else if (state is DetailReportPrinting) {
+                        return Text('Cierre De Lote',
+                            textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30));
+                      } else
+                        return Container();
+                    },
+                  )))),
             ]),
             Expanded(
                 child: Stack(children: <Widget>[
@@ -243,8 +252,10 @@ class DetailReport extends StatelessWidget {
                           Spacer(flex: 1),
                         ],
                       );
-                    } else
-                      return SplashScreen();
+                    } else if (state is DetailReportPrinting) {
+                      return TransMessage('Imprimiendo Reporte Detallado');
+                    }
+                    return SplashScreen();
                   }))
             ])),
           ],

@@ -102,6 +102,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddTip) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
+      trans.batchNum = merchant.batchNumber;
       trans.tip = event.tip;
       trans.total += event.tip;
       trans.originalTotal = trans.total;

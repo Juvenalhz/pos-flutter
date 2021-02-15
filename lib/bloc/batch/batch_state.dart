@@ -84,3 +84,8 @@ class BatchNotInBalance extends BatchState {
   @override
   List<Object> get props => [message];
 }
+
+class BatchPrintDetailReport extends BatchState {
+  @override
+  List<Object> get props => [];
+}

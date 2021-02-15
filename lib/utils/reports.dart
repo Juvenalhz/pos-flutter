@@ -41,7 +41,7 @@ class Reports {
     printer.setFontSize(Printer.FONT_SIZE_NORMAL);
   }
 
-  void printDetailReport(List<Trans> transList) async {
+  void printDetailReport(List<Trans> transList, Function onPrintOk, Function onPrintError) async {
     Printer printer = new Printer();
     var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
     TransRepository transRepository = new TransRepository();
@@ -76,7 +76,7 @@ class Reports {
 
     printer.feedLine(5);
 
-    printer.print(onPrintReportOK, onPrintError);
+    printer.print(onPrintOk, onPrintError);
   }
 
   void printTotalsReport(List<Map<String, dynamic>> totalsData) async {
@@ -96,24 +96,22 @@ class Reports {
       int countTDCOwn = totals['visaCount'] + totals['mastercardCount'] + totals['dinersCount'] + totals['privateCount'];
       int totalTDCOwn = totals['visaAmount'] + totals['mastercardAmount'] + totals['dinersAmount'] + totals['privateAmount'];
       int countTDCOther = totals['visaOtherCount'] + totals['mastercardOtherCount'] + totals['dinersOtherCount'] + totals['privateOtherCount'];
-      int totalTDCOther = totals['visaOtherAmount']+totals['mastercardOtherAmount']+ totals['dinersOtherAmount']+totals['privateOtherAmount'];
+      int totalTDCOther = totals['visaOtherAmount'] + totals['mastercardOtherAmount'] + totals['dinersOtherAmount'] + totals['privateOtherAmount'];
 
       int countTDD = totals['debitCount'] + totals['debitOtherCount'];
       int totalTDD = totals['debitAmount'] + totals['debitOtherAmount'];
       int countTDDElectron = totals['electronCount'] + totals['electronOtherCount'];
-      int totalTDDElectron = totals['electronAmount']+totals['electronOtherAmount'];
+      int totalTDDElectron = totals['electronAmount'] + totals['electronOtherAmount'];
 
       int totalTCD_TDD = totalTDCOwn + totalTDCOther + totalTDD + totalTDDElectron;
 
       if (element['acquirer'].toLowerCase().contains('platco')) {
         acquirer = 'Platco';
         acquirerShort = 'PL';
-      }
-      else if (element['acquirer'].toLowerCase().contains('mercantil')) {
+      } else if (element['acquirer'].toLowerCase().contains('mercantil')) {
         acquirer = 'Mercantil';
         acquirerShort = 'BM';
-      }
-      else if (element['acquirer'].toLowerCase().contains('provincial')) {
+      } else if (element['acquirer'].toLowerCase().contains('provincial')) {
         acquirer = 'Provincial';
         acquirerShort = 'BP';
       }
@@ -123,22 +121,30 @@ class Reports {
       printer.addText(Printer.CENTER, 'TDC');
       printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
-      printer.addTextSideBySide(totals['visaCount'].toString().padLeft(4, '0') + '  VISA ' + acquirerShort, formatter.format(totals['visaAmount'] / 100));
-      printer.addTextSideBySide(totals['mastercardCount'].toString().padLeft(4, '0') + '  MASTER ' + acquirerShort, formatter.format(totals['mastercardAmount'] / 100));
-      printer.addTextSideBySide(totals['dinersCount'].toString().padLeft(4, '0') + '  DINERS ' + acquirerShort, formatter.format(totals['dinersAmount'] / 100));
-      printer.addTextSideBySide(totals['privateCount'].toString().padLeft(4, '0') + '  Tarj. PRIV ' + acquirerShort, formatter.format(totals['privateAmount'] / 100));
-      printer.addTextSideBySide(countTDCOwn.toString().padLeft(4, '0') +  '  Total TDC ' + acquirerShort, formatter.format(totalTDCOwn / 100));
+      printer.addTextSideBySide(
+          totals['visaCount'].toString().padLeft(4, '0') + '  VISA ' + acquirerShort, formatter.format(totals['visaAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['mastercardCount'].toString().padLeft(4, '0') + '  MASTER ' + acquirerShort, formatter.format(totals['mastercardAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['dinersCount'].toString().padLeft(4, '0') + '  DINERS ' + acquirerShort, formatter.format(totals['dinersAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['privateCount'].toString().padLeft(4, '0') + '  Tarj. PRIV ' + acquirerShort, formatter.format(totals['privateAmount'] / 100));
+      printer.addTextSideBySide(countTDCOwn.toString().padLeft(4, '0') + '  Total TDC ' + acquirerShort, formatter.format(totalTDCOwn / 100));
 
       printer.setFontSize(Printer.FONT_SIZE_NORMAL);
       printer.addText(Printer.CENTER, 'TDC OTROS BANCOS');
       printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
-      printer.addTextSideBySide(totals['visaOtherCount'].toString().padLeft(4, '0') + '  VISA o/Ban' , formatter.format(totals['visaOtherAmount'] / 100));
-      printer.addTextSideBySide(totals['mastercardOtherCount'].toString().padLeft(4, '0') + '  MASTER  o/Ban', formatter.format(totals['mastercardOtherAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['visaOtherCount'].toString().padLeft(4, '0') + '  VISA o/Ban', formatter.format(totals['visaOtherAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['mastercardOtherCount'].toString().padLeft(4, '0') + '  MASTER  o/Ban', formatter.format(totals['mastercardOtherAmount'] / 100));
       if (totals['dinersOtherCount'] != 0)
-        printer.addTextSideBySide(totals['dinersOtherCount'].toString().padLeft(4, '0') + '  DINERS  o/Ban', formatter.format(totals['dinersOtherAmount'] / 100));
+        printer.addTextSideBySide(
+            totals['dinersOtherCount'].toString().padLeft(4, '0') + '  DINERS  o/Ban', formatter.format(totals['dinersOtherAmount'] / 100));
       if (totals['privateOtherCount'] != 0)
-        printer.addTextSideBySide(totals['privateOtherCount'].toString().padLeft(4, '0') + '  Tarj. PRIV  o/Ban' , formatter.format(totals['privateOtherAmount'] / 100));
+        printer.addTextSideBySide(
+            totals['privateOtherCount'].toString().padLeft(4, '0') + '  Tarj. PRIV  o/Ban', formatter.format(totals['privateOtherAmount'] / 100));
       printer.addTextSideBySide(countTDCOther.toString().padLeft(4, '0') + '  Total TDC o/Ban', formatter.format(totalTDCOther / 100));
       printer.addTextSideBySide('Total TDC', formatter.format((totalTDCOwn + totalTDCOther) / 100));
 
@@ -146,26 +152,29 @@ class Reports {
       printer.addText(Printer.CENTER, 'TDD');
       printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
-      printer.addTextSideBySide(totals['debitCount'].toString().padLeft(4, '0') + '  Total TDD ' + acquirerShort , formatter.format(totals['debitAmount'] / 100));
-      printer.addTextSideBySide(totals['debitOtherCount'].toString().padLeft(4, '0') + '  Total TDD o/Ban', formatter.format(totals['debitOtherAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['debitCount'].toString().padLeft(4, '0') + '  Total TDD ' + acquirerShort, formatter.format(totals['debitAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['debitOtherCount'].toString().padLeft(4, '0') + '  Total TDD o/Ban', formatter.format(totals['debitOtherAmount'] / 100));
 
       printer.setFontSize(Printer.FONT_SIZE_NORMAL);
       printer.addText(Printer.CENTER, 'TDD VISA ELECTRON');
       printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
-      printer.addTextSideBySide(totals['electronCount'].toString().padLeft(4, '0') + '  Total TVE ' + acquirerShort , formatter.format(totals['electronAmount'] / 100));
-      printer.addTextSideBySide(totals['electronOtherCount'].toString().padLeft(4, '0') + '  Total TVE o/Ban', formatter.format(totals['electronOtherAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['electronCount'].toString().padLeft(4, '0') + '  Total TVE ' + acquirerShort, formatter.format(totals['electronAmount'] / 100));
+      printer.addTextSideBySide(
+          totals['electronOtherCount'].toString().padLeft(4, '0') + '  Total TVE o/Ban', formatter.format(totals['electronOtherAmount'] / 100));
       printer.addTextSideBySide('Total TDD', formatter.format((totalTDD + totalTDDElectron) / 100));
 
       printer.setFontSize(Printer.FONT_SIZE_NORMAL);
       printer.addText(Printer.CENTER, 'ALIMENTACIÓN');
       printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
-      printer.addTextSideBySide(totals['foodCount'].toString().padLeft(4, '0') + '  Total TAE ' , formatter.format(totals['foodAmount'] / 100));
+      printer.addTextSideBySide(totals['foodCount'].toString().padLeft(4, '0') + '  Total TAE ', formatter.format(totals['foodAmount'] / 100));
 
       printer.addTextSideBySide('Total TDC+TDD', formatter.format(totalTCD_TDD / 100));
       printer.addTextSideBySide('Total Cestaticket', formatter.format(totals['foodAmount'] / 100));
-
     });
   }
 

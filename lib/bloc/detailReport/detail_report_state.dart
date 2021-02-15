@@ -26,3 +26,18 @@ class DetailReportShowTransDetail extends DetailReportState {
   @override
   List<Object> get props => [trans, cardBrand];
 }
+
+class DetailReportPrinting extends DetailReportState {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportPrintOk extends DetailReportState {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportPrintError extends DetailReportState {
+  @override
+  List<Object> get props => [];
+}
