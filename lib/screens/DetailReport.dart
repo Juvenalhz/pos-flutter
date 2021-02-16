@@ -44,7 +44,9 @@ class DetailReport extends StatelessWidget {
                   child: Center(
                       child: BlocListener<DetailReportBloc, DetailReportState>(listener: (context, state) {
                     if (state is DetailReportPrintOk) {
-                      Navigator.of(context).pop();
+                      if (state.printFromBatch) {
+                        Navigator.of(context).pop();
+                      }
                     }
                   }, child: BlocBuilder<DetailReportBloc, DetailReportState>(
                     builder: (context, state) {
@@ -74,7 +76,7 @@ class DetailReport extends StatelessWidget {
                                   onPressed: () {
                                     final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                                    detailReportBloc.add(DetailReportPrintReport(context));
+                                    detailReportBloc.add(DetailReportPrintReport(context, printFromBatch: false));
                                   },
                                 );
                               else

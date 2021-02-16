@@ -33,8 +33,12 @@ class DetailReportPrinting extends DetailReportState {
 }
 
 class DetailReportPrintOk extends DetailReportState {
+  final bool printFromBatch;
+
+  DetailReportPrintOk(this.printFromBatch);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [printFromBatch];
 }
 
 class DetailReportPrintError extends DetailReportState {

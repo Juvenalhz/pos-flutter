@@ -79,7 +79,7 @@ class Reports {
     printer.print(onPrintOk, onPrintError);
   }
 
-  void printTotalsReport(List<Map<String, dynamic>> totalsData) async {
+  void printTotalsReport(List<Map<String, dynamic>> totalsData, Function onPrintOk, Function onPrintError) async {
     Printer printer = new Printer();
     var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
     await _addHeader(printer);
@@ -176,6 +176,11 @@ class Reports {
       printer.addTextSideBySide('Total TDC+TDD', formatter.format(totalTCD_TDD / 100));
       printer.addTextSideBySide('Total Cestaticket', formatter.format(totals['foodAmount'] / 100));
     });
+
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
+    printer.feedLine(5);
+
+    printer.print(onPrintOk, onPrintError);
   }
 
   printTipReport(List<Map<String, dynamic>> transList, int tipGrandTotal) async {

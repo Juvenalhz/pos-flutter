@@ -11,10 +11,20 @@ class TotalsReportInitialEvent extends TotalsReportEvent {
 
 class TotalsReportPrintReport extends TotalsReportEvent {
   final BuildContext context;
-  final List<Map<String, dynamic>> totalsData;
+  final bool printFromBatch;
 
-  TotalsReportPrintReport(this.context, this.totalsData);
+  TotalsReportPrintReport(this.context, {this.printFromBatch});
 
   @override
-  List<Object> get props => [context, totalsData];
+  List<Object> get props => [context, printFromBatch];
+}
+
+class TotalsReportOnPrintOKEvent extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportOnPrintErrorEvent extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
 }

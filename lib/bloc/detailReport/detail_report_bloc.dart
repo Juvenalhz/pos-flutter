@@ -47,8 +47,12 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
       transList.forEach((element) {
         listTrans.add(Trans.fromMap(element));
       });
-      if ((event.printFromBatch != null) && (event.printFromBatch == true)) {
+
+      if (event.printFromBatch != null) {
         printFromBatch = event.printFromBatch;
+      }
+
+      if ((event.printFromBatch != null) && (event.printFromBatch == true)) {
         yield DetailReportPrinting();
       }
       report.printDetailReport(listTrans, onPrintOK, onPrintError);
@@ -61,7 +65,10 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
       if (trans.respMessage == null) trans.respMessage = '';
       yield DetailReportShowTransDetail(trans, bin.brand);
     } else if (event is DetailReportOnPrintOKEvent) {
-      yield DetailReportPrintOk();
+      if (printFromBatch)
+        yield DetailReportPrintOk(printFromBatch);
+      else
+        this.add(DetailReportInitialEvent());
     } else if (event is DetailReportOnPrintErrorEvent) {
       yield DetailReportPrintError();
     }

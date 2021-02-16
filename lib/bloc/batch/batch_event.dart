@@ -71,3 +71,8 @@ class BatchComplete extends BatchEvent {
   @override
   List<Object> get props => [];
 }
+
+class BatchDone extends BatchEvent {
+  @override
+  List<Object> get props => [];
+}

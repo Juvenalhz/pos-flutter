@@ -25,6 +25,10 @@ class Batch extends StatelessWidget {
         detailReportBloc.add(DetailReportPrintReport(context, printFromBatch: true));
         await Navigator.pushNamed(context, '/DetailReport');
 
+        totalsReportBloc.add(TotalsReportPrintReport(context, printFromBatch: true));
+        await Navigator.pushNamed(context, '/TotalsReport');
+
+        batchBloc.add(BatchDone());
       }
     }, child: Container(child: BlocBuilder<BatchBloc, BatchState>(builder: (context, state) {
       if (state is BatchEmpty)
