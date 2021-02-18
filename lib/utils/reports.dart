@@ -10,10 +10,6 @@ import 'package:pay/utils/printer.dart';
 import 'package:pay/utils/serialNumber.dart';
 
 class Reports {
-  final BuildContext context;
-
-  Reports(this.context);
-
   void _addHeader(Printer printer) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));

@@ -7,7 +7,7 @@ import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/screens/WarningScreen.dart';
 import 'package:pay/screens/askOkCancel.dart';
 import 'package:pay/screens/commProgress.dart';
-import 'package:pay/screens/components/CommError.dart';
+import 'package:pay/screens/components/AlertCancelRetry.dart';
 import 'package:pay/screens/transMessage.dart';
 
 class Batch extends StatelessWidget {
@@ -22,13 +22,13 @@ class Batch extends StatelessWidget {
         final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
         final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-        detailReportBloc.add(DetailReportPrintReport(context, printFromBatch: true));
+        detailReportBloc.add(DetailReportPrintReport(true));
         await Navigator.pushNamed(context, '/DetailReport');
 
-        totalsReportBloc.add(TotalsReportPrintReport(context, printFromBatch: true));
+        totalsReportBloc.add(TotalsReportPrintReport(true));
         await Navigator.pushNamed(context, '/TotalsReport');
 
-        batchBloc.add(BatchDone());
+        batchBloc.add(BatchComplete());
       }
     }, child: Container(child: BlocBuilder<BatchBloc, BatchState>(builder: (context, state) {
       if (state is BatchEmpty)
@@ -46,7 +46,7 @@ class Batch extends StatelessWidget {
       } else if (state is BatchReceiving) {
         return CommProgress('Cierre De Lote', status: 'Recibiendo').build(context);
       } else if (state is BatchCommError) {
-        return CommError('Cierre De Lote', 'Error de conexión....', onClickCancel, onClickRetry);
+        return AlertCancelRetry('Cierre De Lote', 'Error de conexión....', onClickCancel, onClickRetry);
       } else if (state is BatchNotInBalance) {
         return WarningScreen('Cierre De Lote', 'Lote No Conciliado', onClickBatchFinish);
       } else if (state is BatchNotInBalance) {
@@ -73,7 +73,7 @@ class Batch extends StatelessWidget {
   void onClickBatchFinish(BuildContext context) {
     final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
 
-    batchBloc.add(BatchComplete());
+    batchBloc.add(BatchDone());
   }
 
   void onClickOkConfirm(BuildContext context) {

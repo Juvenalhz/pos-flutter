@@ -27,7 +27,7 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
     if (event is TotalsReportInitialEvent) {
       yield TotalsReportDataReady(await getTotalsData());
     } else if (event is TotalsReportPrintReport) {
-      Reports report = new Reports(event.context);
+      Reports report = new Reports();
 
       if (event.printFromBatch != null) {
         printFromBatch = event.printFromBatch;
@@ -45,6 +45,10 @@ class TotalsReportBloc extends Bloc<TotalsReportEvent, TotalsReportState> {
         this.add(TotalsReportInitialEvent());
     } else if (event is TotalsReportOnPrintErrorEvent) {
       yield TotalsReportPrintError();
+    } else if (event is TotalsReportPrintRetry) {
+      this.add(TotalsReportPrintReport(printFromBatch));
+    } else if (event is TotalsReportPrintCancel) {
+      this.add(TotalsReportOnPrintOKEvent());
     }
   }
 

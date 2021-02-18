@@ -14,6 +14,7 @@ import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 import 'LastSaleDetail.dart';
+import 'components/AlertCancelRetry.dart';
 
 class DetailReport extends StatelessWidget {
   final List<String> menuListWithVoid = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
@@ -76,7 +77,7 @@ class DetailReport extends StatelessWidget {
                                   onPressed: () {
                                     final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                                    detailReportBloc.add(DetailReportPrintReport(context, printFromBatch: false));
+                                    detailReportBloc.add(DetailReportPrintReport(false));
                                   },
                                 );
                               else
@@ -96,6 +97,9 @@ class DetailReport extends StatelessWidget {
                         );
                       } else if (state is DetailReportPrinting) {
                         return Text('Cierre De Lote',
+                            textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30));
+                      } else if (state is DetailReportPrintError) {
+                        return Text('Reporte Detallado',
                             textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30));
                       } else
                         return Container();
@@ -256,6 +260,8 @@ class DetailReport extends StatelessWidget {
                       );
                     } else if (state is DetailReportPrinting) {
                       return TransMessage('Imprimiendo Reporte Detallado');
+                    } else if (state is DetailReportPrintError) {
+                      return AlertCancelRetry('Impresión', 'Error en impresión de reporte....', onPrintCancel, onPrintRetry);
                     }
                     return SplashScreen();
                   }))
@@ -336,5 +342,17 @@ class DetailReport extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+    detailReportBloc.add(DetailReportPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+    detailReportBloc.add(DetailReportPrintRetry());
   }
 }

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/components/AlertCancelRetry.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/spear_menu.dart';
@@ -75,7 +76,7 @@ class TotalsReport extends StatelessWidget {
                                 onPressed: () {
                                   final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                                  totalsReportBloc.add(TotalsReportPrintReport(context, printFromBatch: false));
+                                  totalsReportBloc.add(TotalsReportPrintReport(false));
                                 },
                               );
                             else
@@ -89,6 +90,15 @@ class TotalsReport extends StatelessWidget {
                         padding: const EdgeInsets.all(5.0),
                         child: Text(
                           'Cierre De Lote',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 29),
+                        ),
+                      );
+                    } else if (state is TotalsReportPrintError) {
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'Reporte De Totales',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 29),
                         ),
@@ -211,8 +221,10 @@ class TotalsReport extends StatelessWidget {
                       );
                     } else if (state is TotalsReportPrinting) {
                       return TransMessage('Imprimiendo Reporte De Totales');
+                    } else if (state is TotalsReportPrintError) {
+                      return AlertCancelRetry('Impresión', 'Error en impresión de reporte....', onPrintCancel, onPrintRetry);
                     } else
-                      return SplashScreen();
+                      return Container();
                   }))
             ])),
           ],
@@ -304,5 +316,17 @@ class TotalsReport extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+    totalsReportBloc.add(TotalsReportPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+    totalsReportBloc.add(TotalsReportPrintRetry());
   }
 }

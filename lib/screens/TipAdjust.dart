@@ -12,7 +12,7 @@ import 'package:pay/screens/TransApprovedScreen.dart';
 import 'package:pay/screens/TransRejectedScreen.dart';
 import 'package:pay/screens/amount.dart';
 import 'package:pay/screens/commProgress.dart';
-import 'package:pay/screens/components/CommError.dart';
+import 'package:pay/screens/components/AlertCancelRetry.dart';
 
 import 'LastSaleDetail.dart';
 
@@ -39,7 +39,7 @@ class TipAdjust extends StatelessWidget {
           } else if (state is TipAdjustReceiving) {
             return CommProgress('Ajuste De Propina', status: 'Recibiendo').build(context);
           } else if (state is TipAdjustCommError) {
-            return CommError('Ajuste De Propina', 'Error de conexión....', onClickCancel, onClickRetry);
+            return AlertCancelRetry('Ajuste De Propina', 'Error de conexión....', onClickCancel, onClickRetry);
           } else if (state is TipAdjustCompleted) {
             return TransApprovedScreen(state.trans, onClickResponseMessage);
           } else if (state is TipAdjustRejected) {

@@ -30,6 +30,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
   Comm comm;
   BatchMessage batchMessage;
   int batchStan;
+  String strMessage;
 
   BatchBloc() : super(BatchInitial());
 
@@ -168,10 +169,10 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
             if (event.respMap[6202] != null) merchant.batchNumber = int.parse(event.respMap[6202]);
 
             merchantRepository.updateMerchant(merchant);
-            //receipt.tipAdjustReceipt(trans);
-            if (event.respMap[39] == '00')
-              yield BatchOK(event.respMap[6208]);
-            else
+            if (event.respMap[39] == '00') {
+              strMessage = event.respMap[6208];
+              yield BatchPrintDetailReport();
+            } else
               yield BatchNotInBalance(event.respMap[6208]);
           } else {
             yield BatchError(event.respMap[6208]);
@@ -179,7 +180,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
         }
       }
     } else if (event is BatchComplete) {
-      yield BatchPrintDetailReport();
+      await transRepository.deleteAllTrans();
+      yield BatchOK(strMessage + '\n\n\nLote Cerrado');
     } else if (event is BatchDone) {
       yield BatchFinish();
     }

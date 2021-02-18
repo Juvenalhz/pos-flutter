@@ -10,13 +10,12 @@ class TotalsReportInitialEvent extends TotalsReportEvent {
 }
 
 class TotalsReportPrintReport extends TotalsReportEvent {
-  final BuildContext context;
   final bool printFromBatch;
 
-  TotalsReportPrintReport(this.context, {this.printFromBatch});
+  TotalsReportPrintReport(this.printFromBatch);
 
   @override
-  List<Object> get props => [context, printFromBatch];
+  List<Object> get props => [printFromBatch];
 }
 
 class TotalsReportOnPrintOKEvent extends TotalsReportEvent {
@@ -25,6 +24,16 @@ class TotalsReportOnPrintOKEvent extends TotalsReportEvent {
 }
 
 class TotalsReportOnPrintErrorEvent extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportPrintCancel extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportPrintRetry extends TotalsReportEvent {
   @override
   List<Object> get props => [];
 }

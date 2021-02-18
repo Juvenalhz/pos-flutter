@@ -17,7 +17,7 @@ import 'package:pay/utils/pinpad.dart';
 import 'TipScreen.dart';
 import 'TransRejectedScreen.dart';
 import 'commProgress.dart';
-import 'components/CommError.dart';
+import 'components/AlertCancelRetry.dart';
 import 'mainScreen.dart';
 
 class Transaction extends StatelessWidget {
@@ -62,14 +62,13 @@ class Transaction extends StatelessWidget {
           return SelectionMenu("Seleccione Tipo de Cuenta", accTypes, false, onSelection: onAccTypeSelection);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
-          print('show splash screen');
+            print('show splash screen');
           return SplashScreen();
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
           return TransMessage(state.message);
         } else if (state is TransactionCardRead) {
-          // TODO: add
           return TransMessage(state.trans.appLabel);
         } else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
@@ -88,7 +87,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionPrintCustomerReceipt) {
           return TransMessage('Print Customer Receipt');
         } else if (state is TransactionCommError)
-          return CommError('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
+          return AlertCancelRetry('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
         else if (state is TransactionFinshChip) {
           return TransMessage('');
         } else

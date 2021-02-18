@@ -39,7 +39,7 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
 
       receipt.printTransactionReceipt(event.type, trans);
     } else if (event is DetailReportPrintReport) {
-      Reports report = new Reports(event.context);
+      Reports report = new Reports();
       TransRepository transRepository = new TransRepository();
       List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
       List<Trans> listTrans = new List<Trans>();
@@ -71,6 +71,10 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
         this.add(DetailReportInitialEvent());
     } else if (event is DetailReportOnPrintErrorEvent) {
       yield DetailReportPrintError();
+    } else if (event is DetailReportPrintRetry) {
+      this.add(DetailReportPrintReport(printFromBatch));
+    } else if (event is DetailReportPrintCancel) {
+      this.add(DetailReportOnPrintOKEvent());
     }
   }
 

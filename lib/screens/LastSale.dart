@@ -8,7 +8,7 @@ import 'package:pay/screens/transMessage.dart';
 
 import 'LastSaleDetail.dart';
 import 'commProgress.dart';
-import 'components/CommError.dart';
+import 'components/AlertCancelRetry.dart';
 
 class LastSale extends StatelessWidget {
   @override
@@ -40,7 +40,7 @@ class LastSale extends StatelessWidget {
               } else if (state is LastSaleFailed) {
                 return LastSaleFinalScreen(state.message, false, onClickDone);
               } else if (state is LastSaleCommError)
-                return CommError('Consulta Última Venta', 'Error de conexión....', onClickDone, onClickRetry);
+                return AlertCancelRetry('Consulta Última Venta', 'Error de conexión....', onClickDone, onClickRetry);
               else {
                 return CommProgress('Consulta Última Venta').build(context);
               }
