@@ -3,11 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screen_lock/lock_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/models/bin.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
@@ -235,7 +238,7 @@ class DetailReport extends StatelessWidget {
                           Spacer(flex: 2),
                           RowDetail(label: "Tarjeta:", strAmount: state.trans.maskedPAN),
                           Spacer(flex: 1),
-                          RowDetail(label: "Autorizacion:", strAmount: state.trans.authCode),
+                          RowDetail(label: "Autorización:", strAmount: state.trans.authCode),
                           Spacer(flex: 1),
                           RowDetail(label: "Referencia:", strAmount: state.trans.referenceNumber),
                           Spacer(flex: 2),
@@ -284,13 +287,13 @@ class DetailReport extends StatelessWidget {
     } else if (item.menuTitle == 'Ver Detalles') {
       detailReportBloc.add(DetailReportViewTransDetail(id));
     } else if (item.menuTitle == 'Anulación') {
-      final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-      Pinpad pinpad = new Pinpad(context);
-      //TODO: this pinpad instance for now is a work around, need a way to remove it as it will not be used
-      transactionBloc.add(TransInitPinpad(pinpad));
-      transactionBloc.add(TransVoidTransaction(id));
-      Navigator.pushNamed(context, '/transaction');
-    }
+        final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+        Pinpad pinpad = new Pinpad(context);
+        //TODO: this pinpad instance for now is a work around, need a way to remove it as it will not be used
+        transactionBloc.add(TransInitPinpad(pinpad));
+        transactionBloc.add(TransVoidTransaction(id));
+        Navigator.pushNamed(context, '/transaction');
+      }
   }
 
   void stateChanged(bool isShow) {

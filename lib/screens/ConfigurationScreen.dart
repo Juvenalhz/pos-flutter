@@ -260,26 +260,26 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   children: <Widget>[
                                     DataTile(
                                         myTitle: 'Clave Sistema',
-                                        value: _terminal.password,
+                                        value: _terminal.techPassword,
                                         type: _tNumber,
                                         obscureText: true,
                                         maxLength: 6,
-                                        onSaved: (nValue) => _terminal.password = nValue,
+                                        onSaved: (nValue) => _terminal.techPassword = nValue,
                                         onChanged: (nValue) {
                                           Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                          _terminal.password = nValue;
+                                          _terminal.techPassword = nValue;
                                         },
                                         validator: (nValue) => InputValidation.defaultPasswordValidator(nValue)),
-                                    DataTile(
-                                        myTitle: 'Mensaje Pin Pad',
-                                        value: _terminal.industry,
-                                        maxLength: 16,
-                                        onSaved: (nValue) => _terminal.industry = nValue,
-                                        onChanged: (nValue) {
-                                          Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                          _terminal.industry = nValue;
-                                        },
-                                        validator: (nValue) => InputValidation.requiredField(nValue)),
+                                    // DataTile(
+                                    //     myTitle: 'Mensaje Pin Pad',
+                                    //     value: _terminal.industry,
+                                    //     maxLength: 16,
+                                    //     onSaved: (nValue) => _terminal.industry = nValue,
+                                    //     onChanged: (nValue) {
+                                    //       Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    //       _terminal.industry = nValue;
+                                    //     },
+                                    //     validator: (nValue) => InputValidation.requiredField(nValue)),
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.zero,
                                       leftLabel: DataTile(

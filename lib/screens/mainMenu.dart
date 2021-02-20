@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screen_lock/lock_screen.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirerBloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:pay/bloc/summaryReportBloc.dart';
 import 'package:pay/bloc/TechVisitBloc.dart';
 import 'package:pay/bloc/terminal/terminal_bloc.dart';
 import 'package:pay/bloc/terminal/terminal_event.dart';
+import 'package:pay/bloc/terminal/terminal_state.dart';
 import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/bloc/tipAdjustBloc.dart';
 import 'package:pay/bloc/tipReportBloc.dart';
@@ -125,22 +127,55 @@ class MainMenu extends StatelessWidget {
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
-                text: 'Consulta Ultima Venta',
-                onTap: () {
-                  final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
+                    text: 'Consulta Ultima Venta',
+                    onTap: () {
+                        final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
 
-                  lastSaleBloc.add(LastSaleInitialEvent());
-                  Navigator.pushNamed(context, '/LastSale');
+                        lastSaleBloc.add(LastSaleInitialEvent());
+                        Navigator.pushNamed(context, '/LastSale');
                 }),
             _createDrawerItem(text: 'Cierre De Lote'),
-            _createDrawerItem(
-                text: 'Borrar Lote',
-                onTap: () {
-                  final DeleteBatchBloc deleteBatchBloc = BlocProvider.of<DeleteBatchBloc>(context);
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Borrar Lote',
+                    onTap: () {
+                      if (state.terminal.password.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final DeleteBatchBloc deleteBatchBloc = BlocProvider.of<DeleteBatchBloc>(context);
 
-                  deleteBatchBloc.add(DeleteBatchPending());
-                  Navigator.pushNamed(context, '/DeleteBatch');
-                }),
+                            deleteBatchBloc.add(DeleteBatchPending());
+                            Navigator.pushNamed(context, '/DeleteBatch');
+                          },
+                        );
+                      }
+                      else {
+                        final DeleteBatchBloc deleteBatchBloc = BlocProvider.of<DeleteBatchBloc>(context);
+
+                        deleteBatchBloc.add(DeleteBatchPending());
+                        Navigator.pushNamed(context, '/DeleteBatch');
+                      }
+
+                    });
+              }
+              else return Container();
+            }
+            ),
+
+
+
+
             _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer')),
           ]),
           Divider(),
@@ -151,31 +186,123 @@ class MainMenu extends StatelessWidget {
                   acquirerBloc.add(GetAllAcquirer());
                   Navigator.pushNamed(context, '/configuration');
                 }),
-            _createDrawerItem(
-                text: 'Resumen De Parámetros',
-                onTap: () {
-                  final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
 
-                  summaryReportBloc.add(SummaryReportInitialEvent());
-                  Navigator.pushNamed(context, '/SummaryReport');
-                }),
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Resumen De Parámetros',
+                    onTap: () {
+                      if (state.terminal.password.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
+
+                            summaryReportBloc.add(SummaryReportInitialEvent());
+                            Navigator.pushNamed(context, '/SummaryReport');
+                          },
+                        );
+                      }
+                      else {
+                        final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
+
+                        summaryReportBloc.add(SummaryReportInitialEvent());
+                        Navigator.pushNamed(context, '/SummaryReport');
+                      }
+
+                    });
+              }
+              else return Container();
+            }
+            ),
+
             _createDrawerItem(text: 'Reporte de Parámetros'),
-            _createDrawerItem(
-                text: 'Inicialización',
-                onTap: () {
-                  final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
 
-                  initializationBloc.add(InitializationInitialEvent());
-                  Navigator.pushNamed(context, '/initialization');
-                }),
-            _createDrawerItem(
-                text: 'Borrar Reverso',
-                onTap: () async {
-                  final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Inicialización',
+                    onTap: () {
+                      if (state.terminal.techPassword.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
 
-                  deleteReversalBloc.add(DeleteReversalPending());
-                  Navigator.pushNamed(context, '/deleteReversal');
-                }),
+                            initializationBloc.add(InitializationInitialEvent());
+                            Navigator.pushNamed(context, '/initialization');
+                          },
+                        );
+                      }
+                      else {
+                        final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
+
+                        initializationBloc.add(InitializationInitialEvent());
+                        Navigator.pushNamed(context, '/initialization');
+                      }
+
+                    });
+              }
+              else return Container();
+            }
+            ),
+
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Borrar Reverso',
+                    onTap: () {
+                      if (state.terminal.techPassword.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
+
+                            deleteReversalBloc.add(DeleteReversalPending());
+                            Navigator.pushNamed(context, '/deleteReversal');
+                          },
+                        );
+                      }
+                      else {
+                        final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
+
+                        deleteReversalBloc.add(DeleteReversalPending());
+                        Navigator.pushNamed(context, '/deleteReversal');
+                      }
+
+                    });
+              }
+              else return Container();
+            }
+            ),
+
             _createDrawerItem(
                 text: 'Conformidad De Visita',
                 onTap: () {
