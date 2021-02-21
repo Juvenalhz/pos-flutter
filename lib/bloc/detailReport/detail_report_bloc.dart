@@ -15,6 +15,8 @@ part 'detail_report_event.dart';
 part 'detail_report_state.dart';
 
 class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
+  bool printFromBatch;
+
   DetailReportBloc() : super(DetailReportInitial());
 
   @override
@@ -34,11 +36,11 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
     } else if (event is DetailReportPrintReceiptCopy) {
       TransRepository transRepository = new TransRepository();
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
-      Receipt receipt = new Receipt(event.context);
+      Receipt receipt = new Receipt();
 
       receipt.printTransactionReceipt(event.type, trans);
     } else if (event is DetailReportPrintReport) {
-      Reports report = new Reports(event.context);
+      Reports report = new Reports();
       TransRepository transRepository = new TransRepository();
       List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
       List<Trans> listTrans = new List<Trans>();
@@ -47,7 +49,14 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
         listTrans.add(Trans.fromMap(element));
       });
 
-      report.printDetailReport(listTrans);
+      if (event.printFromBatch != null) {
+        printFromBatch = event.printFromBatch;
+      }
+
+      if ((event.printFromBatch != null) && (event.printFromBatch == true)) {
+        yield DetailReportPrinting();
+      }
+      report.printDetailReport(listTrans, onPrintOK, onPrintError);
     } else if (event is DetailReportViewTransDetail) {
       TransRepository transRepository = new TransRepository();
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
@@ -56,8 +65,27 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
 
       if (trans.respMessage == null) trans.respMessage = '';
       yield DetailReportShowTransDetail(trans, bin.brand);
+    } else if (event is DetailReportOnPrintOKEvent) {
+      if (printFromBatch)
+        yield DetailReportPrintOk(printFromBatch);
+      else
+        this.add(DetailReportInitialEvent());
+    } else if (event is DetailReportOnPrintErrorEvent) {
+      yield DetailReportPrintError();
+    } else if (event is DetailReportPrintRetry) {
+      this.add(DetailReportPrintReport(printFromBatch));
+    } else if (event is DetailReportPrintCancel) {
+      this.add(DetailReportOnPrintOKEvent());
     } else if (event is DetailReportVoidPassword) {
       yield DetailReportVoidCheckPassword(event.id, event.terminal);
     }
+  }
+
+  void onPrintOK() {
+    this.add(DetailReportOnPrintOKEvent());
+  }
+
+  void onPrintError(int type) {
+    this.add(DetailReportOnPrintErrorEvent());
   }
 }

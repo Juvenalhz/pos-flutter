@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screen_lock/lock_screen.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:pay/bloc/acquirerBloc.dart';
+import 'package:pay/bloc/batch/batch_bloc.dart';
 import 'package:pay/bloc/comm/comm_bloc.dart';
 import 'package:pay/bloc/comm/comm_event.dart';
 import 'package:pay/bloc/deleteBatchBloc.dart';
@@ -211,7 +212,14 @@ class MainMenu extends StatelessWidget {
                   lastSaleBloc.add(LastSaleInitialEvent());
                   Navigator.pushNamed(context, '/LastSale');
                 }),
-            _createDrawerItem(text: 'Cierre De Lote'),
+            _createDrawerItem(
+                text: 'Cierre De Lote',
+                onTap: () {
+                  final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
+
+                  batchBloc.add(BatchInitialEvent());
+                  Navigator.pushNamed(context, '/CloseBatch');
+                }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(

@@ -15,6 +15,7 @@ import 'package:pay/screens/DeleteReversal.dart';
 import 'package:pay/screens/SummaryReport.dart';
 import 'package:pay/screens/TipReport.dart';
 import 'package:pay/screens/TechVisit.dart';
+import 'package:pay/screens/batch.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/Transaction.dart';
 import 'ConfigurationScreen.dart';
@@ -65,6 +66,7 @@ class MainScreen extends StatelessWidget {
         '/TipReport': (context) => TipReport(),
         '/TipAdjust': (context) => TipAdjust(),
         '/TechVisit': (context) => TechVisit(),
+        '/CloseBatch': (context) => Batch(),
       },
       home: Scaffold(
           key: scaffoldKey,

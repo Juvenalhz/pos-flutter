@@ -120,6 +120,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if (respMap[60] != null) {
             await processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
+            merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
@@ -132,6 +133,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if (respMap[62] != null) {
             processField62(respMap[62], merchant, acquirerIndicators);
+            merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
 
           if (respMap[3].substring(5, 6) == '1') {
@@ -371,7 +373,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       switch (table) {
         case 2:
           {
+            MerchantRepository merchantRepository = new MerchantRepository();
+
             merchant.batchNumber = int.parse(ascii.decode(hex.decode(tableData)));
+            await merchantRepository.updateMerchant(merchant);
           }
           break;
         case 7:

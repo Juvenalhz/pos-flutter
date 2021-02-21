@@ -11,10 +11,9 @@ import 'package:pay/models/merchant.dart';
 import 'package:pay/utils/serialNumber.dart';
 
 class Receipt {
-  final BuildContext context;
   bool type;
 
-  Receipt(this.context);
+  Receipt();
   Printer printer = new Printer();
 
   printTransactionReceipt(bool type, Trans trans) async {
@@ -174,24 +173,24 @@ class Receipt {
     printer.setFontSize(0);
     var fecha = DateFormat('dd/MM/yyyy hh:mm:ss a').format(trans.dateTime);
     var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total);
-    printer.addText(Printer.CENTER,merchant.nameL1); //nombre comercio
-    printer.addText(Printer.CENTER, merchant.nameL1);//nombre comercio
-    printer.addText(Printer.CENTER, merchant.city);//localidad comercio
-    printer.addTextSideBySide('RIF: ' + merchant.taxID,'Afiliado: ' + merchant.mid);//rif y afiliado
-    printer.addText(Printer.CENTER,'DUPLICADO');//localidad comercio
+    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
+    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
+    printer.addText(Printer.CENTER, merchant.city); //localidad comercio
+    printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
+    printer.addText(Printer.CENTER, 'DUPLICADO'); //localidad comercio
     printer.addText(Printer.CENTER, trans.type + ' ' + trans.appLabel); //tipo de transaccion
     printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
-    printer.addTextSideBySide('BANCO ADQUIRIENTE','J-123456789-0'); //Info banco
-    printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10),'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
-    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor','No.Operac.');
-    printer.addTextSideBySideWithCenter('12345678', '9999999','9999999');
-    printer.addTextSideBySideWithCenter('Terminal 99', 'Lote 999','Ticket 9999');
+    printer.addTextSideBySide('BANCO ADQUIRIENTE', 'J-123456789-0'); //Info banco
+    printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
+    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
+    printer.addTextSideBySideWithCenter('12345678', '9999999', '9999999');
+    printer.addTextSideBySideWithCenter('Terminal 99', 'Lote 999', 'Ticket 9999');
     printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
     printer.addTextSideBySide('MONTOBs.', monto);
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
     printer.addText(Printer.RIGHT, 'Ap .Preferred Name / Label');
-    printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX');
-    printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
+    printer.addTextSideBySide('AID:XXXXXXXXXXXXXX', '| CT:XXXXXXXXXXXXXXXX');
+    printer.addTextSideBySide('V X.0 - X0', 'Versión del Proveedor del POS');
   }
 
   //////////////////////TRANSACCIÓN RECHAZADA/////////////////////////////////
@@ -272,7 +271,6 @@ class Receipt {
   }
 
   printMerchantInfo(Merchant merchant) async {
-
     printer.setFontSize(Printer.FONT_SIZE_SMALL);
 
     printer.addText(Printer.CENTER, merchant.nameL1);
@@ -280,7 +278,7 @@ class Receipt {
     printer.addText(Printer.CENTER, merchant.city);
     printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid);
   }
-  
+
   printAcquirerInfo(Acquirer acquirer) async {
     printer.addTextSideBySide('BANCO ADQUIRIENTE', acquirer.rif); //Info banco
   }
@@ -291,4 +289,3 @@ class Receipt {
     printer.addTextSideBySide('Fecha: ' + date.substring(0, 10), 'Hora: ' + date.substring(11, 22));
   }
 }
-

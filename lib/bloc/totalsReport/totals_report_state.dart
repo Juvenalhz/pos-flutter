@@ -17,4 +17,21 @@ class TotalsReportDataReady extends TotalsReportState {
   List<Object> get props => [totalsData];
 }
 
+class TotalsReportPrinting extends TotalsReportState {
+  @override
+  List<Object> get props => [];
+}
 
+class TotalsReportPrintOk extends TotalsReportState {
+  final bool printFromBatch;
+
+  TotalsReportPrintOk(this.printFromBatch);
+
+  @override
+  List<Object> get props => [printFromBatch];
+}
+
+class TotalsReportPrintError extends TotalsReportState {
+  @override
+  List<Object> get props => [];
+}

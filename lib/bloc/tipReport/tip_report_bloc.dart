@@ -47,7 +47,7 @@ class TipReportBloc extends Bloc<TipReportEvent, TipReportState> {
 
       yield TipReportDataReady(transPerAcquirer, tipGrandTotal);
     } else if (event is TipReportPrintReport) {
-      Reports report = new Reports(event.context);
+      Reports report = new Reports();
       AcquirerRepository acquirerRepository = new AcquirerRepository();
       TransRepository transRepository = new TransRepository();
       List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers();

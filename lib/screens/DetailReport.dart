@@ -12,10 +12,12 @@ import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 import 'LastSaleDetail.dart';
+import 'components/AlertCancelRetry.dart';
 
 class DetailReport extends StatelessWidget {
   final List<String> menuListWithVoid = new List<String>.of(['Ver Detalles', 'Copia del Comercio', 'Copia del Cliente', 'Anulación']);
@@ -260,6 +262,10 @@ class DetailReport extends StatelessWidget {
                           Spacer(flex: 1),
                         ],
                       );
+                    } else if (state is DetailReportPrinting) {
+                      return TransMessage('Imprimiendo Reporte Detallado');
+                    } else if (state is DetailReportPrintError) {
+                      return AlertCancelRetry('Impresión', 'Error en impresión de reporte....', onPrintCancel, onPrintRetry);
                     } else if (state is DetailReportVoidCheckPassword) {
                       return LockScreen(
                           //context: context,
@@ -369,5 +375,17 @@ class DetailReport extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+    detailReportBloc.add(DetailReportPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+    detailReportBloc.add(DetailReportPrintRetry());
   }
 }

@@ -27,6 +27,25 @@ class DetailReportShowTransDetail extends DetailReportState {
   List<Object> get props => [trans, cardBrand];
 }
 
+class DetailReportPrinting extends DetailReportState {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportPrintOk extends DetailReportState {
+  final bool printFromBatch;
+
+  DetailReportPrintOk(this.printFromBatch);
+
+  @override
+  List<Object> get props => [printFromBatch];
+}
+
+class DetailReportPrintError extends DetailReportState {
+  @override
+  List<Object> get props => [];
+}
+
 class DetailReportVoidCheckPassword extends DetailReportState {
   final int id;
   final Terminal terminal;

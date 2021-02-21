@@ -14,7 +14,9 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 class Printer : MethodChannel.MethodCallHandler{
-    var params = HashMap<String, Any>()
+    companion object {
+        var params = HashMap<String, Any>()
+    }
     private val FONT_SIZE_SMALL = 0
     private val FONT_SIZE_NORMAL = 1
     private val FONT_SIZE_LARGE = 2
@@ -110,6 +112,16 @@ class Printer : MethodChannel.MethodCallHandler{
                         }.start()
                     }
                 })
+            }
+            else if (PinpadManager.isEmulator()){
+                Thread {
+                    Handler(Looper.getMainLooper()).post {
+                        val channel = params["MethodChannel"] as MethodChannel?
+                        if (channel != null) {
+                            channel.invokeMethod("printDone", null)
+                        }
+                    }
+                }.start()
             }
         }
     }
