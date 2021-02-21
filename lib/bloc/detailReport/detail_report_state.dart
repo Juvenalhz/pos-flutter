@@ -26,3 +26,13 @@ class DetailReportShowTransDetail extends DetailReportState {
   @override
   List<Object> get props => [trans, cardBrand];
 }
+
+class DetailReportVoidCheckPassword extends DetailReportState {
+  final int id;
+  final Terminal terminal;
+
+  DetailReportVoidCheckPassword(this.id, this.terminal);
+
+  @override
+  List<Object> get props => [id, terminal];
+}

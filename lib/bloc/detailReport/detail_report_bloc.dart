@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/bin.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/bin_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
@@ -55,6 +56,8 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
 
       if (trans.respMessage == null) trans.respMessage = '';
       yield DetailReportShowTransDetail(trans, bin.brand);
+    } else if (event is DetailReportVoidPassword) {
+      yield DetailReportVoidCheckPassword(event.id, event.terminal);
     }
   }
 }

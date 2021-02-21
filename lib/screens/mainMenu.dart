@@ -46,23 +46,74 @@ class MainMenu extends StatelessWidget {
         children: <Widget>[
           _createHeader(context),
           ExpansionTile(title: Text("Reportes"), leading: Icon(Icons.receipt), children: <Widget>[
-            _createDrawerItem(
-              //icon: Icons.calendar_view_day,
-              text: 'Reporte Totales',
-              onTap: () {
-                final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Reporte Totales',
+                    onTap: () {
+                      if (state.terminal.password.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.password.length,
+                          correctString: state.terminal.password,
+                          title: 'Ingrese Clave De Supervisor',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                totalsReportBloc.add(TotalsReportInitialEvent());
-                Navigator.pushNamed(context, '/TotalsReport');
-              }),
-            _createDrawerItem(
-              text: 'Reporte Detallado',
-              onTap: () {
-                final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+                            totalsReportBloc.add(TotalsReportInitialEvent());
+                            Navigator.pushNamed(context, '/TotalsReport');
+                          },
+                        );
+                      } else {
+                        final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-                  detailReportBloc.add(DetailReportInitialEvent());
-                  Navigator.pushNamed(context, '/DetailReport');
-                }),
+                        totalsReportBloc.add(TotalsReportInitialEvent());
+                        Navigator.pushNamed(context, '/TotalsReport');
+                      }
+                    });
+              } else
+                return Container();
+            }),
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Reporte Detallado',
+                    onTap: () {
+                      if (state.terminal.password.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.password.length,
+                          correctString: state.terminal.password,
+                          title: 'Ingrese Clave De Supervisor',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                            detailReportBloc.add(DetailReportInitialEvent());
+                            Navigator.pushNamed(context, '/DetailReport');
+                          },
+                        );
+                      } else {
+                        final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                        detailReportBloc.add(DetailReportInitialEvent());
+                        Navigator.pushNamed(context, '/DetailReport');
+                      }
+                    });
+              } else
+                return Container();
+            }),
             BlocBuilder<MerchantBloc, MerchantState>(builder: (context, state) {
               if (state is MerchantLoaded) {
                 AcquirerRepository acquirerRepository = new AcquirerRepository();
@@ -72,14 +123,40 @@ class MainMenu extends StatelessWidget {
                 return BlocBuilder<AcquirerBloc, AcquirerState>(builder: (context, state) {
                   if (state is AcquirerLoaded) {
                     if (state.acquirer.industryType)
-                      return _createDrawerItem(
-                          text: 'Ajuste De Propina',
-                          onTap: () {
-                            final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
+                      return BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+                        if (state is TerminalLoaded) {
+                          return _createDrawerItem(
+                              text: 'Ajuste De Propina',
+                              onTap: () {
+                                if (state.terminal.password.length > 0) {
+                                  showLockScreen(
+                                    context: context,
+                                    digits: state.terminal.password.length,
+                                    correctString: state.terminal.password,
+                                    title: 'Ingrese Clave De Supervisor',
+                                    cancelText: 'Cancelar',
+                                    deleteText: 'Borrar',
+                                    backgroundColorOpacity: 0.9,
+                                    onCompleted: (context, verifyCode) {
+                                      Navigator.of(context).pop();
+                                    },
+                                    onUnlocked: () {
+                                      final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
 
-                            tipAdjustBloc.add(TipAdjustInitialEvent());
-                            Navigator.pushNamed(context, '/TipAdjust');
-                          });
+                                      tipAdjustBloc.add(TipAdjustInitialEvent());
+                                      Navigator.pushNamed(context, '/TipAdjust');
+                                    },
+                                  );
+                                } else {
+                                  final TipAdjustBloc tipAdjustBloc = BlocProvider.of<TipAdjustBloc>(context);
+
+                                  tipAdjustBloc.add(TipAdjustInitialEvent());
+                                  Navigator.pushNamed(context, '/TipAdjust');
+                                }
+                              });
+                        } else
+                          return Container();
+                      });
                     else
                       return SizedBox();
                   } else
@@ -127,12 +204,12 @@ class MainMenu extends StatelessWidget {
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
-                    text: 'Consulta Ultima Venta',
-                    onTap: () {
-                        final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
+                text: 'Consulta Ultima Venta',
+                onTap: () {
+                  final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
 
-                        lastSaleBloc.add(LastSaleInitialEvent());
-                        Navigator.pushNamed(context, '/LastSale');
+                  lastSaleBloc.add(LastSaleInitialEvent());
+                  Navigator.pushNamed(context, '/LastSale');
                 }),
             _createDrawerItem(text: 'Cierre De Lote'),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
@@ -140,7 +217,7 @@ class MainMenu extends StatelessWidget {
                 return _createDrawerItem(
                     text: 'Borrar Lote',
                     onTap: () {
-                      if (state.terminal.password.length > 0) {
+                      if (state.terminal.techPassword.length > 0) {
                         showLockScreen(
                           context: context,
                           digits: state.terminal.techPassword.length,
@@ -159,23 +236,16 @@ class MainMenu extends StatelessWidget {
                             Navigator.pushNamed(context, '/DeleteBatch');
                           },
                         );
-                      }
-                      else {
+                      } else {
                         final DeleteBatchBloc deleteBatchBloc = BlocProvider.of<DeleteBatchBloc>(context);
 
                         deleteBatchBloc.add(DeleteBatchPending());
                         Navigator.pushNamed(context, '/DeleteBatch');
                       }
-
                     });
-              }
-              else return Container();
-            }
-            ),
-
-
-
-
+              } else
+                return Container();
+            }),
             _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer')),
           ]),
           Divider(),
@@ -186,13 +256,12 @@ class MainMenu extends StatelessWidget {
                   acquirerBloc.add(GetAllAcquirer());
                   Navigator.pushNamed(context, '/configuration');
                 }),
-
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(
                     text: 'Resumen De Parámetros',
                     onTap: () {
-                      if (state.terminal.password.length > 0) {
+                      if (state.terminal.techPassword.length > 0) {
                         showLockScreen(
                           context: context,
                           digits: state.terminal.techPassword.length,
@@ -211,22 +280,17 @@ class MainMenu extends StatelessWidget {
                             Navigator.pushNamed(context, '/SummaryReport');
                           },
                         );
-                      }
-                      else {
+                      } else {
                         final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
 
                         summaryReportBloc.add(SummaryReportInitialEvent());
                         Navigator.pushNamed(context, '/SummaryReport');
                       }
-
                     });
-              }
-              else return Container();
-            }
-            ),
-
+              } else
+                return Container();
+            }),
             _createDrawerItem(text: 'Reporte de Parámetros'),
-
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(
@@ -251,20 +315,16 @@ class MainMenu extends StatelessWidget {
                             Navigator.pushNamed(context, '/initialization');
                           },
                         );
-                      }
-                      else {
+                      } else {
                         final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
 
                         initializationBloc.add(InitializationInitialEvent());
                         Navigator.pushNamed(context, '/initialization');
                       }
-
                     });
-              }
-              else return Container();
-            }
-            ),
-
+              } else
+                return Container();
+            }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(
@@ -289,20 +349,16 @@ class MainMenu extends StatelessWidget {
                             Navigator.pushNamed(context, '/deleteReversal');
                           },
                         );
-                      }
-                      else {
+                      } else {
                         final DeleteReversalBloc deleteReversalBloc = BlocProvider.of<DeleteReversalBloc>(context);
 
                         deleteReversalBloc.add(DeleteReversalPending());
                         Navigator.pushNamed(context, '/deleteReversal');
                       }
-
                     });
-              }
-              else return Container();
-            }
-            ),
-
+              } else
+                return Container();
+            }),
             _createDrawerItem(
                 text: 'Conformidad De Visita',
                 onTap: () {

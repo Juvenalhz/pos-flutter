@@ -37,3 +37,13 @@ class DetailReportViewTransDetail extends DetailReportEvent {
   @override
   List<Object> get props => [id];
 }
+
+class DetailReportVoidPassword extends DetailReportEvent {
+  final int id;
+  final Terminal terminal;
+
+  DetailReportVoidPassword(this.id, this.terminal);
+
+  @override
+  List<Object> get props => [id, terminal];
+}
