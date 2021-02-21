@@ -41,9 +41,9 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
       EmvRepository emvRepository = new EmvRepository();
       Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
 
-      yield SummaryReportDataReady(merchant, terminal, comm, acquirer,emv);
+      yield SummaryReportDataReady(merchant, terminal, comm, acquirer, emv);
     } else if (event is SummaryReportPrintReport) {
-      Reports report = new Reports(event.context);
+      Reports report = new Reports();
 
       report.printSummaryReport();
     }

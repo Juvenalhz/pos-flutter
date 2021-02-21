@@ -220,10 +220,11 @@ class Reports {
     printer.print(onPrintReportOK, onPrintError);
   }
 
+  void printSummaryReport() {}
+
   void onPrintReportOK() {}
 
   void onPrintError(int error) {
     print('onPrintError:' + error.toString());
   }
-
 }

@@ -212,14 +212,40 @@ class MainMenu extends StatelessWidget {
                   lastSaleBloc.add(LastSaleInitialEvent());
                   Navigator.pushNamed(context, '/LastSale');
                 }),
-            _createDrawerItem(
-                text: 'Cierre De Lote',
-                onTap: () {
-                  final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Cierre De Lote',
+                    onTap: () {
+                      if (state.terminal.password.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.password.length,
+                          correctString: state.terminal.password,
+                          title: 'Ingrese Clave De Supervisor',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
 
-                  batchBloc.add(BatchInitialEvent());
-                  Navigator.pushNamed(context, '/CloseBatch');
-                }),
+                            batchBloc.add(BatchInitialEvent());
+                            Navigator.pushNamed(context, '/CloseBatch');
+                          },
+                        );
+                      } else {
+                        final BatchBloc batchBloc = BlocProvider.of<BatchBloc>(context);
+
+                        batchBloc.add(BatchInitialEvent());
+                        Navigator.pushNamed(context, '/CloseBatch');
+                      }
+                    });
+              } else
+                return Container();
+            }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(

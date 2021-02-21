@@ -74,7 +74,7 @@ class DetailReport extends StatelessWidget {
                                   onPressed: () {
                                     final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
 
-                                    detailReportBloc.add(DetailReportPrintReport(context));
+                                    detailReportBloc.add(DetailReportPrintReport(false));
                                   },
                                 );
                               else
