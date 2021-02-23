@@ -49,7 +49,7 @@ class Reports {
     Printer printer = new Printer();
     var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
     TransRepository transRepository = new TransRepository();
-
+    printer.setFontSize(0);
     await _addHeader(printer);
     printer.setFontSize(Printer.FONT_SIZE_NORMAL);
     printer.addText(Printer.CENTER, 'REPORTE DETALLADO');

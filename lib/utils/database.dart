@@ -94,6 +94,9 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
     _tableAlter(db, 'terminal', 'maskPan', 'integer');
     _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+    _tableAlter(db, 'terminal', 'debitPrint', 'integer');
+    _tableAlter(db, 'terminal', 'creditPrint', 'integer');
+    _tableAlter(db, 'terminal', 'numPrint', 'integer');
   }
 
   void _createCommTable(Database db) async {

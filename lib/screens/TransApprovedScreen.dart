@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
+import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 
 class TransApprovedScreen extends StatelessWidget {
