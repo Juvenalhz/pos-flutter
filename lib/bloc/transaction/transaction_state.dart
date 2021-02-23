@@ -101,7 +101,8 @@ class TransactionProcessResponse extends TransactionState {
 class TransactionCompleted extends TransactionState {
   final Trans trans;
   final Terminal terminal;
-  TransactionCompleted(this.trans,this.terminal);
+
+  TransactionCompleted(this.trans, this.terminal);
 
   @override
   List<Object> get props => [trans, terminal];
@@ -205,20 +206,17 @@ class TransactionAskPrintCustomer extends TransactionState {
   TransactionAskPrintCustomer(this.trans, this.acquierer);
   @override
   List<Object> get props => [trans];
-
-
 }
+
 class TransactionDigitalReceiptCustomer extends TransactionState {
   final Trans trans;
   final Acquirer acquierer;
   final Merchant merchant;
   final Terminal terminal;
 
- TransactionDigitalReceiptCustomer(this.trans, this.acquierer, this.merchant, this.terminal);
+  TransactionDigitalReceiptCustomer(this.trans, this.acquierer, this.merchant, this.terminal);
   @override
   List<Object> get props => [trans, acquierer, merchant, terminal];
-
-
 }
 
 class TransactionAskServerNumber extends TransactionState {
