@@ -223,3 +223,13 @@ class TransactionAskServerNumber extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionPrintMerchantError extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionPrintCustomerError extends TransactionState {
+  @override
+  List<Object> get props => [];
+}

@@ -16,7 +16,7 @@ class Receipt {
 
   Receipt();
 
-  printTransactionReceipt(bool type, Trans trans) async {
+  printTransactionReceipt(bool type, Trans trans, Function onPrintOk, Function onPrintError) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
     BinRepository binRepository = new BinRepository();
@@ -30,20 +30,19 @@ class Receipt {
     if (bin.cardType == 1) {
       CreditReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
-      printer.print(onPrintReceiptOK, onPrintError);
+      printer.print(onPrintOk, onPrintError);
     }
     //if (bin.cardType == Bin.TYPE_DEBIT)
     else if (bin.cardType == 2) {
       DebitReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
-      printer.print(onPrintReceiptOK, onPrintError);
+      printer.print(onPrintOk, onPrintError);
     } else if (bin.cardType == 3) {
       FoodReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
-      printer.print(onPrintReceiptOK, onPrintError);
+      printer.print(onPrintOk, onPrintError);
     }
 
-    //printer.print(onPrintReceiptOK, onPrintError);
   }
 
   void onPrintReceiptOK() {}

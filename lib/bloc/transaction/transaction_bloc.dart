@@ -49,6 +49,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Merchant merchant;
   Acquirer acquirer;
   bool doBeep = false;
+  int numCopies = 0;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -547,6 +548,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
+        numCopies = 0;
         this.add(TransMerchantReceipt());
         yield TransactionPrintMerchantReceipt(trans);
       } else {
@@ -555,62 +557,45 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     } else if (event is TransMerchantReceipt) {
       Receipt receipt = new Receipt();
-      receipt.printTransactionReceipt(false, trans);
       yield TransactionPrintMerchantReceipt(trans);
+      receipt.printTransactionReceipt(false, trans, onPrintMerchantOK, onPrintMerchantError);
+    } else if (event is TransPrintMerchantOK) {
       await new Future.delayed(const Duration(seconds: 3));
       TerminalRepository terminalRepository = new TerminalRepository();
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
-      switch (bin.cardType) {
-        case 1:
-          {
-            // case credit;
-            if (terminal.creditPrint)
-              yield TransactionAskPrintCustomer(trans, acquirer);
-            else
-              this.add(TransDigitalReceiptCustomer());
-          }
-          break;
 
-        case 2:
-          {
-            //case debit;
-            if (terminal.debitPrint)
-              yield TransactionAskPrintCustomer(trans, acquirer);
-            else
-              this.add(TransDigitalReceiptCustomer());
-          }
-          break;
-
-        default:
-          {
-            //statements;
-            if (terminal.creditPrint)
-              yield TransactionAskPrintCustomer(trans, acquirer);
-            else
-              this.add(TransDigitalReceiptCustomer());
-          }
-          break;
-      }
-      if (terminal.debitPrint)
+      if (((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+          ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
+          (bin.cardType > Bin.TYPE_DEBIT)) {
+        numCopies = 0;
         yield TransactionAskPrintCustomer(trans, acquirer);
-      else
-        this.add(TransDigitalReceiptCustomer());
-    } else if (event is TransCustomerReceipt) {
-      Receipt receipt = new Receipt();
-      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-
-      yield TransactionPrintCustomerReceipt(trans);
-      for (int i = 0; i < terminal.numPrint; i++) {
-        receipt.printTransactionReceipt(true, trans);
-        await new Future.delayed(const Duration(seconds: 3));
+      } else {
         if (trans.cardType == Pinpad.CHIP) {
           yield TransactionCompleted(trans, terminal);
         } else {
           yield TransactionFinish(trans);
         }
       }
+    } else if (event is TransPrintMerchantError) {
+      yield TransactionPrintMerchantError();
+    } else if (event is TransCustomerReceipt) {
+      Receipt receipt = new Receipt();
+
+      yield TransactionPrintCustomerReceipt(trans);
+
+      receipt.printTransactionReceipt(true, trans, onPrintCustomerOK, onPrintCustomerError);
+    } else if (event is TransPrintCustomerOK) {
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+      if (trans.cardType == Pinpad.CHIP) {
+        yield TransactionCompleted(trans, terminal);
+      } else {
+        yield TransactionFinish(trans);
+      }
+    } else if (event is TransPrintCustomerError) {
+      yield TransactionPrintCustomerError();
     } else if (event is TransDigitalReceiptCustomer) {
       MerchantRepository merchantRepository = new MerchantRepository();
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
@@ -661,5 +646,34 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     BinRepository binRepository = new BinRepository();
     int binId = await binRepository.getBinId(pan.substring(0, 8));
     return binId;
+  }
+
+  void onPrintMerchantOK() async {
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+    if (this.numCopies < terminal.numPrint) {
+      this.numCopies++;
+      this.add(TransMerchantReceipt());
+    } else {
+      this.add(TransPrintMerchantOK());
+    }
+  }
+
+  void onPrintMerchantError(int type) {
+    this.add(TransPrintMerchantError());
+  }
+
+  void onPrintCustomerOK() async {
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+    if (this.numCopies < terminal.numPrint) {
+      this.numCopies++;
+      this.add(TransCustomerReceipt());
+    }
+    this.add(TransPrintCustomerOK());
+  }
+
+  void onPrintCustomerError(int type) {
+    this.add(TransPrintCustomerError());
   }
 }

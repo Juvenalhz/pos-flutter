@@ -14,6 +14,7 @@ import 'package:pay/screens/selectionMenu.dart';
 import 'package:pay/screens/splash.dart';
 import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
+import 'package:pay/screens/QuestionYesNo.dart';
 import 'DigitalReceipt.dart';
 import 'TipScreen.dart';
 import 'TransRejectedScreen.dart';
@@ -84,14 +85,18 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionPrintMerchantReceipt) {
-          return TransMessage('Print Merchant Receipt');
+          return TransMessage('Impresiónn De Recibo De Comercio');
         } else if (state is TransactionAskPrintCustomer) {
-          return Confirmation(trans: state.trans);
+          return QuestionYesNo('Recibo', 'Imprimir Copia Del Cliente?', onPrintCustomer, onSkipCustomer);
         }else if (state is TransactionPrintCustomerReceipt) {
-          return TransMessage('Print Customer Receipt');
-        } else if (state is TransactionCommError)
+          return TransMessage('Impresión De Recibo De Cliente');
+        } else if (state is TransactionCommError) {
           return AlertCancelRetry('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
-        else if (state is TransactionFinshChip) {
+        } else if (state is TransactionPrintMerchantError) {
+          return AlertCancelRetry('Impresión', 'Error en impresión de recibo....', onPrintMerchantCancel, onPrintMerchantRetry);
+        } else if (state is TransactionPrintCustomerError) {
+          return AlertCancelRetry('Impresión', 'Error en impresión de recibo....', onPrintCustomerCancel, onPrintCustomerRetry);
+        } else if (state is TransactionFinshChip) {
           return TransMessage('');
         }
         else if (state is TransactionDigitalReceiptCustomer) {
@@ -188,6 +193,42 @@ class Transaction extends StatelessWidget {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     transactionBloc.add(TransRemoveCard());
+  }
+
+  void onPrintMerchantCancel(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransPrintMerchantOK());
+  }
+
+  void onPrintMerchantRetry(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransMerchantReceipt());
+  }
+
+  void onPrintCustomerCancel(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransPrintCustomerOK());
+  }
+
+  void onPrintCustomerRetry(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCustomerReceipt());
+  }
+
+  void onPrintCustomer(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCustomerReceipt());
+  }
+
+  void onSkipCustomer(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransPrintMerchantRetry());
   }
 }
 
