@@ -323,6 +323,79 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftWidth: size.width / 2.5,
                                       rightWidth: size.width / 2.5,
                                     ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión',
+                                          value: _terminal.print,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                //If print is false, it cant print credit or debit
+                                                if (newValue == false) {
+                                                  _terminal.creditPrint = newValue;
+                                                  _terminal.debitPrint = newValue;
+                                                  _terminal.numPrint = 0;
+                                                }
+                                                _terminal.print = newValue;
+                                              })),
+                                      rightLabel: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text('Número de\ncopias'),
+                                          DropdownButton(
+                                            value: _terminal.numPrint,
+                                            onChanged: (int newValue) {
+                                              Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                              setState(() {
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.numPrint = newValue;
+                                              });
+                                            },
+                                            items: <int>[0, 1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text(value.toString()),
+                                              );
+                                            }).toList(),
+                                          )
+                                        ],
+                                      ),
+                                      // CheckboxItem(
+                                      //     label: 'Número de\ncopias',
+                                      //     value: _terminal.cashback,
+                                      //     onChanged: (newValue) => setState(() {
+                                      //           _terminal.cashback = newValue;
+                                      //         })),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión\nDébito',
+                                          value: _terminal.debitPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.debitPrint = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Impresión\nCrédito',
+                                          value: _terminal.creditPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.creditPrint = newValue;
+                                              })),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
                                     SizedBox(height: 10.0),
                                     Divider(color: Colors.black54, thickness: 0.6),
                                     ItemTileTwoColumn(
@@ -359,136 +432,28 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),*/
+
                                     ItemTileTwoColumn(
-                                      contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(
-                                          label: 'Impresión',
-                                          value: _terminal.print,
-                                          onChanged: (newValue) => setState(() {
-                                                //If print is false, it cant print credit or debit
-                                                if (newValue == false) {
-                                                  _terminal.creditPrint = newValue;
-                                                  _terminal.debitPrint = newValue;
-                                                  _terminal.numPrint = 0;
-                                                }
-                                                _terminal.print = newValue;
-                                              })),
-                                      rightLabel: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Text('Número de\ncopias'),
-                                          DropdownButton(
-                                            value: _terminal.numPrint,
-                                            onChanged: (int newValue) {
-                                              setState(() {
-                                                if (_terminal.print == false)
-                                                  return null;
-                                                else
-                                                  _terminal.numPrint = newValue;
-                                              });
-                                            },
-                                            items: <int>[0, 1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
-                                              return DropdownMenuItem<int>(
-                                                value: value,
-                                                child: Text(value.toString()),
-                                              );
-                                            }).toList(),
-                                          )
-                                        ],
-                                      ),
-                                      // CheckboxItem(
-                                      //     label: 'Número de\ncopias',
-                                      //     value: _terminal.cashback,
-                                      //     onChanged: (newValue) => setState(() {
-                                      //           _terminal.cashback = newValue;
-                                      //         })),
+                                      leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(
-                                          label: 'Impresión\nDébito',
-                                          value: _terminal.debitPrint,
-                                          onChanged: (newValue) => setState(() {
-                                                if (_terminal.print == false)
-                                                  return null;
-                                                else
-                                                  _terminal.debitPrint = newValue;
-                                              })),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Impresión\nCrédito',
-                                          value: _terminal.creditPrint,
-                                          onChanged: (newValue) => setState(() {
-                                                if (_terminal.print == false)
-                                                  return null;
-                                                else
-                                                  _terminal.creditPrint = newValue;
-                                              })),
+                                      leftLabel: CheckboxItem(label: 'Cheque', value: _acquirer.cheque, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Check In/\nCheckOut', value: _acquirer.checkIncheckOut, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Cuotas',
-                                          value: _terminal.installments,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.installments = newValue;
-                                              })),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Devolución',
-                                          value: _terminal.refund,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.refund = newValue;
-                                              })),
+                                      leftLabel: CheckboxItem(label: 'CVV2', value: _acquirer.cvv2, onChanged: null),
+                                      rightLabel: CheckboxItem(label: '4 últimos\ndígitos', value: _terminal.last4Digits, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Cheque',
-                                          value: _acquirer.cheque,
-                                          onChanged: (newValue) => setState(() {
-                                                _acquirer.cheque = newValue;
-                                              })),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Check In/\nCheckOut',
-                                          value: _acquirer.checkIncheckOut,
-                                          onChanged: (newValue) => setState(() {
-                                                _acquirer.checkIncheckOut = newValue;
-                                              })),
-                                      leftWidth: size.width / 2.18,
-                                      rightWidth: size.width / 2.18,
-                                    ),
-                                    ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'CVV2',
-                                          value: _acquirer.cvv2,
-                                          onChanged: (newValue) => setState(() {
-                                                _acquirer.cvv2 = newValue;
-                                              })),
-                                      rightLabel: CheckboxItem(
-                                          label: '4 últimos\ndígitos',
-                                          value: _terminal.last4Digits,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.last4Digits = newValue;
-                                              })),
-                                      leftWidth: size.width / 2.18,
-                                      rightWidth: size.width / 2.18,
-                                    ),
-                                    ItemTileTwoColumn(
-                                      leftLabel: CheckboxItem(
-                                          label: 'Clave\nAnulación',
-                                          value: _terminal.passwordVoid,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.passwordVoid = newValue;
-                                              })),
-                                      rightLabel: CheckboxItem(
-                                          label: 'Clave Cierre',
-                                          value: _terminal.passwordBatch,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.passwordBatch = newValue;
-                                              })),
+                                      leftLabel: CheckboxItem(label: 'Clave\nAnulación', value: _terminal.passwordVoid, onChanged: null),
+                                      rightLabel: CheckboxItem(label: 'Clave Cierre', value: _terminal.passwordBatch, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
@@ -497,16 +462,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Clave\nDevolución',
                                         value: _terminal.passwordRefund,
-                                        onChanged: (newValue) => setState(() {
-                                          _terminal.passwordRefund = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Enmascarar\nTarjeta',
                                         value: _terminal.maskPan,
-                                        onChanged: (newValue) => setState(() {
-                                          _terminal.maskPan = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -515,16 +476,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Pre-impresión',
                                         value: _acquirer.prePrint,
-                                        onChanged: (newValue) => setState(() {
-                                          _acquirer.prePrint = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Entrada\nManual PAN',
                                         value: _acquirer.manualEntry,
-                                        onChanged: (newValue) => setState(() {
-                                          _acquirer.manualEntry = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
@@ -533,28 +490,19 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftLabel: CheckboxItem(
                                         label: 'Confirmación\nde Importe',
                                         value: _terminal.amountConfirmation,
-                                        onChanged: (newValue) => setState(() {
-                                          _terminal.amountConfirmation = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       rightLabel: CheckboxItem(
                                         label: 'Ventas Fuera\nde Línea',
                                         value: _acquirer.saleOffline,
-                                        onChanged: (newValue) => setState(() {
-                                          _acquirer.saleOffline = newValue;
-                                        }),
+                                        onChanged: null,
                                       ),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(
-                                          label: 'Cash back',
-                                          value: _terminal.cashback,
-                                          onChanged: (newValue) => setState(() {
-                                                _terminal.cashback = newValue;
-                                              })),
+                                      leftLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
