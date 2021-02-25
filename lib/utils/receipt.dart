@@ -184,13 +184,14 @@ HostNotAnswerReceipt(Trans trans, Merchant merchant) {
     printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
     printer.addTextSideBySide('BANCO ADQUIRIENTE','J-123456789-0'); //Info banco
   }
-  Future<void> Body(Trans trans, Merchant merchant, bool isCliente) async {
+  void Body(Trans trans, Merchant merchant, bool isCliente)  {
     var fecha = DateFormat('dd/MM/yyyy hh:mm:ss a').format(trans.dateTime);
     var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total);
+    //var sn = await SerialNumber.serialNumber;
     trans.type == 'Anulación' ? printer.addText(Printer.CENTER, 'No.Operac.Origen: 999999' ) : null; //
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10),'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
     printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor','No.Operac.');
-    printer.addTextSideBySideWithCenter( await SerialNumber.serialNumber, trans.authCode, trans.referenceNumber);
+    printer.addTextSideBySideWithCenter( 'sn' , trans.authCode, trans.referenceNumber);
     printer.addTextSideBySideWithCenter('Terminal ' + merchant.id.toString(), 'Lote '+ merchant.batchNumber.toString(),'Ticket '+ trans.id.toString());
     isCliente == true ? printer.addText(Printer.CENTER, 'COPIA - CLIENTE') : null;
     printer.addTextSideBySide('MONTOBs.', monto);
