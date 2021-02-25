@@ -278,9 +278,9 @@ class DetailReport extends StatelessWidget {
 
     print('Click menu -> ${item.menuTitle} - id:$id');
     if (item.menuTitle == 'Copia del Comercio') {
-      detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
-    } else if (item.menuTitle == 'Copia del Cliente') {
       detailReportBloc.add(DetailReportPrintReceiptCopy(false, id, context));
+    } else if (item.menuTitle == 'Copia del Cliente') {
+      detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
     } else if (item.menuTitle == 'Ver Detalles') {
       detailReportBloc.add(DetailReportViewTransDetail(id));
     } else if (item.menuTitle == 'Anulación') {

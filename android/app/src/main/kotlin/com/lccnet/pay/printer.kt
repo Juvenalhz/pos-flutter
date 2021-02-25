@@ -89,6 +89,7 @@ class Printer : MethodChannel.MethodCallHandler{
                         }.start()
                     }
 
+
                     override fun onError(i: Int) {
                         Log.e("Printer", "startPrint.onError $i")
                         Thread {
