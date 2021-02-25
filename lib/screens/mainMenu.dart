@@ -284,13 +284,38 @@ class MainMenu extends StatelessWidget {
           ]),
           Divider(),
           ExpansionTile(title: Text("Menu Técnico"), leading: Icon(Icons.settings), children: <Widget>[
-            _createDrawerItem(
-                text: 'Configuracion',
-                onTap: () {
-                  acquirerBloc.add(GetAllAcquirer());
-                  terminalBloc.add(GetTerminal(1));
-                  Navigator.pushNamed(context, '/configuration');
-                }),
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Configuracion',
+                    onTap: () {
+                      if (state.terminal.techPassword.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            acquirerBloc.add(GetAllAcquirer());
+                            terminalBloc.add(GetTerminal(1));
+                            Navigator.pushNamed(context, '/configuration');
+                          },
+                        );
+                      } else {
+                        acquirerBloc.add(GetAllAcquirer());
+                        terminalBloc.add(GetTerminal(1));
+                        Navigator.pushNamed(context, '/configuration');
+                      }
+                    });
+              } else
+                return Container();
+            }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(

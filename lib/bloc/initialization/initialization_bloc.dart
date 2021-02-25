@@ -214,7 +214,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     acquirerIndicators.putIfAbsent(5, () => data.substring(index, index + 6));
     index += 6;
 
-    terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    terminal.password = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
     terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
     index += 2;
