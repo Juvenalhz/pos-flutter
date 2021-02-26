@@ -55,7 +55,7 @@ class LastSaleDetail extends StatelessWidget {
                     onPressed: () {
                       Receipt receipt = new Receipt();
 
-                      receipt.printTransactionReceipt(true, trans, onPrintOK, onPrintError);
+                      receipt.printTransactionReceipt(true, true, trans, onPrintOK, onPrintError);
                     },
                   ),
                 ])),

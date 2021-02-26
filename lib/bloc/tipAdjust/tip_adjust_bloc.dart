@@ -184,7 +184,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
           trans.tipAdjusted = true;
 
           transRepository.updateTrans(trans);
-          receipt.tipAdjustReceipt(trans);
+          receipt.tipAdjustReceipt(trans, onPrintOk, onPrintError);
 
           yield TipAdjustCompleted(trans);
         } else {
@@ -194,4 +194,8 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       }
     }
   }
+
+  void onPrintOk() async {}
+
+  void onPrintError(int type) {}
 }

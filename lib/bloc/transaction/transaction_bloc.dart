@@ -279,15 +279,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.binType = bin.cardType;
       trans.cardholderID = event.idNumber.toString();
 
-      trans.binType = Bin.TYPE_CREDIT;
       if (trans.binType == Bin.TYPE_CREDIT) {
         acquirer.industryType = true;
         if (acquirer.industryType) // true = restaurant
           yield TransactionAskServerNumber();
         else
           yield TransactionAskConfirmation(trans, acquirer);
-      } else {
+      } else if (trans.binType == Bin.TYPE_DEBIT) {
         yield TransactionAskAccountType();
+      } else {
+        yield TransactionAskConfirmation(trans, acquirer);
       }
     } else if (event is TransAddServerNumber) {
       trans.server = event.server;
@@ -513,7 +514,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.createTrans(trans);
             }
             Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-            yield TransactionCompleted(trans, terminal);
+            this.add(TransMerchantReceipt());
           }
         } else {
           trans.respMessage = event.respMap[6208];
@@ -558,7 +559,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransMerchantReceipt) {
       Receipt receipt = new Receipt();
       yield TransactionPrintMerchantReceipt(trans);
-      receipt.printTransactionReceipt(false, trans, onPrintMerchantOK, onPrintMerchantError);
+      receipt.printTransactionReceipt(false, false, trans, onPrintMerchantOK, onPrintMerchantError);
     } else if (event is TransPrintMerchantOK) {
       await new Future.delayed(const Duration(seconds: 3));
       TerminalRepository terminalRepository = new TerminalRepository();
@@ -585,7 +586,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       yield TransactionPrintCustomerReceipt(trans);
 
-      receipt.printTransactionReceipt(true, trans, onPrintCustomerOK, onPrintCustomerError);
+      receipt.printTransactionReceipt(true, false, trans, onPrintCustomerOK, onPrintCustomerError);
     } else if (event is TransPrintCustomerOK) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 

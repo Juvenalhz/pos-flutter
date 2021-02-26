@@ -5,6 +5,7 @@ import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/printer.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/models/merchant.dart';
@@ -16,7 +17,7 @@ class Receipt {
 
   Receipt();
 
-  printTransactionReceipt(bool type, Trans trans, Function onPrintOk, Function onPrintError) async {
+  printTransactionReceipt(bool type, bool copy, Trans trans, Function onPrintOk, Function onPrintError) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
     BinRepository binRepository = new BinRepository();
@@ -28,64 +29,58 @@ class Receipt {
     this.type = type;
     //if (bin.cardType == Bin.TYPE_CREDIT)
     if (bin.cardType == 1) {
-      CreditReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      CreditReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
       printer.print(onPrintOk, onPrintError);
     }
     //if (bin.cardType == Bin.TYPE_DEBIT)
     else if (bin.cardType == 2) {
-      DebitReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      DebitReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
       printer.print(onPrintOk, onPrintError);
     } else if (bin.cardType == 3) {
-      FoodReceipt(trans, merchant, type); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      FoodReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.feedLine(2);
       printer.print(onPrintOk, onPrintError);
     }
-
   }
 
-  void onPrintReceiptOK() {}
-
-  void onPrintError(int error) {
-    print('onPrintError:' + error.toString());
-
-
-  }
 //////////////////////////////////////////////////////////////RECIBOS CREDITO ///////////////////////////////////////////////////////////
-
-  CreditReceipt(Trans trans, Merchant merchant, bool isCliente) {
+  CreditReceipt(Trans trans, Merchant merchant, bool isCustomer, bool isCopy) async {
     printer.setFontSize(0);
-   Header(trans,merchant,isCliente);
-   Body(trans,merchant,isCliente);
+    await Header(trans, merchant);
+    await Body(trans, merchant, isCustomer, isCopy);
 
-   if(isCliente == false && trans.type == 'Compra') printer.addText(Printer.LEFT, 'Firma: _______________________________________');
-   else if(trans.type == 'Anulación') printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
-   else null;
+    if (isCustomer == false && trans.type == 'Venta')
+      printer.addText(Printer.LEFT, 'Firma: _______________________________________');
+    else if (trans.type == 'Anulación') printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
 
-   footer(trans,merchant,isCliente);
+    footer(trans, merchant, isCustomer);
   }
 
 //////////////////////////////////////////////////////////////RECIBOS DEBITO ///////////////////////////////////////////////////////////
-  DebitReceipt(Trans trans, Merchant merchant, bool isCliente) {
+  DebitReceipt(Trans trans, Merchant merchant, bool isCustomer, bool isCopy) async {
     printer.setFontSize(0);
-    Header(trans,merchant,isCliente);
-    Body(trans,merchant,isCliente);
+    await Header(trans, merchant);
+    await Body(trans, merchant, isCustomer, isCopy);
 
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
 
-    footer(trans,merchant,isCliente);
+    footer(trans, merchant, isCustomer);
   }
 
   ////////////////////////////////////////////////RECIBO ALIMENTACIÓN COMERCIO////////////////////////////////////////////////////
-  FoodReceipt(Trans trans, Merchant merchant, bool isCliente) {
+  FoodReceipt(Trans trans, Merchant merchant, bool isCustomer, bool isCopy) async {
     printer.setFontSize(0);
-    Header(trans,merchant,isCliente);
-    Body(trans,merchant,isCliente);
+    await Header(trans, merchant);
+    await Body(trans, merchant, isCustomer, isCopy);
 
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
-    if(isCliente == true && trans.type == 'Compra') printer.addText(Printer.LEFT, 'Saldo: 999.999.999,99'); else null;
-    footer(trans,merchant,isCliente);
+    if (isCustomer == true && trans.type == 'Venta') {
+      var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.foodBalance / 100);
+      printer.addText(Printer.LEFT, 'Saldo Bs:        $monto');
+    }
+    footer(trans, merchant, isCustomer);
   }
 
   //////////////////////SIN RESPUESTA/////////////////////////////////
@@ -129,49 +124,8 @@ class Receipt {
     printer.addTextSideBySide('V X.0 - X0', 'Versión del Proveedor del POS');
   }
 
-  //////////////////////////////////////////////////////////////RECIBOS COMERCIO DEBITO ///////////////////////////////////////////////////////////
-  DuplicateReceipt(Trans trans, Merchant merchant) {
-    printer.setFontSize(0);
-    var fecha = DateFormat('dd/MM/yyyy hh:mm:ss a').format(trans.dateTime);
-    var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total);
-    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
-    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
-    printer.addText(Printer.CENTER, merchant.city); //localidad comercio
-    printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
-    printer.addText(Printer.CENTER, 'DUPLICADO'); //localidad comercio
-    printer.addText(Printer.CENTER, trans.type + ' ' + trans.appLabel); //tipo de transaccion
-    printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
-    printer.addTextSideBySide('BANCO ADQUIRIENTE', 'J-123456789-0'); //Info banco
-    printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
-    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
-    printer.addTextSideBySideWithCenter('12345678', '9999999', '9999999');
-    printer.addTextSideBySideWithCenter('Terminal 99', 'Lote 999', 'Ticket 9999');
-    printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
-    printer.addTextSideBySide('MONTOBs.', monto);
-    printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
-    printer.addText(Printer.RIGHT, 'Ap .Preferred Name / Label');
-    printer.addTextSideBySide('AID:XXXXXXXXXXXXXX', '| CT:XXXXXXXXXXXXXXXX');
-    printer.addTextSideBySide('V X.0 - X0', 'Versión del Proveedor del POS');
-  }
-
-  printTransactionReceiptCopy(bool type, Trans trans) {
-    Printer printer = new Printer();
-
-    this.type = type;
-    if (type)
-      printer.addText(Printer.CENTER, 'Merchant Receipt');
-    else
-      printer.addText(Printer.CENTER, 'Customer Receipt');
-
-    printer.feedLine(2);
-
-    printer.print(onPrintCopyReceiptOK, onPrintError);
-  }
-
-  void onPrintCopyReceiptOK() {}
-
   ///////////////////////////////////////////////////RECIBOS AJUSTE DE PROPINA ////////////////////////////////////////////////////
-  tipAdjustReceipt(Trans trans) async {
+  tipAdjustReceipt(Trans trans, Function onPrintOk, Function onPrintError) async {
     var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
     MerchantRepository merchantRepository = new MerchantRepository();
     Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
@@ -199,25 +153,97 @@ class Receipt {
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
     printer.addTextSideBySide('V08.01-05', '01.01');
     printer.feedLine(2);
-    printer.print(onPrintReceiptOK, onPrintError);
+    printer.print(onPrintOk, onPrintError);
   }
-  
-  void Body(Trans trans, Merchant merchant, bool isCliente)  {
+
+  ///////////////////////////////////////////////////RECIBO DE CONFORMIDAD DE VISITA ////////////////////////////////////////////////////
+  techVisitReceipt(
+      String techTrack1, String techTrack2, String visitType, String reqType, String authCode, Function onPrintOk, Function onPrintError) async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+    String sn = await SerialNumber.serialNumber;
+    String panTech = techTrack2.substring(0, techTrack2.indexOf('='));
+    String maskedPanTech = panTech.substring(0, 4) + '....' + panTech.substring(panTech.length - 4);
+    String name = '';
+
+    printMerchantInfo(merchant);
+    printer.addText(Printer.CENTER, 'CONFORMIDAD VISITA');
+    printer.addTextSideBySide('S/N POS: ' + sn.padRight(16, ' '), maskedPanTech);
+    printAcquirerInfo(acquirer);
+    printer.addText(Printer.LEFT, 'Técnico:    ' + name);
+    printer.addTextSideBySide('Tipo Act:   ' + visitType, 'Num. Req.: ' + reqType);
+    printDateTime();
+    printer.addTextSideBySide('N Operac:   ' + authCode, 'Terminal: ' + merchant.tid);
+    printer.addText(Printer.CENTER, 'CONFORME');
+    printer.addTextSideBySide('V08.01-05', '01.01');
+    printer.feedLine(2);
+    printer.print(onPrintOk, onPrintError);
+  }
+
+  printMerchantInfo(Merchant merchant) async {
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+
+    printer.addText(Printer.CENTER, merchant.nameL1);
+    printer.addText(Printer.CENTER, merchant.nameL2);
+    printer.addText(Printer.CENTER, merchant.city);
+    printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid);
+  }
+
+  printAcquirerInfo(Acquirer acquirer) async {
+    printer.addTextSideBySide('BANCO ADQUIRIENTE', acquirer.rif); //Info banco
+  }
+
+  printDateTime() {
+    var date = DateFormat('dd/MM/yyyy hh:mm:ss a').format(DateTime.now());
+
+    printer.addTextSideBySide('Fecha: ' + date.substring(0, 10), 'Hora: ' + date.substring(11, 22));
+  }
+
+  Future<void> Header(Trans trans, Merchant merchant) async {
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(trans.acquirer));
+
+    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
+    printer.addText(Printer.CENTER, merchant.nameL2); //nombre comercio
+    printer.addText(Printer.CENTER, merchant.city); //localidad comercio
+    printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
+    printer.addText(Printer.CENTER, trans.type + ' ' + trans.appLabel); //tipo de transaccion
+    printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
+    printer.addTextSideBySide('BANCO ADQUIRIENTE', acquirer.rif.trim());
+  }
+
+  Future<void> Body(Trans trans, Merchant merchant, bool isCustomer, bool isCopy) async {
     var fecha = DateFormat('dd/MM/yyyy hh:mm:ss a').format(trans.dateTime);
-    var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total);
-    //var sn = await SerialNumber.serialNumber;
-    trans.type == 'Anulación' ? printer.addText(Printer.CENTER, 'No.Operac.Origen: 999999' ) : null; //
-    printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10),'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
-    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor','No.Operac.');
-    printer.addTextSideBySideWithCenter( 'sn' , trans.authCode, trans.referenceNumber);
-    printer.addTextSideBySideWithCenter('Terminal ' + merchant.id.toString(), 'Lote '+ merchant.batchNumber.toString(),'Ticket '+ trans.id.toString());
-    isCliente == true ? printer.addText(Printer.CENTER, 'COPIA - CLIENTE') : null;
+    var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total / 100);
+    var sn = await SerialNumber.serialNumber;
+
+    printer.setFontSize(0);
+    if (trans.type == 'Anulación') {
+      printer.addText(Printer.CENTER, 'No.Operac.Origen: 999999');
+    }
+    printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
+    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
+    printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
+    printer.addTextSideBySideWithCenter(
+        'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
+    if (isCustomer == true) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
     printer.addTextSideBySide('MONTOBs.', monto);
+    if (isCopy) {
+      printer.addText(Printer.CENTER, 'DUPLICADO');
+    }
   }
-  void footer(Trans trans, Merchant merchant, bool isCliente) {
-    printer.addText(Printer.LEFT, 'Ap .Preferred Name / Label');
-    trans.type == 'Compra' ? printer.addTextSideBySide('AID:XXXXXXXXXXXXXX','| CT:XXXXXXXXXXXXXXXX') : printer.addText(Printer.RIGHT, 'AID:XXXXXXXXXXXXXX');
-    isCliente == true ? printer.addText(Printer.CENTER, 'CAMPO TEXTO') : null ;
-    printer.addTextSideBySide('V X.0 - X0','Versión del Proveedor del POS');
+
+  void footer(Trans trans, Merchant merchant, bool isCustomer) {
+    if (trans.cardType == Pinpad.CHIP) {
+      printer.addText(Printer.LEFT, 'Ap .Preferred Name / Label');
+      if (trans.type == 'Venta')
+        printer.addTextSideBySide('AID:XXXXXXXXXXXXXX', '| CT:XXXXXXXXXXXXXXXX');
+      else
+        printer.addText(Printer.RIGHT, 'AID:XXXXXXXXXXXXXX');
+    }
+
+    printer.addTextSideBySide('V08.01-05', '01.01');
   }
 }
