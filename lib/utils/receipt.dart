@@ -1,3 +1,4 @@
+import 'package:convert/convert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/models/acquirer.dart';
@@ -238,10 +239,17 @@ class Receipt {
   void footer(Trans trans, Merchant merchant, bool isCustomer) {
     if (trans.cardType == Pinpad.CHIP) {
       printer.addText(Printer.LEFT, 'Ap .Preferred Name / Label');
+      int aidIndex = trans.emvTags.indexOf('9F06') + 4;
+      int aidLength = hex.decode(trans.emvTags.substring(aidIndex, aidIndex + 2))[0];
+      String aid = trans.emvTags.substring(aidIndex + 2, aidIndex + 2 + aidLength * 2);
+      int ctIndex = trans.emvTags.indexOf('9F06') + 4;
+      int ctLength = hex.decode(trans.emvTags.substring(ctIndex, ctIndex + 2))[0];
+      String ct = trans.emvTags.substring(ctIndex + 2, ctIndex + 2 + ctIndex * 2);
+
       if (trans.type == 'Venta')
-        printer.addTextSideBySide('AID:XXXXXXXXXXXXXX', '| CT:XXXXXXXXXXXXXXXX');
+        printer.addTextSideBySide('AID:$aid', 'CT:$ct');
       else
-        printer.addText(Printer.RIGHT, 'AID:XXXXXXXXXXXXXX');
+        printer.addText(Printer.RIGHT, 'AID:$aid');
     }
 
     printer.addTextSideBySide('V08.01-05', '01.01');
