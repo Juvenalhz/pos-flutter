@@ -50,6 +50,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Acquirer acquirer;
   bool doBeep = false;
   int numCopies = 0;
+  int respBatchNumber = 0;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -500,6 +501,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             trans.issuer = event.respMap[6206];
           }
 
+          if (event.respMap[6202] != null) {
+            respBatchNumber = int.parse(event.respMap[6202]);
+            trans.batchNum = respBatchNumber;
+          }
+
           if (trans.cardType == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {
@@ -625,7 +631,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     } else if (event is TransCardRemoved) {
       doBeep = false;
-      this.add(TransfinishTransaction());
+      if (merchant.batchNumber != trans.batchNum) {
+        yield TransactionAutoCloseBatch(merchant.batchNumber);
+      } else {
+        yield TransactionFinish(trans);
+      }
+    } else if (event is TransDeletePreviousBatch) {
+      String whatDelete = 'batchNum = ' + merchant.batchNumber.toString();
+      await transRepository.deleteAllTrans(where: whatDelete);
       yield TransactionFinish(trans);
     }
 

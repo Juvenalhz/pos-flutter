@@ -14,7 +14,7 @@ class TransRepository {
 
   Future deleteTrans(int id) => appdb.delete('trans', id);
 
-  Future deleteAllTrans() => appdb.deleteAll('trans');
+  Future deleteAllTrans({String where}) => appdb.deleteAll('trans', where: where);
 
   Future getCountTrans() => appdb.queryRowCount('trans', where: 'reverse=0');
 

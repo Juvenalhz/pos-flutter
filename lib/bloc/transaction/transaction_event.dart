@@ -367,3 +367,8 @@ class TransPrintCustomerRetry extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransDeletePreviousBatch extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

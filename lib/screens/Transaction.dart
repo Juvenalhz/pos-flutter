@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pay/bloc/batch/batch_bloc.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/MessageOKScreen.dart';
 import 'package:pay/screens/TransApprovedScreen.dart';
 import 'package:pay/screens/Confirmation.dart';
 import 'package:pay/screens/AskNumeric.dart';
@@ -64,7 +66,7 @@ class Transaction extends StatelessWidget {
           return SelectionMenu("Seleccione Tipo de Cuenta", accTypes, false, onSelection: onAccTypeSelection);
         } else if (state is TransactionLoadEmvTable) {
           //transactionBloc.add(TransLoadEmvTables());
-            print('show splash screen');
+          print('show splash screen');
           return SplashScreen();
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
@@ -88,7 +90,7 @@ class Transaction extends StatelessWidget {
           return TransMessage('Impresiónn De Recibo De Comercio');
         } else if (state is TransactionAskPrintCustomer) {
           return QuestionYesNo('Recibo', 'Imprimir Copia Del Cliente?', onPrintCustomer, onSkipCustomer);
-        }else if (state is TransactionPrintCustomerReceipt) {
+        } else if (state is TransactionPrintCustomerReceipt) {
           return TransMessage('Impresión De Recibo De Cliente');
         } else if (state is TransactionCommError) {
           return AlertCancelRetry('Autorización', 'Error de conexión....', onClickCancel, onClickRetry);
@@ -98,11 +100,11 @@ class Transaction extends StatelessWidget {
           return AlertCancelRetry('Impresión', 'Error en impresión de recibo....', onPrintCustomerCancel, onPrintCustomerRetry);
         } else if (state is TransactionFinshChip) {
           return TransMessage('');
-        }
-        else if (state is TransactionDigitalReceiptCustomer) {
-          return DigitalReceipt(state.trans,state.acquierer,state.merchant,state.terminal);
-        }
-        else
+        } else if (state is TransactionDigitalReceiptCustomer) {
+          return DigitalReceipt(state.trans, state.acquierer, state.merchant, state.terminal);
+        } else if (state is TransactionAutoCloseBatch) {
+          return MessageOkScreen('Cierre De Lote', 'Se imprimirá Reporte de Lote Anterior', onCloseBatchOk);
+        } else
           print('state:' + state.toString());
         return TransMessage('');
       }),
@@ -229,6 +231,16 @@ class Transaction extends StatelessWidget {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     transactionBloc.add(TransPrintMerchantRetry());
+  }
+
+  Future<void> onCloseBatchOk(BuildContext context) async {
+    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    detailReportBloc.add(DetailReportPrintReport(true));
+    await Navigator.pushNamed(context, '/DetailReport');
+
+    transactionBloc.add(TransDeletePreviousBatch());
   }
 }
 

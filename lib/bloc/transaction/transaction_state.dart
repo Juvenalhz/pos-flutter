@@ -233,3 +233,12 @@ class TransactionPrintCustomerError extends TransactionState {
   @override
   List<Object> get props => [];
 }
+
+class TransactionAutoCloseBatch extends TransactionState{
+  final int batchNumber;
+
+  TransactionAutoCloseBatch(this.batchNumber);
+
+  @override
+  List<Object> get props => [batchNumber];
+}
