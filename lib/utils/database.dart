@@ -463,7 +463,8 @@ class DatabaseHelper {
 
   Future<int> querySumColumnArguments(String table, String column, {String where}) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    int sum = Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    return sum == null ? 0 : sum;
   }
 
   Future rawQuery(String query) async {

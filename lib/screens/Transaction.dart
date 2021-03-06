@@ -87,7 +87,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionRejected) {
           return TransRejectedScreen(state.trans, onClickResponseMessage);
         } else if (state is TransactionPrintMerchantReceipt) {
-          return TransMessage('Impresiónn De Recibo De Comercio');
+          return TransMessage('Impresión De Recibo De Comercio');
         } else if (state is TransactionAskPrintCustomer) {
           return QuestionYesNo('Recibo', 'Imprimir Copia Del Cliente?', onPrintCustomer, onSkipCustomer);
         } else if (state is TransactionPrintCustomerReceipt) {

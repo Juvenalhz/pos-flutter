@@ -639,6 +639,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransDeletePreviousBatch) {
       String whatDelete = 'batchNum = ' + merchant.batchNumber.toString();
       await transRepository.deleteAllTrans(where: whatDelete);
+      merchant.batchNumber = respBatchNumber;
+      await merchantRepository.updateMerchant(merchant);
       yield TransactionFinish(trans);
     }
 

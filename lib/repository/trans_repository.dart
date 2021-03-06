@@ -16,7 +16,7 @@ class TransRepository {
 
   Future deleteAllTrans({String where}) => appdb.deleteAll('trans', where: where);
 
-  Future getCountTrans() => appdb.queryRowCount('trans', where: 'reverse=0');
+  Future getCountTrans({String where}) => appdb.queryRowCount('trans', where: where);
 
   Future getCountReversal() => appdb.queryRowCount('trans', where: 'reverse=1');
 
@@ -24,7 +24,7 @@ class TransRepository {
 
   Future getMaxId() => appdb.queryMaxId('trans');
 
-  Future getBatchTotal() => appdb.querySumColumnArguments('trans', 'total', where: 'reverse=0 and voided=0');
+  Future getBatchTotal({String where}) => appdb.querySumColumnArguments('trans', 'total', where: where);
 
   Future getTotalsData() => appdb.rawQuery(
       'select c.name as acquirer, a.issuer as issuer, b.brand as brand,  b.cardType as cardType, count(a.id) as count, sum(a.total) as total ' +
@@ -33,7 +33,8 @@ class TransRepository {
           'group by b.brand , a.issuer, b.cardType ' +
           'order by a.acquirer, a.issuer, b.cardType');
 
-  Future getTipsByServer()  => appdb.rawQuery('SELECT acquirer, server, count(id) as count, SUM(tip) as total FROM trans where tip<>0 group by  server  order by acquirer, server');
+  Future getTipsByServer() => appdb
+      .rawQuery('SELECT acquirer, server, count(id) as count, SUM(tip) as total FROM trans where tip<>0 group by  server  order by acquirer, server');
 
   Future getCountSale() => appdb.queryRowCount('trans', where: 'reverse=0 and voided=0');
 
