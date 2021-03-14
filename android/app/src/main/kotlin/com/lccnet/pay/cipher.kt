@@ -7,7 +7,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.annotation.NonNull
 import com.ingenico.lar.apos.DeviceHelper
-import com.usdk.apiservice.aidl.pinpad.DESMode
+import com.usdk.apiservice.aidl.pinpad.*
 import com.usdk.apiservice.aidl.pinpad.KeySystem
 import com.usdk.apiservice.aidl.pinpad.KeyType
 import io.flutter.embedding.engine.FlutterEngine
@@ -17,7 +17,7 @@ import java.util.*
 
 class Cipher : MethodChannel.MethodCallHandler{
     var params = HashMap<String, Any>()
-    private val PAN_KEY_ID = 20
+    private val PAN_KEY_ID = 0
 
     fun registerWith(@NonNull flutterEngine: FlutterEngine){
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "cipher")
@@ -103,6 +103,42 @@ class Cipher : MethodChannel.MethodCallHandler{
             }
             else if (PinpadManager.isEmulator()){
                 result.success(data?.let { String(it) });
+            }
+        }
+        else if (call.method == "cipherMessage") {
+            var data: ByteArray? = call.argument("data")
+            var wk: String? = call.argument("wk")
+            var keyId: Int? = call.argument("keyId")
+
+            if (Build.MODEL.contains("APOS")) {
+                try {
+                    val pinpad: UPinpad
+                    if (wk == null) {
+                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
+                        pinpad.open()
+                    } else {
+                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_MKSK)
+                        pinpad.open()
+                        //load ciphered key
+                        //pinpad.loadEncKey(int keyType, int mainKeyId, int keyId, byte[] encKey, byte[] checkValue)
+                    }
+
+                    try {
+                        var encrypted: ByteArray = byteArrayOf()
+                        if (pinpad.isKeyExist(keyId!!)) {
+                            encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TCBC), null, data)
+
+                            if (encrypted == null) {
+                                Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
+                            }
+                        }
+                        result.success(encrypted);
+                    } finally {
+                        pinpad.close()
+                    }
+                } catch (e: RemoteException) {
+                    Log.e("Cipher", "Pinpad", e)
+                }
             }
         }
 

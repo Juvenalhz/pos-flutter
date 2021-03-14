@@ -135,6 +135,19 @@ class HostMessage {
     }
     return respMap;
   }
+
+  Uint8List calculateChecksum(Uint8List message)
+  {
+    var checksum = Uint8List(1);
+
+    checksum[0] = 0;
+
+    message.forEach((element) {
+      checksum[0] += element;
+    });
+
+    return checksum;
+  }
 }
 
 class MessageInitialization extends HostMessage {
