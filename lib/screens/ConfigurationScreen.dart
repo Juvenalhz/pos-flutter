@@ -526,7 +526,29 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                 leftWidth: size.width / 2.26,
                                 rightWidth: size.width / 2.8,
                               ),
-                              ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
+
+                              ItemTileTwoColumn(
+                                contentPadding: EdgeInsets.zero,
+                                leftLabel: ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
+                                rightLabel: DataTile(
+                                  myTitle: 'KIN',
+                                  value: _comm.kin.toString(),
+                                  type: _tNumber,
+                                  maxLength: 3,
+                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
+                                  onSaved: (nValue) => _comm.kin = int.parse(nValue),
+                                  onChanged: (nValue) {
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    _comm.kin = int.parse(nValue);
+                                  },
+                                  validator: (nValue) => InputValidation.requiredField(nValue),
+                                ),
+                                leftWidth: size.width / 2.26,
+                                rightWidth: size.width / 2.8,
+                              ),
+
+
+                              //ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
                             ],
                           );
                         }

@@ -4,8 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test31.db";
-  static final _databaseVersion = 3;
+  static final _databaseName = "test33.db";
+  static final _databaseVersion = 1;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -77,7 +77,6 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'password', 'text');
     _tableAlter(db, 'terminal', 'techPassword', 'text');
     _tableAlter(db, 'terminal', 'idTerminal', 'text');
-    _tableAlter(db, 'terminal', 'kin', 'integer');
     _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
     _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
     _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
@@ -113,6 +112,7 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'ip', 'text');
     _tableAlter(db, 'comm', 'port', 'integer');
     _tableAlter(db, 'comm', 'headerLength', 'integer');
+    _tableAlter(db, 'comm', 'kin', 'integer');
   }
 
   Future<void> _fillDefaultComm() async {

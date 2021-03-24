@@ -5,7 +5,7 @@ class Terminal {
   String _password = '';
   String _techPassword = '';
   String _idTerminal = '';
-  int _kin = 0;
+
   int _minPinDigits = 0;
   int _maxPinDigits = 0;
   int _timeoutPrompt = 0;
@@ -26,7 +26,6 @@ class Terminal {
   Terminal(this._id, this._idTerminal,
       [this._password,
       this._techPassword,
-      this._kin,
       this._minPinDigits,
       this._maxPinDigits,
       this._timeoutPrompt,
@@ -48,7 +47,6 @@ class Terminal {
   String get password => _password;
   String get techPassword => _techPassword;
   String get idTerminal => _idTerminal;
-  int get kin => _kin;
   int get minPinDigits => _minPinDigits;
   int get maxPinDigits => _maxPinDigits;
   int get timeoutPrompt => _timeoutPrompt;
@@ -80,10 +78,6 @@ class Terminal {
 
   set idTerminal(String idTerminal) {
     this._idTerminal = idTerminal;
-  }
-
-  set kin(int kin) {
-    this._kin = kin;
   }
 
   set minPinDigits(int minPinDigits) {
@@ -157,7 +151,6 @@ class Terminal {
     map['password'] = this._password;
     map['techPassword'] = this._techPassword;
     map['idTerminal'] = this._idTerminal;
-    map['kin'] = this._kin;
     map['minPinDigits'] = this._minPinDigits;
     map['maxPinDigits'] = this._maxPinDigits;
     map['timeoutPrompt'] = this._timeoutPrompt;
@@ -183,7 +176,6 @@ class Terminal {
     this._password = terminal['password'];
     this._techPassword = terminal['techPassword'];
     this._idTerminal = terminal['idTerminal'];
-    this._kin = terminal['kin'];
     this._minPinDigits = terminal['minPinDigits'];
     this._maxPinDigits = terminal['maxPinDigits'];
     this._timeoutPrompt = terminal['timeoutPrompt'];

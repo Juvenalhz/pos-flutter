@@ -357,7 +357,15 @@ class MainMenu extends StatelessWidget {
                       }
                     });
               } else
-                return Container();
+                return _createDrawerItem(
+                    text: 'Inicialización',
+                    onTap: () {
+                      final InitializationBloc initializationBloc = BlocProvider.of<InitializationBloc>(context);
+
+                    initializationBloc.add(InitializationInitialEvent());
+                    Navigator.pushNamed(context, '/initialization');
+                    }
+                );
             }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
