@@ -9,24 +9,31 @@ class TotalsReportInitialEvent extends TotalsReportEvent {
   List<Object> get props => [];
 }
 
-class TotalsReportPrintReceiptCopy extends TotalsReportEvent {
-  final int id;
-  final bool type;
-  final BuildContext context;
-
-  TotalsReportPrintReceiptCopy(this.type, this.id, this.context);
-
-  @override
-  List<Object> get props => [type, id];
-}
-
 class TotalsReportPrintReport extends TotalsReportEvent {
-  final BuildContext context;
-  final List<Map<String, dynamic>> totalsData;
+  final bool printFromBatch;
 
-  TotalsReportPrintReport(this.context, this.totalsData);
+  TotalsReportPrintReport(this.printFromBatch);
 
   @override
-  List<Object> get props => [context, totalsData];
+  List<Object> get props => [printFromBatch];
 }
 
+class TotalsReportOnPrintOKEvent extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportOnPrintErrorEvent extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportPrintCancel extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TotalsReportPrintRetry extends TotalsReportEvent {
+  @override
+  List<Object> get props => [];
+}

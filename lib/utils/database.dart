@@ -4,8 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "test31.db";
-  static final _databaseVersion = 3;
+  static final _databaseName = "appData.db";
+  static final _databaseVersion = 1;
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -77,7 +77,6 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'password', 'text');
     _tableAlter(db, 'terminal', 'techPassword', 'text');
     _tableAlter(db, 'terminal', 'idTerminal', 'text');
-    _tableAlter(db, 'terminal', 'kin', 'integer');
     _tableAlter(db, 'terminal', 'minPinDigits', 'integer');
     _tableAlter(db, 'terminal', 'maxPinDigits', 'integer');
     _tableAlter(db, 'terminal', 'timeoutPrompt', 'integer');
@@ -94,6 +93,9 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
     _tableAlter(db, 'terminal', 'maskPan', 'integer');
     _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+    _tableAlter(db, 'terminal', 'debitPrint', 'integer');
+    _tableAlter(db, 'terminal', 'creditPrint', 'integer');
+    _tableAlter(db, 'terminal', 'numPrint', 'integer');
   }
 
   void _createCommTable(Database db) async {
@@ -113,6 +115,9 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'ip', 'text');
     _tableAlter(db, 'comm', 'port', 'integer');
     _tableAlter(db, 'comm', 'headerLength', 'integer');
+    _tableAlter(db, 'comm', 'kin', 'integer');
+    _tableAlter(db, 'comm', 'kinIdTerminal', 'integer');
+
   }
 
   Future<void> _fillDefaultComm() async {
@@ -126,6 +131,7 @@ class DatabaseHelper {
       'ip': '192.168.11.209',
       'port': 15000,
       'headerLength': 1,
+      'kin': 2000,
     };
 
     await deleteAll('comm');
@@ -285,7 +291,6 @@ class DatabaseHelper {
   }
 
   void _upgradeTransTable(Database db) async {
-    _tableAlter(db, 'trans', 'id', 'integer');
     _tableAlter(db, 'trans', 'number', 'integer');
     _tableAlter(db, 'trans', 'stan', 'integer');
     _tableAlter(db, 'trans', 'dateTime', 'text');
@@ -423,9 +428,9 @@ class DatabaseHelper {
     return await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<int> deleteAll(String table) async {
+  Future<int> deleteAll(String table, {String where}) async {
     Database db = await instance.database;
-    return await db.delete(table);
+    return await db.delete(table, where: where);
   }
 
   Future<int> deleteRows(String table, {String where, List<dynamic> whereArgs}) async {
@@ -460,7 +465,8 @@ class DatabaseHelper {
 
   Future<int> querySumColumnArguments(String table, String column, {String where}) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    int sum = Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    return sum == null ? 0 : sum;
   }
 
   Future rawQuery(String query) async {

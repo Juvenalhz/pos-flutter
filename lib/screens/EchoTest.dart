@@ -7,7 +7,7 @@ import 'package:pay/bloc/echotestBloc.dart';
 import 'package:pay/screens/transMessage.dart';
 
 import 'commProgress.dart';
-import 'components/CommError.dart';
+import 'components/AlertCancelRetry.dart';
 
 class EchoTest extends StatelessWidget {
   @override
@@ -36,12 +36,10 @@ class EchoTest extends StatelessWidget {
                 return TransMessage(state.message);
               else if (state is EchoTestCompleted) {
                 return EchoTestFinalScreen(state.message, true, onClickDone);
-              }
-              else if (state is EchoTestFailed) {
+              } else if (state is EchoTestFailed) {
                 return EchoTestFinalScreen(state.message, false, onClickDone);
-              }
-              else if (state is EchoTestCommError)
-                return CommError('Prueba De Comunicación', 'Error de conexión....', onClickDone, onClickRetry);
+              } else if (state is EchoTestCommError)
+                return AlertCancelRetry('Prueba De Comunicación', 'Error de conexión....', onClickDone, onClickRetry);
               else {
                 return CommProgress('Prueba De Comunicación').build(context);
               }
@@ -65,7 +63,6 @@ class EchoTest extends StatelessWidget {
 
     echoTestBloc.add(EchoTestInitialEvent());
   }
-
 }
 
 class EchoTestFinalScreen extends StatelessWidget {
@@ -83,10 +80,7 @@ class EchoTestFinalScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Spacer(),
-            if (approved)
-              Image.asset('assets/images/icon_success.png')
-            else
-              Image.asset('assets/images/icon_failure.png'),
+            if (approved) Image.asset('assets/images/icon_success.png') else Image.asset('assets/images/icon_failure.png'),
             Spacer(),
             Text(message, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
             Spacer(),
@@ -107,23 +101,23 @@ class EchoTestFinalScreen extends StatelessWidget {
                   //side: BorderSide(color: Colors.blueGrey)
                 ),
               )
-              else
-                FlatButton(
-                  child: Text(
-                    'OK',
-                    style: TextStyle(fontSize: 32, color: Colors.white),
-                  ),
-                  onPressed: () {
-                    onClick(context);
-                  },
-                  color: Colors.red,
-                  padding: EdgeInsets.all(15.0),
-                  splashColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    //side: BorderSide(color: Colors.blueGrey)
-                  ),
+            else
+              FlatButton(
+                child: Text(
+                  'OK',
+                  style: TextStyle(fontSize: 32, color: Colors.white),
                 ),
+                onPressed: () {
+                  onClick(context);
+                },
+                color: Colors.red,
+                padding: EdgeInsets.all(15.0),
+                splashColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  //side: BorderSide(color: Colors.blueGrey)
+                ),
+              ),
             Spacer(),
           ],
         ),

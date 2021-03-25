@@ -305,6 +305,15 @@ class TransVoidTransaction extends TransactionEvent {
   List<Object> get props => [id];
 }
 
+class TransAskPrintCustomer extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+class TransDigitalReceiptCustomer extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class TransAddServerNumber extends TransactionEvent {
   final int server;
 
@@ -315,6 +324,51 @@ class TransAddServerNumber extends TransactionEvent {
 }
 
 class TransServerBack extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintMerchantOK extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintMerchantError extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintMerchantCancel extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintMerchantRetry extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintCustomerOK extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintCustomerError extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintCustomerCancel extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransPrintCustomerRetry extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransDeletePreviousBatch extends TransactionEvent {
   @override
   List<Object> get props => [];
 }

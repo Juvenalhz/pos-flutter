@@ -9,7 +9,7 @@ import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/pinpad.dart';
 
 import 'commProgress.dart';
-import 'components/CommError.dart';
+import 'components/AlertCancelRetry.dart';
 
 class TechVisit extends StatelessWidget {
   @override
@@ -48,12 +48,11 @@ class TechVisit extends StatelessWidget {
               else if (state is TechVisitShowMessage)
                 return TransMessage(state.message);
               else if (state is TechVisitCompleted) {
-                 return TechVisitFinalScreen(state.message, true, onClickDone);
-              }
-              else if (state is TechVisitFailed) {
+                return TechVisitFinalScreen(state.message, true, onClickDone);
+              } else if (state is TechVisitFailed) {
                 return TechVisitFinalScreen(state.message, false, onClickDone);
               } else if (state is TechVisitCommError)
-                return CommError('Conformidad De Visita', 'Error de conexión....', onClickDone, onClickRetry);
+                return AlertCancelRetry('Conformidad De Visita', 'Error de conexión....', onClickDone, onClickRetry);
               else {
                 return CommProgress('Conformidad De Visita').build(context);
               }

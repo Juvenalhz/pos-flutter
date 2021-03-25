@@ -8,6 +8,8 @@ class Comm {
   String _ip;
   int _port;
   bool _headerLength;
+  int _kin = 0;
+  int _kinIdTerminal = 0;
 
   Comm(this._id, this._tpdu, this._nii, this._timeout, this._ip, this._port, this._headerLength);
 
@@ -18,6 +20,8 @@ class Comm {
   String get ip => this._ip;
   int get port => this._port;
   bool get headerLength => this._headerLength;
+  int get kin => _kin;
+  int get kinIdTerminal => _kinIdTerminal;
 
   set id(int id) {
     this._id = id;
@@ -47,6 +51,14 @@ class Comm {
     this._headerLength = headerLength;
   }
 
+  set kin(int kin) {
+    this._kin = kin;
+  }
+
+  set kinIdTerminal(int kinIdTerminal) {
+    this._kinIdTerminal = kinIdTerminal;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -57,6 +69,8 @@ class Comm {
     map['ip'] = this._ip;
     map['port'] = this._port;
     map['headerLength'] = boolToInt(this._headerLength);
+    map['kin'] = this._kin;
+    map['kinIdTerminal'] = this._kinIdTerminal;
 
     return map;
   }
@@ -69,5 +83,8 @@ class Comm {
     this._ip = comm['ip'];
     this._port = comm['port'];
     this._headerLength = intToBool(comm['headerLength']);
+    this._kin = comm['kin'];
+    this._kinIdTerminal = comm['kinIdTerminal'];
+
   }
 }

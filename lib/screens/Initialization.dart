@@ -18,7 +18,7 @@ import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/screens/commProgress.dart';
 import 'package:pay/bloc/initializationBloc.dart';
-import 'components/CommError.dart';
+import 'components/AlertCancelRetry.dart';
 
 class Initialization extends StatelessWidget {
   @override
@@ -61,7 +61,7 @@ class Initialization extends StatelessWidget {
                 return InitializationAlert('Inicialización', 'Proceso de inicialización falló, intente de nuevamente...');
               }
               else if (state is InitializationCommError)
-                return CommError('Inicialización', 'Error de conexión....', onClickCancel, onClickRetry);
+                return AlertCancelRetry('Inicialización', 'Error de conexión....', onClickCancel, onClickRetry);
               else {
                 return CommProgress('Inicialización').build(context);
               }

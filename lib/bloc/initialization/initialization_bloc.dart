@@ -16,6 +16,7 @@ import 'package:pay/models/terminal.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
@@ -44,6 +45,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       yield InitializationInitial();
     else if (event is InitializationConnect) {
       comm = event.comm;
+      newComm = Comm.fromMap(comm.toMap());
       initialization = new MessageInitialization(comm);
 
       yield InitializationConnecting(comm);
@@ -87,19 +89,19 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         if (await terminalRepository.getTerminal(1) == null) {
           terminal = new Terminal(1, '1');
           terminal.password = '0000';
-          terminal.kin = 1;
           terminal.minPinDigits = 4;
           terminal.maxPinDigits = 12;
           terminal.keyIndex = 2;
           terminal.techPassword = '000000';
           terminal.timeoutPrompt = 60;
+          terminal.numPrint = 0;
 
           await terminalRepository.createTerminal(terminal);
         } else
           terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
-          newComm = comm;
+
           Map acquirerIndicators = new Map<int, String>();
 
           if ((respMap[41] != null) && (merchant.tid.length == 0)) {
@@ -120,6 +122,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if (respMap[60] != null) {
             await processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
+            merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
             if (respMap[3].substring(3, 4) == '1') {
@@ -132,12 +135,16 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           }
           if (respMap[62] != null) {
             processField62(respMap[62], merchant, acquirerIndicators);
+            merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
 
           if (respMap[3].substring(5, 6) == '1') {
             this.add(InitializationSend());
             yield InitializationSending();
           } else {
+            CommRepository commRepository = new CommRepository();
+
+            commRepository.updateComm(newComm);
             connection.disconnect();
             yield InitializationCompleted();
           }
@@ -187,7 +194,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     comm.tpdu = data.substring(index, index + 10);
     index += 10;
-    comm.nii = data.substring(index, index + 4);
+    comm.nii = data.substring(index, index + 4).substring(1, 4);
     index += 4;
 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
@@ -212,7 +219,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
     acquirerIndicators.putIfAbsent(5, () => data.substring(index, index + 6));
     index += 6;
 
-    terminal.techPassword = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    terminal.password = ascii.decode(hex.decode(data.substring(index, index + 8)));
     index += 8;
     terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
     index += 2;
@@ -371,7 +378,10 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       switch (table) {
         case 2:
           {
+            MerchantRepository merchantRepository = new MerchantRepository();
+
             merchant.batchNumber = int.parse(ascii.decode(hex.decode(tableData)));
+            await merchantRepository.updateMerchant(merchant);
           }
           break;
         case 7:

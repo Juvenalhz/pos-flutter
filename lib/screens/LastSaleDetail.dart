@@ -26,8 +26,6 @@ class LastSaleDetail extends StatelessWidget {
         body: Column(
           children: <Widget>[
             Stack(children: <Widget>[
-
-
               Container(
                 height: 80,
                 decoration: BoxDecoration(
@@ -41,74 +39,78 @@ class LastSaleDetail extends StatelessWidget {
                     ],
                   ),
                 ),
-                child:
-                  Center(
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            'Consulta Última Venta',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        ),
-                        IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.print_outlined),
-                          onPressed: () {
-                            Receipt receipt = new Receipt(context);
-
-                            receipt.printTransactionReceipt(true, trans);
-                          },
-                        ),
-                      ])
+                child: Center(
+                    child: Row(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      'Consulta Última Venta',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
                   ),
+                  IconButton(
+                    color: Colors.white,
+                    icon: Icon(Icons.print_outlined),
+                    onPressed: () {
+                      Receipt receipt = new Receipt();
+
+                      receipt.printTransactionReceipt(true, true, trans, onPrintOK, onPrintError);
+                    },
+                  ),
+                ])),
               ),
             ]),
             Expanded(
                 child: Stack(children: <Widget>[
-                  Container(
-                    color: Color(0xFF0D47A1),
-                  ),
-                  Container(
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
-                    child:
-                      Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Spacer(flex: 1),
-                              Text(trans.type + ' - ' + cardBrand, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                              Spacer(flex: 1),
-                              RowDetail(label: DateFormat('dd/MM/yyyy').format(trans.dateTime), strAmount: DateFormat('hh:mm:ss').format(trans.dateTime)),
-                              Spacer(flex: 1),
-                              RowDetail(label: "Ticket:", strAmount: trans.stan.toString()),
-                              Spacer(flex: 2),
-                              RowDetailAmount(label: "Total:", strAmount: formattedTotal),
-                              Spacer(flex: 2),
-                              RowDetail(label: "Tarjeta:", strAmount: trans.maskedPAN),
-                              Spacer(flex: 1),
-                              RowDetail(label: "Autorizacion:", strAmount: trans.authCode),
-                              Spacer(flex: 1),
-                              RowDetail(label: "Referencia:", strAmount: trans.referenceNumber),
-                              Spacer(flex: 2),
-                              Text(trans.respMessage, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
-                              Spacer(flex: 1),
-                              if (trans.respCode == '00')
-                                btnEnter(context, true)
-                              else
-                                btnEnter(context, false),
-                              Spacer(flex: 1),
-                            ],
-                      ),
-
-                  )
+              Container(
+                color: Color(0xFF0D47A1),
+              ),
+              Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Spacer(flex: 1),
+                    Text(trans.type + ' - ' + cardBrand, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                    Spacer(flex: 1),
+                    RowDetail(label: DateFormat('dd/MM/yyyy').format(trans.dateTime), strAmount: DateFormat('hh:mm:ss').format(trans.dateTime)),
+                    Spacer(flex: 1),
+                    RowDetail(label: "Ticket:", strAmount: trans.stan.toString()),
+                    Spacer(flex: 2),
+                    RowDetailAmount(label: "Total:", strAmount: formattedTotal),
+                    Spacer(flex: 2),
+                    RowDetail(label: "Tarjeta:", strAmount: trans.maskedPAN),
+                    Spacer(flex: 1),
+                    RowDetail(label: "Autorizacion:", strAmount: trans.authCode),
+                    Spacer(flex: 1),
+                    RowDetail(label: "Referencia:", strAmount: trans.referenceNumber),
+                    Spacer(flex: 2),
+                    Text(trans.respMessage, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
+                    Spacer(flex: 1),
+                    if (trans.respCode == '00') btnEnter(context, true) else btnEnter(context, false),
+                    Spacer(flex: 1),
+                  ],
+                ),
+              )
             ])),
           ],
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    // final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    //
+    // transactionBloc.add(TransPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    // final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    //
+    // transactionBloc.add(TransPrintRetry());
   }
 
   Widget btnEnter(BuildContext context, bool approved) {
@@ -122,7 +124,6 @@ class LastSaleDetail extends StatelessWidget {
         onPressed: () {
           onClick(context);
         },
-
         color: btnColor,
         padding: EdgeInsets.all(15.0),
         splashColor: Colors.black,
@@ -180,3 +181,7 @@ class RowDetailAmount extends StatelessWidget {
     );
   }
 }
+
+void onPrintOK() {}
+
+void onPrintError(int type) {}

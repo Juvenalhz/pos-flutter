@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
+import 'package:pay/screens/components/AlertCancelRetry.dart';
 import 'package:pay/screens/splash.dart';
+import 'package:pay/screens/transMessage.dart';
 import 'package:pay/utils/spear_menu.dart';
 
 import 'LastSaleDetail.dart';
@@ -38,46 +40,74 @@ class TotalsReport extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Center(child: BlocBuilder<TotalsReportBloc, TotalsReportState>(builder: (context, state) {
-                  if (state is TotalsReportDataReady) {
-                    return Row(children: [
-                      IconButton(
-                        color: Colors.white,
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      Padding(
+                child: Center(
+                    child: BlocListener<TotalsReportBloc, TotalsReportState>(
+                  listener: (context, state) {
+                    if (state is TotalsReportPrintOk) {
+                      if (state.printFromBatch) {
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  child: BlocBuilder<TotalsReportBloc, TotalsReportState>(builder: (context, state) {
+                    if (state is TotalsReportDataReady) {
+                      return Row(children: [
+                        IconButton(
+                          color: Colors.white,
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            'Reporte De Totales',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 29),
+                          ),
+                        ),
+                        BlocBuilder<TotalsReportBloc, TotalsReportState>(builder: (context, state) {
+                          if (state is TotalsReportDataReady) {
+                            if (state.totalsData.length > 0)
+                              return IconButton(
+                                color: Colors.white,
+                                icon: Icon(Icons.print_outlined),
+                                onPressed: () {
+                                  final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+                                  totalsReportBloc.add(TotalsReportPrintReport(false));
+                                },
+                              );
+                            else
+                              return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                          } else
+                            return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                        }),
+                      ]);
+                    } else if (state is TotalsReportPrinting) {
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'Cierre De Lote',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 29),
+                        ),
+                      );
+                    } else if (state is TotalsReportPrintError) {
+                      return Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Text(
                           'Reporte De Totales',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 29),
                         ),
-                      ),
-                      BlocBuilder<TotalsReportBloc, TotalsReportState>(builder: (context, state) {
-                        if (state is TotalsReportDataReady) {
-                          if (state.totalsData.length > 0)
-                            return IconButton(
-                              color: Colors.white,
-                              icon: Icon(Icons.print_outlined),
-                              onPressed: () {
-                                final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
-
-                                totalsReportBloc.add(TotalsReportPrintReport(context, state.totalsData));
-                              },
-                            );
-                          else
-                            return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                        } else
-                          return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                      }),
-                    ]);
-                  } else {
-                    return Text('');
-                  }
-                })),
+                      );
+                    } else {
+                      return Text('');
+                    }
+                  }),
+                )),
               ),
             ]),
             Expanded(
@@ -109,27 +139,31 @@ class TotalsReport extends StatelessWidget {
                                 String acquirerShort;
                                 Map<String, dynamic> totals = state.totalsData[index]['totals'];
                                 int countTDCOwn = totals['visaCount'] + totals['mastercardCount'] + totals['dinersCount'] + totals['privateCount'];
-                                int totalTDCOwn = totals['visaAmount'] + totals['mastercardAmount'] + totals['dinersAmount'] + totals['privateAmount'];
-                                int countTDCOther = totals['visaOtherCount'] + totals['mastercardOtherCount'] + totals['dinersOtherCount'] + totals['privateOtherCount'];
-                                int totalTDCOther = totals['visaOtherAmount']+totals['mastercardOtherAmount']+ totals['dinersOtherAmount']+totals['privateOtherAmount'];
+                                int totalTDCOwn =
+                                    totals['visaAmount'] + totals['mastercardAmount'] + totals['dinersAmount'] + totals['privateAmount'];
+                                int countTDCOther = totals['visaOtherCount'] +
+                                    totals['mastercardOtherCount'] +
+                                    totals['dinersOtherCount'] +
+                                    totals['privateOtherCount'];
+                                int totalTDCOther = totals['visaOtherAmount'] +
+                                    totals['mastercardOtherAmount'] +
+                                    totals['dinersOtherAmount'] +
+                                    totals['privateOtherAmount'];
 
                                 int countTDD = totals['debitCount'] + totals['debitOtherCount'];
                                 int totalTDD = totals['debitAmount'] + totals['debitOtherAmount'];
                                 int countTDDElectron = totals['electronCount'] + totals['electronOtherCount'];
-                                int totalTDDElectron = totals['electronAmount']+totals['electronOtherAmount'];
+                                int totalTDDElectron = totals['electronAmount'] + totals['electronOtherAmount'];
 
                                 int totalTCD_TDD = totalTDCOwn + totalTDCOther + totalTDD + totalTDDElectron;
-
 
                                 if (state.totalsData[index]['acquirer'].toLowerCase().contains('platco')) {
                                   acquirer = 'Platco';
                                   acquirerShort = 'PL';
-                                }
-                                else if (state.totalsData[index]['acquirer'].toLowerCase().contains('mercantil')) {
+                                } else if (state.totalsData[index]['acquirer'].toLowerCase().contains('mercantil')) {
                                   acquirer = 'Mercantil';
                                   acquirerShort = 'BM';
-                                }
-                                else if (state.totalsData[index]['acquirer'].toLowerCase().contains('provincial')) {
+                                } else if (state.totalsData[index]['acquirer'].toLowerCase().contains('provincial')) {
                                   acquirer = 'Provincial';
                                   acquirerShort = 'BP';
                                 }
@@ -138,11 +172,8 @@ class TotalsReport extends StatelessWidget {
                                   elevation: 3,
                                   child: Column(
                                     children: [
-
                                       Text('ADQUIRIENCIA: ' + state.totalsData[index]['acquirer'],
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(fontWeight: FontWeight.bold)
-                                      ),
+                                          textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
                                       Text('TDC ' + acquirer, style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
@@ -154,29 +185,29 @@ class TotalsReport extends StatelessWidget {
                                       SizedBox(height: 9),
                                       Text('TDC OTROS BANCOS', style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
-                                      TotalsDetailLine(totals['visaOtherCount'], 'VISA o/Ban' , totals['visaOtherAmount']),
+                                      TotalsDetailLine(totals['visaOtherCount'], 'VISA o/Ban', totals['visaOtherAmount']),
                                       TotalsDetailLine(totals['mastercardOtherCount'], 'MASTER  o/Ban', totals['mastercardOtherAmount']),
                                       if (totals['dinersOtherCount'] != 0)
                                         TotalsDetailLine(totals['dinersOtherCount'], 'DINERS  o/Ban', totals['dinersOtherAmount']),
                                       if (totals['privateOtherCount'] != 0)
-                                        TotalsDetailLine(totals['privateOtherCount'], 'Tarj. PRIV  o/Ban' , totals['privateOtherAmount']),
+                                        TotalsDetailLine(totals['privateOtherCount'], 'Tarj. PRIV  o/Ban', totals['privateOtherAmount']),
                                       TotalsDetailLine(countTDCOther, 'Total TDC o/Ban', totalTDCOther),
                                       TotalsLine('Total TDC', totalTDCOwn + totalTDCOther),
                                       SizedBox(height: 9),
                                       Text('TDD', style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
-                                      TotalsDetailLine(totals['debitCount'], 'Total TDD ' + acquirerShort , totals['debitAmount']),
+                                      TotalsDetailLine(totals['debitCount'], 'Total TDD ' + acquirerShort, totals['debitAmount']),
                                       TotalsDetailLine(totals['debitOtherCount'], 'Total TDD o/Ban', totals['debitOtherAmount']),
                                       SizedBox(height: 9),
                                       Text('TDD VISA ELECTRON', style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
-                                      TotalsDetailLine(totals['electronCount'], 'Total TVE ' + acquirerShort , totals['electronAmount']),
+                                      TotalsDetailLine(totals['electronCount'], 'Total TVE ' + acquirerShort, totals['electronAmount']),
                                       TotalsDetailLine(totals['electronOtherCount'], 'Total TVE o/Ban', totals['electronOtherAmount']),
                                       TotalsLine('Total TDD', totalTDD + totalTDDElectron),
                                       SizedBox(height: 9),
                                       Text('ALIMENTACIÓN', style: TextStyle(fontWeight: FontWeight.bold)),
                                       SizedBox(height: 9),
-                                      TotalsDetailLine(totals['foodCount'], 'Total TAE ' , totals['foodAmount']),
+                                      TotalsDetailLine(totals['foodCount'], 'Total TAE ', totals['foodAmount']),
                                       SizedBox(height: 12),
                                       TotalsLine('Total TDC+TDD', totalTCD_TDD),
                                       TotalsLine('Total Cestaticket', totals['foodAmount']),
@@ -188,8 +219,12 @@ class TotalsReport extends StatelessWidget {
                           ),
                         ],
                       );
+                    } else if (state is TotalsReportPrinting) {
+                      return TransMessage('Imprimiendo Reporte De Totales');
+                    } else if (state is TotalsReportPrintError) {
+                      return AlertCancelRetry('Impresión', 'Error en impresión de reporte....', onPrintCancel, onPrintRetry);
                     } else
-                      return SplashScreen();
+                      return Container();
                   }))
             ])),
           ],
@@ -209,9 +244,7 @@ class TotalsReport extends StatelessWidget {
           Spacer(flex: 1),
           SizedBox(
             width: 40,
-            child: Text(count.toString().padLeft(4, '0'),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontWeight: FontWeight.normal)),
+            child: Text(count.toString().padLeft(4, '0'), textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.normal)),
           ),
           Spacer(flex: 2),
           SizedBox(
@@ -228,7 +261,6 @@ class TotalsReport extends StatelessWidget {
                   fontFeatures: [FontFeature.tabularFigures()],
                 )),
           ),
-
         ],
       ),
     );
@@ -257,7 +289,6 @@ class TotalsReport extends StatelessWidget {
                   fontFeatures: [FontFeature.tabularFigures()],
                 )),
           ),
-
         ],
       ),
     );
@@ -285,5 +316,17 @@ class TotalsReport extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+    totalsReportBloc.add(TotalsReportPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
+
+    totalsReportBloc.add(TotalsReportPrintRetry());
   }
 }

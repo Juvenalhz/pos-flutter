@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pay/bloc/transactionBloc.dart';
-import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 
-class TransApprovedScreen extends StatelessWidget {
-  final Trans trans;
+class WarningScreen extends StatelessWidget {
+  final String title;
+  final String message;
   final Function(BuildContext) onClickFunction;
 
-  TransApprovedScreen(this.trans, this.onClickFunction);
+  WarningScreen(this.title, this.message, this.onClickFunction);
 
   @override
   Widget build(BuildContext context) {
@@ -17,30 +15,20 @@ class TransApprovedScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Image.asset('assets/images/icon_success.png'),
+            Image.asset('assets/images/icon_warning.png'),
             Text(
-              "Aprobado",
+              title,
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-              child: Row(children: [
-                Text('Aprovación:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
-                Flexible(fit: FlexFit.tight, child: SizedBox()),
-                Text(trans.authCode, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
-              ])
-            ),
-            Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
                 child: Row(children: [
-                  Text('Referencia:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
-                  Flexible(fit: FlexFit.tight, child: SizedBox()),
-                  Text(trans.stan.toString().padLeft(4, '0'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
-                ])
-            ),
+                  Flexible(
+                      child: Center(child: Text(message, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)))),
+                ])),
             FlatButton(
               child: Text(
                 'OK',
@@ -49,7 +37,7 @@ class TransApprovedScreen extends StatelessWidget {
               onPressed: () {
                 onClickFunction(context);
               },
-              color: Colors.green,
+              color: Colors.orange,
               padding: EdgeInsets.all(15.0),
               splashColor: Colors.black,
               shape: RoundedRectangleBorder(

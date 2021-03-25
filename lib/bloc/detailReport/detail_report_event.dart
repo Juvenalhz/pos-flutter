@@ -21,12 +21,12 @@ class DetailReportPrintReceiptCopy extends DetailReportEvent {
 }
 
 class DetailReportPrintReport extends DetailReportEvent {
-  final BuildContext context;
+  final bool printFromBatch;
 
-  DetailReportPrintReport(this.context);
+  DetailReportPrintReport(this.printFromBatch);
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [printFromBatch];
 }
 
 class DetailReportViewTransDetail extends DetailReportEvent {
@@ -36,4 +36,34 @@ class DetailReportViewTransDetail extends DetailReportEvent {
 
   @override
   List<Object> get props => [id];
+}
+
+class DetailReportOnPrintOKEvent extends DetailReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportOnPrintErrorEvent extends DetailReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportPrintCancel extends DetailReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportPrintRetry extends DetailReportEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class DetailReportVoidPassword extends DetailReportEvent {
+  final int id;
+  final Terminal terminal;
+
+  DetailReportVoidPassword(this.id, this.terminal);
+
+  @override
+  List<Object> get props => [id, terminal];
 }

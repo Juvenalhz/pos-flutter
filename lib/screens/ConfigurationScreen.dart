@@ -260,26 +260,26 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   children: <Widget>[
                                     DataTile(
                                         myTitle: 'Clave Sistema',
-                                        value: _terminal.password,
+                                        value: _terminal.techPassword,
                                         type: _tNumber,
                                         obscureText: true,
                                         maxLength: 6,
-                                        onSaved: (nValue) => _terminal.password = nValue,
+                                        onSaved: (nValue) => _terminal.techPassword = nValue,
                                         onChanged: (nValue) {
                                           Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                          _terminal.password = nValue;
+                                          _terminal.techPassword = nValue;
                                         },
                                         validator: (nValue) => InputValidation.defaultPasswordValidator(nValue)),
-                                    DataTile(
-                                        myTitle: 'Mensaje Pin Pad',
-                                        value: _terminal.industry,
-                                        maxLength: 16,
-                                        onSaved: (nValue) => _terminal.industry = nValue,
-                                        onChanged: (nValue) {
-                                          Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                          _terminal.industry = nValue;
-                                        },
-                                        validator: (nValue) => InputValidation.requiredField(nValue)),
+                                    // DataTile(
+                                    //     myTitle: 'Mensaje Pin Pad',
+                                    //     value: _terminal.industry,
+                                    //     maxLength: 16,
+                                    //     onSaved: (nValue) => _terminal.industry = nValue,
+                                    //     onChanged: (nValue) {
+                                    //       Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    //       _terminal.industry = nValue;
+                                    //     },
+                                    //     validator: (nValue) => InputValidation.requiredField(nValue)),
                                     ItemTileTwoColumn(
                                       contentPadding: EdgeInsets.zero,
                                       leftLabel: DataTile(
@@ -323,6 +323,79 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftWidth: size.width / 2.5,
                                       rightWidth: size.width / 2.5,
                                     ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión',
+                                          value: _terminal.print,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                //If print is false, it cant print credit or debit
+                                                if (newValue == false) {
+                                                  _terminal.creditPrint = newValue;
+                                                  _terminal.debitPrint = newValue;
+                                                  _terminal.numPrint = 0;
+                                                }
+                                                _terminal.print = newValue;
+                                              })),
+                                      rightLabel: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text('Número de\ncopias'),
+                                          DropdownButton(
+                                            value: _terminal.numPrint,
+                                            onChanged: (int newValue) {
+                                              Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                              setState(() {
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.numPrint = newValue;
+                                              });
+                                            },
+                                            items: <int>[0, 1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text(value.toString()),
+                                              );
+                                            }).toList(),
+                                          )
+                                        ],
+                                      ),
+                                      // CheckboxItem(
+                                      //     label: 'Número de\ncopias',
+                                      //     value: _terminal.cashback,
+                                      //     onChanged: (newValue) => setState(() {
+                                      //           _terminal.cashback = newValue;
+                                      //         })),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(
+                                          label: 'Impresión\nDébito',
+                                          value: _terminal.debitPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.debitPrint = newValue;
+                                              })),
+                                      rightLabel: CheckboxItem(
+                                          label: 'Impresión\nCrédito',
+                                          value: _terminal.creditPrint,
+                                          onChanged: (newValue) => setState(() {
+                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                                if (_terminal.print == false)
+                                                  return null;
+                                                else
+                                                  _terminal.creditPrint = newValue;
+                                              })),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
                                     SizedBox(height: 10.0),
                                     Divider(color: Colors.black54, thickness: 0.6),
                                     ItemTileTwoColumn(
@@ -359,13 +432,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   leftWidth: size.width / 2.18,
                                   rightWidth: size.width / 2.18,
                                 ),*/
-                                    ItemTileTwoColumn(
-                                      contentPadding: EdgeInsets.all(5.0),
-                                      leftLabel: CheckboxItem(label: 'Impresión', value: _terminal.print, onChanged: null),
-                                      rightLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
-                                      leftWidth: size.width / 2.18,
-                                      rightWidth: size.width / 2.18,
-                                    ),
+
                                     ItemTileTwoColumn(
                                       leftLabel: CheckboxItem(label: 'Cuotas', value: _terminal.installments, onChanged: null),
                                       rightLabel: CheckboxItem(label: 'Devolución', value: _terminal.refund, onChanged: null),
@@ -433,6 +500,12 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),
+                                    ItemTileTwoColumn(
+                                      contentPadding: EdgeInsets.all(5.0),
+                                      leftLabel: CheckboxItem(label: 'Cash back', value: _terminal.cashback, onChanged: null),
+                                      leftWidth: size.width / 2.18,
+                                      rightWidth: size.width / 2.18,
+                                    ),
                                   ],
                                 );
                               }
@@ -493,7 +566,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.26,
+                                leftWidth: size.width / 1.9,
                                 rightWidth: size.width / 2.8,
                               ),
                               ItemTileTwoColumn(
@@ -523,9 +596,44 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.26,
+                                leftWidth: size.width / 1.9,
                                 rightWidth: size.width / 2.8,
                               ),
+
+                              ItemTileTwoColumn(
+                                contentPadding: EdgeInsets.zero,
+                                leftLabel: DataTile(
+                                  myTitle: 'Llave KIN Terminal',
+                                  value: _comm.kinIdTerminal.toString(),
+                                  type: _tNumber,
+                                  maxLength: 3,
+                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
+                                  onSaved: (nValue) => _comm.kinIdTerminal = int.parse(nValue),
+                                  onChanged: (nValue) {
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    _comm.kinIdTerminal = int.parse(nValue);
+                                  },
+                                  validator: (nValue) => InputValidation.requiredField(nValue),
+                                ),
+                                rightLabel:  DataTile(
+                                  myTitle: 'KIN',
+                                  value: _comm.kin.toString(),
+                                  type: _tNumber,
+                                  maxLength: 4,
+                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
+                                  onSaved: (nValue) => _comm.kin = int.parse(nValue),
+                                  onChanged: (nValue) {
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    _comm.kin = int.parse(nValue);
+                                  },
+                                  validator: (nValue) => InputValidation.requiredField(nValue),
+                                ),
+
+                                leftWidth: size.width / 1.9,
+                                rightWidth: size.width / 2.8,
+                              ),
+
+
                               ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
                             ],
                           );
@@ -594,8 +702,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                             itemBuilder: (context, index) {
                               return ListTile(
                                 //padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                                title: Column(
-                                  children: <Widget>[
+                                title: Column(children: <Widget>[
                                   ItemTileTwoColumn(
                                     leftLabel: Text('Código Adquiriente'),
                                     leftItem: Text(acquirers[index]['id'].toString()),
@@ -615,14 +722,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                     leftWidth: size.width / 2.5,
                                     rightWidth: size.width / 2.5,
                                   ),
-                                    Divider(thickness: 3),
+                                  Divider(thickness: 3),
                                 ]),
                               );
-
                             },
                           );
-
-
                         }
                         return retWidget;
                       },
@@ -640,7 +744,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
 
 Widget onOffTile(String myTitle, int value) {
   return SwitchListTile(
-    onChanged: (bool b) {} ,
+    onChanged: (bool b) {},
     title: Text(myTitle),
     value: (value == 1) ? true : false,
   );

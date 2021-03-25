@@ -281,7 +281,7 @@ class _NumericEntryState extends State<NumericEntry> {
               duration: Duration(seconds: 1),
             );
             final snackBarNumber = SnackBar(
-              content: Text('Longitud Minima Es ' + (this.min > 0 ? this.min : this.min + 1).toString(),
+              content: Text('Longitud Mínima Es ' + (this.min > 0 ? this.min : this.min + 1).toString(),
                   textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
               duration: Duration(seconds: 1),
             );
