@@ -11,10 +11,10 @@ import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/acquirer_repository.dart';
-import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
+import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/constants.dart';
 import 'package:pay/utils/database.dart';
 import 'package:pay/utils/pinpad.dart';
@@ -136,7 +136,7 @@ class HostMessage {
     return respMap;
   }
 
-  Uint8List calculateChecksum(Uint8List message)
+  Uint8List calculateEFTSECChecksum(Uint8List message)
   {
     var checksum = Uint8List(1);
 
@@ -147,6 +147,86 @@ class HostMessage {
     });
 
     return checksum;
+  }
+
+  Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
+
+    if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
+      return clearMessage;
+    }
+    else {
+      var cipher = Cipher();
+      Uint8List temp;
+      Uint8List cipheredData;
+
+      //create cyphered buffer
+      if (_comm.headerLength == true)
+        cipheredData = await cipher.cipherMessage(clearMessage.sublist(7), _comm.kinIdTerminal);
+      else
+        cipheredData = await cipher.cipherMessage(clearMessage.sublist(5), _comm.kinIdTerminal);
+
+      Uint8List dataToSend = new Uint8List(14 + cipheredData.length);  //length from the ciphered buffer + header of eftsec message
+
+      int i = 0;
+      int lengthIndex = 0;
+
+      //leave space for full length
+      if (_comm.headerLength == true) i += 2;
+
+      //tpdu
+      if (_comm.headerLength == true) {
+        clearMessage.sublist(2, 7).forEach((element) {
+          dataToSend[i++] = element;
+        });
+      }
+      else {
+        clearMessage.sublist(0, 5).forEach((element) {
+          dataToSend[i++] = element;
+        });
+      }
+
+      //kin
+      temp = strToBcd(_comm.kin.toRadixString(16).padLeft(4, '0'));
+      temp.forEach((element) {
+        dataToSend[i++] = element;
+      });
+
+      //hex.decode(_comm.kin.toRadixString(16).padLeft(4, '0')).sublist(0).reversed.forEach((element) {dataToSend[i++] = element;});
+
+      //start always 0x00 0x00
+      [0, 0].forEach((element) {dataToSend[i++] = element;});
+
+      //length of the request buffer in clear
+      if (_comm.headerLength == true)
+        temp = strToBcd((clearMessage.length - 2).toRadixString(16).padLeft(4, '0'));  // clear message has length added at this point, needs to be removed
+      else
+        temp = strToBcd(clearMessage.length.toRadixString(16).padLeft(4, '0'));
+
+      temp.forEach((element) {
+        dataToSend[i++] = element;
+      });
+      //hex.decode(clearMessage.length.toRadixString(16)).sublist(0).reversed.forEach((element) {dataToSend[i++] = element;});
+
+      //checksum byte
+      dataToSend[i++] = calculateEFTSECChecksum(clearMessage.sublist(5))[0];
+
+      //add ciphered data buffer
+      cipheredData.forEach((element) {
+        dataToSend[i++] = element;
+      });
+
+      //add full package length
+      if (_comm.headerLength == true) {
+        Uint8List temp = strToBcd((i).toRadixString(16).padLeft(4, '0'));
+        temp.forEach((element) {
+          dataToSend[lengthIndex++] = element;
+        });
+      }
+
+      memDump('Ciphred request', dataToSend);
+      return dataToSend;
+    }
+
   }
 }
 
@@ -194,7 +274,7 @@ class MessageInitialization extends HostMessage {
 
     super._field62Type = DT.BIN;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -259,7 +339,7 @@ class TransactionMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -319,7 +399,7 @@ class ReversalMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -367,7 +447,7 @@ class EchoTestMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -408,7 +488,7 @@ class LastSaleMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -472,7 +552,7 @@ class VoidMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -524,7 +604,7 @@ class TechVisitMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -586,7 +666,7 @@ class AdjustMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }
 
@@ -644,6 +724,6 @@ class BatchMessage extends HostMessage {
 
     super._field62Type = DT.ASCII;
 
-    return message.buildIso();
+    return buildCiphredMessage(message.buildIso());
   }
 }

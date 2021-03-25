@@ -125,7 +125,7 @@ class Communication {
       }
     }
 
-    print("received bytes len: ${_frameSize + 2}");
+    //print("received bytes len: ${_frameSize + 2}");
     return _message.sublist(2, _frameSize + 2);
   }
 

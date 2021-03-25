@@ -493,7 +493,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.26,
+                                leftWidth: size.width / 2,
                                 rightWidth: size.width / 2.8,
                               ),
                               ItemTileTwoColumn(
@@ -529,12 +529,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
 
                               ItemTileTwoColumn(
                                 contentPadding: EdgeInsets.zero,
-                                leftLabel: ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
-                                rightLabel: DataTile(
+                                leftLabel:  DataTile(
                                   myTitle: 'KIN',
                                   value: _comm.kin.toString(),
                                   type: _tNumber,
-                                  maxLength: 3,
+                                  maxLength: 4,
                                   formatInput: [FilteringTextInputFormatter.digitsOnly],
                                   onSaved: (nValue) => _comm.kin = int.parse(nValue),
                                   onChanged: (nValue) {
@@ -543,12 +542,25 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.26,
-                                rightWidth: size.width / 2.8,
+                                rightLabel: DataTile(
+                                  myTitle: 'Llave KIN Terminal',
+                                  value: _comm.kinIdTerminal.toString(),
+                                  type: _tNumber,
+                                  maxLength: 3,
+                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
+                                  onSaved: (nValue) => _comm.kinIdTerminal = int.parse(nValue),
+                                  onChanged: (nValue) {
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    _comm.kinIdTerminal = int.parse(nValue);
+                                  },
+                                  validator: (nValue) => InputValidation.requiredField(nValue),
+                                ),
+                                leftWidth: size.width / 2.8,
+                                rightWidth: size.width / 2.2,
                               ),
 
 
-                              //ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
+                              ListTile(title: Text('Tipo de Comunicación'), subtitle: Text('LAN')),
                             ],
                           );
                         }

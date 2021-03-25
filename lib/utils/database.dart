@@ -113,6 +113,8 @@ class DatabaseHelper {
     _tableAlter(db, 'comm', 'port', 'integer');
     _tableAlter(db, 'comm', 'headerLength', 'integer');
     _tableAlter(db, 'comm', 'kin', 'integer');
+    _tableAlter(db, 'comm', 'kinIdTerminal', 'integer');
+
   }
 
   Future<void> _fillDefaultComm() async {
@@ -126,6 +128,7 @@ class DatabaseHelper {
       'ip': '192.168.11.209',
       'port': 15000,
       'headerLength': 1,
+      'kin': 2000,
     };
 
     await deleteAll('comm');
@@ -285,7 +288,6 @@ class DatabaseHelper {
   }
 
   void _upgradeTransTable(Database db) async {
-    _tableAlter(db, 'trans', 'id', 'integer');
     _tableAlter(db, 'trans', 'number', 'integer');
     _tableAlter(db, 'trans', 'stan', 'integer');
     _tableAlter(db, 'trans', 'dateTime', 'text');

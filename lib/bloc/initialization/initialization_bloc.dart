@@ -16,6 +16,7 @@ import 'package:pay/models/terminal.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/aid_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/pubKey_repository.dart';
@@ -44,6 +45,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       yield InitializationInitial();
     else if (event is InitializationConnect) {
       comm = event.comm;
+      newComm = Comm.fromMap(comm.toMap());
       initialization = new MessageInitialization(comm);
 
       yield InitializationConnecting(comm);
@@ -87,7 +89,6 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
         if (await terminalRepository.getTerminal(1) == null) {
           terminal = new Terminal(1, '1');
           terminal.password = '0000';
-          terminal.kin = 1;
           terminal.minPinDigits = 4;
           terminal.maxPinDigits = 12;
           terminal.keyIndex = 2;
@@ -99,7 +100,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         if ((respMap[39] != null) && (respMap[39] == '00')) {
-          newComm = comm;
+
           Map acquirerIndicators = new Map<int, String>();
 
           if ((respMap[41] != null) && (merchant.tid.length == 0)) {
@@ -140,6 +141,9 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             this.add(InitializationSend());
             yield InitializationSending();
           } else {
+            CommRepository commRepository = new CommRepository();
+
+            commRepository.updateComm(newComm);
             connection.disconnect();
             yield InitializationCompleted();
           }
@@ -189,7 +193,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     comm.tpdu = data.substring(index, index + 10);
     index += 10;
-    comm.nii = data.substring(index, index + 4);
+    comm.nii = data.substring(index, index + 4).substring(1, 4);
     index += 4;
 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
