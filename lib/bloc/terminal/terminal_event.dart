@@ -41,3 +41,4 @@ class UpdateTerminal extends TerminalEvent {
 
   const UpdateTerminal(this.terminal);
 }
+

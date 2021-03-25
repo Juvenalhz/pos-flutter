@@ -22,6 +22,9 @@ class Terminal {
   bool _passwordRefund = false;
   bool _maskPan = false;
   bool _amountConfirmation = false;
+  bool _debitPrint = false;
+  bool _creditPrint = false;
+  int _numPrint = 0;
 
   Terminal(this._id, this._idTerminal,
       [this._password,
@@ -41,28 +44,55 @@ class Terminal {
       this._passwordBatch,
       this._passwordRefund,
       this._maskPan,
-      this._amountConfirmation]);
+      this._amountConfirmation,
+      this._debitPrint,
+      this._creditPrint,
+      this._numPrint]);
 
   int get id => _id;
+
   String get password => _password;
+
   String get techPassword => _techPassword;
+
   String get idTerminal => _idTerminal;
   int get minPinDigits => _minPinDigits;
+
   int get maxPinDigits => _maxPinDigits;
+
   int get timeoutPrompt => _timeoutPrompt;
+
   int get maxTipPercentage => _maxTipPercentage;
+
   int get keyIndex => _keyIndex;
+
   String get industry => _industry;
+
   bool get print => _print;
+
   bool get cashback => _cashback;
+
   bool get installments => _installments;
+
   bool get refund => _refund;
+
   bool get last4Digits => _last4Digits;
+
   bool get passwordVoid => _passwordVoid;
+
   bool get passwordBatch => _passwordBatch;
+
   bool get passwordRefund => _passwordRefund;
+
   bool get maskPan => _maskPan;
+
   bool get amountConfirmation => _amountConfirmation;
+
+  bool get debitPrint => _debitPrint;
+
+  bool get creditPrint => _creditPrint;
+
+  int get numPrint => _numPrint;
 
   set id(int id) {
     this._id = id;
@@ -144,6 +174,17 @@ class Terminal {
     this._amountConfirmation = amountConfirmation;
   }
 
+  set debitPrint(bool debitPrint) {
+    this._debitPrint = debitPrint;
+  }
+
+  set creditPrint(bool creditPrint) {
+    this._creditPrint = creditPrint;
+  }
+  set numPrint(int numPrint) {
+    this._numPrint = numPrint;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -157,7 +198,7 @@ class Terminal {
     map['maxTipPercentage'] = this._maxTipPercentage;
     map['keyIndex'] = this._keyIndex;
     map['industry'] = this._industry;
-    map['print'] = boolToString(this._print);
+    map['print'] = boolToInt(this._print);
     map['cashback'] = boolToInt(this._cashback);
     map['installments'] = boolToInt(this._installments);
     map['refund'] = boolToInt(this._refund);
@@ -167,6 +208,9 @@ class Terminal {
     map['passwordRefund'] = boolToInt(this._passwordRefund);
     map['maskPan'] = boolToInt(this._maskPan);
     map['amountConfirmation'] = boolToInt(this._amountConfirmation);
+    map['debitPrint'] = boolToString(this._debitPrint);
+    map['creditPrint'] = boolToString(this._creditPrint);
+    map['numPrint'] = this._numPrint;
 
     return map;
   }
@@ -192,5 +236,8 @@ class Terminal {
     this._passwordRefund = intToBool(terminal['passwordRefund']);
     this._maskPan = intToBool(terminal['maskPan']);
     this._amountConfirmation = intToBool(terminal['amountConfirmation']);
+    this._debitPrint = intToBool(terminal['debitPrint']);
+    this._creditPrint = intToBool(terminal['creditPrint']);
+    this._numPrint = terminal['numPrint'];
   }
 }

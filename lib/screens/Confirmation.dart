@@ -132,7 +132,8 @@ class Confirmation extends StatelessWidget {
                           Spacer(flex: 2),
                           Padding(
                             padding: const EdgeInsets.all(40.0),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [btnCancel(context), btnEnter(context)]),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround, children: [btnCancel(context, state), btnEnter(context, state)]),
                           ),
                         ],
                       );
@@ -153,7 +154,7 @@ class Confirmation extends StatelessWidget {
     );
   }
 
-  Widget btnCancel(BuildContext context) {
+  Widget btnCancel(BuildContext context, TransactionState state) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return Container(
@@ -161,7 +162,10 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.cancel, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransCardError());
+          if (state is TransactionAskPrintCustomer) {
+            transactionBloc.add(TransDigitalReceiptCustomer());
+          } else
+            transactionBloc.add(TransCardError());
         },
         color: Colors.red,
         padding: EdgeInsets.all(15.0),
@@ -174,7 +178,7 @@ class Confirmation extends StatelessWidget {
     );
   }
 
-  Widget btnEnter(BuildContext context) {
+  Widget btnEnter(BuildContext context, state) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
     return Container(
@@ -182,7 +186,10 @@ class Confirmation extends StatelessWidget {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          transactionBloc.add(TransConfirmOK());
+          if (state is TransactionAskPrintCustomer) {
+            transactionBloc.add(TransCustomerReceipt());
+          } else
+            transactionBloc.add(TransConfirmOK());
         },
         color: Colors.green,
         padding: EdgeInsets.all(15.0),

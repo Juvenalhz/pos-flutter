@@ -4,9 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/bin.dart';
+import 'package:pay/models/merchant.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/receipt.dart';
 import 'package:pay/utils/reports.dart';
@@ -25,7 +27,11 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
   ) async* {
     if (event is DetailReportInitialEvent) {
       TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
+      MerchantRepository merchantRepository = new MerchantRepository();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      int batchNumber = merchant.batchNumber;
+
+      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0 and batchNum = $batchNumber');
       List<Trans> listTrans = new List<Trans>();
 
       transList.forEach((element) {
@@ -38,11 +44,15 @@ class DetailReportBloc extends Bloc<DetailReportEvent, DetailReportState> {
       Trans trans = Trans.fromMap(await transRepository.getTrans(event.id));
       Receipt receipt = new Receipt();
 
-      receipt.printTransactionReceipt(event.type, trans);
+      receipt.printTransactionReceipt(event.type, true, trans, null, null);
     } else if (event is DetailReportPrintReport) {
       Reports report = new Reports();
       TransRepository transRepository = new TransRepository();
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0');
+      MerchantRepository merchantRepository = new MerchantRepository();
+      Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      int batchNumber = merchant.batchNumber;
+
+      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'reverse = 0 and batchNum = $batchNumber');
       List<Trans> listTrans = new List<Trans>();
 
       transList.forEach((element) {

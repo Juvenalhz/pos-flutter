@@ -412,6 +412,7 @@ class Trans {
     map['voided'] = boolToInt(this._voided);
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
+    map['cardType'] = this._cardType;
 
     return map;
   }
@@ -423,8 +424,7 @@ class Trans {
     // !!!!!!!!!!!!!!!!!!!!
     var cipher = Cipher();
     this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
-    if (this.cardholderName.length > 0)
-      this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+    if (this.cardholderName.length > 0) this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
 
     map['id'] = this._id;
     map['number'] = this._number;
@@ -472,6 +472,7 @@ class Trans {
     map['issuer'] = this._issuer;
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
+    map['cardType'] = this._cardType;
 
     return map;
   }
@@ -528,6 +529,7 @@ class Trans {
     this._issuer = trans['issuer'];
     this._server = trans['server'];
     this._tipAdjusted = intToBool(trans['tipAdjusted']);
+    this._cardType = trans['cardType'];
   }
 
   void clear() {

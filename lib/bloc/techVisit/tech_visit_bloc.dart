@@ -113,7 +113,7 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
         if (respMap[39] == '00') {
           Receipt receipt = new Receipt();
 
-          receipt.techVisitReceipt('', track2, visitType.toString(), requirementType.toString(), respMap[38]);
+          receipt.techVisitReceipt('', track2, visitType.toString(), requirementType.toString(), respMap[38], onPrintOk, onPrintError);
           yield TechVisitCompleted(respMap[6208]);
         } else // error in echo test response
           yield TechVisitFailed('Error En Prueba De Comunicación');
@@ -127,4 +127,8 @@ class TechVisitBloc extends Bloc<TechVisitEvent, TechVisitState> {
 
     lastSaleBloc.add(TechVisitCardRead(params));
   }
+
+  void onPrintOk() async {}
+
+  void onPrintError(int type) {}
 }

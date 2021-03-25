@@ -93,6 +93,9 @@ class DatabaseHelper {
     _tableAlter(db, 'terminal', 'passwordRefund', 'integer');
     _tableAlter(db, 'terminal', 'maskPan', 'integer');
     _tableAlter(db, 'terminal', 'amountConfirmation', 'integer');
+    _tableAlter(db, 'terminal', 'debitPrint', 'integer');
+    _tableAlter(db, 'terminal', 'creditPrint', 'integer');
+    _tableAlter(db, 'terminal', 'numPrint', 'integer');
   }
 
   void _createCommTable(Database db) async {
@@ -425,9 +428,9 @@ class DatabaseHelper {
     return await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<int> deleteAll(String table) async {
+  Future<int> deleteAll(String table, {String where}) async {
     Database db = await instance.database;
-    return await db.delete(table);
+    return await db.delete(table, where: where);
   }
 
   Future<int> deleteRows(String table, {String where, List<dynamic> whereArgs}) async {
@@ -462,7 +465,8 @@ class DatabaseHelper {
 
   Future<int> querySumColumnArguments(String table, String column, {String where}) async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    int sum = Sqflite.firstIntValue(await db.rawQuery('SELECT SUM($column) FROM $table WHERE $where'));
+    return sum == null ? 0 : sum;
   }
 
   Future rawQuery(String query) async {

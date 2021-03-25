@@ -49,7 +49,11 @@ class Reports {
     Printer printer = new Printer();
     var formatter = new NumberFormat.currency(locale: 'eu', symbol: ' ', decimalDigits: 2);
     TransRepository transRepository = new TransRepository();
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    int batchNumber = merchant.batchNumber;
 
+    printer.setFontSize(0);
     await _addHeader(printer);
     printer.setFontSize(Printer.FONT_SIZE_NORMAL);
     printer.addText(Printer.CENTER, 'REPORTE DETALLADO');
@@ -74,8 +78,10 @@ class Reports {
     });
 
     printer.addText(Printer.LEFT, 'Totales');
-    printer.addTextSideBySide('Cantidad de Transacciones:', (await transRepository.getCountTrans()).toString());
-    printer.addTextSideBySide('Bs.:', formatter.format(await transRepository.getBatchTotal() / 100).toString().trim());
+    printer.addTextSideBySide(
+        'Cantidad de Transacciones:', (await transRepository.getCountTrans(where: 'reverse = 0 and batchNum = $batchNumber')).toString());
+    printer.addTextSideBySide('Bs.:',
+        formatter.format(await transRepository.getBatchTotal(where: 'reverse=0 and voided=0 and batchNum = $batchNumber') / 100).toString().trim());
     printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
 
     printer.feedLine(5);

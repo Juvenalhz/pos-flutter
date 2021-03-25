@@ -41,7 +41,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
     print(event.toString());
     if (event is BatchInitialEvent) {
-      if (transRepository.getCountTrans() == 0)
+      if (await transRepository.getCountTrans(where: 'reverse = 0') == 0)
         yield BatchEmpty();
       else
         this.add(BatchCheckAdjustedTips());
@@ -115,7 +115,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
       int countSale = await transRepository.getCountSale();
       int countVoid = await transRepository.getCountVoid();
-      int totalSale = await transRepository.getBatchTotal();
+      int totalSale = await transRepository.getBatchTotal(where: 'reverse=0 and voided=0');
       int totalVoid = (countVoid != 0) ? await transRepository.getTotalVoid() : 0;
 
       batchStan = await getStan();

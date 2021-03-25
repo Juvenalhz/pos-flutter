@@ -7,7 +7,6 @@ import 'package:flutter_screen_lock/lock_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
 import 'package:pay/bloc/transactionBloc.dart';
-import 'package:pay/models/bin.dart';
 import 'package:pay/models/terminal.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/terminal_repository.dart';
@@ -32,83 +31,92 @@ class DetailReport extends StatelessWidget {
         body: Column(
           children: <Widget>[
             Stack(children: <Widget>[
-              BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                if ((state is DetailReportDataReady) || (state is DetailReportShowTransDetail)) {
-                  return Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      gradient: LinearGradient(
-                        begin: Alignment(0.0, 0.6),
-                        end: Alignment(0.0, 0.0),
-                        colors: <Color>[
-                          Color(0xFF0D47A1),
-                          Colors.blue,
-                        ],
+              BlocListener<DetailReportBloc, DetailReportState>(
+                listener: (context, state) {
+                  if (state is DetailReportPrintOk) {
+                    if (state.printFromBatch) {
+                      Navigator.of(context).pop();
+                    }
+                  }
+                },
+                child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                  if ((state is DetailReportDataReady) || (state is DetailReportShowTransDetail)) {
+                    return Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        gradient: LinearGradient(
+                          begin: Alignment(0.0, 0.6),
+                          end: Alignment(0.0, 0.0),
+                          colors: <Color>[
+                            Color(0xFF0D47A1),
+                            Colors.blue,
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Center(child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                      if (state is DetailReportDataReady) {
-                        return Row(children: [
-                          IconButton(
-                            color: Colors.white,
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          Padding(
+                      child: Center(child: BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                        if (state is DetailReportDataReady) {
+                          return Row(children: [
+                            IconButton(
+                              color: Colors.white,
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                'Reporte Detallado',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                              ),
+                            ),
+                            BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
+                              if (state is DetailReportDataReady) {
+                                if (state.transList.length > 0)
+                                  return IconButton(
+                                    color: Colors.white,
+                                    icon: Icon(Icons.print_outlined),
+                                    onPressed: () {
+                                      final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
+
+                                      detailReportBloc.add(DetailReportPrintReport(false));
+                                    },
+                                  );
+                                else
+                                  return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                              } else
+                                return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
+                            }),
+                          ]);
+                        } else if (state is DetailReportShowTransDetail) {
+                          return Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
-                              'Reporte Detallado',
+                              'Detalle De Transacción',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                             ),
-                          ),
-                          BlocBuilder<DetailReportBloc, DetailReportState>(builder: (context, state) {
-                            if (state is DetailReportDataReady) {
-                              if (state.transList.length > 0)
-                                return IconButton(
-                                  color: Colors.white,
-                                  icon: Icon(Icons.print_outlined),
-                                  onPressed: () {
-                                    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
-
-                                    detailReportBloc.add(DetailReportPrintReport(false));
-                                  },
-                                );
-                              else
-                                return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                            } else
-                              return IconButton(color: Colors.black38, icon: Icon(Icons.print_outlined), onPressed: () {});
-                          }),
-                        ]);
-                      } else if (state is DetailReportShowTransDetail) {
-                        return Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            'Detalle De Transacción',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        );
-                      } else {
-                        return Text('');
-                      }
-                    })),
-                  );
-                } else if (state is DetailReportVoidCheckPassword) {
-                  return Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Text(
-                      'Anulación',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
-                    ),
-                  );
-                } else
-                  return Container();
-              }),
+                          );
+                        } else {
+                          return Text('');
+                        }
+                      })),
+                    );
+                  } else if (state is DetailReportVoidCheckPassword) {
+                    return Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        'Anulación',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                      ),
+                    );
+                  } else
+                    return Container();
+                }),
+              ),
             ]),
             Expanded(
                 child: Stack(children: <Widget>[
@@ -323,9 +331,9 @@ class DetailReport extends StatelessWidget {
 
     print('Click menu -> ${item.menuTitle} - id:$id');
     if (item.menuTitle == 'Copia del Comercio') {
-      detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
-    } else if (item.menuTitle == 'Copia del Cliente') {
       detailReportBloc.add(DetailReportPrintReceiptCopy(false, id, context));
+    } else if (item.menuTitle == 'Copia del Cliente') {
+      detailReportBloc.add(DetailReportPrintReceiptCopy(true, id, context));
     } else if (item.menuTitle == 'Ver Detalles') {
       detailReportBloc.add(DetailReportViewTransDetail(id));
     } else if (item.menuTitle == 'Anulación') {

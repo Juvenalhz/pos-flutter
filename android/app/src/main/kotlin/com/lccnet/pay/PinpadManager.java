@@ -353,7 +353,7 @@ public class PinpadManager implements PinpadCallbacks {
             );
 
             // list of tags that GoOnChip should return
-            final String goOnChipTagList = "829F269F279F369F10959F349F379A9F029F039F1A5F245F2A9C9F359F339F408E9B9F17";
+            final String goOnChipTagList = "9F06829F269F279F369F10959F349F379A9F029F039F1A5F245F2A9C9F359F339F408E9B9F17";
             final String goOnChipTags = String.format(Locale.US, "%03d%s",
                     goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
                     goOnChipTagList                        // List of tags, hex-coded
@@ -401,7 +401,7 @@ public class PinpadManager implements PinpadCallbacks {
                 onChipData.put("didOnlinePIN", 1);
                 onChipData.put("didOfflinePIN", 0);
                 onChipData.put("decision", 2);
-                onChipData.put("emvTags", "82021C009F2608D0C99189499C18749F2701809F360202059F100706010A03A0B800950580800480009F34034203009F37048DC71FAA9A032010029F02060000000011119F03060000000000009F1A0208625F24032212315F2A0209289C01009F3501229F3303E0F8C89F4005F0000F0F008E0E000000000000000042035E031F009B026800");
+                onChipData.put("emvTags", "82021C009F0607A00000000320109F2608D0C99189499C18749F2701809F360202059F100706010A03A0B800950580800480009F34034203009F37048DC71FAA9A032010029F02060000000011119F03060000000000009F1A0208625F24032212315F2A0209289C01009F3501229F3303E0F8C89F4005F0000F0F008E0E000000000000000042035E031F009B026800");
                 onChipData.put("isBlockedPIN", 1);
                 onChipData.put("triesLeft", 0);
                 onChipData.put("resultCode", 0);
@@ -629,8 +629,8 @@ public class PinpadManager implements PinpadCallbacks {
 //                new Handler(Looper.getMainLooper()).post(new Runnable() {
 //                    @Override
 //                    public void run() {
-                        MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                        channel.invokeMethod("showPinAmount", null);
+                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
+                channel.invokeMethod("showPinAmount", null);
 //                    }
 //                });
             }
@@ -715,14 +715,14 @@ public class PinpadManager implements PinpadCallbacks {
 
         Boolean isvm = false;
         if( "google_sdk".equals(Build.PRODUCT) ||
-            "sdk_google_phone_x86".equals(Build.PRODUCT) ||
-            "sdk".equals(Build.PRODUCT) ||
-            "sdk_x86".equals(Build.PRODUCT) ||
-            "vbox86p".equals(Build.PRODUCT) ||
-            Build.FINGERPRINT.contains("generic") ||
-            Build.MANUFACTURER.contains("Genymotion") ||
-            Build.MODEL.contains("Emulator") ||
-            Build.MODEL.contains("Android SDK built for x86")
+                "sdk_google_phone_x86".equals(Build.PRODUCT) ||
+                "sdk".equals(Build.PRODUCT) ||
+                "sdk_x86".equals(Build.PRODUCT) ||
+                "vbox86p".equals(Build.PRODUCT) ||
+                Build.FINGERPRINT.contains("generic") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86")
         ){
             isvm =  true;
         }

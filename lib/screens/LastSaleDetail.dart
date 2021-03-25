@@ -55,7 +55,7 @@ class LastSaleDetail extends StatelessWidget {
                     onPressed: () {
                       Receipt receipt = new Receipt();
 
-                      receipt.printTransactionReceipt(true, trans);
+                      receipt.printTransactionReceipt(true, true, trans, onPrintOK, onPrintError);
                     },
                   ),
                 ])),
@@ -99,6 +99,18 @@ class LastSaleDetail extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onPrintCancel(BuildContext context) {
+    // final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    //
+    // transactionBloc.add(TransPrintCancel());
+  }
+
+  void onPrintRetry(BuildContext context) {
+    // final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    //
+    // transactionBloc.add(TransPrintRetry());
   }
 
   Widget btnEnter(BuildContext context, bool approved) {
@@ -169,3 +181,7 @@ class RowDetailAmount extends StatelessWidget {
     );
   }
 }
+
+void onPrintOK() {}
+
+void onPrintError(int type) {}

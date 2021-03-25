@@ -18,7 +18,7 @@ class DeleteBatchBloc extends Bloc<DeleteBatchEvent, DeleteBatchState> {
     if (event is DeleteBatchPending) {
       TransRepository transRepository = new TransRepository();
 
-      if (await transRepository.getCountTrans() != 0) {
+      if (await transRepository.getCountTrans(where: 'reverse = 0') != 0) {
         yield DeleteBatchAskDelete();
       } else {
         yield DeleteBatchNotExist();
