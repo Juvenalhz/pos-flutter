@@ -281,7 +281,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.cardholderID = event.idNumber.toString();
 
       if (trans.binType == Bin.TYPE_CREDIT) {
-        acquirer.industryType = true;
+        //acquirer.industryType = true; //to test restaurant flow
         if (acquirer.industryType) // true = restaurant
           yield TransactionAskServerNumber();
         else
@@ -541,6 +541,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // finish chip
     else if (event is TransFinishChipComplete) {
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
       if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
@@ -555,17 +557,27 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.id = (await transRepository.getMaxId()) + 1;
           transRepository.createTrans(trans);
         }
-        numCopies = 0;
+
         this.add(TransMerchantReceipt());
-        yield TransactionPrintMerchantReceipt(trans);
+        if (terminal.print == true) {
+          numCopies = 1;
+          yield TransactionPrintMerchantReceipt(trans);
+        }
       } else {
         trans.respMessage = 'Transacción Denegada Por Tarjeta';
         yield TransactionRejected(trans);
       }
     } else if (event is TransMerchantReceipt) {
-      Receipt receipt = new Receipt();
-      yield TransactionPrintMerchantReceipt(trans);
-      receipt.printTransactionReceipt(false, false, trans, onPrintMerchantOK, onPrintMerchantError);
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+
+      if (terminal.print == true) {
+        Receipt receipt = new Receipt();
+        yield TransactionPrintMerchantReceipt(trans);
+        receipt.printTransactionReceipt(false, false, trans, onPrintMerchantOK, onPrintMerchantError);
+      }
+      else{
+        this.add(TransPrintMerchantOK());
+      }
     } else if (event is TransPrintMerchantOK) {
       await new Future.delayed(const Duration(seconds: 3));
       TerminalRepository terminalRepository = new TerminalRepository();

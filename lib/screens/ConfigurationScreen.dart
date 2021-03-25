@@ -566,7 +566,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2,
+                                leftWidth: size.width / 1.9,
                                 rightWidth: size.width / 2.8,
                               ),
                               ItemTileTwoColumn(
@@ -596,26 +596,13 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.26,
+                                leftWidth: size.width / 1.9,
                                 rightWidth: size.width / 2.8,
                               ),
 
                               ItemTileTwoColumn(
                                 contentPadding: EdgeInsets.zero,
-                                leftLabel:  DataTile(
-                                  myTitle: 'KIN',
-                                  value: _comm.kin.toString(),
-                                  type: _tNumber,
-                                  maxLength: 4,
-                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
-                                  onSaved: (nValue) => _comm.kin = int.parse(nValue),
-                                  onChanged: (nValue) {
-                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                    _comm.kin = int.parse(nValue);
-                                  },
-                                  validator: (nValue) => InputValidation.requiredField(nValue),
-                                ),
-                                rightLabel: DataTile(
+                                leftLabel: DataTile(
                                   myTitle: 'Llave KIN Terminal',
                                   value: _comm.kinIdTerminal.toString(),
                                   type: _tNumber,
@@ -628,8 +615,22 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                   },
                                   validator: (nValue) => InputValidation.requiredField(nValue),
                                 ),
-                                leftWidth: size.width / 2.8,
-                                rightWidth: size.width / 2.2,
+                                rightLabel:  DataTile(
+                                  myTitle: 'KIN',
+                                  value: _comm.kin.toString(),
+                                  type: _tNumber,
+                                  maxLength: 4,
+                                  formatInput: [FilteringTextInputFormatter.digitsOnly],
+                                  onSaved: (nValue) => _comm.kin = int.parse(nValue),
+                                  onChanged: (nValue) {
+                                    Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                    _comm.kin = int.parse(nValue);
+                                  },
+                                  validator: (nValue) => InputValidation.requiredField(nValue),
+                                ),
+
+                                leftWidth: size.width / 1.9,
+                                rightWidth: size.width / 2.8,
                               ),
 
 

@@ -45,6 +45,8 @@ class Batch extends StatelessWidget {
         return CommProgress('Cierre De Lote', status: 'Enviando').build(context);
       } else if (state is BatchReceiving) {
         return CommProgress('Cierre De Lote', status: 'Recibiendo').build(context);
+      } else if (state is BatchError) {
+        return TransMessage(state.message);
       } else if (state is BatchCommError) {
         return AlertCancelRetry('Cierre De Lote', 'Error de conexión....', onClickCancel, onClickRetry);
       } else if (state is BatchNotInBalance) {

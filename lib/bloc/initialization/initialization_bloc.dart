@@ -94,6 +94,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
           terminal.keyIndex = 2;
           terminal.techPassword = '000000';
           terminal.timeoutPrompt = 60;
+          terminal.numPrint = 0;
 
           await terminalRepository.createTerminal(terminal);
         } else

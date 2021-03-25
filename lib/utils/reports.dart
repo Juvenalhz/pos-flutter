@@ -11,6 +11,7 @@ import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/emv_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/constants.dart';
@@ -226,7 +227,161 @@ class Reports {
     printer.print(onPrintReportOK, onPrintError);
   }
 
-  void printSummaryReport() {}
+  void _summaryReportHeader(Printer printer) async {
+    DateTime now = DateTime.now();
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addTextSideBySide('   Fecha' , 'Hora   ');
+    printer.addTextSideBySide( DateFormat('dd/MM/yyyy').format(now),  DateFormat('hh:mm:ss a').format(now));
+    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
+    printer.addText(Printer.CENTER, 'RESUMEN DE PARAMETROS');
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addText(Printer.LEFT, '**DATOS DEL COMERCIO**');
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addText(Printer.LEFT, merchant.nameL1);
+    printer.addText(Printer.LEFT, merchant.nameL2);
+    printer.addText(Printer.LEFT,'RIF:' + merchant.taxID.toString());
+    printer.addText(Printer.LEFT,merchant.city);
+  }
+
+  void _parametersReportHeader(Printer printer) async {
+    DateTime now = DateTime.now();
+    String sn= await SerialNumber.serialNumber;
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
+    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
+    printer.addText(Printer.CENTER, merchant.nameL1);
+    printer.addText(Printer.CENTER, merchant.nameL2);
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addTextSideBySideWithCenter("",merchant.city , "");
+    printer.addTextSideBySide( "RIF: "+ merchant.taxID.toString() , "Afiliado: " +merchant.mid.trim());
+    printer.addTextSideBySideWithCenter("","S/N POS:"+ sn , "");
+    printer.setFontSize(Printer.FONT_SIZE_NORMAL);
+    printer.addText(Printer.CENTER, 'REPORTE DE PARAMETROS EMV');
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addText(Printer.LEFT, '**DATOS GENERALES*');
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+
+  }
+
+  printSummaryReport() async {
+    Printer printer = new Printer();
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    TerminalRepository terminalRepository = new TerminalRepository();
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    CommRepository commRepository = new CommRepository();
+    Comm comm = Comm.fromMap(await commRepository.getComm(1));
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+    EmvRepository emvRepository  = new EmvRepository();
+    Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+
+    await _summaryReportHeader(printer);
+
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addTextFillLine('-');
+    printer.addText(Printer.LEFT, '**PARAMETROS GENERALES**');
+    printer.addTextSideBySideWithCenter("COD. COMERCIO",     ":",merchant.mid.toString());
+    printer.addTextSideBySideWithCenter("NUMERO DE SERIE",   ":",merchant.maxTip.toString());
+    printer.addTextSideBySideWithCenter("NUMERO DE TERMINAL",":",merchant.tid);
+    printer.addTextSideBySideWithCenter("COD MONEDA",        ":",merchant.currencyCode.toString());
+    printer.addTextSideBySideWithCenter("SIMBOLO DE MONEDA", ":",merchant.currencySymbol.toString());
+    printer.addTextSideBySideWithCenter("COD ADQUIRIENTE",   ":",merchant.acquirerCode.toString());
+    printer.addTextSideBySideWithCenter("TELF. PRIMARIO",    ":",'N/A');
+    printer.addTextSideBySideWithCenter("TELF. SECUNDARIO",  ":",'N/A');
+    printer.addTextSideBySideWithCenter("TPDU",              ":",comm.tpdu);
+    printer.addTextSideBySideWithCenter("NII",               ":",comm.nii);
+    printer.addTextSideBySideWithCenter("TIPO SOFT",         ":",'NORMAL');
+    acquirer.cashback==true ? printer.addTextSideBySideWithCenter("CASH BACK",":","SI") : null;
+    terminal.installments==true ? printer.addTextSideBySideWithCenter("CUOTAS",":","SI") : null;
+    acquirer.refund==true ? printer.addTextSideBySideWithCenter("DEVOLUCION",":","Si") : null ;
+    acquirer.provimillas==true ? printer.addTextSideBySideWithCenter("PROVIMILLA",":","SI") : null;
+    acquirer.cheque==true ? printer.addTextSideBySideWithCenter("CHEQUE",":","Si") : null;
+    acquirer.checkIncheckOut==true ? printer.addTextSideBySideWithCenter("CHECK IN/OUT", ":","SI") : null;
+    acquirer.saleOffline==true ? printer.addTextSideBySideWithCenter("VTA. FUERA LINEA",":","SI") : null;
+    acquirer.cvv2==true ? printer.addTextSideBySideWithCenter("CVV2",":","SI") : null;
+    acquirer.last4Digits==true ? printer.addTextSideBySideWithCenter("4 ULT.DIGITOS",":","SI") : null;
+    terminal.passwordRefund==true ? printer.addTextSideBySideWithCenter("CLAVE ANULACION",":","Si") : null;
+    terminal.passwordBatch==true ? printer.addTextSideBySideWithCenter("CLAVE CIERRE",":","SI") : null;
+    terminal.passwordRefund==true ? printer.addTextSideBySideWithCenter("CLAVE DEVOLUCION", ":","SI") : null ;
+    terminal.maskPan==true ? printer.addTextSideBySideWithCenter("ENMASCARAR TARJETA",":","SI") : null ;
+    acquirer.prePrint==true ? printer.addTextSideBySideWithCenter("PRE-IMPRESION",":","SI") : null;
+    terminal.amountConfirmation==true ?printer.addTextSideBySideWithCenter("CONFIRMAR IMPORTE", ":","SI") : null;
+    printer.addTextSideBySideWithCenter("CLAVE SUPERVISOR",  ":",terminal.techPassword.toString());
+    printer.addTextSideBySideWithCenter("PROPINA",           ":","N/A");
+    printer.addTextSideBySideWithCenter("TEMP RPTA",         ":",terminal.timeoutPrompt.toString());
+    printer.addTextSideBySideWithCenter("TEMP ENT DATOS",    ":",terminal.timeoutPrompt.toString()); //
+    printer.addTextSideBySideWithCenter("FECHA Y HORA",      ":", new DateFormat("ddMMyyyyhhmmss").format(DateTime.now()));
+    printer.addTextSideBySideWithCenter("COD PAIS TERMINAL",  ":",merchant.countryCode.toString());
+    emv.fallback==true ?printer.addTextSideBySideWithCenter("FALLBACK",":","SI") : null;
+    emv.forceOnline==true ?printer.addTextSideBySideWithCenter("FORZAR ONLINE",":","SI") : null;
+    printer.feedLine(1);
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
+    printer.feedLine(6);
+
+    printer.print(onPrintReportOK, onPrintError);
+  }
+
+  printParameterReport() async {
+    Printer printer = new Printer();
+    MerchantRepository merchantRepository = new MerchantRepository();
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+    TerminalRepository terminalRepository = new TerminalRepository();
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    CommRepository commRepository = new CommRepository();
+    Comm comm = Comm.fromMap(await commRepository.getComm(1));
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+    EmvRepository emvRepository  = new EmvRepository();
+    Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+    PubKeyRepository pubKeyRepository = new PubKeyRepository();
+    List<Map<String, dynamic>> pubKey = await pubKeyRepository.getPubKeys();
+
+    final pkeyLen=pubKey.length.toInt();
+
+    await _parametersReportHeader(printer);
+
+    printer.setFontSize(Printer.FONT_SIZE_SMALL);
+    printer.addTextFillLine('-');
+    printer.addTextSideBySideWithCenter("TIPO TERMINAL",     ":",emv.terminalType);
+    printer.addTextSideBySideWithCenter("ADD CAPABILITIES",":",emv.terminalCapabilities);
+    emv.fallback==true ?printer.addTextSideBySideWithCenter("FALLBACK",":","SI") : null;
+    emv.forceOnline==true ?printer.addTextSideBySideWithCenter("FORZAR ONLINE",":","SI") : null;
+
+    printer.addText(Printer.LEFT, '**TABLA AIDs**');
+    printer.addTextSideBySideWithCenter("RID+PIX", ":",merchant.currencySymbol.toString());
+    printer.addTextSideBySideWithCenter("LIMITE PISO",   ":",merchant.acquirerCode.toString());
+    printer.addTextSideBySideWithCenter("VERSION",    ":",'N/A');
+    printer.addTextSideBySideWithCenter("TAC DENIAL",  ":",'N/A');
+    printer.addTextSideBySideWithCenter("TAC ONLINE",              ":",comm.tpdu);
+    printer.addTextSideBySideWithCenter("TAC DEFAULT",               ":",comm.nii);
+    printer.addTextSideBySideWithCenter("THRESHOLD VALUE",         ":",'NORMAL');
+    acquirer.cashback==true ? printer.addTextSideBySideWithCenter("TARGET PERCENT",":","SI") : null;
+    terminal.installments==true ? printer.addTextSideBySideWithCenter("MAX TAR. PERCENT",":","SI") : null;
+    acquirer.refund==true ? printer.addTextSideBySideWithCenter("TDOL",":","Si") : null ;
+    acquirer.provimillas==true ? printer.addTextSideBySideWithCenter("DDOL",":","SI") : null;
+
+    printer.addText(Printer.LEFT, '**TABLA LLAVES**');
+    printer.addTextFillLine('-');
+    if (pubKey != null) {
+      for(int i = 0; i <= pkeyLen-1 ; i++){
+        printer.addTextSideBySideWithCenter("PUBLIC KEY INDEX",  ":",pubKey[i]["keyIndex"].toString());
+        printer.addTextSideBySideWithCenter("KEY LENGTH",  ":",pubKey[i]["length"].toString());
+        printer.addTextSideBySideWithCenter("KEY EXPONENT",           ":",pubKey[i]["exponent"].toString());
+        printer.addTextSideBySideWithCenter("RID",         ":",pubKey[i]["rid"].toString());
+        printer.addTextSideBySideWithCenter("EXPIRATION DATE",    ":",pubKey[i]["expDate"].toString()); //
+        printer.addTextFillLine('-');
+      }
+    }
+
+    printer.feedLine(1);
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
+    printer.feedLine(6);
+    printer.print(onPrintReportOK, onPrintError);
+  }
+
 
   void onPrintReportOK() {}
 

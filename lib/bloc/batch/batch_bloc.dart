@@ -161,6 +161,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
           (merchant.tid.padLeft(8, '0') != event.respMap[41])) {
         // reversal is stored in the DB
         yield BatchError('Error en Respuesta');
+        await new Future.delayed(const Duration(seconds: 3));
+        this.add(BatchCancel());
       } else {
         if (event.respMap[39] != null) {
           if ((event.respMap[39] == '00') || (event.respMap[39] == '95')) {

@@ -193,15 +193,20 @@ class MainMenu extends StatelessWidget {
             }),
           ]),
           Divider(),
-          _createDrawerItem(
-              icon: Icons.sync,
-              text: 'Prueba De Comunicación',
-              onTap: () {
-                final EchoTestBloc echoTestBloc = BlocProvider.of<EchoTestBloc>(context);
+          BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+            if (state is TerminalLoaded) {
+              return _createDrawerItem(
+                  icon: Icons.sync,
+                  text: 'Prueba De Comunicación',
+                  onTap: () {
+                    final EchoTestBloc echoTestBloc = BlocProvider.of<EchoTestBloc>(context);
 
-                echoTestBloc.add(EchoTestInitialEvent());
-                Navigator.pushNamed(context, '/EchoTest');
-              }),
+                    echoTestBloc.add(EchoTestInitialEvent());
+                    Navigator.pushNamed(context, '/EchoTest');
+                  });
+            } else
+              return Container();
+          }),
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
             _createDrawerItem(
@@ -314,7 +319,27 @@ class MainMenu extends StatelessWidget {
                       }
                     });
               } else
-                return Container();
+                return _createDrawerItem(
+                    text: 'Configuracion',
+                    onTap: () {
+                      showLockScreen(
+                        context: context,
+                        digits: 6,
+                        correctString: '000000',
+                        title: 'Ingrese Clave De Sistema',
+                        cancelText: 'Cancelar',
+                        deleteText: 'Borrar',
+                        backgroundColorOpacity: 0.9,
+                        onCompleted: (context, verifyCode) {
+                          Navigator.of(context).pop();
+                        },
+                        onUnlocked: () {
+                          acquirerBloc.add(GetAllAcquirer());
+                          terminalBloc.add(GetTerminal(1));
+                          Navigator.pushNamed(context, '/configuration');
+                        },
+                      );
+                    });
             }),
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
@@ -336,21 +361,56 @@ class MainMenu extends StatelessWidget {
                           onUnlocked: () {
                             final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
 
-                            summaryReportBloc.add(SummaryReportInitialEvent());
+                            summaryReportBloc.add(SummaryReportGetData());
                             Navigator.pushNamed(context, '/SummaryReport');
                           },
                         );
                       } else {
                         final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
 
-                        summaryReportBloc.add(SummaryReportInitialEvent());
+                        summaryReportBloc.add(SummaryReportGetData());
                         Navigator.pushNamed(context, '/SummaryReport');
                       }
                     });
               } else
                 return Container();
             }),
-            _createDrawerItem(text: 'Reporte de Parámetros'),
+
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Reporte de Parámetros EMV',
+                    onTap: () {
+                      if (state.terminal.techPassword.length > 0) {
+                        showLockScreen(
+                          context: context,
+                          digits: state.terminal.techPassword.length,
+                          correctString: state.terminal.techPassword,
+                          title: 'Ingrese Clave De Sistema',
+                          cancelText: 'Cancelar',
+                          deleteText: 'Borrar',
+                          backgroundColorOpacity: 0.9,
+                          onCompleted: (context, verifyCode) {
+                            Navigator.of(context).pop();
+                          },
+                          onUnlocked: () {
+                            final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
+
+                            summaryReportBloc.add(ParameterReportGetData());
+                            Navigator.pushNamed(context, '/ParameterReportEMV');
+                          },
+                        );
+                      } else {
+                        final SummaryReportBloc summaryReportBloc = BlocProvider.of<SummaryReportBloc>(context);
+
+                        summaryReportBloc.add(ParameterReportGetData());
+                        Navigator.pushNamed(context, '/ParameterReportEMV');
+                      }
+                    });
+              } else
+                return Container();
+            }),
+
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(
@@ -436,20 +496,20 @@ class MainMenu extends StatelessWidget {
                   Navigator.pushNamed(context, '/TechVisit');
                 }),
           ]),
-          if (isDev)
-            _createDrawerItem(
-              icon: Icons.bug_report,
-              text: 'Inicializacion De Pruebas',
-              onTap: () async {
-                await TestConfig().createTestConfiguration();
-                merchantBloc.add(GetMerchant(1));
-                terminalBloc.add(GetTerminal(1));
-                commBloc.add(GetComm(1));
-                emvBloc.add(GetEmv(1));
-                acquirerBloc.add(GetAcquirer(1));
-                Navigator.of(context).pop();
-              },
-            ),
+          // if (isDev)
+          //   _createDrawerItem(
+          //     icon: Icons.bug_report,
+          //     text: 'Inicializacion De Pruebas',
+          //     onTap: () async {
+          //       await TestConfig().createTestConfiguration();
+          //       merchantBloc.add(GetMerchant(1));
+          //       terminalBloc.add(GetTerminal(1));
+          //       commBloc.add(GetComm(1));
+          //       emvBloc.add(GetEmv(1));
+          //       acquirerBloc.add(GetAcquirer(1));
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
           ListTile(
             title: Text(Constants.appVersion),
             onTap: () {},

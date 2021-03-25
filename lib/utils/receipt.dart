@@ -6,6 +6,7 @@ import 'package:pay/models/bin.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:pay/repository/bin_repository.dart';
+import 'package:pay/utils/constants.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/printer.dart';
 import 'package:pay/repository/merchant_repository.dart';
@@ -14,13 +15,15 @@ import 'package:pay/utils/serialNumber.dart';
 
 class Receipt {
   bool type;
-  Printer printer = new Printer();
+  Printer printer;
 
-  Receipt();
+  Receipt(){
+    printer = new Printer();
+  }
 
   printTransactionReceipt(bool type, bool copy, Trans trans, Function onPrintOk, Function onPrintError) async {
     MerchantRepository merchantRepository = new MerchantRepository();
-    Merchant merchant = new Merchant.fromMap(await merchantRepository.getMerchant(1));
+    Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     BinRepository binRepository = new BinRepository();
     Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
     // static const int TYPE_CREDIT = 1;
@@ -30,18 +33,15 @@ class Receipt {
     this.type = type;
     //if (bin.cardType == Bin.TYPE_CREDIT)
     if (bin.cardType == 1) {
-      CreditReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
-      printer.feedLine(2);
+      await CreditReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.print(onPrintOk, onPrintError);
     }
     //if (bin.cardType == Bin.TYPE_DEBIT)
     else if (bin.cardType == 2) {
       DebitReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
-      printer.feedLine(2);
       printer.print(onPrintOk, onPrintError);
     } else if (bin.cardType == 3) {
       FoodReceipt(trans, merchant, type, copy); //the var type is a bool, false = merchantReceipt and true = clientReceipt
-      printer.feedLine(2);
       printer.print(onPrintOk, onPrintError);
     }
   }
@@ -56,7 +56,7 @@ class Receipt {
       printer.addText(Printer.LEFT, 'Firma: _______________________________________');
     else if (trans.type == 'Anulación') printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
 
-    footer(trans, merchant, isCustomer);
+    await footer(trans, merchant, isCustomer);
   }
 
 //////////////////////////////////////////////////////////////RECIBOS DEBITO ///////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ class Receipt {
 
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
 
-    footer(trans, merchant, isCustomer);
+    await footer(trans, merchant, isCustomer);
   }
 
   ////////////////////////////////////////////////RECIBO ALIMENTACIÓN COMERCIO////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ class Receipt {
       var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.foodBalance / 100);
       printer.addText(Printer.LEFT, 'Saldo Bs:        $monto');
     }
-    footer(trans, merchant, isCustomer);
+    await footer(trans, merchant, isCustomer);
   }
 
   //////////////////////SIN RESPUESTA/////////////////////////////////
@@ -152,8 +152,8 @@ class Receipt {
     printer.addTextSideBySideWithCenter('Terminal ' + merchant.tid, 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
     printer.addTextSideBySide('MONTOBs.', amount.trim());
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
-    printer.addTextSideBySide('V08.01-05', '01.01');
-    printer.feedLine(2);
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
+    printer.feedLine(5);
     printer.print(onPrintOk, onPrintError);
   }
 
@@ -178,7 +178,7 @@ class Receipt {
     printDateTime();
     printer.addTextSideBySide('N Operac:   ' + authCode, 'Terminal: ' + merchant.tid);
     printer.addText(Printer.CENTER, 'CONFORME');
-    printer.addTextSideBySide('V08.01-05', '01.01');
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
     printer.feedLine(2);
     printer.print(onPrintOk, onPrintError);
   }
@@ -252,6 +252,7 @@ class Receipt {
         printer.addText(Printer.RIGHT, 'AID:$aid');
     }
 
-    printer.addTextSideBySide('V08.01-05', '01.01');
+    printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
+    printer.feedLine(5);
   }
 }
