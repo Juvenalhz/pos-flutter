@@ -372,3 +372,8 @@ class TransDeletePreviousBatch extends TransactionEvent {
   @override
   List<Object> get props => [];
 }
+
+class TransCardReadError extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}

@@ -51,6 +51,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   bool doBeep = false;
   int numCopies = 0;
   int respBatchNumber = 0;
+  int cardReadTrials = 0;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -160,9 +161,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // read card from pinpad
     else if (event is TransGetCard) {
-      if (await pinpad.getCard(trans.toMap()) != 0) {
-        trans.clear();
-        yield TransactionError();
+      if (trans.chipEnable) {
+        if (await pinpad.getCard(trans.toMap()) != 0) {
+          trans.clear();
+          yield TransactionError();
+        }
+      }
+      else {
+          yield TransactionShowMessage('Deslice Tarjeta');
+          pinpad.swipeCard(onSwipeCardRead);
       }
     }
     // card was read, save data returned by pinpad module
@@ -182,6 +189,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['expDate'] != null) trans.expDate = event.card['expDate'];
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
       if (event.card['recordID'] != null) trans.aidID = event.card['recordID'];
+
+      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE)
+        trans.entryMode = Pinpad.FALLBACK;
 
       yield TransactionCardRead(trans);
       this.add(TransProcessCard(trans));
@@ -655,9 +665,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       await merchantRepository.updateMerchant(merchant);
       yield TransactionFinish(trans);
     }
-
+    // chip card read error
+    else if (event is TransCardReadError) {
+      cardReadTrials++;
+      yield TransactionShowMessage('Error Leyendo Tarjeta. Intente Nuevamente...');
+      await new Future.delayed(const Duration(seconds: 3));
+      if (cardReadTrials >= 3) {
+        trans.chipEnable = false;
+      }
+      this.add(TransGetCard(trans));
+    }
     // pinpad error detected
     else if (event is TransCardError) {
+      cardReadTrials = 0;
       trans.clear();
       yield TransactionError();
     }
@@ -703,5 +723,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   void onPrintCustomerError(int type) {
     this.add(TransPrintCustomerError());
+  }
+
+  void onSwipeCardRead(BuildContext context, Map<String, dynamic> params) {
+    this.add(TransCardWasRead(params));
   }
 }

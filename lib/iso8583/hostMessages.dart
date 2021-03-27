@@ -377,7 +377,11 @@ class ReversalMessage extends HostMessage {
     message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
-    message.fieldData(22, trans.entryMode.toString());
+    switch(trans.entryMode) {
+      case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
+      case Pinpad.CHIP: message.fieldData(22, "051"); break;
+      case Pinpad.FALLBACK: message.fieldData(22, "921"); break;
+    }
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');

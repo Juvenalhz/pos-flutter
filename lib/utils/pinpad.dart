@@ -12,6 +12,7 @@ class Pinpad {
   static const int CHIP = 3;
   static const int CLESS_MS = 5;
   static const int CLESS_EMV = 6;
+  static const int FALLBACK = 98;
   static const int MANUAL = 99;
 
   final BuildContext context;
@@ -120,7 +121,10 @@ class Pinpad {
         params[key] = value;
       });
       this.onSwipeCardRread(context, params);
+    } else if(call.method == 'cardReadError') {
+      transactionBloc.add(TransCardReadError());
     }
+
 
     // handle error cases  - do not group on else if section
     else if ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
