@@ -60,6 +60,7 @@ class Trans {
   String _issuer = '';
   int _server = 0;
   bool _tipAdjusted = false;
+  bool _chipEnable = true;
 
   Trans();
 
@@ -121,6 +122,7 @@ class Trans {
   String get issuer => _issuer;
   int get server => _server;
   bool get tipAdjusted => _tipAdjusted;
+  bool get chipEnable => _chipEnable;
 
   set id(int id) {
     this._id = id;
@@ -352,6 +354,10 @@ class Trans {
 
   set tipAdjusted(bool tipAdjusted) {
     this._tipAdjusted = tipAdjusted;
+  }
+
+  set chipEnable(bool chipEnable) {
+    this._chipEnable = chipEnable;
   }
 
   Map<String, dynamic> toMap() {

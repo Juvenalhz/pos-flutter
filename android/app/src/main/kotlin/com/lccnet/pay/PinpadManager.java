@@ -199,6 +199,16 @@ public class PinpadManager implements PinpadCallbacks {
                 //Log.i(TAG, "getCard output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
                 if (output.getResultCode() != Pinpad.PP_OK) {
                     Log.i(TAG, "Pinpad result code error");
+                    final String out = output.getOutput();
+
+                    if(output.getResultCode() == Pinpad.PP_DUMBCARD){
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                channel.invokeMethod("cardReadError", null);
+                            }
+                        });
+                    }
                 } else if (output.getResultCode() == Pinpad.PP_OK) {
                     final String out = output.getOutput();
 
@@ -761,10 +771,13 @@ public class PinpadManager implements PinpadCallbacks {
 
                         i += 2;
                         card.put("track1", out.substring(i, i + trackLength));
-                        i += trackLength;
+                        i += 76; //trackLength;
                         trackLength = Integer.parseInt(out.substring(i, i + 2));
                         i += 2;
                         card.put("track2", out.substring(i, i + trackLength));
+                        card.put("pan", card.get("track2").toString().substring(0, card.get("track2").toString().indexOf("=")));
+                        card.put("cardType", 0); //magstripe
+                        card.put("entryMode", 21);
 
                         Log.i(TAG, "Pinpad.PP_OK");
                     }
