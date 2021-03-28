@@ -209,18 +209,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans = event.trans;
         trans.bin = binId;
         if (event.trans.cardType == Pinpad.MAG_STRIPE) {
-          if (acquirer.last4Digits)
-            yield TransactionAskLast4Digits();
-          else if (acquirer.cvv2) {
-            if (trans.type == 'Venta')
-              yield TransactionAskCVV();
-            else
-              yield TransactionAskConfirmation(trans, acquirer);
-          } else {
-            if (trans.type == 'Venta')
-              yield TransactionAskIdNumber();
-            else
-              yield TransactionAskConfirmation(trans, acquirer);
+          if ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6')) {
+            yield TransactionShowMessage('Use Lector De Chip');
+            await new Future.delayed(const Duration(seconds: 3));
+            this.add(TransGetCard(trans));
+          }
+          else {
+            if (acquirer.last4Digits)
+              yield TransactionAskLast4Digits();
+            else if (acquirer.cvv2) {
+              if (trans.type == 'Venta')
+                yield TransactionAskCVV();
+              else
+                yield TransactionAskConfirmation(trans, acquirer);
+            } else {
+              if (trans.type == 'Venta')
+                yield TransactionAskIdNumber();
+              else
+                yield TransactionAskConfirmation(trans, acquirer);
+            }
           }
         } else {
           if (_validateChipData(trans) == true) {
