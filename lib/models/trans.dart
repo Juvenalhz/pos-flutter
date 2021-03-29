@@ -423,8 +423,11 @@ class Trans {
     // some fields from trans should not be stored in the DB for security
     // !!!!!!!!!!!!!!!!!!!!
     var cipher = Cipher();
-    this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
-    if (this.cardholderName.length > 0) this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+
+    if (this.pan.length > 0) {
+      this._cipheredPAN = await cipher.encryptCriticalData(this.pan);
+      if (this.cardholderName.length > 0) this._cipheredCardHolderName = await cipher.encryptCriticalData(this.cardholderName);
+    }
 
     map['id'] = this._id;
     map['number'] = this._number;
