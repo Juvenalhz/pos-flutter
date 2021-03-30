@@ -123,7 +123,7 @@ class Pinpad {
     }
 
     // handle error cases  - do not group on else if section
-    else if ((call.method == 'cardRead') || (call.method == 'cardRemoved') || (call.method == 'pinEntered')) {
+    if ((call.method == 'cardRead') || (call.method == 'pinEntered')) {
       if (params['resultCode'] != 0) {
         // error was triggered, like pulling the card out
         transactionBloc.add(TransCardError());

@@ -494,6 +494,7 @@ public class PinpadManager implements PinpadCallbacks {
         if (Build.MODEL.contains("APOS")) {
             // if chip, ask user to remove card
             pinpad.removeCard("Retire Tarjeta", removeOutput -> {
+                pinpad.close();
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
@@ -663,18 +664,20 @@ public class PinpadManager implements PinpadCallbacks {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-
+                                HashMap<String, Object> methodParams = new HashMap<>();
+                                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
 
                                 psOutputGetPIN.append(output.getOutput());
                                 int ret = output.getResultCode();
 
-                                MethodChannel channel = (MethodChannel) params.get("MethodChannel");
-                                HashMap<String, Object> methodParams = new HashMap<>();
-                                methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
-                                methodParams.put("PINKSN", psOutputGetPIN.substring(16));
                                 methodParams.put("resultCode", ret);
-                                methodParams.put("type", type);
+                                if (ret == Pinpad.PP_OK) {
 
+                                    methodParams.put("PINBlock", psOutputGetPIN.substring(0, 16));
+                                    methodParams.put("PINKSN", psOutputGetPIN.substring(16));
+
+                                    methodParams.put("type", type);
+                                }
                                 channel.invokeMethod("pinEntered", methodParams);
                             };
                         });
