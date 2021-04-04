@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:pay/utils/dataUtils.dart';
 
 class Communication {
@@ -28,7 +29,11 @@ class Communication {
     _secure = false;
     try {
       if (_secure == true) {
+        ByteData data = await rootBundle.load('assets/cert/caroot.crt');
+
         SecurityContext securityContext = SecurityContext();
+        securityContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
+        //securityContext.setTrustedCertificates();
         _secureSocket = await SecureSocket.connect(
           _host,
           _port,
@@ -75,11 +80,19 @@ class Communication {
   Future<Uint8List> receiveMessage() async {
     int time = 0;
     if (_secure) {
-      if (_secureSocket != null) {
+      if ((_secureSocket != null) && (_listenSet == false)) {
         _secureSocket.listen((data) {
-          print(data.toString());
           data.forEach((element) {
             _message[_size++] = element;
+
+            if (_size == 2) {
+              String temp = bcdToStr(_message.sublist(0, 2));
+              _frameSize = int.parse(temp, radix: 16);
+            }
+
+            if (_size == _frameSize + 2) {
+              _isDone = true;
+            }
           });
         }, onError: (error) {
           print(error.toString());
@@ -89,6 +102,7 @@ class Communication {
           _frameSize = int.parse(temp, radix: 16);
           _isDone = true;
         });
+        _listenSet = true;
       }
     } else {
       if ((_socket != null) && (_listenSet == false)) {
