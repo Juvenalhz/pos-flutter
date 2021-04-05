@@ -22,6 +22,7 @@ import 'package:pay/repository/pubKey_repository.dart';
 import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
+import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
@@ -174,6 +175,22 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was read, save data returned by pinpad module
     else if (event is TransCardWasRead) {
+      if (trans.type == 'Anulación'){
+        Cipher cipher = new Cipher();
+        String cipheredPAN;
+
+        if ((event.card['pan'] != null) && (event.card['pan'].length > 0)) {
+          cipheredPAN = await cipher.encryptCriticalData(event.card['pan']);
+        }
+
+        if ((event.card['pan'] != null) && (trans.cipheredPAN != cipheredPAN)) {
+          yield TransactionShowMessage('Se debe usar la misma tarjeta de la transacción que se desea anular!');
+          await new Future.delayed(const Duration(seconds: 3));
+          trans.clear();
+          yield TransactionError();
+        }
+      }
+
       if (event.card['serviceCode'] != null) trans.serviceCode = event.card['serviceCode'];
       if (event.card['appType'] != null) trans.appType = event.card['appType'];
       if (event.card['cardType'] != null) trans.cardType = event.card['cardType'];
