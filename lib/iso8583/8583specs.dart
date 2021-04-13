@@ -254,7 +254,7 @@ class IsoSpecBCD extends Iso8583Specs {
       else
         temp.dataType = DT.BCD;
 
-      if (temp.lengthType != LT.FIXED) temp.lengthDataType = DT.BCD;
+      if (temp.lengthType != LT.FIXED) temp.lengthDataType = DT.BIN;
 
       _addField(temp);
     });
@@ -323,7 +323,7 @@ var contentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 59, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
   {'field': 60, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved national'},
   {'field': 61, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
-  {'field': 62, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
+  {'field': 62, 'ContentType': 'b', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
   {'field': 63, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Reserved private'},
   {'field': 64, 'ContentType': 'b', 'MaxLen': 8, 'LenType': LT.FIXED, 'description': 'Message authentication code (MAC)'},
   {'field': 65, 'ContentType': 'b', 'MaxLen': 1, 'LenType': LT.FIXED, 'description': 'Bitmap, extended'},

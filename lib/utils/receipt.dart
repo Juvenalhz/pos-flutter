@@ -237,7 +237,7 @@ class Receipt {
   }
 
   void footer(Trans trans, Merchant merchant, bool isCustomer) {
-    if (trans.cardType == Pinpad.CHIP) {
+    if (trans.entryMode == Pinpad.CHIP) {
       printer.addText(Printer.LEFT, 'Ap .Preferred Name / Label');
       int aidIndex = trans.emvTags.indexOf('9F06') + 4;
       int aidLength = hex.decode(trans.emvTags.substring(aidIndex, aidIndex + 2))[0];

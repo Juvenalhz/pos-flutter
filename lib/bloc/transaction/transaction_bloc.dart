@@ -336,7 +336,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddAccountType) {
       trans.accType = event.accType;
 
-      if ((trans.accType > 0) && (trans.pinBlock.length == 0)) {
+      if ((trans.accType > 0) && ((trans.pinBlock.length == 0) || (trans.pinBlock == '0000000000000000'))) {
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         yield TransactionShowPinAmount(trans);
@@ -371,7 +371,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowPinAmount) {
       yield TransactionShowPinAmount(trans);
     } else if (event is TransConfirmOK) {
-      if (trans.cardType == Pinpad.CHIP) {
+      if (trans.entryMode == Pinpad.CHIP) {
         this.add(TransGoOnChip(trans));
       } else {
         this.add(TransOnlineTransaction(trans));
@@ -540,7 +540,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             trans.batchNum = respBatchNumber;
           }
 
-          if (trans.cardType == Pinpad.CHIP) {
+          if (trans.entryMode == Pinpad.CHIP) {
             this.add(TransFinishChip(trans));
           } else {
             if (trans.type == 'Venta')
@@ -625,7 +625,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         numCopies = 0;
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
-        if (trans.cardType == Pinpad.CHIP) {
+        if (trans.entryMode == Pinpad.CHIP) {
           yield TransactionCompleted(trans, terminal);
         } else {
           yield TransactionFinish(trans);
@@ -642,7 +642,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else if (event is TransPrintCustomerOK) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-      if (trans.cardType == Pinpad.CHIP) {
+      if (trans.entryMode == Pinpad.CHIP) {
         yield TransactionCompleted(trans, terminal);
       } else {
         yield TransactionFinish(trans);
@@ -660,7 +660,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
-      if (trans.cardType == Pinpad.CHIP) {
+      if (trans.entryMode == Pinpad.CHIP) {
         doBeep = true;
         pinpad.removeCard();
         this.add(RemovingCard());

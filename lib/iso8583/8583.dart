@@ -126,10 +126,6 @@ class Iso8583 {
 
     //print('ParseField ' + field.toString());
 
-    if (field == 60) {
-      field += 0;
-    }
-
     dataType = _isoSpec.dataType(field);
     lenType = _isoSpec.lengthType(field);
     contentType = _isoSpec.contentType(field);
@@ -164,7 +160,7 @@ class Iso8583 {
         len = int.parse(temp);
         index += 2;
       } else if (lenDataType == DT.BIN) {
-        len = _isoMsg[index]; //TODO fix this legnth as it needs 2 bytes
+        len = int.parse(hex.encode(_isoMsg.sublist(index, index + 2)).toString(), radix: 16);
         index += 2;
       }
     }
@@ -332,7 +328,7 @@ class Iso8583 {
         lenString = len.toString().padLeft(2, '0');
         len = 2;
       } else if (lenType == LT.LLLVAR) {
-        lenString = len.toString().padLeft(4, '0');
+        lenString = len.toRadixString(16).padLeft(4, '0');
         len = 4;
       }
 
@@ -345,8 +341,12 @@ class Iso8583 {
           this._isoMsg[index++] = element;
         });
       } else if (lenDataType == DT.BIN) {
-        _isoMsg.add(len);
-      } //TODO fix this length
+        Uint8List temp = hex.decode(lenString);
+
+        temp.forEach((element) {
+          this._isoMsg[index++] = element;
+        });
+      }
     }
 
     if (contentType == 'z') {
@@ -407,7 +407,6 @@ class Iso8583 {
       //index = 1;
       temp.forEach((element) {
         this._isoMsg[lengthIndex++] = element;
-        index++;
       });
     }
 
@@ -510,7 +509,7 @@ class Iso8583 {
             data = data.substring(0, 4) + '********' + data.substring(12);
             temp += data + ']';
           } else {
-            if (data.length % 2 == 0)
+            if ((data.length % 2 == 0) || (_isoSpec.contentType(i) == 'ans'))
               temp += data + ']';
             else
               temp += data.padLeft(data.length + 1, '0') + ']';

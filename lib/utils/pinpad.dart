@@ -8,8 +8,8 @@ import 'package:pay/bloc/transactionBloc.dart';
 import 'package:pay/screens/selectionMenu.dart';
 
 class Pinpad {
-  static const int MAG_STRIPE = 0;
-  static const int CHIP = 3;
+  static const int MAG_STRIPE = 21;
+  static const int CHIP = 51;
   static const int CLESS_MS = 5;
   static const int CLESS_EMV = 6;
   static const int FALLBACK = 98;

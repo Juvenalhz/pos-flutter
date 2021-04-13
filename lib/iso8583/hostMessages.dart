@@ -124,13 +124,15 @@ class HostMessage {
       //decode field 62
       i = 0;
       while ((respMap[62] != null) && (i < respMap[62].length)) {
-        int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
-        i += 4;
-        int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
-        i += 4;
+        List<int> sizeList = respMap[62].substring(i, i + 2).codeUnits;
+        Uint8List sizeBytes = Uint8List.fromList(sizeList);
+        int len = int.parse(bcdToStr(sizeBytes));
+        i += 2;
+        int subTable = int.parse(respMap[62].substring(i, i + 2));
+        i += 2;
         //add fields like 6201, 6202, ... 6241
-        respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
-        i += len - 4;
+        respMap[62 * 100 + subTable] = respMap[62].substring(i, i + len - 2);
+        i += len - 2;
       }
     }
     return respMap;
@@ -150,7 +152,6 @@ class HostMessage {
   }
 
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
-
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
       return clearMessage;
     }
@@ -223,7 +224,7 @@ class HostMessage {
         });
       }
 
-      memDump('Ciphred request', dataToSend);
+      //memDump('Ciphred request', dataToSend);
       return dataToSend;
     }
 
@@ -262,7 +263,6 @@ class MessageInitialization extends HostMessage {
     else
       message.fieldData(41, merchant.tid);
     message.contentType(60, 'ans');
-    //TODO: get the application version from the project
     message.fieldData(60, Constants.appVersion);
     message.fieldData(62, field62);
 
