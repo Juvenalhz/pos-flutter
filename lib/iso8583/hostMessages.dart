@@ -43,7 +43,6 @@ void incrementStan() async {
 class HostMessage {
   Comm _comm;
   int _msgId;
-  DT _field62Type;
 
   HostMessage(this._comm, this._msgId);
 
@@ -106,9 +105,9 @@ class HostMessage {
     } else {
       isoResponse.dataType(60, DT.BIN);
       isoResponse.dataType(61, DT.BIN);
-      isoResponse.dataType(62, _field62Type);
-
+      isoResponse.dataType(62, DT.BIN);
       isoResponse.setIsoContent(response);
+
       if (isDev) {
         isoResponse.printMessage();
       }
@@ -124,15 +123,24 @@ class HostMessage {
       //decode field 62
       i = 0;
       while ((respMap[62] != null) && (i < respMap[62].length)) {
-        List<int> sizeList = respMap[62].substring(i, i + 2).codeUnits;
-        Uint8List sizeBytes = Uint8List.fromList(sizeList);
-        int len = int.parse(bcdToStr(sizeBytes));
-        i += 2;
-        int subTable = int.parse(respMap[62].substring(i, i + 2));
-        i += 2;
+        // List<int> sizeList = respMap[62].substring(i, i + 2).codeUnits;
+        // Uint8List sizeBytes = Uint8List.fromList(sizeList);
+        // int len = int.parse(bcdToStr(sizeBytes));
+        // i += 2;
+        // int subTable = int.parse(respMap[62].substring(i, i + 2));
+        // i += 2;
+        // //add fields like 6201, 6202, ... 6241
+        // respMap[62 * 100 + subTable] = respMap[62].substring(i, i + len - 2);
+        // i += len - 2;
+
+
+        int len = int.parse(respMap[62].substring(i, i + 4)) * 2;
+        i += 4;
+        int subTable = int.parse(ascii.decode(hex.decode(respMap[62].substring(i, i + 4))));
+        i += 4;
         //add fields like 6201, 6202, ... 6241
-        respMap[62 * 100 + subTable] = respMap[62].substring(i, i + len - 2);
-        i += len - 2;
+        respMap[62 * 100 + subTable] = ascii.decode(hex.decode(respMap[62].substring(i, i + len - 4)));
+        i += len - 4;
       }
     }
     return respMap;
@@ -262,8 +270,7 @@ class MessageInitialization extends HostMessage {
       message.fieldData(41, '00000000');
     else
       message.fieldData(41, merchant.tid);
-    message.contentType(60, 'ans');
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersion );
     message.fieldData(62, field62);
 
     msgSeq++;
@@ -271,10 +278,11 @@ class MessageInitialization extends HostMessage {
     if (isDev) {
       message.printMessage();
     }
-
-    super._field62Type = DT.BIN;
-
+    message.dataType(60, DT.ASCII);
     return buildCiphredMessage(message.buildIso());
+
+    //needed to process the response correctly
+    message.dataType(60, DT.BIN);
   }
 }
 
@@ -322,6 +330,8 @@ class TransactionMessage extends HostMessage {
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
+
+
     message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(1, trans.id.toString());
@@ -336,8 +346,6 @@ class TransactionMessage extends HostMessage {
     if (isDev) {
       message.printMessage();
     }
-
-    super._field62Type = DT.ASCII;
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -401,7 +409,7 @@ class ReversalMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -449,7 +457,7 @@ class EchoTestMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -490,7 +498,7 @@ class LastSaleMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -554,7 +562,7 @@ class VoidMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -594,7 +602,7 @@ class TechVisitMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     if (pinBlock.length > 0) message.fieldData(52, pinBlock);
     if (pinKSN.length > 0) message.fieldData(53, pinKSN);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     temp = visitType.toString().padRight(2, ' ') + requirementType.toString().padRight(12, ' ');
     field62 += addField62Table(5, temp);
@@ -606,7 +614,7 @@ class TechVisitMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -668,7 +676,7 @@ class AdjustMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }
@@ -711,7 +719,7 @@ class BatchMessage extends HostMessage {
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
-    message.fieldData(60, '01.00');
+    message.fieldData(60, Constants.appVersion);
 
     field62 += addField62Table(41, sn);
     message.fieldData(62, field62);
@@ -726,7 +734,7 @@ class BatchMessage extends HostMessage {
       message.printMessage();
     }
 
-    super._field62Type = DT.ASCII;
+    //message.dataType(60, DT.ASCII);
 
     return buildCiphredMessage(message.buildIso());
   }

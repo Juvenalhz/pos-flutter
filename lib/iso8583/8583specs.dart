@@ -258,6 +258,9 @@ class IsoSpecBCD extends Iso8583Specs {
 
       _addField(temp);
     });
+
+    lengthDataType(2, DT.BCD);
+    lengthType(2, LT.LLVAR);
   }
 }
 
