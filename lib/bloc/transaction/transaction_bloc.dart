@@ -625,11 +625,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         numCopies = 0;
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
-        if (trans.entryMode == Pinpad.CHIP) {
-          yield TransactionCompleted(trans, terminal);
-        } else {
-          yield TransactionFinish(trans);
-        }
+        yield TransactionCompleted(trans, terminal);
+      }
       }
     } else if (event is TransPrintMerchantError) {
       yield TransactionPrintMerchantError();
