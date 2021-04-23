@@ -328,8 +328,14 @@ class Iso8583 {
         lenString = len.toString().padLeft(2, '0');
         len = 2;
       } else if (lenType == LT.LLLVAR) {
-        lenString = len.toRadixString(16).padLeft(4, '0');
-        len = 4;
+        if (lenDataType == DT.BIN) {
+          lenString = len.toRadixString(16).padLeft(4, '0');
+          len = 4;
+        }
+        else {
+          lenString = len.toString().padLeft(4, '0');
+          len = 4;
+        }
       }
 
       if (lenDataType == DT.ASCII)

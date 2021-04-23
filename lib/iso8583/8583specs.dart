@@ -254,7 +254,7 @@ class IsoSpecBCD extends Iso8583Specs {
       else
         temp.dataType = DT.BCD;
 
-      if (temp.lengthType != LT.FIXED) temp.lengthDataType = DT.BIN;
+      if (temp.lengthType != LT.FIXED) temp.lengthDataType = DT.BCD;
 
       _addField(temp);
     });
