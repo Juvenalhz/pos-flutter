@@ -331,8 +331,7 @@ class Iso8583 {
         if (lenDataType == DT.BIN) {
           lenString = len.toRadixString(16).padLeft(4, '0');
           len = 4;
-        }
-        else {
+        } else {
           lenString = len.toString().padLeft(4, '0');
           len = 4;
         }
@@ -409,8 +408,7 @@ class Iso8583 {
     }
 
     if ((this._addLength != null) && (this._addLength == true)) {
-      Uint8List temp = strToBcd((index).toRadixString(16).padLeft(4, '0'));
-      //index = 1;
+      Uint8List temp = Uint8List(2)..buffer.asByteData().setInt16(0, index - 2, Endian.big);
       temp.forEach((element) {
         this._isoMsg[lengthIndex++] = element;
       });
