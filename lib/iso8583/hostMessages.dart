@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:flutter/material.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
 import 'package:pay/models/bin.dart';
@@ -243,6 +244,7 @@ class MessageInitialization extends HostMessage {
   Comm _comm;
   Iso8583 message;
   int msgSeq = 0;
+  int tableType = 0;
 
   MessageInitialization(this._comm) : super(_comm, 800) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
@@ -257,13 +259,11 @@ class MessageInitialization extends HostMessage {
 
     field62 = addField62Table(41, sn);
 
-    message.setMID(800);
-    if (msgSeq == 0)
-      message.fieldData(3, '9000' + msgSeq.toString().padLeft(2, '0'));
-    else {
-      message.fieldData(3, '9001' + msgSeq.toString().padLeft(2, '0'));
+    if (tableType != 0)
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
-    }
+
+    message.setMID(800);
+    message.fieldData(3, '90' + tableType.toString().padLeft(2, '0') + msgSeq.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
     if (msgSeq == 0)
@@ -283,6 +283,16 @@ class MessageInitialization extends HostMessage {
 
     //needed to process the response correctly
     message.dataType(60, DT.BIN);
+  }
+
+  Future<Map<int, String>> parseRenponse(Uint8List response, {Trans trans}) async {
+    Map<int, String> respMap = await super.parseRenponse(response);
+
+    tableType = int.parse(respMap[3].substring(3, 4));
+    if (respMap[3].substring(3, 4) != message.fieldData(3).substring(3,4))
+      msgSeq = 1;
+
+    return respMap;
   }
 }
 
