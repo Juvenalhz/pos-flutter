@@ -125,11 +125,11 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
-            if (respMap[3].substring(3, 4) == '1') {
+            if (initialization.tableType == 1) {
               processField61BIN(respMap[61]);
-            } else if (respMap[3].substring(3, 4) == '2') {
+            } else if (initialization.tableType == 2) {
               processField61AID(respMap[61]);
-            } else if (respMap[3].substring(3, 4) == '3') {
+            } else if (initialization.tableType == 3) {
               processField61PubKey(respMap[61]);
             }
           }
