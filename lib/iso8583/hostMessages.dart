@@ -260,7 +260,7 @@ class MessageInitialization extends HostMessage {
 
     field62 = addField62Table(41, sn);
 
-    if (tableType != 0) {
+    if (newTableType != 0) {
       _updateTableType();
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     }
@@ -268,7 +268,7 @@ class MessageInitialization extends HostMessage {
     message.fieldData(3, '90' + tableType.toString().padLeft(2, '0') + msgSeq.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(24, _comm.nii);
-    if (msgSeq == 0)
+    if (tableType == 0)
       message.fieldData(41, '00000000');
     else
       message.fieldData(41, merchant.tid);
