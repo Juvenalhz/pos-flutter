@@ -245,6 +245,7 @@ class MessageInitialization extends HostMessage {
   Iso8583 message;
   int msgSeq = 0;
   int tableType = 0;
+  int newTableType = 0;
 
   MessageInitialization(this._comm) : super(_comm, 800) {
     message = new Iso8583(null, ISOSPEC.ISO_BCD, this._comm.tpdu, _comm.headerLength);
@@ -259,9 +260,10 @@ class MessageInitialization extends HostMessage {
 
     field62 = addField62Table(41, sn);
 
-    if (tableType != 0)
+    if (tableType != 0) {
+      _updateTableType();
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
-
+    }
     message.setMID(800);
     message.fieldData(3, '90' + tableType.toString().padLeft(2, '0') + msgSeq.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
@@ -288,11 +290,15 @@ class MessageInitialization extends HostMessage {
   Future<Map<int, String>> parseRenponse(Uint8List response, {Trans trans}) async {
     Map<int, String> respMap = await super.parseRenponse(response);
 
-    tableType = int.parse(respMap[3].substring(3, 4));
+    newTableType = int.parse(respMap[3].substring(3, 4));
     if (respMap[3].substring(3, 4) != message.fieldData(3).substring(3,4))
       msgSeq = 1;
 
     return respMap;
+  }
+
+  void _updateTableType() {
+    tableType = newTableType;
   }
 }
 
