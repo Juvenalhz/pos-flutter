@@ -47,17 +47,6 @@ class Initialization extends StatelessWidget {
                 return InitializationAlert('Inicialización', 'Proceso de inicialización completado');
               }
               else if (state is InitializationFailed) {
-                final MerchantBloc merchantBloc = BlocProvider.of<MerchantBloc>(context);
-                final TerminalBloc terminalBloc = BlocProvider.of<TerminalBloc>(context);
-                final CommBloc commBloc = BlocProvider.of<CommBloc>(context);
-                final EmvBloc emvBloc = BlocProvider.of<EmvBloc>(context);
-                final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
-
-                merchantBloc.add(GetMerchant(1));
-                terminalBloc.add(GetTerminal(1));
-                commBloc.add(GetComm(1));
-                emvBloc.add(GetEmv(1));
-                acquirerBloc.add(GetAcquirer(1));
                 return InitializationAlert('Inicialización', 'Proceso de inicialización falló, intente de nuevamente...');
               }
               else if (state is InitializationCommError)
