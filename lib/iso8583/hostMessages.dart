@@ -272,7 +272,7 @@ class MessageInitialization extends HostMessage {
       message.fieldData(41, '00000000');
     else
       message.fieldData(41, merchant.tid);
-    message.fieldData(60, Constants.appVersion );
+    message.fieldData(60, Constants.appVersionHost );
     message.fieldData(62, field62);
 
     msgSeq++;
@@ -348,7 +348,7 @@ class TransactionMessage extends HostMessage {
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
 
 
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
@@ -413,7 +413,7 @@ class ReversalMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
@@ -459,11 +459,11 @@ class EchoTestMessage extends HostMessage {
             dateTime.minute.toString().padLeft(2, '0') +
             dateTime.second.toString().padLeft(2, '0'));
     message.fieldData(11, (await getStan()).toString());
-    message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
-    message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
+    //message.fieldData(12, dateTime.hour.toString() + dateTime.minute.toString() + dateTime.second.toString());
+    //message.fieldData(13, dateTime.month.toString() + dateTime.day.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.tid);
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     field62 += addField62Table(41, sn);
 
@@ -504,7 +504,7 @@ class LastSaleMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     field62 += addField62Table(41, sn);
 
@@ -559,7 +559,7 @@ class VoidMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     originalData = trans.referenceNumber;
     originalData += trans.stan.toString().padLeft(6, '0');
@@ -618,7 +618,7 @@ class TechVisitMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     if (pinBlock.length > 0) message.fieldData(52, pinBlock);
     if (pinKSN.length > 0) message.fieldData(53, pinKSN);
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     temp = visitType.toString().padRight(2, ' ') + requirementType.toString().padRight(12, ' ');
     field62 += addField62Table(5, temp);
@@ -674,7 +674,7 @@ class AdjustMessage extends HostMessage {
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     originalData = trans.referenceNumber;
     originalData += trans.stan.toString().padLeft(6, '0');
@@ -735,7 +735,7 @@ class BatchMessage extends HostMessage {
     message.fieldData(24, _comm.nii);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
-    message.fieldData(60, Constants.appVersion);
+    message.fieldData(60, Constants.appVersionHost);
 
     field62 += addField62Table(41, sn);
     message.fieldData(62, field62);

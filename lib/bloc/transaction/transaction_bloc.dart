@@ -627,7 +627,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         yield TransactionCompleted(trans, terminal);
       }
-      }
     } else if (event is TransPrintMerchantError) {
       yield TransactionPrintMerchantError();
     } else if (event is TransCustomerReceipt) {

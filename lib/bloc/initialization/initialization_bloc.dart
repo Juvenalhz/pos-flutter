@@ -121,11 +121,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
             processField43(respMap[43], merchant);
           }
           if (respMap[60] != null) {
+            merchant.tid = respMap[41];
             await processField60(respMap[60], merchant, newComm, terminal, emv, acquirerIndicators);
             merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
           }
           if ((respMap[3] != null) && (respMap[61] != null)) {
-            if (initialization.tableType == 1) {
+              if (initialization.tableType == 1) {
               processField61BIN(respMap[61]);
             } else if (initialization.tableType == 2) {
               processField61AID(respMap[61]);
@@ -183,7 +184,7 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
 
     merchant.mid = ascii.decode(hex.decode(data.substring(index, index + 30)));
     index += 30;
-    merchant.tid = data.substring(index, index + 2);
+    //terminal number
     index += 2;
     merchant.currencyCode = int.parse(data.substring(index, index + 4));
     index += 4;
