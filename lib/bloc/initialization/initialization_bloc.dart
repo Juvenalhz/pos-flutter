@@ -273,7 +273,12 @@ class InitializationBloc extends Bloc<InitializationEvent, InitializationState> 
       binExist = await binRepository.existBin(bin);
       if ((addBin) && (!binExist)) {
         await binRepository.createBin(bin);
-      } else if ((!addBin) && (binExist)) {
+      }
+      if ((addBin) && (binExist)) {
+        await binRepository.deleteBin(bin);
+        await binRepository.createBin(bin);
+      }
+      else if ((!addBin) && (binExist)) {
         await binRepository.deleteBin(bin);
       }
     }

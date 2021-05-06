@@ -384,9 +384,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.chipDoneData['OfflinePIN'] != null) trans.offlinePIN = intToBool(event.chipDoneData['OfflinePIN']);
       if (event.chipDoneData['triesLeft'] != null) trans.triesLeft = event.chipDoneData['triesLeft'];
       if (event.chipDoneData['BlockedPIN'] != null) trans.blockedPIN = intToBool(event.chipDoneData['BlockedPIN']);
-      if (event.chipDoneData['OnlinePIN'] != null) trans.onlinePIN = intToBool(event.chipDoneData['OnlinePIN']);
-      if (event.chipDoneData['PINBlock'] != null) trans.pinBlock = event.chipDoneData['PINBlock'];
-      if (event.chipDoneData['PINKSN'] != null) trans.pinKSN = event.chipDoneData['PINKSN'];
+      if ((event.chipDoneData['OnlinePIN'] != null) && (event.chipDoneData['PINBlock'] != '0000000000000000'))
+        trans.onlinePIN = intToBool(event.chipDoneData['OnlinePIN']);
+      if ((event.chipDoneData['PINBlock'] != null) && (event.chipDoneData['PINBlock'] != '0000000000000000'))
+        trans.pinBlock = event.chipDoneData['PINBlock'];
+      if ((event.chipDoneData['PINKSN'] != null)  && (event.chipDoneData['PINKSN'] != '00000000000000000000'))
+        trans.pinKSN = event.chipDoneData['PINKSN'];
       if (event.chipDoneData['emvTags'] != null) trans.emvTags = event.chipDoneData['emvTags'];
 
       if (trans.cardDecision == 1) {
