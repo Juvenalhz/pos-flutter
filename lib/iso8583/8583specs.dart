@@ -313,7 +313,7 @@ var contentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 46, 'ContentType': 'an', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Additional data - ISO'},
   {'field': 47, 'ContentType': 'an', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Additional data - national'},
   {'field': 48, 'ContentType': 'ans', 'MaxLen': 999, 'LenType': LT.LLLVAR, 'description': 'Additional data - private'},
-  {'field': 49, 'ContentType': 'an', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Currency code, transaction'},
+  {'field': 49, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Currency code, transaction'},
   {'field': 50, 'ContentType': 'an', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Currency code, settlement'},
   {'field': 51, 'ContentType': 'an', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Currency code, cardholder billing'},
   {'field': 52, 'ContentType': 'b', 'MaxLen': 8, 'LenType': LT.FIXED, 'description': 'Personal identification number data'},
