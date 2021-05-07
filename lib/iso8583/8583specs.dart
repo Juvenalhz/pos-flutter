@@ -287,7 +287,7 @@ var contentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 20, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'PAN extended, country code'},
   {'field': 21, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Forwarding institution. country code'},
   {'field': 22, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Point of service entry mode'},
-  {'field': 23, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Application PAN sequence number'},
+  {'field': 23, 'ContentType': 'n', 'MaxLen': 2, 'LenType': LT.FIXED, 'description': 'Application PAN sequence number'},
   {'field': 24, 'ContentType': 'n', 'MaxLen': 3, 'LenType': LT.FIXED, 'description': 'Network International identifier (NII)'},
   {'field': 25, 'ContentType': 'n', 'MaxLen': 2, 'LenType': LT.FIXED, 'description': 'Point of service condition code'},
   {'field': 26, 'ContentType': 'n', 'MaxLen': 2, 'LenType': LT.FIXED, 'description': 'Point of service capture code'},
