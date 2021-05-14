@@ -299,7 +299,7 @@ var contentTypes1987 = new List<Map<String, dynamic>>.unmodifiable({
   {'field': 32, 'ContentType': 'n', 'MaxLen': 11, 'LenType': LT.LLVAR, 'description': 'Acquiring institution identification code'},
   {'field': 33, 'ContentType': 'n', 'MaxLen': 11, 'LenType': LT.LLVAR, 'description': 'Forwarding institution identification code'},
   {'field': 34, 'ContentType': 'ns', 'MaxLen': 28, 'LenType': LT.LLVAR, 'description': 'Primary account number, extended'},
-  {'field': 35, 'ContentType': 'z', 'MaxLen': 40, 'LenType': LT.LLVAR, 'description': 'Track 2 data'},
+  {'field': 35, 'ContentType': 'z', 'MaxLen': 60, 'LenType': LT.LLVAR, 'description': 'Track 2 data'},
   {'field': 36, 'ContentType': 'n', 'MaxLen': 104, 'LenType': LT.LLLVAR, 'description': 'Track 3 data'},
   {'field': 37, 'ContentType': 'an', 'MaxLen': 12, 'LenType': LT.FIXED, 'description': 'Retrieval reference number'},
   {'field': 38, 'ContentType': 'an', 'MaxLen': 6, 'LenType': LT.FIXED, 'description': 'Authorization identification response'},
