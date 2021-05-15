@@ -167,15 +167,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.clear();
           yield TransactionError();
         }
-      }
-      else {
-          yield TransactionShowMessage('Deslice Tarjeta');
-          pinpad.swipeCard(onSwipeCardRead);
+      } else {
+        yield TransactionShowMessage('Deslice Tarjeta');
+        pinpad.swipeCard(onSwipeCardRead);
       }
     }
     // card was read, save data returned by pinpad module
     else if (event is TransCardWasRead) {
-      if (trans.type == 'Anulación'){
+      if (trans.type == 'Anulación') {
         Cipher cipher = new Cipher();
         String cipheredPAN;
 
@@ -207,8 +206,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
       if (event.card['recordID'] != null) trans.aidID = event.card['recordID'];
 
-      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE)
-        trans.entryMode = Pinpad.FALLBACK;
+      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE) trans.entryMode = Pinpad.FALLBACK;
 
       yield TransactionCardRead(trans);
       this.add(TransProcessCard(trans));
@@ -230,8 +228,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             yield TransactionShowMessage('Use Lector De Chip');
             await new Future.delayed(const Duration(seconds: 3));
             this.add(TransGetCard(trans));
-          }
-          else {
+          } else {
             if (acquirer.last4Digits)
               yield TransactionAskLast4Digits();
             else if (acquirer.cvv2) {
@@ -325,7 +322,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             yield TransactionAskConfirmation(trans, acquirer);
           }
         }
-
       } else if (trans.binType == Bin.TYPE_DEBIT) {
         yield TransactionAskAccountType();
       } else {
@@ -341,10 +337,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // account type ase selected
     else if (event is TransAddAccountType) {
       trans.accType = event.accType;
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
       if ((trans.accType > 0) && ((trans.pinBlock.length == 0) || (trans.pinBlock == '0000000000000000'))) {
-        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-
         if (trans.entryMode == Pinpad.MAG_STRIPE) {
           yield TransactionShowPinAmount(trans);
           await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
@@ -352,11 +347,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         } else {
           this.add(TransGoOnChip(trans));
         }
-      }
-    }
-        yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
-            'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
       } else
         yield TransactionAskConfirmation(trans, acquirer);
     }
@@ -401,10 +391,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.chipDoneData['BlockedPIN'] != null) trans.blockedPIN = intToBool(event.chipDoneData['BlockedPIN']);
       if ((event.chipDoneData['OnlinePIN'] != null) && (event.chipDoneData['PINBlock'] != '0000000000000000'))
         trans.onlinePIN = intToBool(event.chipDoneData['OnlinePIN']);
-      if ((event.chipDoneData['PINBlock'] != null) && (event.chipDoneData['PINBlock'] != '0000000000000000'))
-        trans.pinBlock = event.chipDoneData['PINBlock'];
-      if ((event.chipDoneData['PINKSN'] != null)  && (event.chipDoneData['PINKSN'] != '00000000000000000000'))
-        trans.pinKSN = event.chipDoneData['PINKSN'];
+      if ((event.chipDoneData['PINBlock'] != null) && (event.chipDoneData['PINBlock'] != '0000000000000000')) trans.pinBlock = event.chipDoneData['PINBlock'];
+      if ((event.chipDoneData['PINKSN'] != null) && (event.chipDoneData['PINKSN'] != '00000000000000000000')) trans.pinKSN = event.chipDoneData['PINKSN'];
       if (event.chipDoneData['emvTags'] != null) trans.emvTags = event.chipDoneData['emvTags'];
 
       if (trans.cardDecision == 1) {
@@ -413,7 +401,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         await new Future.delayed(const Duration(seconds: 3));
         trans.clear();
         yield TransactionError();
-      } else if ( (event.chipDoneData['resultCode'] != null) && (event.chipDoneData['resultCode'] != 0) ) {
+      } else if ((event.chipDoneData['resultCode'] != null) && (event.chipDoneData['resultCode'] != 0)) {
         yield TransactionShowMessage('Transacción Cancelada');
         await new Future.delayed(const Duration(seconds: 3));
         trans.clear();
@@ -631,8 +619,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Receipt receipt = new Receipt();
         yield TransactionPrintMerchantReceipt(trans);
         receipt.printTransactionReceipt(false, false, trans, onPrintMerchantOK, onPrintMerchantError);
-      }
-      else{
+      } else {
         this.add(TransPrintMerchantOK());
       }
     } else if (event is TransPrintMerchantOK) {
