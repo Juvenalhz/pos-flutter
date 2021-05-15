@@ -354,12 +354,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         }
       }
     }
-        yield TransactionShowPinAmount(trans);
-        await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
-            'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
-      } else
-        yield TransactionAskConfirmation(trans, acquirer);
-    }
     // online pin was entered for swiped cases
     else if (event is TransPinEntered) {
       if (event.pinData['PINBlock'] != null) {
@@ -386,11 +380,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowPinAmount) {
       yield TransactionShowPinAmount(trans);
     } else if (event is TransConfirmOK) {
-      if (trans.entryMode == Pinpad.CHIP) {
-        this.add(TransGoOnChip(trans));
-      } else {
-        this.add(TransOnlineTransaction(trans));
-      }
+      this.add(TransOnlineTransaction(trans));
     }
     // analyze chip desition online/offline/decline by chip
     else if (event is TransGoOnChipDecision) {
@@ -499,11 +489,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       trans.stan = await getStan();
       // save reversal
-      if (trans.type == 'Venta') {
-        trans.reverse = true;
-        await transRepository.createTrans(trans);
-        trans.reverse = false;
-      }
+      // if (trans.type == 'Venta') {
+      //   trans.reverse = true;
+      //   await transRepository.createTrans(trans);
+      //   trans.reverse = false;
+      // }
       incrementStan();
       this.add(TransReceive());
     }
@@ -690,7 +680,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
       if (doBeep) {
-        pinpad.beep();
+        //pinpad.beep();
         this.add(RemovingCard());
         await new Future.delayed(const Duration(seconds: 2));
       }
