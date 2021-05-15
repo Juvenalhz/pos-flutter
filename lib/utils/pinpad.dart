@@ -182,11 +182,12 @@ class Pinpad {
       case REMOVE_CARD:
         return "Remueva Tarjeta";
       case UPDATING_TABLES:
+      case UPDATING_RECORD:
         return "Actualizando Tablas EMV...";
       case SECOND_TAP:
         return "Acerque la Tarjeta Nuevamente";
       case PIN_VERIFIED:
-      case UPDATING_RECORD:
+
       case PIN_STARTING:
       default:
         return "";

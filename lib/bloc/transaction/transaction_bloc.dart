@@ -251,7 +251,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             if (trans.type == 'Venta')
               yield TransactionAskIdNumber();
             else
-              yield TransactionAskConfirmation(trans, acquirer);
+              this.add(TransGoOnChip(trans));
           } else {
             yield TransactionShowMessage(("Error en Tarjeta"));
             trans.clear();
@@ -318,8 +318,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         //acquirer.industryType = true; //to test restaurant flow
         if (acquirer.industryType) // true = restaurant
           yield TransactionAskServerNumber();
-        else
-          yield TransactionAskConfirmation(trans, acquirer);
+        else {
+          if (trans.entryMode == Pinpad.CHIP) {
+            this.add(TransGoOnChip(trans));
+          } else {
+            yield TransactionAskConfirmation(trans, acquirer);
+          }
+        }
+
       } else if (trans.binType == Bin.TYPE_DEBIT) {
         yield TransactionAskAccountType();
       } else {
@@ -339,6 +345,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if ((trans.accType > 0) && ((trans.pinBlock.length == 0) || (trans.pinBlock == '0000000000000000'))) {
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
+        if (trans.entryMode == Pinpad.MAG_STRIPE) {
+          yield TransactionShowPinAmount(trans);
+          await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
+              'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
+        } else {
+          this.add(TransGoOnChip(trans));
+        }
+      }
+    }
         yield TransactionShowPinAmount(trans);
         await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
             'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
@@ -394,14 +409,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       if (trans.cardDecision == 1) {
         // denial by the card
-        yield TransactionShowMessage('Transaccion Rechazada Por Tarjeta');
+        yield TransactionShowMessage('Transacción Rechazada Por Tarjeta');
+        await new Future.delayed(const Duration(seconds: 3));
+        trans.clear();
+        yield TransactionError();
+      } else if ( (event.chipDoneData['resultCode'] != null) && (event.chipDoneData['resultCode'] != 0) ) {
+        yield TransactionShowMessage('Transacción Cancelada');
         await new Future.delayed(const Duration(seconds: 3));
         trans.clear();
         yield TransactionError();
       } else if (trans.cardDecision == 0) {
         // this case is offline approval
       } else
-        this.add(TransOnlineTransaction(trans));
+        yield TransactionAskConfirmation(trans, acquirer);
     }
     // start online process
     else if (event is TransOnlineTransaction) {

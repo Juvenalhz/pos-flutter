@@ -106,11 +106,13 @@ public class PinpadManager implements PinpadCallbacks {
         params.put("emvTables", tables);
 
         if (Build.MODEL.contains("APOS")) {
-            PinpadManager.me().abort();
+            this.abort();
             new Thread(() -> {
                 pinpad.open();
-                if (pinpad.tableLoadInit("00" + TIMESTAMP) == Pinpad.PP_TABEXP) {
+                int ret = pinpad.tableLoadInit("00" + TIMESTAMP);
+                if ((ret == Pinpad.PP_OK) || (ret == Pinpad.PP_TABEXP)) {
                     for (final String s : tables) {
+                        if (s != null)
                         pinpad.tableLoadRec(s);
                     }
                     pinpad.tableLoadEnd();
@@ -219,7 +221,7 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("appType", Integer.parseInt(out.substring(3, 5)));
                     card.put("appNetID", Integer.parseInt(out.substring(5, 7)));
                     card.put("recordID", Integer.parseInt(out.substring(7, 9)));
-                    final PinpadManager.TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
+                    final PinpadManager.TrackData tracks = this.extractTrack(output.getOutput(), 9);
                     card.put("track1", tracks.track1);
                     card.put("track2", tracks.track2);
                     final int panLen = Integer.parseInt(out.substring(233, 235));
@@ -368,7 +370,7 @@ public class PinpadManager implements PinpadCallbacks {
                     goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
                     goOnChipTagList                        // List of tags, hex-coded
             );
-
+            this.callbacks = this;
             ret = pinpad.goOnChip(goOnChipInput, goOnChipTags, null, output -> {
 
                 Log.i(TAG, "goOnChip output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");
@@ -627,6 +629,9 @@ public class PinpadManager implements PinpadCallbacks {
             @Override
             public void run() {
                 try {
+                    if (digits > 0) {
+                        DeviceHelper.me().getBeeper().startBeep(200);
+                    }
                     DeviceHelper.me().getBeeper().startBeep(200);
                 } catch (RemoteException e) {
                     Log.e(TAG, "startBeep", e);

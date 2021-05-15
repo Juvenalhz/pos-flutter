@@ -71,6 +71,7 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
+          if (state.message != null)
           return TransMessage(state.message);
         } else if (state is TransactionCardRead) {
           return TransMessage(state.trans.appLabel);
