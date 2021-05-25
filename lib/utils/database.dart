@@ -163,7 +163,7 @@ class DatabaseHelper {
     Map<String, dynamic> testEmv = {
       'id': 1,
       'terminalType': '22',
-      'terminalCapabilities': 'E0F8C8',
+      'terminalCapabilities': 'E0F0C8',
       'addTermCapabilities': 'F0000F0F001',
       'fallback': 1,
       'forceOnline': 1,
