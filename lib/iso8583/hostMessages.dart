@@ -68,7 +68,7 @@ class HostMessage {
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
       case 18:
-        temp += bcdToStr(AsciiEncoder().convert(data.padRight(2, ' ')));
+        temp += bcdToStr(AsciiEncoder().convert(data.padLeft(2, '0')));
         break;
       case 41:
         String serial;
@@ -162,6 +162,7 @@ class HostMessage {
 
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
+      memDump('request:', clearMessage);
       return clearMessage;
     }
     else {
