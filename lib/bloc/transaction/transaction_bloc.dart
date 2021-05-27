@@ -679,7 +679,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
       if (doBeep) {
-        //pinpad.beep();
+        pinpad.beep();
         this.add(RemovingCard());
         await new Future.delayed(const Duration(seconds: 2));
       }
