@@ -148,6 +148,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       AidRepository aidRepository = new AidRepository();
       PubKeyRepository pubKeyRepository = new PubKeyRepository();
       Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+
+      if(emv.countryCode == null) {
+        emv.countryCode = merchant.countryCode;
+        await emvRepository.updateEmv(emv);
+      }
+
       List<Map<String, dynamic>> aids = await aidRepository.getAids();
       //TODO: discard expired public keys
       List<Map<String, dynamic>> pubKeys = await pubKeyRepository.getPubKeys();
@@ -673,7 +679,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
       if (doBeep) {
-        //pinpad.beep();
+        pinpad.beep();
         this.add(RemovingCard());
         await new Future.delayed(const Duration(seconds: 2));
       }
