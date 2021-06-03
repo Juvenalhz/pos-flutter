@@ -65,5 +65,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     api 'org.slf4j:slf4j-api:1.7.25'
-    debugImplementation 'com.github.tony19:logback-android:1.1.1-12'
+
+    implementation 'com.github.tony19:logback-android:1.1.1-12'
+
 }

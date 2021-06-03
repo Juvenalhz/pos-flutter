@@ -88,6 +88,8 @@ class Emv : MethodChannel.MethodCallHandler{
 
         var i : Int = 0
 
+        var atc : String = "6000f0a001";
+
         if (aids != null) {
             for((index, aid) in aids.withIndex()){
 
@@ -104,14 +106,19 @@ class Emv : MethodChannel.MethodCallHandler{
                 tables[i] += "%04x".format(aid["version"])  // terminal application 1
                 tables[i] += "0000"   // terminal application 2
                 tables[i] += "0000"   // terminal application 3
-                tables[i] += emv?.get("countryCode").toString().padStart(3, '0')
+
+                tables[i] +="862"
+
                 tables[i] += emv?.get("currencyCode").toString().padStart(3, '0')
                 tables[i] += "2"    // currency exponent
                 tables[i] += "".padEnd(15, ' ')  // MID - optional
                 tables[i] += "5999" // merchant category code
                 tables[i] += "".padEnd(8, ' ')  // TID - optional
                 tables[i] += emv?.get("terminalCapabilities").toString()
-                tables[i] += emv?.get("addTermCapabilities").toString().subSequence(0, 10).toString()
+
+
+                tables[i] +=atc
+
                 tables[i] += emv?.get("terminalType").toString()
                 tables[i] += aid["tacDefault"].toString()
                 tables[i] += aid["tacDenial"].toString()

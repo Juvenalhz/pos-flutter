@@ -162,7 +162,9 @@ class HostMessage {
 
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
-      memDump('request:', clearMessage);
+
+      //memDump('request:', clearMessage);
+
       return clearMessage;
     }
     else {
