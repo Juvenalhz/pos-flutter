@@ -61,6 +61,7 @@ class Trans {
   int _server = 0;
   bool _tipAdjusted = false;
   bool _chipEnable = true;
+  String _referenceNumberCancellation = '';
 
   Trans();
 
@@ -123,6 +124,7 @@ class Trans {
   int get server => _server;
   bool get tipAdjusted => _tipAdjusted;
   bool get chipEnable => _chipEnable;
+  String get referenceNumberCancellation => this._referenceNumberCancellation;
 
   set id(int id) {
     this._id = id;
@@ -360,6 +362,10 @@ class Trans {
     this._chipEnable = chipEnable;
   }
 
+  set referenceNumberCancellation(String referenceNumberCancellation) {
+    this._referenceNumberCancellation = referenceNumberCancellation;
+  }
+
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
 
@@ -419,7 +425,7 @@ class Trans {
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
     map['cardType'] = this._cardType;
-
+   // map['referenceNumberCancellation'] = this._referenceNumberCancellation;
     return map;
   }
 
@@ -482,7 +488,7 @@ class Trans {
     map['server'] = this._server;
     map['tipAdjusted'] = boolToInt(this._tipAdjusted);
     map['cardType'] = this._cardType;
-
+    //map['referenceNumberCancellation'] = this._referenceNumberCancellation;
     return map;
   }
 
@@ -539,6 +545,7 @@ class Trans {
     this._server = trans['server'];
     this._tipAdjusted = intToBool(trans['tipAdjusted']);
     this._cardType = trans['cardType'];
+    //this._referenceNumberCancellation = trans['referenceNumberCancellation'];
   }
 
   void clear() {
@@ -599,6 +606,7 @@ class Trans {
     _issuer = '';
     _server = 0;
     _tipAdjusted = false;
+    _referenceNumberCancellation = '';
   }
 
   void clearCardData() {

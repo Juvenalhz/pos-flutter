@@ -83,7 +83,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
-      trans.id = (await transRepository.getMaxId()) + 1;
+      trans.id = (await transRepository.getMaxId() + 1) ;
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       trans.type = 'Venta';
@@ -534,6 +534,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
+          if (trans.type == "Anulación") trans.referenceNumberCancellation = trans.referenceNumber;
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
           if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
@@ -588,9 +589,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
       if (trans.cardDecision == 0) {
-        if (trans.type == 'Venta')
+        if (trans.type == 'Venta') {
           transRepository.updateTrans(trans);
-        else {
+          trans.id = (await transRepository.getMaxId()) + 1;
+          transRepository.createTrans(trans);
+        } else {
           //update original transaction
           originalTrans.voided = true;
           transRepository.updateTrans(originalTrans);
@@ -625,10 +628,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
-      if (((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+      if ( (terminal.numPrint > 0 ) && ( ((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
           ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
-          (bin.cardType > Bin.TYPE_DEBIT)) {
-        numCopies = 0;
+          (bin.cardType > Bin.TYPE_DEBIT) )) {
+        numCopies = 1;
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
         yield TransactionCompleted(trans, terminal);
@@ -723,14 +726,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void onPrintMerchantOK() async {
-    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-
-    if (this.numCopies < terminal.numPrint) {
-      this.numCopies++;
-      this.add(TransMerchantReceipt());
-    } else {
+    // Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+    //
+    // if (this.numCopies <= terminal.numPrint) {
+    //   this.numCopies++;
+    //   this.add(TransMerchantReceipt());
+    // } else {
       this.add(TransPrintMerchantOK());
-    }
+    //}
   }
 
   void onPrintMerchantError(int type) {
