@@ -28,7 +28,7 @@ class TransApprovedScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: Row(children: [
-                Text('Aprovación:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                Text('Aprobación:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
                 Flexible(fit: FlexFit.tight, child: SizedBox()),
                 Text(trans.authCode, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
               ])
