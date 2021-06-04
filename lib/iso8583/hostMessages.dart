@@ -568,9 +568,6 @@ class VoidMessage extends HostMessage {
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
-    //500051
-    //000178
-    //082301
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
