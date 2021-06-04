@@ -503,6 +503,7 @@ class LastSaleMessage extends HostMessage {
     message.setMID(100);
     message.fieldData(3, '340000');
     message.fieldData(11, (await getStan()).toString());
+    message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
