@@ -87,7 +87,9 @@ class Emv : MethodChannel.MethodCallHandler{
     private fun loadTables(emv: HashMap<String, Any?>?, aids: List<HashMap<String, Any?>>?, pubKeys: List<HashMap<String, Any?>>?){
 
         var i : Int = 0
+
         var atc : String = "6000f0a001";
+
         if (aids != null) {
             for((index, aid) in aids.withIndex()){
 
@@ -104,7 +106,9 @@ class Emv : MethodChannel.MethodCallHandler{
                 tables[i] += "%04x".format(aid["version"])  // terminal application 1
                 tables[i] += "0000"   // terminal application 2
                 tables[i] += "0000"   // terminal application 3
+
                 tables[i] +="862"
+
                 tables[i] += emv?.get("currencyCode").toString().padStart(3, '0')
                 tables[i] += "2"    // currency exponent
                 tables[i] += "".padEnd(15, ' ')  // MID - optional
@@ -112,7 +116,9 @@ class Emv : MethodChannel.MethodCallHandler{
                 tables[i] += "".padEnd(8, ' ')  // TID - optional
                 tables[i] += emv?.get("terminalCapabilities").toString()
 
+
                 tables[i] +=atc
+
                 tables[i] += emv?.get("terminalType").toString()
                 tables[i] += aid["tacDefault"].toString()
                 tables[i] += aid["tacDenial"].toString()

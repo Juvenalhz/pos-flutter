@@ -1,3 +1,4 @@
+
 <configuration>
     <appender name="logcat"
         class="ch.qos.logback.classic.android.LogcatAppender">
@@ -13,3 +14,4 @@
         <appender-ref ref="logcat" />
     </root>
 </configuration>
+

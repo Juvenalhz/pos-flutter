@@ -162,6 +162,9 @@ class HostMessage {
 
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
+
+      //memDump('request:', clearMessage);
+
       return clearMessage;
     }
     else {
@@ -545,14 +548,14 @@ class VoidMessage extends HostMessage {
 
     String sn = await SerialNumber.serialNumber;
 
-    message.setMID(220);
+    message.setMID(200);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
-    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    //if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(35, trans.track2);
@@ -561,11 +564,10 @@ class VoidMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     message.fieldData(60, Constants.appVersionHost);
 
-    originalData = trans.referenceNumber;
+    originalData = trans.referenceNumber.replaceAll(' ', '');
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
-
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
