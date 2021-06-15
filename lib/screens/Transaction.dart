@@ -231,7 +231,7 @@ class Transaction extends StatelessWidget {
   void onSkipCustomer(BuildContext context) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransPrintMerchantRetry());
+    transactionBloc.add(TransPrintCustomerOK());
   }
 
   Future<void> onCloseBatchOk(BuildContext context) async {

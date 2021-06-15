@@ -634,7 +634,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
           ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
           (bin.cardType > Bin.TYPE_DEBIT)) {
-        numCopies = 0;
+        numCopies = 1;
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
         yield TransactionCompleted(trans, terminal);
