@@ -488,12 +488,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
 
       trans.stan = await getStan();
-      // save reversal
-      // if (trans.type == 'Venta') {
-      //   trans.reverse = true;
-      //   await transRepository.createTrans(trans);
-      //   trans.reverse = false;
-      // }
+      //save reversal
+      if (trans.type == 'Venta') {
+        trans.reverse = true;
+        await transRepository.createTrans(trans);
+        trans.reverse = false;
+      }
       incrementStan();
       this.add(TransReceive());
     }
