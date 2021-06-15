@@ -501,6 +501,7 @@ class LastSaleMessage extends HostMessage {
     message.setMID(100);
     message.fieldData(3, '340000');
     message.fieldData(11, (await getStan()).toString());
+    message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
@@ -546,14 +547,14 @@ class VoidMessage extends HostMessage {
 
     String sn = await SerialNumber.serialNumber;
 
-    message.setMID(220);
+    message.setMID(200);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(22, trans.entryMode.toString());
-    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    //if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(35, trans.track2);
@@ -562,7 +563,7 @@ class VoidMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     message.fieldData(60, Constants.appVersionHost);
 
-    originalData = trans.referenceNumber;
+    originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');

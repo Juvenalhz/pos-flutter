@@ -705,6 +705,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (cardReadTrials >= 3) {
         trans.chipEnable = false;
       }
+      this.add(TransFinishChip(trans));
       this.add(TransGetCard(trans));
     }
     // pinpad error detected
