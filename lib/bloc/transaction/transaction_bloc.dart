@@ -61,8 +61,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   @override
   Stream<TransactionState> mapEventToState(
-    TransactionEvent event,
-  ) async* {
+      TransactionEvent event,
+      ) async* {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -339,8 +339,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         yield TransactionAskConfirmation(trans, acquirer);
       }
     } else if (event is TransAddServerNumber) {
+      //agrego el evento TransGoOnChip para obtener campo 55 tags emv y seguir el flujo de la tx J.Q
+      this.add(TransGoOnChip(trans));
       trans.server = event.server;
-      yield TransactionAskConfirmation(trans, acquirer);
+      //no hace falta la linea de abajo, valido que se realice en TransGoOnChip
+      //yield TransactionAskConfirmation(trans, acquirer);
     } else if (event is TransServerBack) {
       trans.server = 0;
       yield TransactionAskIdNumber();
@@ -378,6 +381,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
         yield TransactionFinshChip();
+        //valido mensaje de confirmación modo restaurant J.Q
+      } else if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0  && acquirer.industryType ) {
+        yield TransactionAskConfirmation(trans,acquirer);
       } else {
         trans.clear();
         yield TransactionError();
@@ -776,7 +782,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     //   this.numCopies++;
     //   this.add(TransMerchantReceipt());
     // } else {
-      this.add(TransPrintMerchantOK());
+    this.add(TransPrintMerchantOK());
     //}
   }
 

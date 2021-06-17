@@ -65,6 +65,8 @@ class HostMessage {
         break;
       case 5:
       case 13:
+        //temp += data;
+
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
       case 18:
@@ -173,11 +175,13 @@ class HostMessage {
       Uint8List cipheredData;
 
       //create cyphered buffer
-      if (_comm.headerLength == true)
+      if (_comm.headerLength == true){
         cipheredData = await cipher.cipherMessage(clearMessage.sublist(7), _comm.kinIdTerminal);
-      else
+        memDump('clear Message 7', clearMessage.sublist(7));
+      } else{
         cipheredData = await cipher.cipherMessage(clearMessage.sublist(5), _comm.kinIdTerminal);
-
+      memDump('clear Message 5', cipheredData);
+      }
       Uint8List dataToSend = new Uint8List(14 + cipheredData.length);  //length from the ciphered buffer + header of eftsec message
 
       int i = 0;
@@ -236,7 +240,7 @@ class HostMessage {
         });
       }
 
-      //memDump('Ciphred request', dataToSend);
+      memDump('Ciphred request', dataToSend);
       return dataToSend;
     }
 
@@ -332,8 +336,7 @@ class TransactionMessage extends HostMessage {
     message.setMID(200);
     if (trans.binType == Bin.TYPE_FOOD)
       message.fieldData(3, '070000');
-    else
-      message.fieldData(3, '00' + trans.accType.toString() + '000');
+    else message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.originalTotal.toString());
     message.fieldData(11, trans.stan.toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
@@ -348,7 +351,10 @@ class TransactionMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
-    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
+
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.baseAmount.toString());
+
+    if (trans.emvTags.length > 0)message.fieldData(55, trans.emvTags);
 
 
     message.fieldData(60, Constants.appVersionHost);
@@ -505,6 +511,7 @@ class LastSaleMessage extends HostMessage {
     message.setMID(100);
     message.fieldData(3, '340000');
     message.fieldData(11, (await getStan()).toString());
+    message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
@@ -666,21 +673,26 @@ class AdjustMessage extends HostMessage {
     String originalData;
 
     message.setMID(220);
-    message.fieldData(3, '00' + trans.accType.toString() + '000');
+    message.fieldData(2, "5401393019569303");
+    print(trans.pan);
+    message.fieldData(3, '02' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, trans.stan.toString());
-    message.fieldData(22, trans.entryMode.toString());
-    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    message.fieldData(14, trans.expDate.substring(0, 4));
+    message.fieldData(22, "0011");
+    // if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
     //message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
+    // if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
     message.fieldData(60, Constants.appVersionHost);
 
-    originalData = trans.referenceNumber;
+
+    originalData = trans.referenceNumber.replaceAll(' ', '');
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
