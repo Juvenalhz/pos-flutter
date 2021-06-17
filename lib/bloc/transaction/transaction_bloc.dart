@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/iso8583/hostMessages.dart';
@@ -24,6 +26,7 @@ import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/utils/cipher.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/datetime.dart';
 import 'package:pay/utils/pinpad.dart';
 import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
@@ -527,7 +530,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // analyze response fields
     else if (event is TransProcessResponse) {
+
+      MerchantRepository merchantRepository = new MerchantRepository();
+      TerminalRepository terminalRepository = new TerminalRepository();
+      EmvRepository emvRepository = new EmvRepository();
+      Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+      Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
       if ((event.respMap[4] == null) ||
           (trans.originalTotal != int.parse(event.respMap[4])) ||
@@ -539,6 +549,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.respMessage = 'Error En Respuesta';
         yield TransactionRejected(trans);
       } else {
+
+
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
@@ -548,6 +560,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
           if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
+
+
 
           if (event.respMap[6206] != null) {
             trans.issuer = event.respMap[6206];
@@ -578,6 +592,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
         }
+         if (event.respMap[60] != null) {
+
+
+       // String campo60 = "4a303030303230323030313030312064092842732e20020000000000000000000000006000040000000403000000eef300e6f3000000000000000000003132333400009000102106161630100862";
+        //Comm comm;
+        Comm newComm;
+        Map acquirerIndicators = new Map<int, String>();
+        merchant.tid = event.respMap[41];
+        await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
+        merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
+         }
+
       }
     }
     //
@@ -773,5 +800,89 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   void onSwipeCardRead(BuildContext context, Map<String, dynamic> params) {
     this.add(TransCardWasRead(params));
+  }
+
+   processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
+    MerchantRepository merchantRepository = new MerchantRepository();
+    TerminalRepository terminalRepository = new TerminalRepository();
+    EmvRepository emvRepository = new EmvRepository();
+    SetDateTime newDateTime = new SetDateTime();
+    int index = 0;
+    bool telecarga = true;
+    //Comm newComm = Comm.fromMap(comm.toMap());
+
+    merchant.mid = ascii.decode(hex.decode(data.substring(index, index + 30)));
+    index += 30;
+    //terminal number
+    index += 2;
+    merchant.currencyCode = int.parse(data.substring(index, index + 4));
+    index += 4;
+    merchant.currencySymbol = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    index += 8;
+    merchant.acquirerCode = int.parse(data.substring(index, index + 2));
+    index += 2 + 24; //phone numbers are skipped
+
+    comm.tpdu = data.substring(index, index + 10);
+    index += 10;
+    comm.nii = data.substring(index, index + 4).substring(1, 4);
+    index += 4;
+
+    if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true; 
+    if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
+    if ((int.parse(data.substring(index, index + 2)) & 0x04) != 0) emv.forceOnline = true;
+
+    emv.countryCode = merchant.countryCode;
+    emv.currencyCode = merchant.currencyCode;
+
+    index += 2;
+
+    acquirerIndicators.putIfAbsent(0, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(1, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(2, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(3, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(4, () => data.substring(index, index + 6));
+    index += 6;
+    acquirerIndicators.putIfAbsent(5, () => data.substring(index, index + 6));
+    index += 6;
+
+    terminal.password = ascii.decode(hex.decode(data.substring(index, index + 8)));
+    index += 8;
+    terminal.maxTipPercentage = int.parse(data.substring(index, index + 2));
+    index += 2;
+    comm.timeout = int.parse(data.substring(index, index + 4));
+    index += 4;
+    terminal.timeoutPrompt = int.parse(data.substring(index, index + 4));
+    index += 4;
+
+    String dateAndTime = data.substring(index, index + 12);
+    newDateTime.dateTime = dateAndTime;
+
+    index += 12;
+    merchant.countryCode = int.parse(data.substring(index, index + 4));
+
+
+    await merchantRepository.updateMerchant(merchant);
+    await terminalRepository.updateTerminal(terminal);
+    await emvRepository.updateEmv(emv);
+    await commRepository.updateComm(comm);
+
+    AcquirerRepository acquirerRepository = new AcquirerRepository();
+
+    Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
+
+    //if (acquirerIndicators[0] != '000000')
+
+      //Acquirer acquirer = new Acquirer(0, 'Platco', '');
+      acquirer.setIndicators(acquirerIndicators[0]);
+      await acquirerRepository.deleteacquirer(acquirer.id);
+      await acquirerRepository.createacquirer(acquirer);
+
+    return telecarga;
+
   }
 }
