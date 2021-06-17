@@ -23,10 +23,11 @@ String bcdToStr(Uint8List data) {
   return hex.encode(data);
 }
 
-Uint8List strToBcd(String data) {
+Uint8List strToBcd(String data, {int campo}) {
   if (data.length != 0) {
     if (data.length % 2 == 1) {
-      String temp = data.padLeft(data.length + 1, '0');
+
+      String temp = campo != 2 ? data.padLeft(data.length + 1, '0') : data.padRight(data.length + 1, 'f');
       return new Uint8List.fromList(hex.decode(temp));
     }
     return new Uint8List.fromList(hex.decode(data));

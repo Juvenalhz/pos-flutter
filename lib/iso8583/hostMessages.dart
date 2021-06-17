@@ -397,12 +397,13 @@ class ReversalMessage extends HostMessage {
     trans.pan = await trans.getClearPan();
 
     message.setMID(400);
-    message.fieldData(2, trans.pan);
+    String pan = ( trans.pan.length  >= 19 ? trans.pan.substring(0, 19) : trans.pan );
+    message.fieldData(2, pan);
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
     switch(trans.entryMode) {
       case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
@@ -420,6 +421,7 @@ class ReversalMessage extends HostMessage {
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(18, merchant.acquirerCode.toString());
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);
