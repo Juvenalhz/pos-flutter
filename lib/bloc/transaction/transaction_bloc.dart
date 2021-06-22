@@ -212,8 +212,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
       if (event.card['recordID'] != null) trans.aidID = event.card['recordID'];
 
-      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE) trans.entryMode = Pinpad.FALLBACK;
-
+      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE) {
+        var posExpDate = trans.track2.indexOf('=') + 1;
+        trans.expDate = trans.track2.substring(posExpDate, posExpDate + 4);
+        trans.entryMode = Pinpad.FALLBACK;
+      }
       yield TransactionCardRead(trans);
       this.add(TransProcessCard(trans));
     }
@@ -229,8 +232,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         trans = event.trans;
         trans.bin = binId;
-        if (event.trans.cardType == Pinpad.MAG_STRIPE) {
-          if ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6')) {
+        if ((event.trans.entryMode == Pinpad.MAG_STRIPE) || (event.trans.entryMode == Pinpad.FALLBACK)) {
+          if ((event.trans.entryMode == Pinpad.MAG_STRIPE) &&
+              ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6'))) {
             yield TransactionShowMessage('Use Lector De Chip');
             await new Future.delayed(const Duration(seconds: 3));
             this.add(TransGetCard(trans));
@@ -668,27 +672,33 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
-      if (trans.entryMode == Pinpad.CHIP) {
-        doBeep = true;
-        pinpad.removeCard();
-        this.add(RemovingCard());
-        yield TransactionShowMessage('Retire Tarjeta');
-      } else
-        yield TransactionFinish(trans);
+        if (trans.entryMode == Pinpad.CHIP) {
+          doBeep = true;
+          pinpad.removeCard();
+          this.add(RemovingCard());
+          yield TransactionShowMessage('Retire Tarjeta');
+        } else
+          yield TransactionFinish(trans);
     }
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
       if (doBeep) {
         pinpad.beep();
         this.add(RemovingCard());
-        await new Future.delayed(const Duration(seconds: 2));
+        await new Future.delayed(const Duration(seconds: 1));
+        yield TransactionShowMessage('Retire Tarjeta');
       }
     } else if (event is TransCardRemoved) {
       doBeep = false;
-      if (merchant.batchNumber != trans.batchNum) {
-        yield TransactionAutoCloseBatch(merchant.batchNumber);
-      } else {
-        yield TransactionFinish(trans);
+      if (this.cardReadTrials == 0) {
+        if (merchant.batchNumber != trans.batchNum) {
+          yield TransactionAutoCloseBatch(merchant.batchNumber);
+        } else {
+          yield TransactionFinish(trans);
+        }
+      }
+      else {
+        this.add(TransGetCard(trans));
       }
     } else if (event is TransDeletePreviousBatch) {
       String whatDelete = 'batchNum = ' + merchant.batchNumber.toString();
@@ -699,18 +709,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // chip card read error
     else if (event is TransCardReadError) {
-      cardReadTrials++;
+      this.cardReadTrials++;
       yield TransactionShowMessage('Error Leyendo Tarjeta. Intente Nuevamente...');
-      await new Future.delayed(const Duration(seconds: 3));
-      if (cardReadTrials >= 3) {
+      await new Future.delayed(const Duration(microseconds: 500));
+      if (this.cardReadTrials >= 3) {
         trans.chipEnable = false;
       }
-      this.add(TransFinishChip(trans));
-      this.add(TransGetCard(trans));
+      doBeep = true;
+      pinpad.removeCard();
+      this.add(RemovingCard());
+
+
     }
     // pinpad error detected
     else if (event is TransCardError) {
-      cardReadTrials = 0;
+      this.cardReadTrials = 0;
       trans.clear();
       yield TransactionError();
     }
