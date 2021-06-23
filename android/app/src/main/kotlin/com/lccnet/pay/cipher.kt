@@ -15,6 +15,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import java.nio.charset.StandardCharsets;
 
 class Cipher : MethodChannel.MethodCallHandler{
     companion object {
@@ -92,10 +93,12 @@ class Cipher : MethodChannel.MethodCallHandler{
                     val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
                     pinpad.open()
                     try {
-                        val decrypted = String(pinpad.calculateDes(PAN_KEY_ID, DESMode(DESMode.DM_DEC, DESMode.DM_OM_TCBC), null, data))
+                        var decrypted = String(pinpad.calculateDes(PAN_KEY_ID, DESMode(DESMode.DM_DEC, DESMode.DM_OM_TCBC), null, data), StandardCharsets.UTF_8);
                         if (decrypted.isEmpty()) {
                             Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
                         }
+                        val re = Regex("[^0-9 ]")
+                        decrypted = re.replace(decrypted, "")
                         result.success(decrypted)
                     } finally {
                         pinpad.close()
@@ -133,7 +136,8 @@ class Cipher : MethodChannel.MethodCallHandler{
                     try {
 
                         if (pinpad.isKeyExist(keyId!!)) {
-                                encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TECB), null, data)
+                                val iv = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte())
+                                encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TCBC), iv, data)
 
                             if (encrypted == null) {
                                 Log.d("Cipher", "pinpad.error = " + pinpad.lastError)

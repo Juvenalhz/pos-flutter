@@ -221,7 +221,7 @@ public class PinpadManager implements PinpadCallbacks {
                     card.put("appType", Integer.parseInt(out.substring(3, 5)));
                     card.put("appNetID", Integer.parseInt(out.substring(5, 7)));
                     card.put("recordID", Integer.parseInt(out.substring(7, 9)));
-                    final PinpadManager.TrackData tracks = this.extractTrack(output.getOutput(), 9);
+                    final PinpadManager.TrackData tracks = PinpadManager.extractTrack(output.getOutput(), 9);
                     card.put("track1", tracks.track1);
                     card.put("track2", tracks.track2);
                     final int panLen = Integer.parseInt(out.substring(233, 235));
@@ -507,6 +507,7 @@ public class PinpadManager implements PinpadCallbacks {
             // if chip, ask user to remove card
             pinpad.removeCard("Retire Tarjeta", removeOutput -> {
                 pinpad.close();
+                pinpad.open();
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
@@ -578,7 +579,7 @@ public class PinpadManager implements PinpadCallbacks {
 
     @Override
     public void onAbort() {
-        //if (callbacks != null) callbacks.onAbort();
+        if (callbacks != null) callbacks.onAbort();
     }
 
     @Override
