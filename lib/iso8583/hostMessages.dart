@@ -154,7 +154,7 @@ class HostMessage {
     checksum[0] = 0;
 
     message.forEach((element) {
-      checksum[0] += element;
+      checksum[0] |= element;
     });
 
     return checksum;
@@ -169,12 +169,35 @@ class HostMessage {
       var cipher = Cipher();
       Uint8List temp;
       Uint8List cipheredData;
+      int length;
+      int clearLength;
 
       //create cyphered buffer
-      if (_comm.headerLength == true)
-        cipheredData = await cipher.cipherMessage(clearMessage.sublist(7), _comm.kinIdTerminal);
-      else
+      if (_comm.headerLength == true) {
+        clearLength = clearMessage.sublist(7).length;
+        var lengthPadded = clearMessage.sublist(7).length + ( 8 - (clearMessage.sublist(7).length % 8));
+        var tempBuffer = Uint8List (lengthPadded);
+        var j = 0;
+        clearMessage.sublist(7).forEach((element) {
+          tempBuffer[j++] = element;
+        });
+        while (j<lengthPadded)
+          tempBuffer[j++] = 0;
+        cipheredData = await cipher.cipherMessage(tempBuffer, _comm.kinIdTerminal);
+      }
+      else {
+        clearLength = clearMessage.sublist(5).length;
+        var lengthPadded = clearMessage.sublist(5).length + ( 8 - (clearMessage.sublist(5).length % 8));
+        var tempBuffer = Uint8List (lengthPadded);
+        var j = 0;
+        clearMessage.sublist(5).forEach((element) {
+          tempBuffer[j++] = element;
+        });
+        while (j<lengthPadded)
+          tempBuffer[j++] = 0;
+
         cipheredData = await cipher.cipherMessage(clearMessage.sublist(5), _comm.kinIdTerminal);
+      }
 
       Uint8List dataToSend = new Uint8List(14 + cipheredData.length);  //length from the ciphered buffer + header of eftsec message
 
@@ -209,17 +232,19 @@ class HostMessage {
 
       //length of the request buffer in clear
       if (_comm.headerLength == true)
-        temp = strToBcd((clearMessage.length - 2).toRadixString(16).padLeft(4, '0'));  // clear message has length added at this point, needs to be removed
+        length = clearLength; //temp = strToBcd((clearMessage.length - 2).toRadixString(16).padLeft(4, '0'));  // clear message has length added at this point, needs to be removed
       else
-        temp = strToBcd(clearMessage.length.toRadixString(16).padLeft(4, '0'));
+        length = clearLength; //temp = strToBcd(clearMessage.length.toRadixString(16).padLeft(4, '0'));
 
+      temp = Uint8List(2)..buffer.asByteData().setInt16(0, length, Endian.big);
       temp.forEach((element) {
         dataToSend[i++] = element;
       });
       //hex.decode(clearMessage.length.toRadixString(16)).sublist(0).reversed.forEach((element) {dataToSend[i++] = element;});
 
       //checksum byte
-      dataToSend[i++] = calculateEFTSECChecksum(clearMessage.sublist(5))[0];
+      memDump('clar request:tha', clearMessage.sublist(7));
+      dataToSend[i++] = calculateEFTSECChecksum(clearMessage.sublist(7))[0];
 
       //add ciphered data buffer
       cipheredData.forEach((element) {
@@ -234,7 +259,7 @@ class HostMessage {
         });
       }
 
-      //memDump('Ciphred request', dataToSend);
+      memDump('Ciphred request', dataToSend);
       return dataToSend;
     }
 
