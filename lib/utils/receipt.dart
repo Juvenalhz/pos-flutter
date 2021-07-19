@@ -249,8 +249,11 @@ class Receipt {
 
     }
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
-    printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
-    printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
+    //printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
+    trans.server==0 ? printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.') : printer.addText(Printer.LEFT, 'S/N POS:      No.Autor    No.Operac.   Mesero');
+    trans.server==0 ?  printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber) :
+    printer.addText(Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString()) ;
+    //printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
     printer.addTextSideBySideWithCenter(
         'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
     if (isCustomer == true) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');

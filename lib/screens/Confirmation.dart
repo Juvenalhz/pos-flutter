@@ -124,7 +124,7 @@ class Confirmation extends StatelessWidget {
                           Spacer(flex: 3),
                           if (state.acquierer.industryType) RowDetailAmount(label: "Monto:", strAmount: formattedAmount),
                           if (state.acquierer.industryType) Spacer(flex: 1),
-                          if (state.acquierer.industryType) RowDetailAmount(label: "Propina:", strAmount: formattedTip),
+                          if (state.acquierer.industryType && state.trans.binType == Bin.TYPE_CREDIT) RowDetailAmount(label: "Propina:", strAmount: formattedTip),
                           if (state.acquierer.industryType) Spacer(flex: 1),
                           if (state.acquierer.industryType) Divider(thickness: 4, indent: 30, endIndent: 30),
                           if (state.acquierer.industryType) Spacer(flex: 1),

@@ -36,9 +36,9 @@ class TipReportBloc extends Bloc<TipReportEvent, TipReportState> {
         }
 
         tipsList.forEach((element) {
-          if (acquirer['id'] == element['acquirer']) {
+          if (acquirer['id'] == element['acquirer'] && element['server'] != 0) {
             tipGrandTotal += element['total'];
-            ;
+
             transPerAcquirer[acquirer['id']]['total'] += element['total'];
             transPerAcquirer[acquirer['id']]['tips'].add({'server': element['server'], 'count': element['count'], 'total': element['total']});
           }
@@ -62,7 +62,7 @@ class TipReportBloc extends Bloc<TipReportEvent, TipReportState> {
         }
 
         tipsList.forEach((element) {
-          if (acquirer['id'] == element['acquirer']) {
+          if (acquirer['id'] == element['acquirer']  && element['server'] != 0  ) {
             tipGrandTotal += element['total'];
             transPerAcquirer[acquirer['id']]['total'] += element['total'];
             transPerAcquirer[acquirer['id']]['tips'].add({'server': element['server'], 'count': element['count'], 'total': element['total']});

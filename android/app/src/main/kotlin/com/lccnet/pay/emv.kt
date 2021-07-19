@@ -50,7 +50,7 @@ class Emv : MethodChannel.MethodCallHandler{
             val keyIndex : Int? = call.argument("keyIndex")
 
             if ((trans != null) && (aid != null) && (keyIndex != null)) {
-                result.success(goOnChip(trans["total"] as Int, trans["cashback"] as Int, keyIndex, aid))
+                result.success(goOnChip(trans["originalTotal"] as Int, trans["cashback"] as Int, keyIndex, aid))
             }
         } else if (call.method == "finishChip"){
             val respCode : String? = call.argument("respCode")
@@ -157,8 +157,8 @@ class Emv : MethodChannel.MethodCallHandler{
                 tables[i] += pubKey["exponent"].toString().padStart(6, '0')  // exponent
                 tables[i] += pubKey["length"].toString().padStart(3, '0')  // length of key modulus
                 tables[i] += pubKey["modulus"].toString().padEnd(496, '0')  // key modulus
-                tables[i] += "0"    // checksum not supported
-                tables[i] += "".padEnd(40, '0')  // checksum value
+                tables[i] += "0"    //  not supported
+                tables[i] += "".padEnd(40, '0')  //  value
                 tables[i] += "".padEnd(42, '0')  // RFU
 
                 i += 1
