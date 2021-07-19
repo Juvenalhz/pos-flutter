@@ -15,10 +15,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import java.nio.charset.StandardCharsets;
 
 class Cipher : MethodChannel.MethodCallHandler{
     companion object {
-    var params = HashMap<String, Any>()
+        var params = HashMap<String, Any>()
     }
     private val PAN_KEY_ID = 0
 
@@ -60,7 +61,7 @@ class Cipher : MethodChannel.MethodCallHandler{
 
         if (call.method == "cipherCriticalData") {
             var data : String? = call.argument("data")
-            
+
             if (Build.MODEL.contains("APOS")) {
                 try {
                     val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
@@ -92,10 +93,12 @@ class Cipher : MethodChannel.MethodCallHandler{
                     val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
                     pinpad.open()
                     try {
-                        val decrypted = String(pinpad.calculateDes(PAN_KEY_ID, DESMode(DESMode.DM_DEC, DESMode.DM_OM_TCBC), null, data))
+                        var decrypted = String(pinpad.calculateDes(PAN_KEY_ID, DESMode(DESMode.DM_DEC, DESMode.DM_OM_TCBC), null, data), StandardCharsets.UTF_8);
                         if (decrypted.isEmpty()) {
                             Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
                         }
+                        val re = Regex("[^0-9 ]")
+                        decrypted = re.replace(decrypted, "")
                         result.success(decrypted)
                     } finally {
                         pinpad.close()
@@ -119,33 +122,35 @@ class Cipher : MethodChannel.MethodCallHandler{
                 DeviceHelper.me().bindService()
                 try {
                     try {
-                    val pinpad: UPinpad
-                    if (wk == null) {
-                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
-                        pinpad.open()
-                    } else {
-                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_MKSK)
-                        pinpad.open()
-                        //load ciphered key
-                        //pinpad.loadEncKey(int keyType, int mainKeyId, int keyId, byte[] encKey, byte[] checkValue)
-                    }
-
-                    try {
-
-                        if (pinpad.isKeyExist(keyId!!)) {
-                                encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TECB), null, data)
-
-                            if (encrypted == null) {
-                                Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
-                            }
+                        val pinpad: UPinpad
+                        if (wk == null) {
+                            pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
+                            pinpad.open()
+                        } else {
+                            pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_MKSK)
+                            pinpad.open()
+                            //load ciphered key
+                            //pinpad.loadEncKey(int keyType, int mainKeyId, int keyId, byte[] encKey, byte[] checkValue)
                         }
 
-                    } finally {
-                        pinpad.close()
+                        try {
+
+                            if (pinpad.isKeyExist(keyId!!)) {
+                                val iv = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte())
+                                //val iv = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte())
+                                encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TCBC), iv, data)
+
+                                if (encrypted == null) {
+                                    Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
+                                }
+                            }
+
+                        } finally {
+                            pinpad.close()
+                        }
+                    } catch (e: RemoteException) {
+                        Log.e("Cipher", "Pinpad", e)
                     }
-                } catch (e: RemoteException) {
-                    Log.e("Cipher", "Pinpad", e)
-                }
                 } finally {
                     DeviceHelper.me().unbindService()
                 }

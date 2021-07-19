@@ -115,6 +115,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.originalTotal = trans.total;
       if (acquirer.industryType) {
         trans.originalTotal += (trans.total * terminal.maxTipPercentage) ~/ 100;
+        //agrego el importe de la propina
+        trans.tip += (trans.total * terminal.maxTipPercentage) ~/ 100;
       }
       trans.dateTime = DateTime.now();
       if (emvTablesInit == false) {

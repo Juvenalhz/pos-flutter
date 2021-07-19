@@ -13,6 +13,7 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'batch_event.dart';
@@ -52,7 +53,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
-        }
+        }else
+          yield BatchConfirm();
       } else
         yield BatchConfirm();
     } else if (event is BatchCancel) {

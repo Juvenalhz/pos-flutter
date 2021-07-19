@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
@@ -65,7 +66,7 @@ class HostMessage {
         break;
       case 5:
       case 13:
-        //temp += data;
+      //temp += data;
 
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
@@ -165,7 +166,7 @@ class HostMessage {
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
 
-      //memDump('request:', clearMessage);
+      memDump('request:', clearMessage);
 
       return clearMessage;
     }
@@ -173,14 +174,34 @@ class HostMessage {
       var cipher = Cipher();
       Uint8List temp;
       Uint8List cipheredData;
+      int length;
+      int clearLength;
 
       //create cyphered buffer
-      if (_comm.headerLength == true){
-        cipheredData = await cipher.cipherMessage(clearMessage.sublist(7), _comm.kinIdTerminal);
-        memDump('clear Message 7', clearMessage.sublist(7));
-      } else{
+      if (_comm.headerLength == true) {
+        clearLength = clearMessage.sublist(7).length;
+        var lengthPadded = clearMessage.sublist(7).length + ( 8 - (clearMessage.sublist(7).length % 8));
+        var tempBuffer = Uint8List (lengthPadded);
+        var j = 0;
+        clearMessage.sublist(7).forEach((element) {
+          tempBuffer[j++] = element;
+        });
+        while (j<lengthPadded)
+          tempBuffer[j++] = 0;
+        cipheredData = await cipher.cipherMessage(tempBuffer, _comm.kinIdTerminal);
+      }
+      else {
+        clearLength = clearMessage.sublist(5).length;
+        var lengthPadded = clearMessage.sublist(5).length + ( 8 - (clearMessage.sublist(5).length % 8));
+        var tempBuffer = Uint8List (lengthPadded);
+        var j = 0;
+        clearMessage.sublist(5).forEach((element) {
+          tempBuffer[j++] = element;
+        });
+        while (j<lengthPadded)
+          tempBuffer[j++] = 0;
+
         cipheredData = await cipher.cipherMessage(clearMessage.sublist(5), _comm.kinIdTerminal);
-      memDump('clear Message 5', cipheredData);
       }
       Uint8List dataToSend = new Uint8List(14 + cipheredData.length);  //length from the ciphered buffer + header of eftsec message
 
@@ -215,17 +236,19 @@ class HostMessage {
 
       //length of the request buffer in clear
       if (_comm.headerLength == true)
-        temp = strToBcd((clearMessage.length - 2).toRadixString(16).padLeft(4, '0'));  // clear message has length added at this point, needs to be removed
+        length = clearLength; //temp = strToBcd((clearMessage.length - 2).toRadixString(16).padLeft(4, '0'));  // clear message has length added at this point, needs to be removed
       else
-        temp = strToBcd(clearMessage.length.toRadixString(16).padLeft(4, '0'));
+        length = clearLength; //temp = strToBcd(clearMessage.length.toRadixString(16).padLeft(4, '0'));
 
+      temp = Uint8List(2)..buffer.asByteData().setInt16(0, length, Endian.big);
       temp.forEach((element) {
         dataToSend[i++] = element;
       });
       //hex.decode(clearMessage.length.toRadixString(16)).sublist(0).reversed.forEach((element) {dataToSend[i++] = element;});
 
       //checksum byte
-      dataToSend[i++] = calculateEFTSECChecksum(clearMessage.sublist(5))[0];
+      memDump('clar request:tha', clearMessage.sublist(7));
+      dataToSend[i++] = calculateEFTSECChecksum(clearMessage.sublist(7))[0];
 
       //add ciphered data buffer
       cipheredData.forEach((element) {
@@ -234,7 +257,7 @@ class HostMessage {
 
       //add full package length
       if (_comm.headerLength == true) {
-        Uint8List temp = strToBcd((i).toRadixString(16).padLeft(4, '0'));
+        Uint8List temp = strToBcd((i - 2).toRadixString(16).padLeft(4, '0'));
         temp.forEach((element) {
           dataToSend[lengthIndex++] = element;
         });
@@ -336,7 +359,8 @@ class TransactionMessage extends HostMessage {
     message.setMID(200);
     if (trans.binType == Bin.TYPE_FOOD)
       message.fieldData(3, '070000');
-    else message.fieldData(3, '00' + trans.accType.toString() + '000');
+    else
+      message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.originalTotal.toString());
     message.fieldData(11, trans.stan.toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
@@ -351,11 +375,8 @@ class TransactionMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
-
-    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.baseAmount.toString());
-
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
     if (trans.emvTags.length > 0)message.fieldData(55, trans.emvTags);
-
 
     message.fieldData(60, Constants.appVersionHost);
 
@@ -571,7 +592,7 @@ class VoidMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     message.fieldData(60, Constants.appVersionHost);
 
-    originalData = trans.referenceNumber.replaceAll(' ', '');
+    originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
@@ -658,6 +679,7 @@ class AdjustMessage extends HostMessage {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     TransRepository transRepository = new TransRepository();
+    //getTrans
     AcquirerRepository acquirerRepository = new AcquirerRepository();
 
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
@@ -666,16 +688,16 @@ class AdjustMessage extends HostMessage {
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
-
+    trans.pan = await trans.getClearPan();
     String sn = await SerialNumber.serialNumber;
     String originalData;
 
     message.setMID(220);
-    message.fieldData(2, "5401393019569303");
-    print(trans.pan);
+    message.fieldData(2,   trans.pan );
     message.fieldData(3, '02' + trans.accType.toString() + '000');
-    message.fieldData(4, trans.total.toString());
-    message.fieldData(11, trans.stan.toString());
+
+    message.fieldData(4, trans.baseAmount.toString());
+    message.fieldData(11, (await getStan()).toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
     message.fieldData(22, "0011");
     // if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
@@ -694,8 +716,14 @@ class AdjustMessage extends HostMessage {
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
+    print(originalData);
+    //originalData="5001250001471016550001";
 
-    field62 += addField62Table(2, merchant.batchNumber.toString());
+    //field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(2,merchant.batchNumber.toString());
+    //originalData="5001250001471016550001";
+    // String dataNew ="5001710001581317050003";
+
     field62 += addField62Table(13, originalData);
     field62 += addField62Table(18, trans.acquirer.toString());
     field62 += addField62Table(41, sn);
