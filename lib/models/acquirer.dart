@@ -183,23 +183,22 @@ class Acquirer {
    }
 
   setIndicators(String indicator) {
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x01) != 0) this._industryType = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x02) != 0) this._cashback = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x04) != 0) this._installmets = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x08) != 0) this._refund = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x10) != 0) this._provimillas = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x20) != 0) this._cheque = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x40) != 0) this._checkIncheckOut = true;
-    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x80) != 0) this._saleOffline = true;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x01) != 0) this._industryType = true; else this._industryType = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x02) != 0) this._cashback = true; else this._cashback = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x04) != 0) this._installmets = true; else this._installmets = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x08) != 0) this._refund = true; else this._refund = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x10) != 0) this._provimillas = true; else this._provimillas = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x20) != 0) this._cheque = true; else this._cheque = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x40) != 0) this._checkIncheckOut = true; else this._checkIncheckOut = false;
+    if ((int.parse(indicator.substring(0, 2), radix: 16) & 0x80) != 0) this._saleOffline = true; else this._saleOffline = false;
 
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x01) != 0) this._cvv2 = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x02) != 0) this._last4Digits = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x04) != 0) this._passwordVoid = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x08) != 0)
-      this._passwordSettlement = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x10) != 0) this._passwordRefund = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x20) != 0) this._maskPan = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x40) != 0) this._prePrint = true;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x80) != 0) this._manualEntry = true;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x01) != 0) this._cvv2 = true; else this._cvv2 = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x02) != 0) this._last4Digits = true; else this._last4Digits = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x04) != 0) this._passwordVoid = true; else this._passwordVoid = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x08) != 0) this._passwordSettlement = true; else this._passwordSettlement = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x10) != 0) this._passwordRefund = true; else this._passwordRefund = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x20) != 0) this._maskPan = true; else this._maskPan = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x40) != 0) this._prePrint = true; else this._prePrint = false;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x80) != 0) this._manualEntry = true; else this._manualEntry = false;
   }
 }

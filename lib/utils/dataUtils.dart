@@ -26,7 +26,7 @@ String bcdToStr(Uint8List data) {
 Uint8List strToBcd(String data) {
   if (data.length != 0) {
     if (data.length % 2 == 1) {
-      String temp = data.padLeft(data.length + 1, '0');
+      String temp = data.padLeft(data.length + 1, 'F');
       return new Uint8List.fromList(hex.decode(temp));
     }
     return new Uint8List.fromList(hex.decode(data));

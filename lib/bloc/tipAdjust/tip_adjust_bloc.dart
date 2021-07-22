@@ -61,7 +61,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
         trans.total = trans.baseAmount + trans.tip;
         yield TipAdjustConfirmation(trans);
       } else {
-        yield TipAdjustShowMessage(trans, 'Promina Exede El Monto Maximo Permitido');
+        yield TipAdjustShowMessage(trans, 'Propina Excede El Monto Máximo Permitido');
       }
     } else if (event is TipAdjustConfirmOK) {
       this.add(TipAdjustConnect());
@@ -125,7 +125,6 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
       yield TipAdjustSending();
-      trans.stan = await getStan();
       adjustMessage = new AdjustMessage(trans, comm);
       if ((isDev == true) && (isCommOffline == true))
         await adjustMessage.buildMessage();
@@ -164,11 +163,9 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
       if ((event.respMap[4] == null) ||
-          (trans.total != int.parse(event.respMap[4])) ||
-          (event.respMap[11] == null) ||
-          (trans.stan != int.parse(event.respMap[11])) ||
+          (trans.baseAmount != int.parse(event.respMap[4])) ||
           (event.respMap[41] == null) ||
-          (merchant.tid.padLeft(8, '0') != event.respMap[41])) {
+          (merchant.tid.padLeft(8, '0') != event.respMap[41].toString())) {
         // reversal is stored in the DB
         trans.respMessage = 'Error En Respuesta';
         yield TipAdjustRejected(trans);

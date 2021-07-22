@@ -99,8 +99,6 @@ class Transaction extends StatelessWidget {
           return AlertCancelRetry('Impresión', 'Error en impresión de recibo....', onPrintMerchantCancel, onPrintMerchantRetry);
         } else if (state is TransactionPrintCustomerError) {
           return AlertCancelRetry('Impresión', 'Error en impresión de recibo....', onPrintCustomerCancel, onPrintCustomerRetry);
-        } else if (state is TransactionFinshChip) {
-          return TransMessage('');
         } else if (state is TransactionDigitalReceiptCustomer) {
           return DigitalReceipt(state.trans, state.acquierer, state.merchant, state.terminal);
         } else if (state is TransactionAutoCloseBatch) {

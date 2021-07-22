@@ -253,7 +253,7 @@ class HostMessage {
 
       //add full package length
       if (_comm.headerLength == true) {
-        Uint8List temp = strToBcd((i).toRadixString(16).padLeft(4, '0'));
+        Uint8List temp = strToBcd((i - 2).toRadixString(16).padLeft(4, '0'));
         temp.forEach((element) {
           dataToSend[lengthIndex++] = element;
         });
@@ -371,8 +371,8 @@ class TransactionMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
-
 
     message.fieldData(60, Constants.appVersionHost);
 
@@ -424,8 +424,8 @@ class ReversalMessage extends HostMessage {
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
     switch(trans.entryMode) {
       case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
@@ -443,6 +443,7 @@ class ReversalMessage extends HostMessage {
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(18, merchant.acquirerCode.toString());
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);
@@ -685,25 +686,25 @@ class AdjustMessage extends HostMessage {
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
+    trans.pan = await trans.getClearPan();
     String sn = await SerialNumber.serialNumber;
     String originalData;
 
     message.setMID(220);
-    message.fieldData(3, '00' + trans.accType.toString() + '000');
-    message.fieldData(4, trans.total.toString());
-    message.fieldData(11, trans.stan.toString());
-    message.fieldData(22, trans.entryMode.toString());
-    if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
+    message.fieldData(2,   trans.pan );
+    message.fieldData(3, '02' + trans.accType.toString() + '000');
+    message.fieldData(4, trans.baseAmount.toString());
+    message.fieldData(11, (await getStan()).toString());
+    message.fieldData(14, trans.expDate.substring(0, 4));
+    message.fieldData(22, "0011");
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    //message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
-    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
     message.fieldData(60, Constants.appVersionHost);
 
-    originalData = trans.referenceNumber;
+    originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');

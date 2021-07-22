@@ -125,11 +125,11 @@ class DatabaseHelper {
     Map<String, dynamic> testComm = {
       'id': 1,
       'Name': 'Platco',
-      'tpdu': '6000030000',
-      'nii': '003',
+      'tpdu': '6000040000',
+      'nii': '004',
       'timeout': 60,
-      'ip': '192.168.11.209',
-      'port': 15000,
+      'ip': '192.168.6.149',
+      'port': 4541,
       'headerLength': 1,
       'kin': 2000,
     };
