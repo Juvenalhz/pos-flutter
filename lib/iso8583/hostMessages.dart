@@ -154,7 +154,7 @@ class HostMessage {
     checksum[0] = 0;
 
     message.forEach((element) {
-      checksum[0] |= element;
+      checksum[0] += element;
     });
 
     return checksum;
