@@ -242,9 +242,9 @@ class Receipt {
       int aidIndex = trans.emvTags.indexOf('9F06') + 4;
       int aidLength = hex.decode(trans.emvTags.substring(aidIndex, aidIndex + 2))[0];
       String aid = trans.emvTags.substring(aidIndex + 2, aidIndex + 2 + aidLength * 2);
-      int ctIndex = trans.emvTags.indexOf('9F06') + 4;
+      int ctIndex = trans.emvTags.indexOf('9F26') + 4;
       int ctLength = hex.decode(trans.emvTags.substring(ctIndex, ctIndex + 2))[0];
-      String ct = trans.emvTags.substring(ctIndex + 2, ctIndex + 2 + ctIndex * 2);
+      String ct = trans.emvTags.substring(ctIndex + 2, ctIndex + 2 + ctLength * 2);
 
       if (trans.type == 'Venta')
         printer.addTextSideBySide('AID:$aid', 'CT:$ct');
