@@ -365,7 +365,7 @@ public class PinpadManager implements PinpadCallbacks {
             );
 
             // list of tags that GoOnChip should return
-            final String goOnChipTagList = "82959A9C5F2A9F029F039F109F1A9F269F279F339F349F359F369F379F405F24";
+            final String goOnChipTagList = "82959A9C5F2A9F029F039F069F109F1A9F269F279F339F349F359F369F379F405F24";
             final String goOnChipTags = String.format(Locale.US, "%03d%s",
                     goOnChipTagList.length() / 2,       // Length of tag list *in bytes*
                     goOnChipTagList                        // List of tags, hex-coded
