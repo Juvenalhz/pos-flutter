@@ -350,7 +350,6 @@ class TransactionMessage extends HostMessage {
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
     Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -361,7 +360,12 @@ class TransactionMessage extends HostMessage {
       message.fieldData(3, '070000');
     else
       message.fieldData(3, '00' + trans.accType.toString() + '000');
-    message.fieldData(4, trans.originalTotal.toString());
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT)
+      message.fieldData(4, trans.originalTotal.toString());
+    else
+      message.fieldData(4, trans.total.toString());
+
+
     message.fieldData(11, trans.stan.toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
@@ -424,12 +428,13 @@ class ReversalMessage extends HostMessage {
     trans.pan = await trans.getClearPan();
 
     message.setMID(400);
-    message.fieldData(2, trans.pan);
+    String pan = ( trans.pan.length  >= 19 ? trans.pan.substring(0, 19) : trans.pan );
+    message.fieldData(2, pan);
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
+    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
     switch(trans.entryMode) {
       case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
@@ -447,6 +452,7 @@ class ReversalMessage extends HostMessage {
 
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
+    field62 += addField62Table(18, merchant.acquirerCode.toString());
     field62 += addField62Table(41, sn);
 
     message.fieldData(62, field62);

@@ -208,7 +208,9 @@ class Reports {
       List<Map<String, dynamic>> tips = element['tips'];
 
       printer.feedLine(1);
-      printer.addText(Printer.CENTER, 'ADQUIRIENCIA: ' + element['acquirer'].trim());
+      printer.setFontSize(Printer.FONT_SIZE_SMALL);
+       printer.addText(Printer.CENTER, 'ADQUIRIENCIA: ' + element['acquirer'].trim());
+     // printer.addText(Printer.CENTER, 'ADQUIRIENCIA: ' + element['acquirer'].trim());
       printer.addTextSideBySide(' Num   Mesero', 'Propina');
 
       tips.forEach((i) {

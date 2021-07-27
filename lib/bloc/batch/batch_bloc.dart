@@ -49,7 +49,7 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
     } else if (event is BatchCheckAdjustedTips) {
       List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers(where: 'industryType = 1');
       if (acquirers.length > 0) {
-        List<Map<String, dynamic>> transNotAdjusted = await transRepository.getAllTrans(where: 'binType = 1 and tipAdjusted = 0 and reverse = 0');
+        List<Map<String, dynamic>> transNotAdjusted = await transRepository.getAllTrans(where: 'binType = 1 and tipAdjusted = 0 and reverse = 0  and voided = 0 and type<>\'Anulación\'');
 
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
