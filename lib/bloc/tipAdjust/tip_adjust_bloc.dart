@@ -40,7 +40,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
     if (event is TipAdjustInitialEvent) {
-      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'binType = 1 and reverse = 0');
+      List<Map<String, dynamic>> transList = await transRepository.getAllTrans(where: 'binType = 1 and reverse = 0 and type <> "Anulación"');
       List<Trans> listTrans = new List<Trans>();
 
       transList.forEach((element) {

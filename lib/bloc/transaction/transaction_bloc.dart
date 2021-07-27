@@ -6,6 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pay/iso8583/8583.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/bin.dart';
@@ -381,12 +382,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       AID aid = AID.fromMap(await aidRepository.getAid(trans.aidID));
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-      if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
+     /* if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
         yield TransactionFinshChip();
         //valido mensaje de confirmación modo restaurant J.Q
       } else if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0  && acquirer.industryType ) {
         yield TransactionAskConfirmation(trans,acquirer);
-      } else {
+      } else {*/
+      if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) != 0) {
         trans.clear();
         yield TransactionError();
       }
@@ -547,8 +549,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
+      //valida monto mod restaurant - con o sin ajuste
+      int originalTotal = trans.total;
+      if(trans.binType == Bin.TYPE_CREDIT && trans.type=="Venta")
+        originalTotal = trans.originalTotal;
+      else if(trans.binType == Bin.TYPE_CREDIT && trans.tipAdjusted==false)
+         originalTotal = trans.total;
+      else
+          originalTotal = trans.total;
+
       if ((event.respMap[4] == null) ||
-          (trans.originalTotal != int.parse(event.respMap[4])) ||
+          (originalTotal != int.parse(event.respMap[4])) ||
           (event.respMap[11] == null) ||
           (trans.stan != int.parse(event.respMap[11])) ||
           (event.respMap[41] == null) ||
@@ -601,9 +612,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           yield TransactionRejected(trans);
         }
          if (event.respMap[60] != null) {
-
-
-       // String campo60 = "4a303030303230323030313030312064092842732e20020000000000000000000000006000040000000403000000eef300e6f3000000000000000000003132333400009000102106161630100862";
         //Comm comm;
         Comm newComm;
         Map acquirerIndicators = new Map<int, String>();
@@ -637,10 +645,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
         if (trans.type == 'Venta') {
           transRepository.updateTrans(trans);
-          trans.id = (await transRepository.getMaxId()) + 1;
-          transRepository.createTrans(trans);
         } else {
-
           //update original transaction
           originalTrans.voided = true;
           transRepository.updateTrans(originalTrans);
