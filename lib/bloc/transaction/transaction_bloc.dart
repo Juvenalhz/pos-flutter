@@ -540,8 +540,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
+      //valida monto mod restaurant - con o sin ajuste
+      int originalTotal = trans.total;
+      if(trans.binType == Bin.TYPE_CREDIT && trans.type=="Venta")
+        originalTotal = trans.originalTotal;
+      else if(trans.binType == Bin.TYPE_CREDIT && trans.tipAdjusted==false)
+        originalTotal = trans.total;
+      else
+        originalTotal = trans.total;
+
       if ((event.respMap[4] == null) ||
-          (trans.originalTotal != int.parse(event.respMap[4])) ||
+          (originalTotal != int.parse(event.respMap[4])) ||
           (event.respMap[11] == null) ||
           (trans.stan != int.parse(event.respMap[11])) ||
           (event.respMap[41] == null) ||

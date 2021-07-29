@@ -357,7 +357,12 @@ class TransactionMessage extends HostMessage {
       message.fieldData(3, '070000');
     else
       message.fieldData(3, '00' + trans.accType.toString() + '000');
-    message.fieldData(4, trans.originalTotal.toString());
+
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT)
+      message.fieldData(4, trans.originalTotal.toString());
+    else
+      message.fieldData(4, trans.total.toString());
+
     message.fieldData(11, trans.stan.toString());
     //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
     //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());

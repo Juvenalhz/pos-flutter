@@ -272,7 +272,7 @@ class _NumericEntryState extends State<NumericEntry> {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          if ((amount.length > 0) && (amount.length >= this.min)) {
+          if ( (amount.length > 0 && amount.length >= this.min &&  int.parse(amount) > this.min)) {
             this.onClickEnter(context, int.parse(amount));
             deactivate();
           } else {

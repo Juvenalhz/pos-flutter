@@ -209,13 +209,22 @@ class TipAdjust extends StatelessWidget {
                             child: InkWell(
                               splashColor: Colors.blueAccent.withAlpha(180),
                               onTap: () {
-                                if (trans.tipAdjusted == false) {
+                                if ((trans.type == 'Anulación') || (trans.voided)){
+                                  final snackBar = SnackBar(
+                                    backgroundColor: Colors.redAccent,
+                                    content: Text('VENTA ANULADA', textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
+                                    duration: Duration(seconds: 1),
+                                  );
+                                  Scaffold.of(context).showSnackBar(snackBar);
+                                }
+                                else if (trans.tipAdjusted == false) {
                                   final TipAdjustBloc detailReportBloc = BlocProvider.of<TipAdjustBloc>(context);
 
                                   detailReportBloc.add(TipAdjustAskTip(trans));
                                 } else {
                                   final snackBar = SnackBar(
-                                    content: Text('Transaccion Ya Fue Ajustada!', textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
+                                    backgroundColor: Colors.green,
+                                    content: Text('PROPINA YA EXISTE', textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
                                     duration: Duration(seconds: 1),
                                   );
                                   Scaffold.of(context).showSnackBar(snackBar);
