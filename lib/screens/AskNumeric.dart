@@ -15,6 +15,8 @@ class AskNumeric extends StatelessWidget {
   static const int DECIMALS = 0;
   static const int NO_DECIMALS = 1;
   static const int NO_SEPARATORS = 2;
+  static const int ACCOUNT = 3;
+  static const int EXP_DATE = 4;
 
   AskNumeric(this.title1, this.title2, this.name, this.min, this.max, this.separatorType, this.onClickEnter, this.onClickBack);
 
@@ -151,7 +153,7 @@ class _NumericEntryState extends State<NumericEntry> {
                     fontSize: 20,
                     fontFamily: 'RobotoMono',
                   )),
-              style: TextStyle(fontSize: 33, fontFamily: 'RobotoMono', fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize:(separatorType != AskNumeric.ACCOUNT) ?  33 : 27, fontFamily: 'RobotoMono', fontWeight: FontWeight.bold),
               textAlign: TextAlign.right,
               controller: textControllerInput,
               onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
@@ -272,7 +274,9 @@ class _NumericEntryState extends State<NumericEntry> {
       child: FlatButton(
         child: Icon(Icons.arrow_forward, size: 35, color: Colors.white),
         onPressed: () {
-          if ( (amount.length > 0 && amount.length >= this.min &&  int.parse(amount) > this.min)) {
+
+          if (( (this.separatorType == AskNumeric.DECIMALS) && (amount.length > 0 && amount.length >= this.min &&  int.parse(amount) > this.min)) ||
+          ((this.separatorType != AskNumeric.DECIMALS) && (amount.length >= this.min && amount.length <= this.max))){
             this.onClickEnter(context, int.parse(amount));
             deactivate();
           } else {
@@ -335,6 +339,18 @@ class AskVisitType extends AskNumeric {
 
 class AskRequirementType extends AskNumeric {
   AskRequirementType(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskAccountNumber extends AskNumeric {
+  AskAccountNumber(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
+      Function(BuildContext p1) onClickBack)
+      : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
+}
+
+class AskExpirationDate extends AskNumeric {
+  AskExpirationDate(String title1, String title2, String name, int min, int max, int separatorType, Function(BuildContext p1, int p2) onClickEnter,
       Function(BuildContext p1) onClickBack)
       : super(title1, title2, name, min, max, separatorType, onClickEnter, onClickBack);
 }

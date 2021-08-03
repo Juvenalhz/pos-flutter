@@ -353,6 +353,9 @@ class TransactionMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
+    if (trans.entryMode == Pinpad.MANUAL)
+      message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+
     if (trans.binType == Bin.TYPE_FOOD)
       message.fieldData(3, '070000');
     else
@@ -364,13 +367,15 @@ class TransactionMessage extends HostMessage {
       message.fieldData(4, trans.total.toString());
 
     message.fieldData(11, trans.stan.toString());
-    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+
+    if (trans.entryMode == Pinpad.MANUAL) message.fieldData(14, trans.expDate.substring(0, 4));
+
     message.fieldData(22, trans.entryMode.toString());
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    message.fieldData(35, trans.track2);
+
+    if (trans.entryMode != Pinpad.MANUAL) message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
@@ -436,6 +441,7 @@ class ReversalMessage extends HostMessage {
       case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
       case Pinpad.CHIP: message.fieldData(22, "051"); break;
       case Pinpad.FALLBACK: message.fieldData(22, "921"); break;
+      case Pinpad.MANUAL: message.fieldData(22, "011"); break;
     }
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);

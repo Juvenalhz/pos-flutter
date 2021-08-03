@@ -71,7 +71,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-
+      trans.clear();
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
@@ -171,6 +171,24 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowMessage) {
       yield TransactionShowMessage(event.message);
     }
+    // show message to entry a card
+    else if (event is TransShowEntryCard) {
+      yield TransactionShowEntryCard(event.message);
+    }
+    else if (event is TransCardReadManual) {
+      yield TransactionAskAccountNumber();
+    }
+    else if (event is TransAddAccountNumber) {
+      trans.pan = event.account;
+      trans.entryMode = Pinpad.MANUAL;
+      trans.maskedPAN = trans.pan.substring(0, 4) + '....' + trans.pan.substring(trans.pan.length - 4);
+      yield TransactionAskExpDate();
+    }
+    else if (event is TransAddExpDate) {
+      trans.expDate = event.expDate;
+      this.add(TransProcessCard(trans));
+    }
+
     // read card from pinpad
     else if (event is TransGetCard) {
       if (trans.chipEnable) {
@@ -237,7 +255,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         trans = event.trans;
         trans.bin = binId;
-        if ((event.trans.entryMode == Pinpad.MAG_STRIPE) || (event.trans.entryMode == Pinpad.FALLBACK)) {
+        if ((event.trans.entryMode == Pinpad.MAG_STRIPE) || (event.trans.entryMode == Pinpad.FALLBACK) || (event.trans.entryMode == Pinpad.MANUAL) ) {
           if ((event.trans.entryMode == Pinpad.MAG_STRIPE) &&
               ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6'))) {
             yield TransactionShowMessage('Use Lector De Chip');
@@ -291,7 +309,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // back key was clicked at last4 screen, will go back to enter card
     else if (event is TransLast4Back) {
-      this.add(TransGetCard());
+      if (trans.entryMode != Pinpad.MANUAL)
+        this.add(TransGetCard());
+      else
+        yield TransactionAskExpDate();
     }
     // cvv was entered
     else if (event is TransAddCVV) {

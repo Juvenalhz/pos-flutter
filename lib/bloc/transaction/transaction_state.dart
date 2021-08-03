@@ -65,6 +65,15 @@ class TransactionShowMessage extends TransactionState {
   List<Object> get props => [message];
 }
 
+class TransactionShowEntryCard extends TransactionState {
+  final String message;
+
+  TransactionShowEntryCard(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
 class TransactionCardRead extends TransactionState {
   final Trans trans;
 
@@ -236,4 +245,14 @@ class TransactionAutoCloseBatch extends TransactionState{
 
   @override
   List<Object> get props => [batchNumber];
+}
+
+class TransactionAskAccountNumber extends TransactionState {
+  @override
+  List<Object> get props => [];
+}
+
+class TransactionAskExpDate extends TransactionState {
+  @override
+  List<Object> get props => [];
 }

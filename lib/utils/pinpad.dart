@@ -13,7 +13,25 @@ class Pinpad {
   static const int CLESS_MS = 5;
   static const int CLESS_EMV = 6;
   static const int FALLBACK = 98;
-  static const int MANUAL = 99;
+  static const int MANUAL = 11;
+
+  static const int TEXT_S = 0;
+  static const int PROCESSING = 1;
+  static const int INSERT_SWIPE_CARD = 2;
+  static const int TAP_INSERT_SWIPE_CARD = 3;
+  static const int SELECT = 4;
+  static const int SELECTED_S = 5;
+  static const int INVALID_APP = 6;
+  static const int WRONG_PIN_S = 7;
+  static const int PIN_LAST_TRY = 8;
+  static const int PIN_BLOCKED = 9;
+  static const int PIN_VERIFIED = 10;
+  static const int CARD_BLOCKED = 11;
+  static const int REMOVE_CARD = 12;
+  static const int UPDATING_TABLES = 13;
+  static const int UPDATING_RECORD = 14;
+  static const int PIN_STARTING = 15;
+  static const int SECOND_TAP = 16;
 
   final BuildContext context;
   static const MethodChannel _channel = const MethodChannel('pinpad');
@@ -74,7 +92,11 @@ class Pinpad {
       transactionBloc.add(TransGetCard());
     } else if (call.method == 'showMessage') {
       final params = call.arguments;
-      transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
+      var msgId = params['id'];
+      if ((msgId == INSERT_SWIPE_CARD) || (msgId == TAP_INSERT_SWIPE_CARD))
+        transactionBloc.add(TransShowEntryCard(getMessage(params['id'], params['msg'])));
+      else
+        transactionBloc.add(TransShowMessage(getMessage(params['id'], params['msg'])));
     } else if (call.method == 'cardRead') {
       call.arguments.forEach((key, value) {
         params[key] = value;
@@ -138,23 +160,7 @@ class Pinpad {
   }
 
   String getMessage(int id, String s) {
-    const int TEXT_S = 0;
-    const int PROCESSING = 1;
-    const int INSERT_SWIPE_CARD = 2;
-    const int TAP_INSERT_SWIPE_CARD = 3;
-    const int SELECT = 4;
-    const int SELECTED_S = 5;
-    const int INVALID_APP = 6;
-    const int WRONG_PIN_S = 7;
-    const int PIN_LAST_TRY = 8;
-    const int PIN_BLOCKED = 9;
-    const int PIN_VERIFIED = 10;
-    const int CARD_BLOCKED = 11;
-    const int REMOVE_CARD = 12;
-    const int UPDATING_TABLES = 13;
-    const int UPDATING_RECORD = 14;
-    const int PIN_STARTING = 15;
-    const int SECOND_TAP = 16;
+
 
     switch (id) {
       case TEXT_S:
