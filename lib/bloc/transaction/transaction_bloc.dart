@@ -365,7 +365,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     } else if (event is TransAddServerNumber) {
       trans.server = event.server;
-      this.add(TransGoOnChip(trans));
+      if (trans.entryMode == Pinpad.CHIP) {
+        this.add(TransGoOnChip(trans));
+      }
+      else {
+        yield TransactionAskConfirmation(trans, acquirer);
+      }
     } else if (event is TransServerBack) {
       trans.server = 0;
       yield TransactionAskIdNumber();
