@@ -585,16 +585,14 @@ class VoidMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
+    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    message.fieldData(14, trans.expDate.substring(0, 4));
     message.fieldData(22, trans.entryMode.toString());
-    //if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
@@ -613,9 +611,9 @@ class VoidMessage extends HostMessage {
 
     message.fieldData(62, field62);
 
-    if (isDev) {
-      message.printMessage();
-    }
+    // if (isDev) {
+    //   message.printMessage();
+    // }
 
     //message.dataType(60, DT.ASCII);
 
