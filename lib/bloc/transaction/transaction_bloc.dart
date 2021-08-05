@@ -72,7 +72,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-
+      trans.clear();
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
@@ -174,6 +174,24 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransShowMessage) {
       yield TransactionShowMessage(event.message);
     }
+    // show message to entry a card
+    else if (event is TransShowEntryCard) {
+      yield TransactionShowEntryCard(event.message);
+    }
+    else if (event is TransCardReadManual) {
+      yield TransactionAskAccountNumber();
+    }
+    else if (event is TransAddAccountNumber) {
+      trans.pan = event.account;
+      trans.entryMode = Pinpad.MANUAL;
+      trans.maskedPAN = trans.pan.substring(0, 4) + '....' + trans.pan.substring(trans.pan.length - 4);
+      yield TransactionAskExpDate();
+    }
+    else if (event is TransAddExpDate) {
+      trans.expDate = event.expDate;
+      this.add(TransProcessCard(trans));
+    }
+
     // read card from pinpad
     else if (event is TransGetCard) {
       if (trans.chipEnable) {
@@ -220,8 +238,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['appLabel'] != null) trans.appLabel = event.card['appLabel'];
       if (event.card['recordID'] != null) trans.aidID = event.card['recordID'];
 
-      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE) trans.entryMode = Pinpad.FALLBACK;
-
+      if (!trans.chipEnable && trans.entryMode == Pinpad.MAG_STRIPE) {
+        var posExpDate = trans.track2.indexOf('=') + 1;
+        trans.expDate = trans.track2.substring(posExpDate, posExpDate + 4);
+        trans.entryMode = Pinpad.FALLBACK;
+      }
       yield TransactionCardRead(trans);
       this.add(TransProcessCard(trans));
     }
@@ -237,8 +258,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         trans = event.trans;
         trans.bin = binId;
-        if (event.trans.cardType == Pinpad.MAG_STRIPE) {
-          if ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6')) {
+        if ((event.trans.entryMode == Pinpad.MAG_STRIPE) || (event.trans.entryMode == Pinpad.FALLBACK) || (event.trans.entryMode == Pinpad.MANUAL) ) {
+          if ((event.trans.entryMode == Pinpad.MAG_STRIPE) &&
+              ((trans.track2[trans.track2.indexOf('=') + 5] == '2') || (trans.track2[trans.track2.indexOf('=') + 5] == '6'))) {
             yield TransactionShowMessage('Use Lector De Chip');
             await new Future.delayed(const Duration(seconds: 3));
             this.add(TransGetCard(trans));
@@ -290,7 +312,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // back key was clicked at last4 screen, will go back to enter card
     else if (event is TransLast4Back) {
-      this.add(TransGetCard());
+      if (trans.entryMode != Pinpad.MANUAL)
+        this.add(TransGetCard());
+      else
+        yield TransactionAskExpDate();
     }
     // cvv was entered
     else if (event is TransAddCVV) {
@@ -342,11 +367,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         yield TransactionAskConfirmation(trans, acquirer);
       }
     } else if (event is TransAddServerNumber) {
-      //agrego el evento TransGoOnChip para obtener campo 55 tags emv y seguir el flujo de la tx J.Q
-      this.add(TransGoOnChip(trans));
       trans.server = event.server;
-      //no hace falta la linea de abajo, valido que se realice en TransGoOnChip
-      //yield TransactionAskConfirmation(trans, acquirer);
+      if (trans.entryMode == Pinpad.CHIP) {
+        this.add(TransGoOnChip(trans));
+      }
+      else {
+        yield TransactionAskConfirmation(trans, acquirer);
+      }
     } else if (event is TransServerBack) {
       trans.server = 0;
       yield TransactionAskIdNumber();
@@ -382,12 +409,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       AID aid = AID.fromMap(await aidRepository.getAid(trans.aidID));
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-     /* if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0) {
-        yield TransactionFinshChip();
-        //valido mensaje de confirmación modo restaurant J.Q
-      } else if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) == 0  && acquirer.industryType ) {
-        yield TransactionAskConfirmation(trans,acquirer);
-      } else {*/
       if (await pinpad.goOnChip(trans.toMap(), terminal.toMap(), aid.toMap()) != 0) {
         trans.clear();
         yield TransactionError();
@@ -612,8 +633,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           yield TransactionRejected(trans);
         }
          if (event.respMap[60] != null) {
-        //Comm comm;
-        Comm newComm;
+
         Map acquirerIndicators = new Map<int, String>();
         merchant.tid = event.respMap[41];
         await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
@@ -642,10 +662,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
       if (trans.cardDecision == 0) {
-
-        if (trans.type == 'Venta') {
+        if (trans.type == 'Venta')
           transRepository.updateTrans(trans);
-        } else {
+        else {
           //update original transaction
           originalTrans.voided = true;
           transRepository.updateTrans(originalTrans);
@@ -680,12 +699,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
-
-      if ( (terminal.numPrint > 0 ) && ( ((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+      if (((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
           ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
-          (bin.cardType > Bin.TYPE_DEBIT) )) {
+          (bin.cardType > Bin.TYPE_DEBIT)) {
         numCopies = 1;
-
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
         yield TransactionCompleted(trans, terminal);
@@ -734,14 +751,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         pinpad.beep();
 
         this.add(RemovingCard());
-        await new Future.delayed(const Duration(seconds: 2));
+        await new Future.delayed(const Duration(seconds: 1));
+        yield TransactionShowMessage('Retire Tarjeta');
       }
     } else if (event is TransCardRemoved) {
       doBeep = false;
-      if (merchant.batchNumber != trans.batchNum) {
-        yield TransactionAutoCloseBatch(merchant.batchNumber);
-      } else {
-        yield TransactionFinish(trans);
+      if (this.cardReadTrials == 0) {
+        if (merchant.batchNumber != trans.batchNum) {
+          yield TransactionAutoCloseBatch(merchant.batchNumber);
+        } else {
+          yield TransactionFinish(trans);
+        }
+      }
+      else {
+        this.add(TransGetCard(trans));
       }
     } else if (event is TransDeletePreviousBatch) {
       String whatDelete = 'batchNum = ' + merchant.batchNumber.toString();
@@ -752,17 +775,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // chip card read error
     else if (event is TransCardReadError) {
-      cardReadTrials++;
+      this.cardReadTrials++;
       yield TransactionShowMessage('Error Leyendo Tarjeta. Intente Nuevamente...');
-      await new Future.delayed(const Duration(seconds: 3));
-      if (cardReadTrials >= 3) {
+      await new Future.delayed(const Duration(microseconds: 500));
+      if (this.cardReadTrials >= 3) {
         trans.chipEnable = false;
       }
-      this.add(TransGetCard(trans));
+      doBeep = true;
+      pinpad.removeCard();
+      this.add(RemovingCard());
+
+
     }
     // pinpad error detected
     else if (event is TransCardError) {
-      cardReadTrials = 0;
+      this.cardReadTrials = 0;
       trans.clear();
       yield TransactionError();
     }
@@ -782,15 +809,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void onPrintMerchantOK() async {
+    Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-    // Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-    //
-    // if (this.numCopies <= terminal.numPrint) {
-    //   this.numCopies++;
-    //   this.add(TransMerchantReceipt());
-    // } else {
-    this.add(TransPrintMerchantOK());
-    //}
+    if (this.numCopies < terminal.numPrint) {
+      this.numCopies++;
+      this.add(TransMerchantReceipt());
+    } else {
+      this.add(TransPrintMerchantOK());
+    }
   }
 
   void onPrintMerchantError(int type) {
@@ -887,13 +913,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
-
-    //if (acquirerIndicators[0] != '000000')
-
-      //Acquirer acquirer = new Acquirer(0, 'Platco', '');
-      acquirer.setIndicators(acquirerIndicators[0]);
-      await acquirerRepository.deleteacquirer(acquirer.id);
-      await acquirerRepository.createacquirer(acquirer);
+    acquirer.setIndicators(acquirerIndicators[0]);
+    await acquirerRepository.deleteacquirer(acquirer.id);
+    await acquirerRepository.createacquirer(acquirer);
 
     return telecarga;
 

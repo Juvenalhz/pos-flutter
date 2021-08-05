@@ -340,7 +340,7 @@ class Iso8583 {
       if (lenDataType == DT.ASCII)
         _isoMsg += AsciiEncoder().convert(lenString);
       else if (lenDataType == DT.BCD) {
-        Uint8List temp = strToBcd(lenString.padLeft(len, '0'), campo: field);
+        Uint8List temp = strToBcd(lenString.padLeft(len, '0'));
 
         temp.forEach((element) {
           this._isoMsg[index++] = element;
@@ -365,7 +365,7 @@ class Iso8583 {
         this._isoMsg[index++] = element;
       });
     } else if (dataType == DT.BCD) {
-      Uint8List temp = strToBcd(data.padLeft(len, '0'), campo: field);
+      Uint8List temp = strToBcd(data.padLeft(len, '0'));
 
       temp.forEach((element) {
         this._isoMsg[index++] = element;

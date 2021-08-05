@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pay/iso8583/8583.dart';
 import 'package:pay/models/acquirer.dart';
@@ -66,8 +65,6 @@ class HostMessage {
         break;
       case 5:
       case 13:
-      //temp += data;
-
         temp += bcdToStr(AsciiEncoder().convert(data));
         break;
       case 18:
@@ -356,31 +353,36 @@ class TransactionMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
+    if (trans.entryMode == Pinpad.MANUAL)
+      message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+
     if (trans.binType == Bin.TYPE_FOOD)
       message.fieldData(3, '070000');
     else
       message.fieldData(3, '00' + trans.accType.toString() + '000');
+
     if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT)
       message.fieldData(4, trans.originalTotal.toString());
     else
       message.fieldData(4, trans.total.toString());
 
-
     message.fieldData(11, trans.stan.toString());
-    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+
+    if (trans.entryMode == Pinpad.MANUAL) message.fieldData(14, trans.expDate.substring(0, 4));
+
     message.fieldData(22, trans.entryMode.toString());
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    message.fieldData(35, trans.track2);
+
+    if (trans.entryMode != Pinpad.MANUAL) message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
     if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
-    if (trans.emvTags.length > 0)message.fieldData(55, trans.emvTags);
+    if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
 
     message.fieldData(60, Constants.appVersionHost);
 
@@ -428,8 +430,7 @@ class ReversalMessage extends HostMessage {
     trans.pan = await trans.getClearPan();
 
     message.setMID(400);
-    String pan = ( trans.pan.length  >= 19 ? trans.pan.substring(0, 19) : trans.pan );
-    message.fieldData(2, pan);
+    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
@@ -440,6 +441,7 @@ class ReversalMessage extends HostMessage {
       case Pinpad.MAG_STRIPE: message.fieldData(22, "021"); break;
       case Pinpad.CHIP: message.fieldData(22, "051"); break;
       case Pinpad.FALLBACK: message.fieldData(22, "921"); break;
+      case Pinpad.MANUAL: message.fieldData(22, "011"); break;
     }
     if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
@@ -685,7 +687,6 @@ class AdjustMessage extends HostMessage {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     TransRepository transRepository = new TransRepository();
-    //getTrans
     AcquirerRepository acquirerRepository = new AcquirerRepository();
 
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
@@ -694,41 +695,32 @@ class AdjustMessage extends HostMessage {
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
+
     trans.pan = await trans.getClearPan();
     String sn = await SerialNumber.serialNumber;
     String originalData;
 
     message.setMID(220);
-    message.fieldData(2,   trans.pan );
+    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
     message.fieldData(3, '02' + trans.accType.toString() + '000');
-
     message.fieldData(4, trans.baseAmount.toString());
     message.fieldData(11, (await getStan()).toString());
     message.fieldData(14, trans.expDate.substring(0, 4));
     message.fieldData(22, "0011");
-    // if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    //message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
     if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
-    // if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
     message.fieldData(60, Constants.appVersionHost);
 
-
-    originalData = trans.referenceNumber.replaceAll(' ', '');
+    originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
-    print(originalData);
-    //originalData="5001250001471016550001";
-
-    //field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(2,merchant.batchNumber.toString());
-    //originalData="5001250001471016550001";
-    // String dataNew ="5001710001581317050003";
+
 
     field62 += addField62Table(13, originalData);
     field62 += addField62Table(18, trans.acquirer.toString());

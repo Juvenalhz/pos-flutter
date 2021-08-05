@@ -104,6 +104,15 @@ class TransShowMessage extends TransactionEvent {
   List<Object> get props => [this.message];
 }
 
+class TransShowEntryCard extends TransactionEvent {
+  final String message;
+
+  const TransShowEntryCard([this.message]);
+
+  @override
+  List<Object> get props => [this.message];
+}
+
 class TransCardWasRead extends TransactionEvent {
   final Map<String, dynamic> card;
 
@@ -379,4 +388,27 @@ class TransDeletePreviousBatch extends TransactionEvent {
 class TransCardReadError extends TransactionEvent {
   @override
   List<Object> get props => [];
+}
+
+class TransCardReadManual extends TransactionEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class TransAddAccountNumber extends TransactionEvent {
+  final String account;
+
+  const TransAddAccountNumber([this.account]);
+
+  @override
+  List<Object> get props => [this.account];
+}
+
+class TransAddExpDate extends TransactionEvent {
+  final String expDate;
+
+  const TransAddExpDate([this.expDate]);
+
+  @override
+  List<Object> get props => [this.expDate];
 }

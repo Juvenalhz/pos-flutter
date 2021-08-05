@@ -125,10 +125,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       Comm comm = Comm.fromMap(await commRepository.getComm(1));
 
       yield TipAdjustSending();
-      //JQ
-      //trans.stan = await getStan();
       adjustMessage = new AdjustMessage(trans, comm);
-      //trans.stan = await getStan(); //J.Q
       if ((isDev == true) && (isCommOffline == true))
         await adjustMessage.buildMessage();
       else
@@ -167,10 +164,9 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
 
       if ((event.respMap[4] == null) ||
           (trans.baseAmount != int.parse(event.respMap[4]))||
-          /*(event.respMap[11] == null) ||
-          (trans.stan != int.parse(event.respMap[11])) ||*///J.Q
+    
           (event.respMap[41] == null) ||
-          (merchant.tid.padLeft(8, '0') != (event.respMap[41].toString()))) {
+          (merchant.tid.padLeft(8, '0') != event.respMap[41].toString())) {
         // reversal is stored in the DB
         trans.respMessage = 'Error En Respuesta';
         yield TipAdjustRejected(trans);
