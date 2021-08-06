@@ -711,6 +711,7 @@ class AdjustMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
+    if (acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
     message.fieldData(60, Constants.appVersionHost);
 
     originalData = trans.referenceNumber.trim();
