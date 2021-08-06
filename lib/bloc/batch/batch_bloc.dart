@@ -16,6 +16,7 @@ import 'package:pay/utils/communication.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'batch_event.dart';
+
 part 'batch_state.dart';
 
 class BatchBloc extends Bloc<BatchEvent, BatchState> {
@@ -31,6 +32,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
   BatchMessage batchMessage;
   int batchStan;
   String strMessage;
+  int newBatch;
+  String AprobMessage;
 
   BatchBloc() : super(BatchInitial());
 
@@ -48,7 +51,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
     } else if (event is BatchCheckAdjustedTips) {
       List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers(where: 'industryType = 1');
       if (acquirers.length > 0) {
-        List<Map<String, dynamic>> transNotAdjusted = await transRepository.getAllTrans(where: 'binType = 1 and tipAdjusted = 0 and reverse = 0  and voided = 0 and type<>\'Anulación\'');
+        List<Map<String, dynamic>> transNotAdjusted =
+        await transRepository.getAllTrans(where: 'binType = 1 and tipAdjusted = 0 and reverse = 0  and voided = 0 and type<>\'Anulación\'');
 
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
@@ -168,22 +172,25 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
           if ((event.respMap[39] == '00') || (event.respMap[39] == '95')) {
             Receipt receipt = new Receipt();
 
-            if (event.respMap[6202] != null) merchant.batchNumber = int.parse(event.respMap[6202]);
+            AprobMessage = event.respMap[39];
+            strMessage = event.respMap[6208];
+            yield BatchPrintDetailReport();
 
-            merchantRepository.updateMerchant(merchant);
-            if (event.respMap[39] == '00') {
-              strMessage = event.respMap[6208];
-              yield BatchPrintDetailReport();
-            } else
-              yield BatchNotInBalance(event.respMap[6208]);
+            if (event.respMap[6202] != null) newBatch = int.parse(event.respMap[6202]);
           } else {
             yield BatchError(event.respMap[6208]);
           }
         }
       }
     } else if (event is BatchComplete) {
+      if (newBatch != null) merchant.batchNumber = newBatch;
+      merchantRepository.updateMerchant(merchant);
+
       await transRepository.deleteAllTrans();
-      yield BatchOK(strMessage + '\n\n\nLote Cerrado');
+      if (AprobMessage == '00')
+        yield BatchOK(strMessage + '\n\n\nLote Cerrado');
+      else
+        yield BatchNotInBalance(strMessage);
     } else if (event is BatchDone) {
       yield BatchFinish();
     }

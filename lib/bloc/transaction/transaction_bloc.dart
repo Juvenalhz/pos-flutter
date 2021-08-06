@@ -69,9 +69,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     print(event.toString());
 
     if (event is TransactionInitial) {
+
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-      trans.clear();
+
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
@@ -83,6 +84,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // base amount added, transaction initial data
     else if (event is TransAddAmount) {
+      trans.clear();
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
