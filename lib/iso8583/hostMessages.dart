@@ -381,7 +381,7 @@ class TransactionMessage extends HostMessage {
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
-    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
+    if (acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
 
     message.fieldData(60, Constants.appVersionHost);
