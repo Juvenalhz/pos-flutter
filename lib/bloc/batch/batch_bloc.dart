@@ -48,7 +48,8 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
         yield BatchEmpty();
       else
         this.add(BatchCheckAdjustedTips());
-    } else if (event is BatchCheckAdjustedTips) {
+    }
+    else if (event is BatchCheckAdjustedTips) {
       List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers(where: 'industryType = 1');
       if (acquirers.length > 0) {
         List<Map<String, dynamic>> transNotAdjusted =
@@ -56,9 +57,9 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
-        }
-      } else
-        yield BatchConfirm();
+        }else
+          yield BatchConfirm();
+      }
     } else if (event is BatchCancel) {
       yield BatchFinish();
     } else if (event is BatchMissingTipsOk) {
