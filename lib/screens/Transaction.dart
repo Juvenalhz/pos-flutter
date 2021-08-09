@@ -71,11 +71,19 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
-          if (state.message != null)
-          return TransMessage(state.message);
+            if (state.message != null)
+              return TransMessage(state.message);
+        } else if (state is TransactionShowEntryCard){
+          return TransMessageEntryCard(state.message);
         } else if (state is TransactionCardRead) {
           return TransMessage(state.trans.appLabel);
-        } else if (state is TransactionShowPinAmount) {
+        } else if (state is TransactionAskAccountNumber) {
+          return AskAccountNumber('Ingrese', 'Numero De Tarjeta', '', 13, 19, AskNumeric.ACCOUNT, onClickAccountNumberEnter, onClickAccountNumberBack);
+        } else if (state is TransactionAskExpDate) {
+          return AskExpirationDate('Ingrese', 'Fecha De Vencimiento', '', 4, 9999, AskNumeric.NO_SEPARATORS, onClickExpDateEnter, onClickExpDateBack);
+        }
+
+        else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
         } else if (state is TransactionConnecting) {
           return CommProgress('Autorización', status: 'Conectando').build(context);
@@ -229,7 +237,7 @@ class Transaction extends StatelessWidget {
   void onSkipCustomer(BuildContext context) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
 
-    transactionBloc.add(TransPrintMerchantRetry());
+    transactionBloc.add(TransPrintCustomerOK());
   }
 
   Future<void> onCloseBatchOk(BuildContext context) async {
@@ -240,6 +248,30 @@ class Transaction extends StatelessWidget {
     await Navigator.pushNamed(context, '/DetailReport');
 
     transactionBloc.add(TransDeletePreviousBatch());
+  }
+
+  void onClickAccountNumberEnter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddAccountNumber(value.toString()));
+  }
+
+  void onClickAccountNumberBack(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransGetCard());
+  }
+
+  void onClickExpDateEnter(BuildContext context, int value) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransAddExpDate(value.toString()));
+  }
+
+  void onClickExpDateBack(BuildContext context) {
+    final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+
+    transactionBloc.add(TransCardReadManual());
   }
 }
 

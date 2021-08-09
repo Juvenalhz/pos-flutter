@@ -195,8 +195,7 @@ class Acquirer {
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x01) != 0) this._cvv2 = true; else this._cvv2 = false;
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x02) != 0) this._last4Digits = true; else this._last4Digits = false;
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x04) != 0) this._passwordVoid = true; else this._passwordVoid = false;
-    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x08) != 0)
-      this._passwordSettlement = true;
+    if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x08) != 0) this._passwordSettlement = true; else this._passwordSettlement = false;
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x10) != 0) this._passwordRefund = true; else this._passwordRefund = false;
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x20) != 0) this._maskPan = true; else this._maskPan = false;
     if ((int.parse(indicator.substring(2, 4), radix: 16) & 0x40) != 0) this._prePrint = true; else this._prePrint = false;

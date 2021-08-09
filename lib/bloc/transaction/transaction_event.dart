@@ -296,11 +296,8 @@ class TransPinEntered extends TransactionEvent {
 }
 
 class TransMerchantReceipt extends TransactionEvent {
-  bool telecarga;
-
-  TransMerchantReceipt([this.telecarga]);
   @override
-  List<Object> get props => [this.telecarga];
+  List<Object> get props => [];
 }
 
 class TransCustomerReceipt extends TransactionEvent {

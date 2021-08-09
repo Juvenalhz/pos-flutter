@@ -163,8 +163,7 @@ class TipAdjustBloc extends Bloc<TipAdjustEvent, TipAdjustState> {
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
       if ((event.respMap[4] == null) ||
-          (trans.baseAmount != int.parse(event.respMap[4]))||
-    
+          (trans.baseAmount != int.parse(event.respMap[4])) ||
           (event.respMap[41] == null) ||
           (merchant.tid.padLeft(8, '0') != event.respMap[41].toString())) {
         // reversal is stored in the DB

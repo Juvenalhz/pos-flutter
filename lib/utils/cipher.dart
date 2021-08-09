@@ -16,8 +16,8 @@ class Cipher {
 
   Future<Uint8List> cipherMessage(Uint8List data, int kin) async {
 
-    Uint8List cipheredData = await _channel.invokeMethod('cipherMessage', {'data': data, 'keyId': kin});
-    return cipheredData;
+    Uint8List CipheredData = await _channel.invokeMethod('cipherMessage', {'data': data, 'keyId': kin});
+    return CipheredData;
 
   }
 }

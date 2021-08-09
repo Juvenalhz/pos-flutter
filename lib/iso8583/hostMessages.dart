@@ -162,9 +162,7 @@ class HostMessage {
 
   Future<Uint8List> buildCiphredMessage(Uint8List clearMessage) async {
     if (!(_comm.tpdu.contains('7000', 0)) || (_comm.kinIdTerminal == 0)){  //tpdu with value starting 7000 needs to use encryption
-
       memDump('request:', clearMessage);
-
       return clearMessage;
     }
     else {
@@ -200,6 +198,7 @@ class HostMessage {
 
         cipheredData = await cipher.cipherMessage(clearMessage.sublist(5), _comm.kinIdTerminal);
       }
+
       Uint8List dataToSend = new Uint8List(14 + cipheredData.length);  //length from the ciphered buffer + header of eftsec message
 
       int i = 0;
@@ -347,6 +346,7 @@ class TransactionMessage extends HostMessage {
     Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
     Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
     Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -585,16 +585,14 @@ class VoidMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
+    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    //message.fieldData(12, trans.dateTime.hour.toString() + trans.dateTime.minute.toString() + trans.dateTime.second.toString());
-    //message.fieldData(13, trans.dateTime.month.toString() + trans.dateTime.day.toString());
+    message.fieldData(14, trans.expDate.substring(0, 4));
     message.fieldData(22, trans.entryMode.toString());
-    //if (trans.entryMode == Pinpad.CHIP) message.fieldData(23, trans.panSequenceNumber.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
-    message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
@@ -604,6 +602,7 @@ class VoidMessage extends HostMessage {
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
+
     field62 += addField62Table(1, trans.id.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
@@ -695,7 +694,6 @@ class AdjustMessage extends HostMessage {
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
-
     trans.pan = await trans.getClearPan();
     String sn = await SerialNumber.serialNumber;
     String originalData;
@@ -719,9 +717,8 @@ class AdjustMessage extends HostMessage {
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
     originalData += trans.id.toString().padLeft(4, '0');
-    field62 += addField62Table(2,merchant.batchNumber.toString());
 
-
+    field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
     field62 += addField62Table(18, trans.acquirer.toString());
     field62 += addField62Table(41, sn);
@@ -737,6 +734,7 @@ class AdjustMessage extends HostMessage {
     return buildCiphredMessage(message.buildIso());
   }
 }
+
 
 class BatchMessage extends HostMessage {
   Iso8583 message;

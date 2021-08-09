@@ -6,7 +6,6 @@ import 'package:bloc/bloc.dart';
 import 'package:convert/convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:pay/iso8583/8583.dart';
 import 'package:pay/iso8583/hostMessages.dart';
 import 'package:pay/models/aid.dart';
 import 'package:pay/models/bin.dart';
@@ -62,8 +61,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   @override
   Stream<TransactionState> mapEventToState(
-      TransactionEvent event,
-      ) async* {
+    TransactionEvent event,
+  ) async* {
     var isCommOffline = (const String.fromEnvironment('offlineComm') == 'true');
     var isDev = (const String.fromEnvironment('dev') == 'true');
 
@@ -72,7 +71,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is TransactionInitial) {
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
-      trans.clear();
+
       yield TransactionAddAmount(trans);
     } else if (event is TransInitPinpad) {
       pinpad = event.pinpad;
@@ -84,12 +83,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // base amount added, transaction initial data
     else if (event is TransAddAmount) {
+      trans.clear();
       merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
-
       trans.id = (await transRepository.getMaxId()) + 1;
-
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       trans.type = 'Venta';
@@ -524,7 +522,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
 
       trans.stan = await getStan();
-      // save reversal
+      //save reversal
       if (trans.type == 'Venta') {
         trans.reverse = true;
         await transRepository.createTrans(trans);
@@ -561,7 +559,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // analyze response fields
     else if (event is TransProcessResponse) {
-
       MerchantRepository merchantRepository = new MerchantRepository();
       TerminalRepository terminalRepository = new TerminalRepository();
       EmvRepository emvRepository = new EmvRepository();
@@ -575,9 +572,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if(trans.binType == Bin.TYPE_CREDIT && trans.type=="Venta")
         originalTotal = trans.originalTotal;
       else if(trans.binType == Bin.TYPE_CREDIT && trans.tipAdjusted==false)
-         originalTotal = trans.total;
+        originalTotal = trans.total;
       else
-          originalTotal = trans.total;
+        originalTotal = trans.total;
 
       if ((event.respMap[4] == null) ||
           (originalTotal != int.parse(event.respMap[4])) ||
@@ -589,19 +586,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         trans.respMessage = 'Error En Respuesta';
         yield TransactionRejected(trans);
       } else {
-
-
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
-
           if (trans.type == "Anulación") trans.referenceNumberCancellation = trans.referenceNumber;
-
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
           if (event.respMap[55] != null) trans.responseEmvTags = event.respMap[55];
-
-
 
           if (event.respMap[6206] != null) {
             trans.issuer = event.respMap[6206];
@@ -632,15 +623,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
         }
-         if (event.respMap[60] != null) {
 
-        Map acquirerIndicators = new Map<int, String>();
-        merchant.tid = event.respMap[41];
-        await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
-        merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+        if (event.respMap[60] != null) {
+          Map acquirerIndicators = new Map<int, String>();
+          merchant.tid = event.respMap[41];
+          await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
+          merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
 
-         }
-
+        }
       }
     }
     //
@@ -736,20 +726,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
-      if (trans.entryMode == Pinpad.CHIP) {
-        doBeep = true;
-        pinpad.removeCard();
-        this.add(RemovingCard());
-        yield TransactionShowMessage('Retire Tarjeta');
-      } else
-        yield TransactionFinish(trans);
+        if (trans.entryMode == Pinpad.CHIP) {
+          doBeep = true;
+          pinpad.removeCard();
+          this.add(RemovingCard());
+          yield TransactionShowMessage('Retire Tarjeta');
+        } else
+          yield TransactionFinish(trans);
     }
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
       if (doBeep) {
-
         pinpad.beep();
-
         this.add(RemovingCard());
         await new Future.delayed(const Duration(seconds: 1));
         yield TransactionShowMessage('Retire Tarjeta');
@@ -841,7 +829,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     this.add(TransCardWasRead(params));
   }
 
-   processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
+  processField60(String data, Merchant merchant, Comm comm, Terminal terminal, Emv emv, Map<int, String> acquirerIndicators) async {
     MerchantRepository merchantRepository = new MerchantRepository();
     TerminalRepository terminalRepository = new TerminalRepository();
     EmvRepository emvRepository = new EmvRepository();
@@ -903,14 +891,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     index += 12;
     merchant.countryCode = int.parse(data.substring(index, index + 4));
 
-
     await merchantRepository.updateMerchant(merchant);
     await terminalRepository.updateTerminal(terminal);
     await emvRepository.updateEmv(emv);
     await commRepository.updateComm(comm);
 
     AcquirerRepository acquirerRepository = new AcquirerRepository();
-
     Acquirer acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
     acquirer.setIndicators(acquirerIndicators[0]);
@@ -918,6 +904,5 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     await acquirerRepository.createacquirer(acquirer);
 
     return telecarga;
-
   }
 }

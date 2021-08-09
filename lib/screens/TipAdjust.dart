@@ -217,8 +217,9 @@ class TipAdjust extends StatelessWidget {
                                   );
                                   Scaffold.of(context).showSnackBar(snackBar);
                                 }
-                               else if (trans.tipAdjusted == false) {
+                                else if (trans.tipAdjusted == false) {
                                   final TipAdjustBloc detailReportBloc = BlocProvider.of<TipAdjustBloc>(context);
+
                                   detailReportBloc.add(TipAdjustAskTip(trans));
                                 } else {
                                   final snackBar = SnackBar(
