@@ -238,7 +238,7 @@ class ParameterReportEMV extends StatelessWidget {
 
   List<Widget> fileMerchantData(Merchant mapMerchant) {
     List<Widget> merchantData = [];
-    final  sn =   SerialNumber.serialNumber;
+    final sn =  SerialNumber.serialNumber;
 
     merchantData.add(fileReportHead("", mapMerchant.nameL1, "",20,320,20));
     merchantData.add(fileReportHead("", mapMerchant.nameL2, "",20,320,20));
@@ -256,9 +256,8 @@ class ParameterReportEMV extends StatelessWidget {
   }
   List<Widget> fileGralData(Emv mapEmv) {
     List<Widget> emvData = [];
-    emvData.add(fileReportBody("Tipo Terminal", ":", mapEmv.addTermCapabilities.toString()));
+    emvData.add(fileReportBody("Tipo Terminal", ":", mapEmv.terminalType.toString()));
     emvData.add(fileReportBody("Ter Capabilities", ":", mapEmv.terminalCapabilities.toString()));
-    emvData.add(fileReportBody("Key Exponent", ":", mapEmv.addTermCapabilities.toString()));
     emvData.add(fileReportBody("Fallback", ":", mapEmv.fallback==true ? "Si":"No"));
     emvData.add(fileReportBody("Forzar Online", ":", mapEmv.forceOnline==true ? "Si":"No"));
     emvData.add(Divider(

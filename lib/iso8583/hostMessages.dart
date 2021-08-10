@@ -611,9 +611,9 @@ class VoidMessage extends HostMessage {
 
     message.fieldData(62, field62);
 
-    if (isDev) {
-      message.printMessage();
-    }
+    // if (isDev) {
+    //   message.printMessage();
+    // }
 
     //message.dataType(60, DT.ASCII);
 

@@ -254,7 +254,7 @@ class Receipt {
       if (trans.type == 'Venta')
         printer.addTextSideBySide('AID:$aid', 'CT:$ct');
       else
-        printer.addText(Printer.RIGHT, 'AID:$aid');
+        printer.addTextSideBySide('AID:$aid', '    ');
     }
 
     printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);

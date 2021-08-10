@@ -128,7 +128,7 @@ class DatabaseHelper {
       'tpdu': '6000040000',
       'nii': '004',
       'timeout': 60,
-      'ip': '192.168.6.149',
+      'ip': '192.168.6.135',
       'port': 4541,
       'headerLength': 1,
       'kin': 2000,
