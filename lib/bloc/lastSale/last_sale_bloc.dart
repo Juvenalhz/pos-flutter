@@ -76,8 +76,8 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
           int lastTransState = int.parse(respMap[6220].substring(0, 1));
           int lastTransType = int.parse(respMap[6220].substring(1, 2));
           int lastTransDay = int.parse(respMap[6220].substring(3, 5));
-          int lastTransMonth = int.parse(respMap[6220].substring(5, 7));
-          int lastTransYear = 2000 + int.parse(respMap[6220].substring(7, 9));
+          int lastTransMonth = int.parse(respMap[6220].substring(4, 6));
+          int lastTransYear = 2000 + int.parse(respMap[6220].substring(2, 4));
 
           trans.type = 'Venta';
 
