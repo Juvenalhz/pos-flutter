@@ -222,11 +222,21 @@ class Receipt {
 
     printer.setFontSize(0);
     if (trans.type == 'Anulación') {
-      printer.addText(Printer.CENTER, 'No.Operac.Origen: 999999');
+      printer.addText(Printer.CENTER, 'No.Operac.Origen: ' + trans.referenceNumberCancellation);
     }
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
     printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
     printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
+
+    if (trans.server == 0) {
+      printer.addTextSideBySideWithCenter('S/N POS:', 'No.Autor', 'No.Operac.');
+      printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
+    }
+    else {
+      printer.addText(Printer.LEFT, 'S/N POS:      No.Autor    No.Operac.   Mesero');
+      printer.addText(Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString()) ;
+    }
+
     printer.addTextSideBySideWithCenter(
         'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
     if (isCustomer == true) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');

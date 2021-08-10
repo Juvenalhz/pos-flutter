@@ -44,8 +44,13 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
     print(event.toString());
     if (event is BatchInitialEvent) {
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
       if (await transRepository.getCountTrans(where: 'reverse = 0') == 0)
         yield BatchEmpty();
+      else if(!acquirer.industryType)
+        yield BatchConfirm();
       else
         this.add(BatchCheckAdjustedTips());
     }
