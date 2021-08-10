@@ -164,7 +164,7 @@ class DatabaseHelper {
       'id': 1,
       'terminalType': '22',
       'terminalCapabilities': 'E0F0C8',
-      'addTermCapabilities': '6000f0a001',//'F0000F0F001',
+      'addTermCapabilities': 'F0000F0F001',
       'fallback': 1,
       'forceOnline': 1,
       'CurrencyCode': 0,
