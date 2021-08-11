@@ -61,10 +61,9 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
       Uint8List response;
 
       response = await connection.receiveMessage();
-      if (response  == null){
-        yield LastSaleShowMessage('Error - Timeout de comunicación');
-        await new Future.delayed(const Duration(seconds: 3));
-        yield LastSaleFailed('Error En Prueba De Comunicación');
+
+      if (response.isEmpty){
+        yield LastSaleFailed('Sin respuesta del Host');
       }
       else if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap = await lastSale.parseRenponse(response);
