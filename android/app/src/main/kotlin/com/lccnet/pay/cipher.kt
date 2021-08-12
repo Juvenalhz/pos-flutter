@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 class Cipher : MethodChannel.MethodCallHandler{
     companion object {
-        var params = HashMap<String, Any>()
+    var params = HashMap<String, Any>()
     }
     private val PAN_KEY_ID = 0
 
@@ -61,7 +61,7 @@ class Cipher : MethodChannel.MethodCallHandler{
 
         if (call.method == "cipherCriticalData") {
             var data : String? = call.argument("data")
-
+            
             if (Build.MODEL.contains("APOS")) {
                 try {
                     val pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
@@ -122,35 +122,34 @@ class Cipher : MethodChannel.MethodCallHandler{
                 DeviceHelper.me().bindService()
                 try {
                     try {
-                        val pinpad: UPinpad
-                        if (wk == null) {
-                            pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
-                            pinpad.open()
-                        } else {
-                            pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_MKSK)
-                            pinpad.open()
-                            //load ciphered key
-                            //pinpad.loadEncKey(int keyType, int mainKeyId, int keyId, byte[] encKey, byte[] checkValue)
-                        }
+                    val pinpad: UPinpad
+                    if (wk == null) {
+                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_FIXED_KEY)
+                        pinpad.open()
+                    } else {
+                        pinpad = DeviceHelper.me().getPinpad(0, 0, KeySystem.KS_MKSK)
+                        pinpad.open()
+                        //load ciphered key
+                        //pinpad.loadEncKey(int keyType, int mainKeyId, int keyId, byte[] encKey, byte[] checkValue)
+                    }
 
-                        try {
+                    try {
 
-                            if (pinpad.isKeyExist(keyId!!)) {
+                        if (pinpad.isKeyExist(keyId!!)) {
                                 val iv = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte())
-                                //val iv = byteArrayOf(0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x00.toByte())
                                 encrypted = pinpad.calculateDes(keyId!!, DESMode(DESMode.DM_ENC, DESMode.DM_OM_TCBC), iv, data)
 
-                                if (encrypted == null) {
-                                    Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
-                                }
+                            if (encrypted == null) {
+                                Log.d("Cipher", "pinpad.error = " + pinpad.lastError)
                             }
-
-                        } finally {
-                            pinpad.close()
                         }
-                    } catch (e: RemoteException) {
-                        Log.e("Cipher", "Pinpad", e)
+
+                    } finally {
+                        pinpad.close()
                     }
+                } catch (e: RemoteException) {
+                    Log.e("Cipher", "Pinpad", e)
+                }
                 } finally {
                     DeviceHelper.me().unbindService()
                 }
