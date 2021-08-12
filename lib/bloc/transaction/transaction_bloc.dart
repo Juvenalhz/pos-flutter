@@ -768,8 +768,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       doBeep = true;
       pinpad.removeCard();
       this.add(RemovingCard());
-
-
     }
     // pinpad error detected
     else if (event is TransCardError) {

@@ -256,7 +256,7 @@ class DetailReport extends StatelessWidget {
                               label: DateFormat('dd/MM/yyyy').format(state.trans.dateTime),
                               strAmount: DateFormat('hh:mm:ss').format(state.trans.dateTime)),
                           Spacer(flex: 1),
-                          RowDetail(label: "Ticket:", strAmount: state.trans.stan.toString()),
+                          RowDetail(label: "Ticket:", strAmount: state.trans.id.toString()),
                           Spacer(flex: 2),
                           RowDetailAmount(label: "Total:", strAmount: formatter.format(state.trans.total / 100)),
                           Spacer(flex: 2),

@@ -209,14 +209,20 @@ class MainMenu extends StatelessWidget {
           }),
           Divider(),
           ExpansionTile(title: Text("Menu De Comercio"), leading: Icon(Icons.account_balance), children: <Widget>[
-            _createDrawerItem(
-                text: 'Consulta Ultima Venta',
-                onTap: () {
-                  final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(
+                    text: 'Consulta Ultima Venta',
+                    onTap: () {
+                      final LastSaleBloc lastSaleBloc = BlocProvider.of<LastSaleBloc>(context);
 
-                  lastSaleBloc.add(LastSaleInitialEvent());
-                  Navigator.pushNamed(context, '/LastSale');
-                }),
+                      lastSaleBloc.add(LastSaleInitialEvent());
+                      Navigator.pushNamed(context, '/LastSale');
+                    });
+              } else
+                return Container();
+            }),
+
             BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
               if (state is TerminalLoaded) {
                 return _createDrawerItem(
@@ -285,7 +291,13 @@ class MainMenu extends StatelessWidget {
               } else
                 return Container();
             }),
-            _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer')),
+            BlocBuilder<TerminalBloc, TerminalState>(builder: (context, state) {
+              if (state is TerminalLoaded) {
+                return _createDrawerItem(text: 'Cambio De Adquiriente', onTap: () => Navigator.pushNamed(context, '/SelectAcquirer'));
+              } else
+                return Container();
+            }),
+
           ]),
           Divider(),
           ExpansionTile(title: Text("Menu Técnico"), leading: Icon(Icons.settings), children: <Widget>[
@@ -487,14 +499,14 @@ class MainMenu extends StatelessWidget {
               } else
                 return Container();
             }),
-            _createDrawerItem(
-                text: 'Conformidad De Visita',
-                onTap: () {
-                  final TechVisitBloc techVisitBloc = BlocProvider.of<TechVisitBloc>(context);
-
-                  techVisitBloc.add(TechVisitInitialEvent());
-                  Navigator.pushNamed(context, '/TechVisit');
-                }),
+            // _createDrawerItem(
+            //     text: 'Conformidad De Visita',
+            //     onTap: () {
+            //       final TechVisitBloc techVisitBloc = BlocProvider.of<TechVisitBloc>(context);
+            //
+            //       techVisitBloc.add(TechVisitInitialEvent());
+            //       Navigator.pushNamed(context, '/TechVisit');
+            //     }),
           ]),
           // if (isDev)
           //   _createDrawerItem(
