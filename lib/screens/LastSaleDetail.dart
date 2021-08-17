@@ -85,7 +85,7 @@ class LastSaleDetail extends StatelessWidget {
                     Spacer(flex: 1),
                     RowDetail(label: "Autorizacion:", strAmount: trans.authCode),
                     Spacer(flex: 1),
-                    RowDetail(label: "Referencia:", strAmount: trans.referenceNumber),
+                    RowDetail(label: "Nro Operacion:", strAmount: trans.referenceNumber),
                     Spacer(flex: 2),
                     Text(trans.respMessage, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 22)),
                     Spacer(flex: 1),

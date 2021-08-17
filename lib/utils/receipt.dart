@@ -124,23 +124,17 @@ class Receipt {
   }
 
   //////////////////////TRANSACCIÓN RECHAZADA/////////////////////////////////
-  TransactionDeclinedReceipt(Trans trans, Merchant merchant) {
-    printer.setFontSize(0);
+  TransactionDeclinedReceipt(Trans trans, Merchant merchant, bool isCustomer, Bin bin, Function onPrintOk, Function onPrintError) async{
     var fecha = DateFormat('dd/MM/yyyy hh:mm:ss a').format(trans.dateTime);
+    printer.setFontSize(0);
     var monto = new NumberFormat("#,##0.00", "es_VE").format(trans.total);
-    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
-    printer.addText(Printer.CENTER, merchant.nameL1); //nombre comercio
-    printer.addText(Printer.CENTER, merchant.city); //localidad comercio
-    printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
-    printer.addText(Printer.CENTER, trans.type + ' ' + trans.appLabel); //tipo de transaccion
-    printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
-    printer.addTextSideBySide('BANCO ADQUIRIENTE', 'J-123456789-0'); //Info banco
+    await Header(trans, merchant, bin);
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
     printer.addText(Printer.CENTER, 'S/N POS: 12345678');
     printer.addText(Printer.CENTER, 'TEXTO RECHAZO');
-    printer.addText(Printer.RIGHT, 'Ap .Preferred Name / Label');
-    printer.addTextSideBySide('AID:XXXXXXXXXXXXXX', '| CT:XXXXXXXXXXXXXXXX');
-    printer.addTextSideBySide('V X.0 - X0', 'Versión del Proveedor del POS');
+    await footer(trans, merchant, isCustomer);
+    //printer.feedLine(5);
+    printer.print(onPrintOk, onPrintError);
   }
 
   ///////////////////////////////////////////////////RECIBOS AJUSTE DE PROPINA ////////////////////////////////////////////////////

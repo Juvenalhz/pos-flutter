@@ -616,8 +616,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             this.add(TransMerchantReceipt());
           }
         } else {
+          BinRepository binRepository = new BinRepository();
+          Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
+          Receipt receipt = new Receipt();
+          receipt.TransactionDeclinedReceipt(trans, merchant, false, bin, onPrintDeclined, onPrintCustomerError);
         }
 
         if (event.respMap[60] != null) {
@@ -625,7 +629,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           merchant.tid = event.respMap[41];
           await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
           merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
-
         }
       }
     }
@@ -642,31 +645,36 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // finish chip
     else if (event is TransFinishChipComplete) {
-      Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+      if(trans.respCode == "00") {
+        Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
-      if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
-      if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
+        if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
+        if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
-      if (trans.cardDecision == 0) {
-        if (trans.type == 'Venta')
-          transRepository.updateTrans(trans);
-        else {
-          //update original transaction
-          originalTrans.voided = true;
-          transRepository.updateTrans(originalTrans);
-          //add void to database
-          trans.id = (await transRepository.getMaxId()) + 1;
-          transRepository.createTrans(trans);
-        }
+        if (trans.cardDecision == 0) {
+          if (trans.type == 'Venta')
+            transRepository.updateTrans(trans);
+          else {
+            //update original transaction
+            originalTrans.voided = true;
+            transRepository.updateTrans(originalTrans);
+            //add void to database
+            trans.id = (await transRepository.getMaxId()) + 1;
+            transRepository.createTrans(trans);
+          }
 
-        this.add(TransMerchantReceipt());
-        if (terminal.print == true) {
-          numCopies = 1;
-          yield TransactionPrintMerchantReceipt(trans);
+
+          this.add(TransMerchantReceipt());
+          if (terminal.print == true) {
+            numCopies = 1;
+            yield TransactionPrintMerchantReceipt(trans);
+          }
+        } else {
+          trans.respMessage = 'Transacción Denegada Por Tarjeta';
+          yield TransactionRejected(trans);
         }
       } else {
-        trans.respMessage = 'Transacción Denegada Por Tarjeta';
-        yield TransactionRejected(trans);
+        transRepository.updateTrans(trans);
       }
     } else if (event is TransMerchantReceipt) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
@@ -813,6 +821,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       this.add(TransCustomerReceipt());
     }
     this.add(TransPrintCustomerOK());
+  }
+
+  void onPrintDeclined() async {
+    this.add(TransFinishChipComplete());
   }
 
   void onPrintCustomerError(int type) {
