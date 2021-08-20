@@ -49,3 +49,12 @@ class MerchantLoaded extends MerchantState {
   @override
   List<Object> get props => [merchant];
 }
+
+class AcquirerSelect extends MerchantState {
+  final Merchant merchant;
+
+  const AcquirerSelect({@required this.merchant}) : assert(merchant != null);
+
+  @override
+  List<Object> get props => [merchant];
+}

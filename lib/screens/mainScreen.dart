@@ -160,6 +160,32 @@ class MainScreen extends StatelessWidget {
                     ),
                   ],
                 );
+              } else if (state is AcquirerSelect) {
+                return AlertDialog(
+                  title: Text(
+                    'Sin adquiriente',
+                    style: TextStyle(color: Color(0xFF0D47A1)),
+                  ),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text('Debe seleccionar un adquiriente.'),
+                        Text('Elija el adquiriente desde el menu de la aplicacion...'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text(
+                        'OK',
+                        style: TextStyle(color: Color(0xFF0D47A1)),
+                      ),
+                      onPressed: () {
+                        scaffoldKey.currentState.openDrawer();
+                      },
+                    ),
+                  ],
+                );
               } else {
                 return SplashScreen();
               }

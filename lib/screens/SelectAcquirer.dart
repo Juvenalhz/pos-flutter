@@ -110,7 +110,100 @@ class SelectAcquirer extends StatelessWidget {
           } else
             return SplashScreen();
         })));
-      } else
+      }
+
+      else if (state is AcquirerSelect) {
+        final AcquirerBloc acquirerBloc = BlocProvider.of<AcquirerBloc>(context);
+        _merchant = state.merchant;
+        _selectedAcquirer = _merchant.acquirerCode;
+        acquirerBloc.add(GetAllAcquirer());
+        return BlocListener<AcquirerBloc, AcquirerState>(listener: (context, state) {
+          if (state is AcquirerSelectionExit) {
+            Navigator.of(context).pop();
+          }
+        }, child: Container(child: BlocBuilder<AcquirerBloc, AcquirerState>(builder: (context, state) {
+          if (state is AcquirerGetAll) {
+            LinkedHashMap<int, String> list = new LinkedHashMap<int, String>();
+            int i = 0;
+
+            state.acquirerList.forEach((value) {
+              Acquirer acquirer = Acquirer.fromMap(value);
+
+              list.putIfAbsent(acquirer.id, () => acquirer.name);
+            });
+
+            return SafeArea(
+              child: Scaffold(
+                body: Column(
+                  children: <Widget>[
+                    Stack(children: <Widget>[
+                      Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          gradient: LinearGradient(
+                            begin: Alignment(0.0, 0.6),
+                            end: Alignment(0.0, 0.0),
+                            colors: <Color>[
+                              Color(0xFF0D47A1),
+                              Colors.blue,
+                            ],
+                          ),
+                        ),
+                        child: Stack(
+                          children: <Widget>[
+                            Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Seleccionar Adquirente',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+                                          ),
+                                        ],
+                                      ),
+                                    )))
+                          ],
+                        ),
+                      ),
+                    ]),
+                    Expanded(
+                        child: Stack(children: <Widget>[
+                          Container(
+                            color: Color(0xFF0D47A1),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)), color: Colors.white),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Spacer(flex: 1),
+                                  SelectionMenu('', list, false, selectedItem: _selectedAcquirer, onSelection: onAcquirerSelection),
+                                  Spacer(flex: 1),
+                                  Padding(
+                                    padding: const EdgeInsets.all(40.0),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [btnCancel(context), btnEnter(context)]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ])),
+                  ],
+                ),
+              ),
+            );
+          } else
+            return SplashScreen();
+        })));
+      }
+
+      else
         return SplashScreen();
     });
   }

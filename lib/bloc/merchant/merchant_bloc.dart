@@ -28,7 +28,10 @@ class MerchantBloc extends Bloc<MerchantEvent, MerchantState> {
         Merchant merchant = new Merchant.fromMap(merchantMap);
 
         if (merchant == null) yield MerchantLoading();
+        if (merchant.acquirerCode != 0)
         yield MerchantLoaded(merchant: merchant);
+
+        else  yield AcquirerSelect(merchant: merchant);
       }
     } else if (event is UpdateMerchant) {
       yield MerchantLoading();
