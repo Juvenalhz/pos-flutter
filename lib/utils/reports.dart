@@ -257,7 +257,7 @@ class Reports {
     printer.setFontSize(Printer.FONT_SIZE_SMALL);
     printer.addTextSideBySideWithCenter("", merchant.city, "");
     printer.addTextSideBySide("RIF: " + merchant.taxID.toString(), "Afiliado: " + merchant.mid.trim());
-    printer.addTextSideBySideWithCenter("", "S/N POS:" + sn, "");
+    printer.addText(Printer.CENTER, "S/N POS:" + sn);
     printer.setFontSize(Printer.FONT_SIZE_NORMAL);
     printer.addText(Printer.CENTER, 'REPORTE DE PARAMETROS EMV');
     printer.setFontSize(Printer.FONT_SIZE_SMALL);
