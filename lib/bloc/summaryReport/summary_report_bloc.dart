@@ -19,6 +19,7 @@ import 'package:pay/repository/terminal_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/receipt.dart';
 import 'package:pay/utils/reports.dart';
+import 'package:pay/utils/serialNumber.dart';
 
 part 'summary_report_event.dart';
 part 'summary_report_state.dart';
@@ -42,13 +43,14 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
 
       EmvRepository emvRepository = new EmvRepository();
       Emv emv = Emv.fromMap(await emvRepository.getEmv(1));
+      String sn = await SerialNumber.serialNumber;
 
-      yield SummaryReportDataReady(merchant, terminal, comm, acquirer, emv);
+      yield SummaryReportDataReady(merchant, terminal, comm, acquirer, emv, sn);
     } else if (event is SummaryReportPrintReport) {
       Reports report = new Reports();
 
       report.printSummaryReport();
-    } else  if (event is ParameterReportGetData) {
+    } else if (event is ParameterReportGetData) {
       MerchantRepository merchantRepository = new MerchantRepository();
       Merchant merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
       TerminalRepository terminalRepository = new TerminalRepository();
@@ -64,7 +66,7 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
       AidRepository aidRepository = new AidRepository();
       List<Map<String, dynamic>> aids = await aidRepository.getAids();
 
-      yield ParameterReportDataReady(merchant, terminal, comm, acquirer,emv, pubKey, aids);
+      yield ParameterReportDataReady(merchant, terminal, comm, acquirer, emv, pubKey, aids);
     } else if (event is ParameterReportPrintReport) {
       Reports report = new Reports();
 
