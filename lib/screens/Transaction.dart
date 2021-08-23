@@ -80,9 +80,8 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionAskAccountNumber) {
           return AskAccountNumber('Ingrese', 'Numero De Tarjeta', '', 13, 19, AskNumeric.ACCOUNT, onClickAccountNumberEnter, onClickAccountNumberBack);
         } else if (state is TransactionAskExpDate) {
-          return AskExpirationDate('Ingrese', 'Fecha De Vencimiento', '', 4, 9999, AskNumeric.NO_SEPARATORS, onClickExpDateEnter, onClickExpDateBack);
+          return AskExpirationDate('Ingrese Fecha De', ' Vencimiento AA/MM', '', 4, 9999, AskNumeric.NO_SEPARATORS, onClickExpDateEnter, onClickExpDateBack);
         }
-
         else if (state is TransactionShowPinAmount) {
           return PinEntryMessage(state.trans);
         } else if (state is TransactionConnecting) {
