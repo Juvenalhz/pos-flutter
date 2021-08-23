@@ -113,7 +113,7 @@ class Receipt {
     printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
     printer.addText(Printer.CENTER, 'INFORMACION COMPLEMENTARIA'); //localidad comercio
     printer.addText(Printer.CENTER, trans.type + ' ' + trans.appLabel); //tipo de transaccion
-    printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
+    printer.addText(Printer.CENTER, trans.maskedPAN); //Bin y PAN
     printer.addTextSideBySide('BANCO ADQUIRIENTE', 'J-123456789-0'); //Info banco
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
     printer.addText(Printer.CENTER, 'S/N POS: 12345678');
@@ -226,7 +226,7 @@ class Receipt {
     printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
 
     printer.addText(Printer.CENTER, TransactionType(bin, trans)); //tipo de transaccion
-    printer.addText(Printer.CENTER, trans.bin.toString() + trans.maskedPAN); //Bin y PAN
+    printer.addText(Printer.CENTER, trans.maskedPAN); //Bin y PAN
     printer.addTextSideBySide(acquirer.name, acquirer.rif.trim());
 
   }

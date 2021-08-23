@@ -183,7 +183,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     else if (event is TransAddAccountNumber) {
       trans.pan = event.account;
       trans.entryMode = Pinpad.MANUAL;
-      trans.maskedPAN = trans.pan.substring(0, 4) + '....' + trans.pan.substring(trans.pan.length - 4);
+      trans.maskedPAN = trans.pan.substring(0, 6) + '....' + trans.pan.substring(trans.pan.length - 4);
       yield TransactionAskExpDate();
     }
     else if (event is TransAddExpDate) {
@@ -229,7 +229,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (event.card['cardholderName'] != null) trans.cardholderName = event.card['cardholderName'];
       if (event.card['pan'] != null) {
         trans.pan = event.card['pan'];
-        trans.maskedPAN = trans.pan.substring(0, 4) + '....' + trans.pan.substring(trans.pan.length - 4);
+        trans.maskedPAN = trans.pan.substring(0, 6) + '....' + trans.pan.substring(trans.pan.length - 4);
       }
       if (event.card['track1'] != null) trans.track1 = event.card['track1'];
       if (event.card['track2'] != null) trans.track2 = event.card['track2'];
