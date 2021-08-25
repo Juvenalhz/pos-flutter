@@ -226,7 +226,7 @@ class Receipt {
     printer.addTextSideBySide('RIF: ' + merchant.taxID, 'Afiliado: ' + merchant.mid); //rif y afiliado
 
     printer.addText(Printer.CENTER, TransactionType(bin, trans)); //tipo de transaccion
-    printer.addText(Printer.CENTER, trans.maskedPAN); //Bin y PAN
+    trans.entryMode == Pinpad.CHIP ? printer.addText(Printer.CENTER, trans.maskedPAN) : null ; //Bin y PAN
     printer.addTextSideBySide(acquirer.name, acquirer.rif.trim());
 
   }

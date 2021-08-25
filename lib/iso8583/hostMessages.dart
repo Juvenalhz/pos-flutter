@@ -354,7 +354,7 @@ class TransactionMessage extends HostMessage {
 
     message.setMID(200);
     if (trans.entryMode == Pinpad.MANUAL)
-      message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+      message.fieldData(2, trans.pan);
 
     if (trans.binType == Bin.TYPE_FOOD)
       message.fieldData(3, '070000');
@@ -430,7 +430,7 @@ class ReversalMessage extends HostMessage {
     trans.pan = await trans.getClearPan();
 
     message.setMID(400);
-    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+    message.fieldData(2, trans.pan);
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
@@ -585,7 +585,7 @@ class VoidMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
-    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+    message.fieldData(2, trans.pan);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
@@ -611,9 +611,9 @@ class VoidMessage extends HostMessage {
 
     message.fieldData(62, field62);
 
-    // if (isDev) {
-    //   message.printMessage();
-    // }
+    if (isDev) {
+      message.printMessage();
+    }
 
     //message.dataType(60, DT.ASCII);
 
@@ -700,7 +700,7 @@ class AdjustMessage extends HostMessage {
     String originalData;
 
     message.setMID(220);
-    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
+    message.fieldData(2, trans.pan);
     message.fieldData(3, '02' + trans.accType.toString() + '000');
     message.fieldData(4, trans.baseAmount.toString());
     message.fieldData(11, (await getStan()).toString());
