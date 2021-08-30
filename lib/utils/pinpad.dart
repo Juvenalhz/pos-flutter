@@ -12,7 +12,7 @@ class Pinpad {
   static const int CHIP = 51;
   static const int CLESS_MS = 5;
   static const int CLESS_EMV = 6;
-  static const int FALLBACK = 98;
+  static const int FALLBACK = 921;
   static const int MANUAL = 11;
 
   static const int TEXT_S = 0;

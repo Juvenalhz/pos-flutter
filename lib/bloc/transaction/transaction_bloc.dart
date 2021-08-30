@@ -201,10 +201,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       } else {
         yield TransactionShowMessage('Deslice Tarjeta');
         pinpad.swipeCard(onSwipeCardRead);
+
       }
     }
     // card was read, save data returned by pinpad module
     else if (event is TransCardWasRead) {
+
       if (trans.type == 'Anulación') {
         Cipher cipher = new Cipher();
         String cipheredPAN;
@@ -241,6 +243,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         var posExpDate = trans.track2.indexOf('=') + 1;
         trans.expDate = trans.track2.substring(posExpDate, posExpDate + 4);
         trans.entryMode = Pinpad.FALLBACK;
+        trans.chipEnable = true;
       }
       yield TransactionCardRead(trans);
       this.add(TransProcessCard(trans));
@@ -378,7 +381,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
       if ((trans.accType > 0) && ((trans.pinBlock.length == 0) || (trans.pinBlock == '0000000000000000'))) {
-        if (trans.entryMode == Pinpad.MAG_STRIPE) {
+        if (trans.entryMode == Pinpad.MAG_STRIPE || trans.entryMode == Pinpad.FALLBACK) {
           yield TransactionShowPinAmount(trans);
           await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
               'trans'); // parameter 3 and 4 are not shown by the BC library, 5 is use to know the pin type is for transaction and not for tech visit
@@ -757,6 +760,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
       else {
         this.add(TransGetCard(trans));
+        this.cardReadTrials = 0;
       }
     } else if (event is TransDeletePreviousBatch) {
       String whatDelete = 'batchNum = ' + merchant.batchNumber.toString();
@@ -768,11 +772,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // chip card read error
     else if (event is TransCardReadError) {
       this.cardReadTrials++;
-      yield TransactionShowMessage('Error Leyendo Tarjeta. Intente Nuevamente...');
+      yield TransactionShowMessage('Error Leyendo Tarjeta.');
       await new Future.delayed(const Duration(microseconds: 500));
-      if (this.cardReadTrials >= 3) {
         trans.chipEnable = false;
-      }
       doBeep = true;
       pinpad.removeCard();
       this.add(RemovingCard());

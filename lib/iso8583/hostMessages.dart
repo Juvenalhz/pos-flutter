@@ -378,6 +378,7 @@ class TransactionMessage extends HostMessage {
     if (trans.entryMode != Pinpad.MANUAL) message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
+    if (trans.entryMode == Pinpad.FALLBACK) message.fieldData(45, trans.track1);
     message.fieldData(49, merchant.currencyCode.toString());
     if (trans.pinBlock.length > 0) message.fieldData(52, trans.pinBlock);
     if (trans.pinKSN.length > 0) message.fieldData(53, trans.pinKSN);
