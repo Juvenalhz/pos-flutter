@@ -586,14 +586,15 @@ class VoidMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
-    message.fieldData(2, trans.pan);
+    if (trans.entryMode != 21) message.fieldData(2, trans.pan);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
-    message.fieldData(14, trans.expDate.substring(0, 4));
+    if (trans.entryMode != 21) message.fieldData(14, trans.expDate.substring(0, 4));
     message.fieldData(22, trans.entryMode.toString());
     message.fieldData(24, _comm.nii);
     message.fieldData(25, '00');
+    if (trans.entryMode == 21) message.fieldData(35, trans.track2);
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
