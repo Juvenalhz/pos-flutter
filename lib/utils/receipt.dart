@@ -52,7 +52,7 @@ class Receipt {
       await DebitReceipt(trans, merchant, type, copy, bin); //the var type is a bool, false = merchantReceipt and true = clientReceipt
       printer.print(onPrintOk, onPrintError);
     } else if (bin.cardType == 3) {
-      FoodReceipt(trans, merchant, type, copy, bin); //the var type is a bool, false = merchantReceipt and true = clientReceipt
+      await FoodReceipt(trans, merchant, type, copy, bin); //the var type is a bool, false = merchantReceipt and true = clientReceipt
 
       printer.print(onPrintOk, onPrintError);
     }
@@ -131,7 +131,7 @@ class Receipt {
     await Header(trans, merchant, bin);
     printer.addTextSideBySide('Fecha: ' + fecha.substring(0, 10), 'Hora: ' + fecha.substring(11, 22)); //Fecha y hora
     printer.addText(Printer.CENTER, 'S/N POS: 12345678');
-    printer.addText(Printer.CENTER, 'TEXTO RECHAZO');
+    printer.addText(Printer.CENTER, 'NEGADA');
     await footer(trans, merchant, isCustomer);
     //printer.feedLine(5);
     printer.print(onPrintOk, onPrintError);
@@ -249,7 +249,7 @@ class Receipt {
     printer.addText(Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString()) ;
     //printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
     printer.addTextSideBySideWithCenter(
-        'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
+        'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString().padLeft(6, '0'));
     if (isCustomer == true) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
     printer.addTextSideBySide('MONTOBs.', monto);
     if (isCopy) {
