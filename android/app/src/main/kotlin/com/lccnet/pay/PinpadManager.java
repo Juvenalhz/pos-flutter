@@ -507,13 +507,13 @@ public class PinpadManager implements PinpadCallbacks {
             // if chip, ask user to remove card
             pinpad.removeCard("Retire Tarjeta", removeOutput -> {
                 pinpad.close();
-                pinpad.open();
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         channel.invokeMethod("cardRemoved", removeChipData);
                     }
                 });
+                pinpad.open();
             });
         }
         else if (isEmulator()) {

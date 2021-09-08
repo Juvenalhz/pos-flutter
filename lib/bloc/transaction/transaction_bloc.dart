@@ -175,6 +175,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // show message to entry a card
     else if (event is TransShowEntryCard) {
       yield TransactionShowEntryCard(event.message);
+
     } else if (event is TransCardReadManual) {
       yield TransactionAskAccountNumber();
     } else if (event is TransAddAccountNumber) {
@@ -371,7 +372,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     } else if (event is TransAddServerNumber) {
       trans.server = event.server;
-      this.add(TransGoOnChip(trans));
+      if (trans.entryMode == Pinpad.CHIP) {
+        this.add(TransGoOnChip(trans));
+      }
+      else {
+        yield TransactionAskConfirmation(trans, acquirer);
+      }
     } else if (event is TransServerBack) {
       trans.server = 0;
       yield TransactionAskIdNumber();
@@ -571,7 +577,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       //valida monto mod restaurant - con o sin ajuste
       int originalTotal = trans.total;
-      if (trans.binType == Bin.TYPE_CREDIT && trans.type == "Venta")
+
+      if(trans.binType == Bin.TYPE_CREDIT && trans.type == "Venta")
         originalTotal = trans.originalTotal;
       else if (trans.binType == Bin.TYPE_CREDIT && trans.tipAdjusted == false)
         originalTotal = trans.total;
@@ -635,6 +642,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           merchant.tid = event.respMap[41];
           await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
           merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+        }
+
+        if (event.respMap[60] != null) {
+          Map acquirerIndicators = new Map<int, String>();
+          merchant.tid = event.respMap[41];
+          await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
+          merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+
         }
       }
     }
@@ -735,13 +750,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
-      if (trans.entryMode == Pinpad.CHIP) {
-        doBeep = true;
-        pinpad.removeCard();
-        this.add(RemovingCard());
-        yield TransactionShowMessage('Retire Tarjeta');
-      } else
-        yield TransactionFinish(trans);
+        if (trans.entryMode == Pinpad.CHIP) {
+          doBeep = true;
+          pinpad.removeCard();
+          this.add(RemovingCard());
+          yield TransactionShowMessage('Retire Tarjeta');
+        } else
+          yield TransactionFinish(trans);
     }
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
@@ -862,6 +877,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     index += 10;
     comm.nii = data.substring(index, index + 4).substring(1, 4);
     index += 4;
+
 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;

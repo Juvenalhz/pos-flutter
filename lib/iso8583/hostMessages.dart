@@ -354,6 +354,7 @@ class TransactionMessage extends HostMessage {
 
     message.setMID(200);
     if (trans.entryMode == Pinpad.MANUAL)
+
       message.fieldData(2, trans.pan);
 
     if (trans.binType == Bin.TYPE_FOOD)
@@ -431,7 +432,7 @@ class ReversalMessage extends HostMessage {
     trans.pan = await trans.getClearPan();
 
     message.setMID(400);
-    message.fieldData(2, trans.pan);
+    message.fieldData(2, (trans.pan.length % 2 == 0) ? trans.pan : trans.pan.padRight(trans.pan.length + 1, 'F'));
     message.fieldData(3, '00' + trans.accType.toString() + '000');
     message.fieldData(4, trans.total.toString());
     message.fieldData(11, (await getStan()).toString());
@@ -586,6 +587,7 @@ class VoidMessage extends HostMessage {
     String sn = await SerialNumber.serialNumber;
 
     message.setMID(200);
+
     if (trans.entryMode != 21) message.fieldData(2, trans.pan);
     message.fieldData(3, '020000');
     message.fieldData(4, trans.total.toString());
@@ -613,9 +615,9 @@ class VoidMessage extends HostMessage {
 
     message.fieldData(62, field62);
 
-    if (isDev) {
-      message.printMessage();
-    }
+    // if (isDev) {
+    //   message.printMessage();
+    // }
 
     //message.dataType(60, DT.ASCII);
 
@@ -696,7 +698,6 @@ class AdjustMessage extends HostMessage {
 
     String field62 = '';
     var isDev = (const String.fromEnvironment('dev') == 'true');
-
     trans.pan = await trans.getClearPan();
     String sn = await SerialNumber.serialNumber;
     String originalData;
@@ -713,6 +714,8 @@ class AdjustMessage extends HostMessage {
     message.fieldData(41, merchant.tid);
     message.fieldData(42, merchant.mid);
     message.fieldData(49, merchant.currencyCode.toString());
+
+    if(acquirer.industryType && trans.binType== Bin.TYPE_CREDIT) message.fieldData(54, trans.tip.toString());
     message.fieldData(60, Constants.appVersionHost);
 
     originalData = trans.referenceNumber.trim();
@@ -736,6 +739,7 @@ class AdjustMessage extends HostMessage {
     return buildCiphredMessage(message.buildIso());
   }
 }
+
 
 class BatchMessage extends HostMessage {
   Iso8583 message;

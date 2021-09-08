@@ -63,7 +63,9 @@ class Emv {
     map['fallback'] = boolToInt(this._fallback);
     map['forceOnline'] = boolToInt(this._forceOnline);
     map['currencyCode'] = this._currencyCode;
-    map['countryCode'] = this._countryCode;
+
+    map['countryCode'] = "862";
+
 
     return map;
   }

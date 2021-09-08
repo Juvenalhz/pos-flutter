@@ -63,6 +63,7 @@ class Trans {
   bool _chipEnable = true;
   String _referenceNumberCancellation = '';
 
+
   Trans();
 
   int get id => this._id;
@@ -125,6 +126,7 @@ class Trans {
   bool get tipAdjusted => _tipAdjusted;
   bool get chipEnable => _chipEnable;
   String get referenceNumberCancellation => this._referenceNumberCancellation;
+
 
   set id(int id) {
     this._id = id;
@@ -545,6 +547,7 @@ class Trans {
     this._server = trans['server'];
     this._tipAdjusted = intToBool(trans['tipAdjusted']);
     this._cardType = trans['cardType'];
+
   }
 
   void clear() {

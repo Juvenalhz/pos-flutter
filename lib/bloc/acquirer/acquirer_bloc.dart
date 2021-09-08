@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pay/models/acquirer.dart';
+
+import 'package:pay/models/trans.dart';
+
 import 'package:pay/repository/acquirer_repository.dart';
 import 'package:equatable/equatable.dart';
 

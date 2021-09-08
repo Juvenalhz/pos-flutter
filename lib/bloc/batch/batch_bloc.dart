@@ -13,6 +13,7 @@ import 'package:pay/repository/comm_repository.dart';
 import 'package:pay/repository/merchant_repository.dart';
 import 'package:pay/repository/trans_repository.dart';
 import 'package:pay/utils/communication.dart';
+import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'batch_event.dart';
@@ -44,11 +45,17 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
     print(event.toString());
     if (event is BatchInitialEvent) {
+      merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
+      acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
+
       if (await transRepository.getCountTrans(where: 'reverse = 0') == 0)
         yield BatchEmpty();
+      else if(!acquirer.industryType)
+        yield BatchConfirm();
       else
         this.add(BatchCheckAdjustedTips());
-    } else if (event is BatchCheckAdjustedTips) {
+    }
+    else if (event is BatchCheckAdjustedTips) {
       List<Map<String, dynamic>> acquirers = await acquirerRepository.getAllacquirers(where: 'industryType = 1');
       if (acquirers.length > 0) {
         List<Map<String, dynamic>> transNotAdjusted =
@@ -56,9 +63,9 @@ class BatchBloc extends Bloc<BatchEvent, BatchState> {
 
         if (transNotAdjusted.length > 0) {
           yield BatchMissingTipAdjust();
-        }
-      } else
-        yield BatchConfirm();
+        }else
+          yield BatchConfirm();
+      }
     } else if (event is BatchCancel) {
       yield BatchFinish();
     } else if (event is BatchMissingTipsOk) {
