@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pay/bloc/batch/batch_bloc.dart';
 import 'package:pay/bloc/detailReportBloc.dart';
+import 'package:pay/bloc/totalsReportBloc.dart';
 import 'package:pay/bloc/transaction/transaction_bloc.dart';
 import 'package:pay/models/trans.dart';
 import 'package:pay/screens/MessageOKScreen.dart';
@@ -71,14 +72,14 @@ class Transaction extends StatelessWidget {
         } else if (state is TransactionWaitEmvTablesLoaded) {
           return TransMessage('Espere, por favor');
         } else if (state is TransactionShowMessage) {
-            if (state.message != null)
-              return TransMessage(state.message);
-        } else if (state is TransactionShowEntryCard){
+          if (state.message != null) return TransMessage(state.message);
+        } else if (state is TransactionShowEntryCard) {
           return TransMessageEntryCard(state.message);
         } else if (state is TransactionCardRead) {
           return TransMessage(state.trans.appLabel);
         } else if (state is TransactionAskAccountNumber) {
-          return AskAccountNumber('Ingrese', 'Numero De Tarjeta', '', 13, 19, AskNumeric.ACCOUNT, onClickAccountNumberEnter, onClickAccountNumberBack);
+          return AskAccountNumber(
+              'Ingrese', 'Numero De Tarjeta', '', 13, 19, AskNumeric.ACCOUNT, onClickAccountNumberEnter, onClickAccountNumberBack);
         } else if (state is TransactionAskExpDate) {
           return AskExpirationDate('Ingrese Fecha De', ' Vencimiento AA/MM', '', 4, 9999, AskNumeric.NO_SEPARATORS, onClickExpDateEnter, onClickExpDateBack);
         }
@@ -246,11 +247,11 @@ class Transaction extends StatelessWidget {
   }
 
   Future<void> onCloseBatchOk(BuildContext context) async {
-    final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
-    detailReportBloc.add(DetailReportPrintReport(true));
-    await Navigator.pushNamed(context, '/DetailReport');
+    totalsReportBloc.add(TotalsReportPrintReport(true));
+    Navigator.pushNamed(context, '/TotalsReport');
 
     transactionBloc.add(TransDeletePreviousBatch());
   }

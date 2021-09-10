@@ -634,7 +634,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
           Receipt receipt = new Receipt();
-          receipt.TransactionDeclinedReceipt(trans, merchant, false, bin, onPrintDeclined, onPrintCustomerError);
+          receipt.TransactionDeclinedReceipt(trans, merchant, false,false,false, bin, onPrintDeclined, onPrintCustomerError);
         }
 
         if (event.respMap[60] != null) {
@@ -702,7 +702,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (terminal.print == true) {
         Receipt receipt = new Receipt();
         yield TransactionPrintMerchantReceipt(trans);
-        receipt.printTransactionReceipt(false, false, trans, onPrintMerchantOK, onPrintMerchantError);
+        receipt.printTransactionReceipt(false, false, false, trans, onPrintMerchantOK, onPrintMerchantError);
       } else {
         this.add(TransPrintMerchantOK());
       }
@@ -728,7 +728,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       yield TransactionPrintCustomerReceipt(trans);
 
-      receipt.printTransactionReceipt(true, false, trans, onPrintCustomerOK, onPrintCustomerError);
+      receipt.printTransactionReceipt(true, false, false, trans, onPrintCustomerOK, onPrintCustomerError);
     } else if (event is TransPrintCustomerOK) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 

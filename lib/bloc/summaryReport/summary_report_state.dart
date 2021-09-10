@@ -15,11 +15,12 @@ class SummaryReportDataReady extends SummaryReportState {
   final Comm comm;
   final Acquirer acquirer;
   final Emv emv;
+  final String sn;
 
-  SummaryReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer,this.emv);
+  SummaryReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer, this.emv, this.sn);
 
   @override
-  List<Object> get props => [merchant, terminal, comm, acquirer, emv];
+  List<Object> get props => [merchant, terminal, comm, acquirer, emv, sn];
 }
 
 class ParameterReportDataReady extends SummaryReportState {
@@ -28,11 +29,12 @@ class ParameterReportDataReady extends SummaryReportState {
   final Comm comm;
   final Acquirer acquirer;
   final Emv emv;
-  final List<Map<String, dynamic>>  pubKey;
-  final List<Map<String, dynamic>>  aids;
+  final List<Map<String, dynamic>> pubKey;
+  final List<Map<String, dynamic>> aids;
+  final String sn;
 
-  ParameterReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer,this.emv, this.pubKey, this.aids);
+  ParameterReportDataReady(this.merchant, this.terminal, this.comm, this.acquirer, this.emv, this.pubKey, this.aids, this.sn);
 
   @override
-  List<Object> get props => [merchant, terminal, comm, acquirer, emv, pubKey, aids];
+  List<Object> get props => [merchant, terminal, comm, acquirer, emv, pubKey, aids, sn];
 }
