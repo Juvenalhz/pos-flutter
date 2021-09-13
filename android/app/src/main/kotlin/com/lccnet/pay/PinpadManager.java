@@ -668,7 +668,7 @@ public class PinpadManager implements PinpadCallbacks {
                         pan,            // pan
                         1,              // amount of data to be capture
                         04,             // min size
-                        12,             // max size
+                        06,             // max size
                         msg1,
                         msg2
                 );
