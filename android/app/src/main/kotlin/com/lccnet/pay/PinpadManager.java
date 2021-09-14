@@ -181,7 +181,7 @@ public class PinpadManager implements PinpadCallbacks {
                 now.get(Calendar.SECOND));
     }
 
-    public int getCard(final int amount) {
+    public int getCard(final Long amount) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> card = new HashMap<>();
         int ret = 0;
@@ -341,7 +341,7 @@ public class PinpadManager implements PinpadCallbacks {
         return pinpad.resumeGetCard();
     }
 
-    public int goOnChip(int amount, int cashBack, int keyIndex, HashMap<String, Object> aid) {
+    public int goOnChip(Long amount, Long cashBack, int keyIndex, HashMap<String, Object> aid) {
         MethodChannel channel = (MethodChannel) params.get("MethodChannel");
         HashMap<String, Object> onChipData = new HashMap<>();
         int ret = Pinpad.PP_ERRCARD;

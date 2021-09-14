@@ -41,16 +41,18 @@ class Emv : MethodChannel.MethodCallHandler{
         } else if (call.method == "getCard") {
             val trans : HashMap<String, Any?>? = call.argument("trans")
 
+            var monto : Long = (trans?.get("total").toString().toLong())
             if (trans != null) {
-                result.success(getCard(trans["total"] as Int))
+                result.success(getCard(monto))
             }
         } else if (call.method == "goOnChip"){
             val trans : HashMap<String, Any?>? = call.argument("trans")
             val aid : HashMap<String, Any?>? = call.argument("aid")
             val keyIndex : Int? = call.argument("keyIndex")
-
+            var montoOriginal : Long = (trans?.get("originalTotal").toString().toLong())
+            var cashback : Long = (trans?.get("cashback").toString().toLong())
             if ((trans != null) && (aid != null) && (keyIndex != null)) {
-                result.success(goOnChip(trans["originalTotal"] as Int, trans["cashback"] as Int, keyIndex, aid))
+                result.success(goOnChip(montoOriginal, cashback, keyIndex, aid))
             }
         } else if (call.method == "finishChip"){
             val respCode : String? = call.argument("respCode")
@@ -168,8 +170,8 @@ class Emv : MethodChannel.MethodCallHandler{
         PinpadManager.me().updateTables(tables)
     }
 
-    private fun getCard(amount: Int) : Int{
-        var ret : Int
+    private fun getCard(amount: Long) : Long{
+        var ret : Long
 
         Thread {
             if (Build.MODEL.contains("APOS")) {
@@ -177,13 +179,13 @@ class Emv : MethodChannel.MethodCallHandler{
             }
         }.start()
 
-        ret = PinpadManager.me().getCard(amount)
+        ret = PinpadManager.me().getCard(amount).toLong()
         Log.i("emv", "getCard: $ret")
 
         return ret
     }
 
-    private fun goOnChip(total: Int, cashBack: Int, keyIndex: Int, aid: HashMap<String, Any?>): Int {
+    private fun goOnChip(total: Long, cashBack: Long, keyIndex: Int, aid: HashMap<String, Any?>): Int {
         return PinpadManager.me().goOnChip(total, cashBack, keyIndex, aid)
     }
 
