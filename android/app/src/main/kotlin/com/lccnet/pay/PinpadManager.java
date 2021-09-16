@@ -364,6 +364,8 @@ public class PinpadManager implements PinpadCallbacks {
                     aid.get("maxTargetPercentage")        // Maximum Target Percentage to be used for Biased Random Selection
             );
 
+
+
             // list of tags that GoOnChip should return
             final String goOnChipTagList = "82959A9C5F2A9F029F039F069F109F1A9F269F279F339F349F359F369F379F405F24";
             final String goOnChipTags = String.format(Locale.US, "%03d%s",
@@ -371,6 +373,7 @@ public class PinpadManager implements PinpadCallbacks {
                     goOnChipTagList                        // List of tags, hex-coded
             );
             this.callbacks = this;
+
             ret = pinpad.goOnChip(goOnChipInput, goOnChipTags, null, output -> {
 
                 Log.i(TAG, "goOnChip output: (" + output.getResultCode() + ") '" + output.getOutput() + "'");

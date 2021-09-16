@@ -251,7 +251,7 @@ class Transaction extends StatelessWidget {
     final TotalsReportBloc totalsReportBloc = BlocProvider.of<TotalsReportBloc>(context);
 
     totalsReportBloc.add(TotalsReportPrintReport(true));
-    Navigator.pushNamed(context, '/TotalsReport');
+    await Navigator.pushNamed(context, '/TotalsReport');
 
     transactionBloc.add(TransDeletePreviousBatch());
   }
