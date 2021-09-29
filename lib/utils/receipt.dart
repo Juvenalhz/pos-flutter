@@ -247,7 +247,6 @@ class Receipt {
     printer.addTextSideBySideWithCenter(
         'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString().padLeft(6, '0'));
     if ((isCustomer == true) && (lastSale == false)) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
-    printer.addTextSideBySide('MONTOBs.', monto);
     if (isCopy) {
       printer.addText(Printer.CENTER, 'DUPLICADO');
     }
