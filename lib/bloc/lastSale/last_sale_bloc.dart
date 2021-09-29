@@ -95,7 +95,7 @@ class LastSaleBloc extends Bloc<LastSaleEvent, LastSaleState> {
           trans.total = int.parse(respMap[4]);
           trans.maskedPAN = respMap[2].substring(0, 6) + '....' + respMap[2].substring(respMap[2].length - 4);
 
-          trans.id = int.parse(respMap[62].substring(0, 4));
+          trans.id = int.parse(respMap[6201]);
           trans.stan = int.parse(respMap[6201]);
 
           if (respMap[62.02] != null)
