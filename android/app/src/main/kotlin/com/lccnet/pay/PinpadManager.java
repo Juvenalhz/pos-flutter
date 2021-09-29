@@ -26,6 +26,7 @@ import com.usdk.apiservice.aidl.pinpad.KeyType;
 import com.usdk.apiservice.aidl.pinpad.UPinpad;
 
 
+
 /**
  * A singleton interface to BC's Pinpad API to ease state sharing between the Activities of the
  * project.
@@ -363,8 +364,6 @@ public class PinpadManager implements PinpadCallbacks {
                     aid.get("thresholdAmount"),           // Threshold Value for Biased Random Selection (hex, 8 digits)
                     aid.get("maxTargetPercentage")        // Maximum Target Percentage to be used for Biased Random Selection
             );
-
-
 
             // list of tags that GoOnChip should return
             final String goOnChipTagList = "82959A9C5F2A9F029F039F069F109F1A9F269F279F339F349F359F369F379F405F24";

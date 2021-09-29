@@ -667,6 +667,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // finish chip
     else if (event is TransFinishChipComplete) {
       if (trans.respCode == "00") {
+
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
         if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
@@ -693,9 +694,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = 'Transacción Denegada Por Tarjeta';
           yield TransactionRejected(trans);
         }
-      } else {
-        transRepository.updateTrans(trans);
       }
+      // else {
+      //   transRepository.updateTrans(trans);
+      // }
     } else if (event is TransMerchantReceipt) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
 
