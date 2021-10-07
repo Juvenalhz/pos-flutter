@@ -474,9 +474,9 @@ class MainMenu extends StatelessWidget {
                       if (state.terminal.techPassword.length > 0) {
                         showLockScreen(
                           context: context,
-                          digits: state.terminal.techPassword.length,
-                          correctString: state.terminal.techPassword,
-                          title: 'Ingrese Clave De Sistema',
+                          digits: state.terminal.password.length,
+                          correctString: state.terminal.password,
+                          title: 'Ingrese Clave De Supervisor',
                           cancelText: 'Cancelar',
                           deleteText: 'Borrar',
                           backgroundColorOpacity: 0.9,
