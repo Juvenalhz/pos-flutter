@@ -106,7 +106,7 @@ class DigitalReceipt extends StatelessWidget {
                                       ShowTwoText('Fecha: ' + fecha.substring(0, 10),'Hora: ' + fecha.substring(11, 22), FontWeight.normal),
                                       ShowThreeText("S/N POS","No. Autor","No. Operac", FontWeight.normal),
                                       ShowThreeText('sn' , trans.authCode, trans.referenceNumber,  FontWeight.bold),
-                                      ShowThreeText('Terminal ' + merchant.id.toString(), 'Lote '+ merchant.batchNumber.toString(),'Ticket '+ trans.id.toString(), FontWeight.bold),
+                                      ShowThreeText('Terminal ' + merchant.id.toString(), 'Lote '+ merchant.batchNumber.toString(),'Ticket '+ trans.numticket.toString(), FontWeight.bold),
                                       ShowTwoText("MontoBs.", monto,FontWeight.bold),
                                       ShowOneText("Ap .Preferred Name / Label", MainAxisAlignment.start),
                                       ShowOneText("AID:XXXXXXXXXXXXXX", MainAxisAlignment.end),

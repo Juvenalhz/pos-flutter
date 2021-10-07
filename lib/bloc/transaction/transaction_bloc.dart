@@ -88,6 +88,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       acquirer = Acquirer.fromMap(await acquirerRepository.getacquirer(merchant.acquirerCode));
 
       trans.id = (await transRepository.getMaxId()) + 1;
+      trans.numticket = await getNumId();
       trans.baseAmount = event.amount;
       trans.total = event.amount;
       trans.type = 'Venta';
@@ -598,6 +599,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
+
           if (trans.type == "Anulación") trans.referenceNumberCancellation = trans.referenceNumber;
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
@@ -623,10 +625,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               transRepository.updateTrans(originalTrans);
               //add void to database
               trans.id = (await transRepository.getMaxId()) + 1;
+              trans.numticket = await getNumId();
               transRepository.createTrans(trans);
             }
             Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
             this.add(TransMerchantReceipt());
+            incrementNumId();
           }
         } else {
           BinRepository binRepository = new BinRepository();
@@ -674,14 +678,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
         if (trans.cardDecision == 0) {
-          if (trans.type == 'Venta')
+          if (trans.type == 'Venta') {
             transRepository.updateTrans(trans);
-          else {
+          } else {
             //update original transaction
             originalTrans.voided = true;
             transRepository.updateTrans(originalTrans);
             //add void to database
             trans.id = (await transRepository.getMaxId()) + 1;
+            trans.numticket = await getNumId();
             transRepository.createTrans(trans);
           }
 
@@ -694,6 +699,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = 'Transacción Denegada Por Tarjeta';
           yield TransactionRejected(trans);
         }
+        incrementNumId();
       }
       // else {
       //   transRepository.updateTrans(trans);

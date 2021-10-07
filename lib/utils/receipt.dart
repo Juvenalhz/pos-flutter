@@ -156,7 +156,7 @@ class Receipt {
     printer.addText(Printer.LEFT, 'S/N POS:        No.Autor     No.Operac.   Mesero');
     printer.addText(
         Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString());
-    printer.addTextSideBySideWithCenter('Terminal ' + merchant.tid, 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString());
+    printer.addTextSideBySideWithCenter('Terminal ' + merchant.tid, 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.numticket.toString());
     printer.addTextSideBySide('MONTOBs.', amount.trim());
     printer.addText(Printer.CENTER, 'NO REQUIERE FIRMA');
     printer.addTextSideBySide(Constants.specsVersion, Constants.appVersion);
@@ -245,7 +245,7 @@ class Receipt {
     printer.addText(Printer.LEFT, sn.padRight(16, ' ') + ' ' + trans.authCode + '     ' + trans.referenceNumber + '       ' + trans.server.toString()) ;
     //printer.addTextSideBySideWithCenter(sn, trans.authCode, trans.referenceNumber);
     printer.addTextSideBySideWithCenter(
-        'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.id.toString().padLeft(6, '0'));
+        'Terminal ' + merchant.id.toString(), 'Lote ' + merchant.batchNumber.toString(), 'Ticket ' + trans.numticket.toString().padLeft(6, '0'));
     if ((isCustomer == true) && (lastSale == false)) printer.addText(Printer.CENTER, 'COPIA - CLIENTE');
     if (isCopy) {
       printer.addText(Printer.CENTER, 'DUPLICADO');

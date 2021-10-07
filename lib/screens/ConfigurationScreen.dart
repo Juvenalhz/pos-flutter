@@ -329,15 +329,15 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           label: 'Impresión',
                                           value: _terminal.print,
                                           onChanged: (newValue) => setState(() {
-                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                                //If print is false, it cant print credit or debit
-                                                if (newValue == false) {
-                                                  _terminal.creditPrint = newValue;
-                                                  _terminal.debitPrint = newValue;
-                                                  _terminal.numPrint = 0;
-                                                }
-                                                _terminal.print = newValue;
-                                              })),
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                            //If print is false, it cant print credit or debit
+                                            if (newValue == false) {
+                                              _terminal.creditPrint = newValue;
+                                              _terminal.debitPrint = newValue;
+                                              _terminal.numPrint = 0;
+                                            }
+                                            _terminal.print = newValue;
+                                          })),
                                       rightLabel: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
@@ -377,22 +377,22 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                           label: 'Impresión\nDébito',
                                           value: _terminal.debitPrint,
                                           onChanged: (newValue) => setState(() {
-                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                                if (_terminal.print == false)
-                                                  return null;
-                                                else
-                                                  _terminal.debitPrint = newValue;
-                                              })),
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                            if (_terminal.print == false)
+                                              return null;
+                                            else
+                                              _terminal.debitPrint = newValue;
+                                          })),
                                       rightLabel: CheckboxItem(
                                           label: 'Impresión\nCrédito',
                                           value: _terminal.creditPrint,
                                           onChanged: (newValue) => setState(() {
-                                                Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
-                                                if (_terminal.print == false)
-                                                  return null;
-                                                else
-                                                  _terminal.creditPrint = newValue;
-                                              })),
+                                            Provider.of<ConfigViewModel>(context, listen: false).updateChanges(true);
+                                            if (_terminal.print == false)
+                                              return null;
+                                            else
+                                              _terminal.creditPrint = newValue;
+                                          })),
                                       leftWidth: size.width / 2.18,
                                       rightWidth: size.width / 2.18,
                                     ),

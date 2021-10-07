@@ -322,6 +322,7 @@ class MainMenu extends StatelessWidget {
                             acquirerBloc.add(GetAllAcquirer());
                             terminalBloc.add(GetTerminal(1));
                             Navigator.pushNamed(context, '/configuration');
+
                           },
                         );
                       } else {

@@ -186,8 +186,19 @@ class DatabaseHelper {
 
     _upgradeCountersTable(db);
   }
-
   void _upgradeCountersTable(Database db) async {}
+
+  void _createCountersTicketTable(Database db) async {
+    await db.execute('''
+          CREATE TABLE countersticket (
+          id integer PRIMARY KEY AUTOINCREMENT,
+          numticket integer )
+          ''');
+
+    _upgradeCountersTicketTable(db);
+  }
+
+  void _upgradeCountersTicketTable(Database db) async {}
 
   void _createAcquirerTable(Database db) async {
     await db.execute('''
@@ -341,6 +352,7 @@ class DatabaseHelper {
     _tableAlter(db, 'trans', 'issuer', 'text');
     _tableAlter(db, 'trans', 'server', 'integer');
     _tableAlter(db, 'trans', 'tipAdjusted', 'integer');
+    _tableAlter(db, 'trans', 'numticket', 'integer');
   }
 
   // SQL code to create the database table
@@ -350,6 +362,7 @@ class DatabaseHelper {
     _createCommTable(db);
     _createEmvTable(db);
     _createCountersTable(db);
+    _createCountersTicketTable(db);
     _createAcquirerTable(db);
     _createBinTable(db);
     _createAidTable(db);
@@ -360,8 +373,13 @@ class DatabaseHelper {
       //'id': 1,
       'stan': 1,
     };
+    Map<String, dynamic> initialCounterticket = {
+      //'id': 1,
+      'numticket': 1,
+    };
 
     await db.insert('counters', initialCounter);
+    await db.insert('countersticket', initialCounterticket);
 
     _fillDefaultComm();
     _fillDefaultEmv();
@@ -373,6 +391,7 @@ class DatabaseHelper {
     _upgradeCommTable(db);
     _upgradeEmvTable(db);
     _upgradeCountersTable(db);
+    _upgradeCountersTicketTable(db);
     _upgradeAcquirerTable(db);
     _upgradeBinTable(db);
     _upgradeAidTable(db);

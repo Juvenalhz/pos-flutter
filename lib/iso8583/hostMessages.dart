@@ -29,6 +29,7 @@ Future<int> getStan() async {
   return counters['stan'];
 }
 
+
 void incrementStan() async {
   final appdb = DatabaseHelper.instance;
 
@@ -39,6 +40,25 @@ void incrementStan() async {
     'stan': counters['stan'] + 1,
   };
   await appdb.update('counters', 1, newCounter);
+}
+
+Future<int> getNumId() async {
+  final appdb = DatabaseHelper.instance;
+
+  Map<String, dynamic> counters = await appdb.queryById('countersticket', 1);
+  return counters['numticket'];
+}
+
+void incrementNumId() async {
+  final appdb = DatabaseHelper.instance;
+
+  Map<String, dynamic> counters2 = await appdb.queryById('countersticket', 1);
+
+  Map<String, dynamic> newCounter2 = {
+    'id': 1,
+    'numticket':  counters2['numticket'] >= 9999 ? 1 : counters2['numticket'] + 1,
+  };
+  await appdb.update('countersticket', 1, newCounter2);
 }
 
 class HostMessage {
@@ -388,7 +408,7 @@ class TransactionMessage extends HostMessage {
 
     message.fieldData(60, Constants.appVersionHost);
 
-    field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(1, trans.numticket.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     if (trans.cvv.length > 0) field62 += addField62Table(3, trans.cvv);
     if (trans.cardholderID.length > 0) field62 += addField62Table(4, trans.cardholderID);
@@ -454,7 +474,7 @@ class ReversalMessage extends HostMessage {
     if (trans.emvTags.length > 0) message.fieldData(55, trans.emvTags);
     message.fieldData(60, Constants.appVersionHost);
 
-    field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(1, trans.numticket.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(18, merchant.acquirerCode.toString());
     field62 += addField62Table(41, sn);
@@ -605,9 +625,9 @@ class VoidMessage extends HostMessage {
     originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
-    originalData += trans.id.toString().padLeft(4, '0');
+    originalData += trans.numticket.toString().padLeft(4, '0');
 
-    field62 += addField62Table(1, trans.id.toString());
+    field62 += addField62Table(1, trans.numticket.toString());
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
     field62 += addField62Table(18, merchant.acquirerCode.toString());
@@ -720,7 +740,7 @@ class AdjustMessage extends HostMessage {
     originalData = trans.referenceNumber.trim();
     originalData += trans.stan.toString().padLeft(6, '0');
     originalData += trans.authCode;
-    originalData += trans.id.toString().padLeft(4, '0');
+    originalData += trans.numticket.toString().padLeft(4, '0');
 
     field62 += addField62Table(2, merchant.batchNumber.toString());
     field62 += addField62Table(13, originalData);
