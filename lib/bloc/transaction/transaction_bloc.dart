@@ -32,7 +32,6 @@ import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'transaction_event.dart';
-
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {

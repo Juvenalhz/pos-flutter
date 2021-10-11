@@ -290,7 +290,7 @@ class Receipt {
       break;
 
       default: {
-        return Txtype + " ALIMENTACION" ;
+        return Txtype + " CESTATICKET" ;
       }
       break;
     }
