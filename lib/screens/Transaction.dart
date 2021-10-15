@@ -270,8 +270,8 @@ class Transaction extends StatelessWidget {
 
   void onClickExpDateEnter(BuildContext context, int value) {
     final TransactionBloc transactionBloc = BlocProvider.of<TransactionBloc>(context);
-
-    transactionBloc.add(TransAddExpDate(value.toString()));
+    var exp = value.toString().length == 3 ? '0'+value.toString() : value.toString(); //Cuanto la fecha comienza en cero lo elimina por ser un entero, aca se agrega en cero en caso de que sea necesario.
+    transactionBloc.add(TransAddExpDate(exp));
   }
 
   void onClickExpDateBack(BuildContext context) {
