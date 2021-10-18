@@ -32,7 +32,12 @@ class Transaction extends StatelessWidget {
     Pinpad pinpad = new Pinpad(context);
     bool pinpadInit = false;
 
-    return BlocListener<TransactionBloc, TransactionState>(listener: (context, state) {
+    return
+      WillPopScope(
+          onWillPop: () async {
+
+             return true;},
+        child: BlocListener<TransactionBloc, TransactionState>(listener: (context, state) {
       if ((state is TransactionFinish) || (state is TransactionError)) {
         if ((state is TransactionFinish) && (state.trans.type == 'Anulación')) {
           final DetailReportBloc detailReportBloc = BlocProvider.of<DetailReportBloc>(context);
@@ -115,7 +120,7 @@ class Transaction extends StatelessWidget {
           print('state:' + state.toString());
         return TransMessage('');
       }),
-    ));
+    )));
   }
 
   void onClickLast4Enter(BuildContext context, int value) {

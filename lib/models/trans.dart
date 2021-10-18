@@ -621,6 +621,7 @@ class Trans {
     _tipAdjusted = false;
     _referenceNumberCancellation = '';
     _numticket = 0;
+    _chipEnable = true;
   }
 
   void clearCardData() {
