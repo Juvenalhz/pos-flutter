@@ -38,17 +38,17 @@ class Confirmation extends StatelessWidget {
                   ),
                 ),
                 child: Stack(children: <Widget>[
-                  Positioned(
-                    left: 6,
-                    top: 6,
-                    child: IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        transactionBloc.add(TransAskIdNumber());
-                      },
-                    ),
-                  ),
+                  // Positioned(
+                  //   left: 6,
+                  //   top: 6,
+                  //   child: IconButton(
+                  //     color: Colors.white,
+                  //     icon: Icon(Icons.arrow_back),
+                  //     onPressed: () {
+                  //       transactionBloc.add(TransAskIdNumber());
+                  //     },
+                  //   ),
+                  // ),
                   Center(
                     child: Padding(
                         padding: const EdgeInsets.fromLTRB(40, 20, 10, 0),

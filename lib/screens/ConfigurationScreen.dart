@@ -254,7 +254,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                               Widget retWidget = SizedBox();
                               if (state is AcquirerGetAll) {
                                 List<Map<String, dynamic>> acquirers = state.acquirerList;
-                                _acquirer = Acquirer.fromMap(acquirers[_merchant.acquirerCode]);
+                                _acquirer = Acquirer.fromMap(_merchant == null ? acquirers[0] : acquirers[_merchant.acquirerCode]);
                                 retWidget = ListView(
                                   padding: const EdgeInsets.fromLTRB(6, 10, 6, 10),
                                   children: <Widget>[
@@ -402,7 +402,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
                                       contentPadding: EdgeInsets.all(5.0),
                                       leftLabel: Text('Número de Lote'),
                                       rightLabel: Text('Terminal ID'),
-                                      leftItem: Text(_merchant.batchNumber.toString()),
+                                      leftItem: Text(_merchant==null ? 'Asignar adquiriente' : _merchant.batchNumber.toString()),
                                       //TODO: asignar campo valido
                                       rightItem: Text(_terminal.idTerminal),
                                       leftWidth: size.width / 2.18,

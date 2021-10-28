@@ -41,17 +41,17 @@ class AskNumeric extends StatelessWidget {
                   ),
                 ),
                 child: Stack(children: <Widget>[
-                  Positioned(
-                    left: 6,
-                    top: 6,
-                    child: IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        this.onClickBack(context);
-                      },
-                    ),
-                  ),
+                  // Positioned(
+                  //   left: 6,
+                  //   top: 6,
+                  //   child: IconButton(
+                  //     color: Colors.white,
+                  //     icon: Icon(Icons.arrow_back),
+                  //     onPressed: () {
+                  //       this.onClickBack(context);
+                  //     },
+                  //   ),
+                  // ),
                   Center(
                       child: Padding(
                           padding: const EdgeInsets.fromLTRB(40, 0, 10, 0),

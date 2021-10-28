@@ -32,6 +32,7 @@ import 'package:pay/utils/dataUtils.dart';
 import 'package:pay/utils/receipt.dart';
 
 part 'transaction_event.dart';
+
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
@@ -55,6 +56,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   int numCopies = 0;
   int respBatchNumber = 0;
   int cardReadTrials = 0;
+  bool vTarjNacional;
 
   TransactionBloc(this.context) : super(TransactionInitial());
 
@@ -175,7 +177,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // show message to entry a card
     else if (event is TransShowEntryCard) {
       yield TransactionShowEntryCard(event.message);
-
     } else if (event is TransCardReadManual) {
       yield TransactionAskAccountNumber();
     } else if (event is TransAddAccountNumber) {
@@ -353,18 +354,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (acquirer.industryType) // true = restaurant
           yield TransactionAskServerNumber();
         else {
-          if (trans.entryMode == Pinpad.CHIP ) {
+          if (trans.entryMode == Pinpad.CHIP) {
             this.add(TransGoOnChip(trans));
           } else {
             yield TransactionAskConfirmation(trans, acquirer);
           }
         }
-      } else if (trans.binType == Bin.TYPE_DEBIT || trans.binType == Bin.TYPE_FOOD ) {
+      } else if (trans.binType == Bin.TYPE_DEBIT || trans.binType == Bin.TYPE_FOOD) {
         if (trans.binType == Bin.TYPE_FOOD) {
           Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
           yield TransactionShowPinAmount(trans);
-          await pinpad.askPin(terminal.keyIndex, trans.pan, '', '',
-              'trans');
+          await pinpad.askPin(terminal.keyIndex, trans.pan, '', '', 'trans');
         } else
           yield TransactionAskAccountType();
       } else {
@@ -374,8 +374,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       trans.server = event.server;
       if (trans.entryMode == Pinpad.CHIP) {
         this.add(TransGoOnChip(trans));
-      }
-      else {
+      } else {
         yield TransactionAskConfirmation(trans, acquirer);
       }
     } else if (event is TransServerBack) {
@@ -555,7 +554,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
       if ((connection.frameSize != 0) || (isCommOffline == true)) {
         Map<int, String> respMap;
-
         if (trans.type == 'Venta')
           respMap = await message.parseRenponse(response, trans: trans);
         else
@@ -578,7 +576,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       //valida monto mod restaurant - con o sin ajuste
       int originalTotal = trans.total;
 
-      if(trans.binType == Bin.TYPE_CREDIT && trans.type == "Venta")
+      if (trans.binType == Bin.TYPE_CREDIT && trans.type == "Venta")
         originalTotal = trans.originalTotal;
       else if (trans.binType == Bin.TYPE_CREDIT && trans.tipAdjusted == false)
         originalTotal = trans.total;
@@ -598,7 +596,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (event.respMap[39] != null) trans.respCode = event.respMap[39];
 
         if (trans.respCode == '00') {
-
           if (trans.type == "Anulación") trans.referenceNumberCancellation = trans.referenceNumber;
           if (event.respMap[37] != null) trans.referenceNumber = event.respMap[37];
           if (event.respMap[38] != null) trans.authCode = event.respMap[38];
@@ -637,7 +634,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           trans.respMessage = event.respMap[6208];
           yield TransactionRejected(trans);
           Receipt receipt = new Receipt();
-          receipt.TransactionDeclinedReceipt(trans, merchant, false,false,false, bin, onPrintDeclined, onPrintCustomerError);
+          receipt.TransactionDeclinedReceipt(trans, merchant, false, false, false, bin, onPrintDeclined, onPrintCustomerError);
         }
 
         if (event.respMap[60] != null) {
@@ -652,7 +649,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           merchant.tid = event.respMap[41];
           await processField60(event.respMap[60], merchant, comm, terminal, emv, acquirerIndicators);
           merchant = Merchant.fromMap(await merchantRepository.getMerchant(1));
-
         }
       }
     }
@@ -670,9 +666,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     // finish chip
     else if (event is TransFinishChipComplete) {
       if (trans.respCode == "00") {
-
         Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
-
+        BinRepository binRepository = new BinRepository();
+        Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
         if (event.finishData['decision'] != null) trans.cardDecision = event.finishData['decision'];
         if (event.finishData['tags'] != null) trans.finishTags = event.finishData['tags'];
 
@@ -690,7 +686,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           }
 
           this.add(TransMerchantReceipt());
-          if (terminal.print == true) {
+
+          if (terminal.print == true && ((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+              ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
+              (bin.cardType > Bin.TYPE_DEBIT) ||
+              trans.entryMode == Pinpad.MANUAL ||
+              trans.entryMode == Pinpad.MAG_STRIPE ||
+              vTarjNacional == false) {
             numCopies = 1;
             yield TransactionPrintMerchantReceipt(trans);
           }
@@ -705,8 +707,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       // }
     } else if (event is TransMerchantReceipt) {
       Terminal terminal = Terminal.fromMap(await terminalRepository.getTerminal(1));
+      BinRepository binRepository = new BinRepository();
+      Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
+      RegExp exp = RegExp(r"(9F1A020862)"); //Expresion regular que determina si el country code es nacional
+      vTarjNacional = exp.hasMatch(trans.emvTags); //si la tarjeta es internacional(false) debe imprimir siempre
 
-      if (terminal.print == true) {
+      if (terminal.print == true && ((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+          ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
+          (bin.cardType > Bin.TYPE_DEBIT) ||
+          trans.entryMode == Pinpad.MANUAL ||
+          trans.entryMode == Pinpad.MAG_STRIPE ||
+          vTarjNacional == false) {
         Receipt receipt = new Receipt();
         yield TransactionPrintMerchantReceipt(trans);
         receipt.printTransactionReceipt(false, false, false, trans, onPrintMerchantOK, onPrintMerchantError);
@@ -720,9 +731,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       BinRepository binRepository = new BinRepository();
       Bin bin = Bin.fromMap(await binRepository.getBin(trans.bin));
 
-      if (((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
+      if (terminal.print == true && ((bin.cardType == Bin.TYPE_CREDIT) && (terminal.creditPrint)) ||
           ((bin.cardType == Bin.TYPE_DEBIT) && (terminal.debitPrint)) ||
-          (bin.cardType > Bin.TYPE_DEBIT)) {
+          (bin.cardType > Bin.TYPE_DEBIT) ||
+          trans.entryMode == Pinpad.MANUAL ||
+          trans.entryMode == Pinpad.MAG_STRIPE ||
+          vTarjNacional == false) {
         numCopies = 1;
         yield TransactionAskPrintCustomer(trans, acquirer);
       } else {
@@ -757,13 +771,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     // card was removed at the end of the emv flow - this the normal scenario
     else if (event is TransRemoveCard) {
-        if (trans.entryMode == Pinpad.CHIP) {
-          doBeep = true;
-          pinpad.removeCard();
-          this.add(RemovingCard());
-          yield TransactionShowMessage('Retire Tarjeta');
-        } else
-          yield TransactionFinish(trans);
+      if (trans.entryMode == Pinpad.CHIP) {
+        doBeep = true;
+        pinpad.removeCard();
+        this.add(RemovingCard());
+        yield TransactionShowMessage('Retire Tarjeta');
+      } else
+        yield TransactionFinish(trans);
     }
     // alarm to beep while card is not removed
     else if (event is RemovingCard) {
@@ -884,7 +898,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     index += 10;
     comm.nii = data.substring(index, index + 4).substring(1, 4);
     index += 4;
-
 
     if ((int.parse(data.substring(index, index + 2)) & 0x01) != 0) terminal.amountConfirmation = true;
     if ((int.parse(data.substring(index, index + 2)) & 0x02) != 0) emv.fallback = true;
